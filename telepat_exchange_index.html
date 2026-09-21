@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Телепат — Обменник</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#101722;color:#fff;font-family:Arial,sans-serif;min-height:100vh}
+.app{max-width:520px;margin:auto;padding:22px 16px 100px}
+h1{font-size:27px;text-align:center;margin:8px 0 4px;color:#f4cf70}
+.sub{text-align:center;color:#9ca8b8;margin-bottom:25px}
+.card{background:linear-gradient(145deg,#202b3b,#151d29);border:1px solid #6e5824;border-radius:22px;padding:22px;margin-bottom:16px;box-shadow:0 10px 30px #0005}
+.title{color:#f4cf70;font-size:14px;letter-spacing:1px}
+.balance{font-size:34px;font-weight:bold;margin:8px 0 20px}
+.row{display:flex;gap:10px}.coin{flex:1;background:#111923;border-radius:15px;padding:14px}
+.coin b{display:block;font-size:22px;color:#f4cf70}.coin span{color:#aeb8c6;font-size:13px}
+button{width:100%;border:0;border-radius:15px;padding:15px;margin-top:10px;font-size:16px;font-weight:bold;background:#d8b44f;color:#151515}
+button.secondary{background:#263344;color:#fff;border:1px solid #536174}
+.nav{position:fixed;bottom:0;left:0;right:0;background:#121a25;border-top:1px solid #334052;padding:10px;display:flex;justify-content:center;gap:8px}
+.nav button{width:auto;margin:0;padding:11px 13px;font-size:13px;background:#1e2938;color:#fff}
+</style>
+</head>
+<body>
+<div class="app">
+<h1>👑 ТЕЛЕПАТ</h1>
+<div class="sub">Виртуальный обменник</div>
+
+<div class="card">
+<div class="title">МОЙ БАЛАНС</div>
+<div class="row">
+<div class="coin"><b>0 TG</b><span>Телепат Голд</span></div>
+<div class="coin"><b>0 TUSD</b><span>Телепат Доллар</span></div>
+</div>
+<button onclick="alert('Здесь будет заявка на пополнение')">💰 Пополнить</button>
+<button class="secondary" onclick="alert('Раздел обмена будет подключён следующим этапом')">🔄 Обменять</button>
+</div>
+
+<div class="card">
+<div class="title">ПРОФИЛЬ</div>
+<div id="user">Пользователь Telegram</div>
+<button class="secondary" onclick="alert('История появится на следующем этапе')">📜 История операций</button>
+</div>
+</div>
+
+<div class="nav">
+<button onclick="scrollTo(0,0)">🏠 Главная</button>
+<button onclick="alert('Баланс')">💰 Баланс</button>
+<button onclick="alert('Обмен')">🔄 Обмен</button>
+<button onclick="alert('Профиль')">👤 Профиль</button>
+</div>
+
+<script>
+const tg = window.Telegram?.WebApp;
+if(tg){
+  tg.ready();
+  tg.expand();
+  const u=tg.initDataUnsafe?.user;
+  if(u) document.getElementById('user').textContent =
+    (u.first_name||'')+' '+(u.last_name||'')+' '+(u.username?'@'+u.username:'');
+}
+</script>
+</body>
+</html>
