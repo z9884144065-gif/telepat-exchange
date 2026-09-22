@@ -1,10 +1,15 @@
 <!doctype html>
-
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Телепат — Обменник</title><script src="https://telegram.org/js/telegram-web-app.js"></script><style>
+
+<title>Телепат — Обменник</title>
+
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
 *{box-sizing:border-box}
 
 body{
@@ -157,47 +162,128 @@ button.admin{
   background:#1e2938;
   color:#fff;
 }
-</style></head><body><div class="app"><h1>👑 ТЕЛЕПАТ</h1>
-<div class="sub">Виртуальный обменник</div><!-- БАЛАНС --><div class="card"><div class="title">МОЙ БАЛАНС</div><div class="row"><div class="coin">
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<h1>👑 ТЕЛЕПАТ</h1>
+
+<div class="sub">Виртуальный обменник</div>
+
+<!-- БАЛАНС -->
+
+<div class="card">
+
+<div class="title">МОЙ БАЛАНС</div>
+
+<div class="row">
+
+<div class="coin">
 <b id="tgBalance">0 TG</b>
 <span>Телепат Голд</span>
-</div><div class="coin">
+</div>
+
+<div class="coin">
 <b id="tusdBalance">0 TUSD</b>
 <span>Телепат Доллар</span>
-</div></div><button onclick="deposit()">
+</div>
+
+</div>
+
+<button onclick="deposit()">
 💰 Пополнить
-</button><button class="secondary" onclick="exchange()">
+</button>
+
+<button class="secondary" onclick="exchange()">
 🔄 Обменять
-</button></div><!-- ПРОФИЛЬ --><div class="card"><div class="title">ПРОФИЛЬ</div><div id="user">
-Пользователь Telegram
-</div><button class="secondary" onclick="history()">
+</button>
+
+</div>
+
+<!-- ПРОФИЛЬ -->
+
+<div class="card">
+
+<div class="title">ПРОФИЛЬ</div>
+
+<div id="user">
+Загрузка пользователя...
+</div>
+
+<button class="secondary" onclick="history()">
 📜 История операций
-</button></div><!-- АДМИН-ПАНЕЛЬ --><div class="card admin-box" id="adminPanel"><div class="title">
+</button>
+
+</div>
+
+<!-- АДМИН -->
+
+<div class="card admin-box" id="adminPanel">
+
+<div class="title">
 👑 АДМИН-ПАНЕЛЬ
-</div><div class="stat">
+</div>
+
+<div class="stat">
 <span>👥 Пользователи</span>
-<b id="usersCount">1</b>
-</div><div class="stat">
+<b id="usersCount">0</b>
+</div>
+
+<div class="stat">
 <span>💰 TG в системе</span>
 <b id="totalTG">0</b>
-</div><div class="stat">
+</div>
+
+<div class="stat">
 <span>💵 TUSD в системе</span>
 <b id="totalTUSD">0</b>
-</div><button class="admin" onclick="addBalance()">
+</div>
+
+<button class="admin" onclick="addBalance()">
 ➕ Начислить баланс
-</button><button class="secondary" onclick="removeBalance()">
+</button>
+
+<button class="secondary" onclick="removeBalance()">
 ➖ Списать баланс
-</button><button class="secondary" onclick="showUsers()">
+</button>
+
+<button class="secondary" onclick="showUsers()">
 👥 Пользователи
-</button><div id="adminMessage"></div></div></div><!-- НИЖНЕЕ МЕНЮ --><div class="nav"><button onclick="scrollTo(0,0)">
+</button>
+
+<div id="adminMessage"></div>
+
+</div>
+
+</div>
+
+<!-- НИЖНЕЕ МЕНЮ -->
+
+<div class="nav">
+
+<button onclick="scrollTo(0,0)">
 🏠 Главная
-</button><button onclick="scrollToBalance()">
+</button>
+
+<button onclick="scrollToBalance()">
 💰 Баланс
-</button><button onclick="exchange()">
+</button>
+
+<button onclick="exchange()">
 🔄 Обмен
-</button><button onclick="scrollToProfile()">
+</button>
+
+<button onclick="scrollToProfile()">
 👤 Профиль
-</button></div><script>
+</button>
+
+</div>
+
+
+<script>
 
 /* =========================
    TELEGRAM
@@ -212,7 +298,24 @@ if(tg){
 
 
 /* =========================
-   ТВОЙ TELEGRAM ID
+   SUPABASE
+========================= */
+
+const SUPABASE_URL =
+"https://jutszxuzjzyfxarceydw.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_geRczpRc3faUHRGto2ueA_eFFiJDwO";
+
+const supabaseClient =
+window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+
+/* =========================
+   АДМИН
 ========================= */
 
 const ADMIN_ID = "949707357";
@@ -222,11 +325,26 @@ const ADMIN_ID = "949707357";
    ПОЛЬЗОВАТЕЛЬ
 ========================= */
 
-const user = tg?.initDataUnsafe?.user;
+const user =
+tg?.initDataUnsafe?.user;
 
 let currentUserId = "";
 
-if(user){
+
+/* =========================
+   ЗАПУСК
+========================= */
+
+async function startApp(){
+
+  if(!user){
+
+    document.getElementById("user").textContent =
+      "Откройте приложение через Telegram";
+
+    return;
+
+  }
 
   currentUserId = String(user.id);
 
@@ -239,30 +357,138 @@ if(user){
     name += " @" + user.username;
   }
 
-  document.getElementById("user").textContent = name;
+  document.getElementById("user").textContent =
+    name.trim();
+
+
+  /* АДМИН */
+
+  if(currentUserId === ADMIN_ID){
+
+    document.getElementById("adminPanel").style.display =
+      "block";
+
+  }
+
+
+  /* ПОЛУЧАЕМ ПОЛЬЗОВАТЕЛЯ */
+
+  await loadUser();
+
 }
 
 
 /* =========================
-   ПРОВЕРКА АДМИНА
+   ЗАГРУЗКА ПОЛЬЗОВАТЕЛЯ
 ========================= */
 
-if(currentUserId === ADMIN_ID){
+async function loadUser(){
 
-  document.getElementById("adminPanel").style.display = "block";
+  const { data, error } =
+    await supabaseClient
+      .from("users")
+      .select("*")
+      .eq("Ttelegram_id", currentUserId)
+      .maybeSingle();
+
+
+  if(error){
+
+    console.error(error);
+
+    alert(
+      "Ошибка подключения к базе данных:\n" +
+      error.message
+    );
+
+    return;
+
+  }
+
+
+  /* ЕСЛИ ПОЛЬЗОВАТЕЛЯ НЕТ */
+
+  if(!data){
+
+    const { data:newUser, error:createError } =
+      await supabaseClient
+        .from("users")
+        .insert({
+
+          Ttelegram_id: currentUserId,
+
+          first_name:
+            user.first_name || "",
+
+          username:
+            user.username || "",
+
+          tg_balance: 0,
+
+          tusd_balance: 0
+
+        })
+        .select()
+        .single();
+
+
+    if(createError){
+
+      console.error(createError);
+
+      alert(
+        "Не удалось создать пользователя:\n" +
+        createError.message
+      );
+
+      return;
+
+    }
+
+    updateBalance(
+      newUser.tg_balance,
+      newUser.tusd_balance
+    );
+
+    return;
+
+  }
+
+
+  /* ЕСЛИ ПОЛЬЗОВАТЕЛЬ ЕСТЬ */
+
+  updateBalance(
+    data.tg_balance,
+    data.tusd_balance
+  );
 
 }
 
 
 /* =========================
-   КНОПКА ПОПОЛНИТЬ
+   ПОКАЗАТЬ БАЛАНС
+========================= */
+
+function updateBalance(tgBalance,tusdBalance){
+
+  document.getElementById("tgBalance").textContent =
+    Number(tgBalance || 0) + " TG";
+
+  document.getElementById("tusdBalance").textContent =
+    Number(tusdBalance || 0) + " TUSD";
+
+}
+
+
+/* =========================
+   ПОПОЛНЕНИЕ
 ========================= */
 
 function deposit(){
 
   alert(
     "💰 Пополнение\n\n" +
-    "Здесь следующим этапом сделаем создание заявки на пополнение."
+    "Следующим этапом здесь создадим заявку на пополнение."
   );
 
 }
@@ -276,7 +502,7 @@ function exchange(){
 
   alert(
     "🔄 Обмен\n\n" +
-    "Здесь следующим этапом сделаем обмен TG ↔ TUSD."
+    "Следующим этапом подключим обмен TG ↔ TUSD."
   );
 
 }
@@ -290,7 +516,7 @@ function history(){
 
   alert(
     "📜 История операций\n\n" +
-    "История будет подключена после создания базы данных."
+    "Следующим этапом подключим журнал операций."
   );
 
 }
@@ -300,36 +526,88 @@ function history(){
    АДМИН: НАЧИСЛЕНИЕ
 ========================= */
 
-function addBalance(){
+async function addBalance(){
 
-  const amount = prompt(
-    "Введите количество TG для начисления:"
-  );
+  const amount =
+    prompt("Введите количество TG для начисления:");
 
   if(!amount) return;
 
-  if(isNaN(amount)){
+  const number =
+    Number(amount);
 
-    alert("Введите число.");
+  if(isNaN(number) || number <= 0){
+
+    alert("Введите положительное число.");
 
     return;
 
   }
 
-  document.getElementById("tgBalance").textContent =
-    amount + " TG";
 
-  document.getElementById("totalTG").textContent =
-    amount;
+  const { data, error } =
+    await supabaseClient
+      .from("users")
+      .select("tg_balance")
+      .eq("Ttelegram_id", currentUserId)
+      .single();
+
+
+  if(error){
+
+    alert("Ошибка загрузки баланса: " + error.message);
+
+    return;
+
+  }
+
+
+  const newBalance =
+    Number(data.tg_balance || 0) + number;
+
+
+  const { error:updateError } =
+    await supabaseClient
+      .from("users")
+      .update({
+        tg_balance:newBalance
+      })
+      .eq("Ttelegram_id",currentUserId);
+
+
+  if(updateError){
+
+    alert(
+      "Ошибка изменения баланса:\n" +
+      updateError.message
+    );
+
+    return;
+
+  }
+
+
+  updateBalance(
+    newBalance,
+    document
+      .getElementById("tusdBalance")
+      .textContent
+      .replace(" TUSD","")
+  );
+
 
   document.getElementById("adminMessage").innerHTML =
     "<div class='admin-user'>" +
-    "✅ Баланс изменён на <strong>" +
-    amount +
+    "✅ Начислено <strong>" +
+    number +
     " TG</strong><br><br>" +
-    "⚠️ Пока это тестовый режим. " +
-    "После подключения базы данных баланс будет сохраняться." +
+    "Новый баланс: <strong>" +
+    newBalance +
+    " TG</strong>" +
     "</div>";
+
+
+  await loadAdminStats();
 
 }
 
@@ -338,72 +616,227 @@ function addBalance(){
    АДМИН: СПИСАНИЕ
 ========================= */
 
-function removeBalance(){
+async function removeBalance(){
 
-  const amount = prompt(
-    "Введите количество TG для списания:"
-  );
+  const amount =
+    prompt("Введите количество TG для списания:");
 
   if(!amount) return;
 
-  if(isNaN(amount)){
+  const number =
+    Number(amount);
 
-    alert("Введите число.");
+  if(isNaN(number) || number <= 0){
+
+    alert("Введите положительное число.");
 
     return;
 
   }
 
-  document.getElementById("tgBalance").textContent =
-    "0 TG";
 
-  document.getElementById("totalTG").textContent =
-    "0";
+  const { data, error } =
+    await supabaseClient
+      .from("users")
+      .select("tg_balance")
+      .eq("Ttelegram_id",currentUserId)
+      .single();
+
+
+  if(error){
+
+    alert("Ошибка загрузки баланса: " + error.message);
+
+    return;
+
+  }
+
+
+  const currentBalance =
+    Number(data.tg_balance || 0);
+
+
+  if(number > currentBalance){
+
+    alert("Недостаточно TG для списания.");
+
+    return;
+
+  }
+
+
+  const newBalance =
+    currentBalance - number;
+
+
+  const { error:updateError } =
+    await supabaseClient
+      .from("users")
+      .update({
+        tg_balance:newBalance
+      })
+      .eq("Ttelegram_id",currentUserId);
+
+
+  if(updateError){
+
+    alert(
+      "Ошибка изменения баланса:\n" +
+      updateError.message
+    );
+
+    return;
+
+  }
+
+
+  updateBalance(
+    newBalance,
+    document
+      .getElementById("tusdBalance")
+      .textContent
+      .replace(" TUSD","")
+  );
+
 
   document.getElementById("adminMessage").innerHTML =
     "<div class='admin-user'>" +
-    "➖ Тестовое списание: <strong>" +
-    amount +
+    "➖ Списано <strong>" +
+    number +
     " TG</strong><br><br>" +
-    "⚠️ Пока это тестовый режим." +
+    "Новый баланс: <strong>" +
+    newBalance +
+    " TG</strong>" +
     "</div>";
+
+
+  await loadAdminStats();
 
 }
 
 
 /* =========================
-   СПИСОК ПОЛЬЗОВАТЕЛЕЙ
+   СТАТИСТИКА АДМИНА
 ========================= */
 
-function showUsers(){
+async function loadAdminStats(){
 
-  const name =
-    user ?
-    ((user.first_name || "") +
-    " " +
-    (user.last_name || "")) :
-    "Пользователь";
+  if(currentUserId !== ADMIN_ID) return;
+
+
+  const { data, error } =
+    await supabaseClient
+      .from("users")
+      .select("tg_balance,tusd_balance");
+
+
+  if(error){
+
+    console.error(error);
+
+    return;
+
+  }
+
+
+  let totalTG = 0;
+  let totalTUSD = 0;
+
+
+  data.forEach(item => {
+
+    totalTG +=
+      Number(item.tg_balance || 0);
+
+    totalTUSD +=
+      Number(item.tusd_balance || 0);
+
+  });
+
+
+  document.getElementById("usersCount").textContent =
+    data.length;
+
+  document.getElementById("totalTG").textContent =
+    totalTG;
+
+  document.getElementById("totalTUSD").textContent =
+    totalTUSD;
+
+}
+
+
+/* =========================
+   ПОЛЬЗОВАТЕЛИ
+========================= */
+
+async function showUsers(){
+
+  const { data, error } =
+    await supabaseClient
+      .from("users")
+      .select("*")
+      .order("created_at",{ascending:false});
+
+
+  if(error){
+
+    alert(
+      "Ошибка загрузки пользователей:\n" +
+      error.message
+    );
+
+    return;
+
+  }
+
+
+  let html =
+    "<div class='admin-user'>" +
+    "<strong>👥 Пользователи</strong><br><br>";
+
+
+  if(!data.length){
+
+    html += "Пользователей пока нет.";
+
+  }
+
+
+  data.forEach(item => {
+
+    html +=
+      "👤 " +
+      (item.first_name || "Без имени") +
+      (item.username ?
+        " @" + item.username :
+        "") +
+      "<br>" +
+
+      "ID: " +
+      item.Ttelegram_id +
+      "<br>" +
+
+      "TG: <strong>" +
+      Number(item.tg_balance || 0) +
+      "</strong>" +
+
+      "<br>" +
+
+      "TUSD: <strong>" +
+      Number(item.tusd_balance || 0) +
+      "</strong>" +
+
+      "<hr>";
+
+  });
+
+
+  html += "</div>";
+
 
   document.getElementById("adminMessage").innerHTML =
-    "<div class='admin-user'>" +
-
-    "<strong>👤 " +
-    name +
-    "</strong><br><br>" +
-
-    "Telegram ID: " +
-    currentUserId +
-    "<br>" +
-
-    "Баланс TG: " +
-    document.getElementById("tgBalance").textContent +
-
-    "<br><br>" +
-
-    "📌 Полноценный список пользователей " +
-    "подключим после создания базы данных." +
-
-    "</div>";
+    html;
 
 }
 
@@ -421,6 +854,7 @@ function scrollToBalance(){
 
 }
 
+
 function scrollToProfile(){
 
   document
@@ -431,5 +865,14 @@ function scrollToProfile(){
 
 }
 
-</script></body>
+
+/* =========================
+   СТАРТ
+========================= */
+
+startApp();
+
+</script>
+
+</body>
 </html>
