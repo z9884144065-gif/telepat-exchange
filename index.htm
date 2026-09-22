@@ -339,7 +339,12 @@ let currentUserId = "";
    ЗАПУСК
 ========================= */
 
-async function startApp(){
+async function startApp()
+const referralLink =
+  "https://t.me/TELEPATp2p_bot?startapp=" + userReferralCode;
+
+document.getElementById("referralLink").value = referralLink;
+{
 
   if(!user){
 
