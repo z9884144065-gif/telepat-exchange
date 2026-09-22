@@ -1,16 +1,25 @@
+
 <!doctype html>
 <html lang="ru">
+
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+
+<meta name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover">
 
 <title>Телепат — Обменник</title>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-*{box-sizing:border-box}
+
+*{
+  box-sizing:border-box;
+}
 
 body{
   margin:0;
@@ -55,10 +64,15 @@ h1{
   margin-bottom:12px;
 }
 
-.balance{
-  font-size:34px;
+.profile-name{
+  font-size:20px;
   font-weight:bold;
-  margin:8px 0 20px;
+  margin-bottom:5px;
+}
+
+.profile-id{
+  color:#9ca8b8;
+  font-size:13px;
 }
 
 .row{
@@ -107,6 +121,34 @@ button.admin{
   color:#171717;
 }
 
+.referral-input{
+  width:100%;
+  box-sizing:border-box;
+  padding:13px;
+  margin:10px 0;
+  border-radius:12px;
+  border:1px solid #536174;
+  background:#111923;
+  color:#fff;
+  font-size:13px;
+}
+
+.referral-info{
+  color:#aeb8c6;
+  font-size:14px;
+  line-height:1.6;
+}
+
+.referral-info strong{
+  color:#f4cf70;
+}
+
+#referralStatus{
+  text-align:center;
+  color:#f4cf70;
+  min-height:20px;
+}
+
 .stat{
   display:flex;
   justify-content:space-between;
@@ -135,6 +177,7 @@ button.admin{
   border-radius:15px;
   padding:15px;
   margin-top:10px;
+  line-height:1.7;
 }
 
 .admin-user strong{
@@ -152,6 +195,7 @@ button.admin{
   display:flex;
   justify-content:center;
   gap:8px;
+  z-index:100;
 }
 
 .nav button{
@@ -162,7 +206,9 @@ button.admin{
   background:#1e2938;
   color:#fff;
 }
+
 </style>
+
 </head>
 
 <body>
@@ -171,24 +217,43 @@ button.admin{
 
 <h1>👑 ТЕЛЕПАТ</h1>
 
-<div class="sub">Виртуальный обменник</div>
+<div class="sub">
+Виртуальный обменник
+</div>
+
 
 <!-- БАЛАНС -->
 
-<div class="card">
+<div class="card" id="balanceSection">
 
-<div class="title">МОЙ БАЛАНС</div>
+<div class="title">
+МОЙ БАЛАНС
+</div>
 
 <div class="row">
 
 <div class="coin">
-<b id="tgBalance">0 TG</b>
-<span>Телепат Голд</span>
+
+<b id="tgBalance">
+0 TG
+</b>
+
+<span>
+Телепат Голд
+</span>
+
 </div>
 
 <div class="coin">
-<b id="tusdBalance">0 TUSD</b>
-<span>Телепат Доллар</span>
+
+<b id="tusdBalance">
+0 TUSD
+</b>
+
+<span>
+Телепат Доллар
+</span>
+
 </div>
 
 </div>
@@ -203,25 +268,104 @@ button.admin{
 
 </div>
 
+
 <!-- ПРОФИЛЬ -->
 
-<div class="card">
-  <h3>👥 Моя реферальная ссылка</h3>
+<div class="card" id="profileSection">
 
-  <input
-    id="referralLink"
-    type="text"
-    readonly
-    style="width:100%; box-sizing:border-box; padding:12px; margin:10px 0;"
-  >
-
-  <button onclick="copyReferralLink()">
-    📋 Скопировать ссылку
-  </button>
-
-  <p id="referralStatus"></p>
+<div class="title">
+👤 МОЙ ПРОФИЛЬ
 </div>
-  >
+
+<div class="profile-name" id="profileName">
+Загрузка...
+</div>
+
+<div class="profile-id" id="profileId">
+ID: ...
+</div>
+
+</div>
+
+
+<!-- РЕФЕРАЛЬНАЯ СИСТЕМА -->
+
+<div class="card" id="referralSection">
+
+<div class="title">
+👥 МОЯ РЕФЕРАЛЬНАЯ ССЫЛКА
+</div>
+
+<div class="referral-info">
+
+Приглашай пользователей в Телепат.
+
+<br><br>
+
+За покупки приглашённых пользователей предусмотрено:
+
+<br>
+
+<strong>TG — 0,1%</strong>
+
+<br>
+
+<strong>TUSD — 1%</strong>
+
+</div>
+
+<input
+  id="referralLink"
+  class="referral-input"
+  type="text"
+  readonly
+  value="Загрузка..."
+>
+
+<button onclick="copyReferralLink()">
+📋 Скопировать ссылку
+</button>
+
+<p id="referralStatus"></p>
+
+<div class="stat">
+
+<span>
+👥 Приглашено
+</span>
+
+<b id="referralCount">
+0
+</b>
+
+</div>
+
+<div class="stat">
+
+<span>
+🪙 Доход TG
+</span>
+
+<b id="referralTGEarnings">
+0 TG
+</b>
+
+</div>
+
+<div class="stat">
+
+<span>
+💵 Доход TUSD
+</span>
+
+<b id="referralTUSDEarnings">
+0 TUSD
+</b>
+
+</div>
+
+</div>
+
 
 <!-- АДМИН -->
 
@@ -232,18 +376,39 @@ button.admin{
 </div>
 
 <div class="stat">
-<span>👥 Пользователи</span>
-<b id="usersCount">0</b>
+
+<span>
+👥 Пользователи
+</span>
+
+<b id="usersCount">
+0
+</b>
+
 </div>
 
 <div class="stat">
-<span>💰 TG в системе</span>
-<b id="totalTG">0</b>
+
+<span>
+💰 TG в системе
+</span>
+
+<b id="totalTG">
+0
+</b>
+
 </div>
 
 <div class="stat">
-<span>💵 TUSD в системе</span>
-<b id="totalTUSD">0</b>
+
+<span>
+💵 TUSD в системе
+</span>
+
+<b id="totalTUSD">
+0
+</b>
+
 </div>
 
 <button class="admin" onclick="addBalance()">
@@ -258,17 +423,19 @@ button.admin{
 👥 Пользователи
 </button>
 
-<div id="adminMessage"></div>
-
+<div id="adminMessage">
 </div>
 
 </div>
+
+</div>
+
 
 <!-- НИЖНЕЕ МЕНЮ -->
 
 <div class="nav">
 
-<button onclick="scrollTo(0,0)">
+<button onclick="scrollToTop()">
 🏠 Главная
 </button>
 
@@ -289,15 +456,20 @@ button.admin{
 
 <script>
 
+
 /* =========================
    TELEGRAM
 ========================= */
 
-const tg = window.Telegram?.WebApp;
+const tg =
+window.Telegram?.WebApp;
 
 if(tg){
+
   tg.ready();
+
   tg.expand();
+
 }
 
 
@@ -322,7 +494,8 @@ window.supabase.createClient(
    АДМИН
 ========================= */
 
-const ADMIN_ID = "949707357";
+const ADMIN_ID =
+"949707357";
 
 
 /* =========================
@@ -334,56 +507,92 @@ tg?.initDataUnsafe?.user;
 
 let currentUserId = "";
 
+let currentUserData = null;
+
+
+/* =========================
+   РЕФЕРАЛЬНЫЙ КОД
+========================= */
+
+function generateReferralCode(){
+
+  const random =
+    Math.random()
+      .toString(36)
+      .substring(2,10);
+
+  return "T" + random;
+
+}
+
 
 /* =========================
    ЗАПУСК
 ========================= */
 
-async function startApp()
-const referralLink =
-  "https://t.me/TELEPATp2p_bot?startapp=" + userReferralCode;
-
-document.getElementById("referralLink").value = referralLink;
-{
+async function startApp(){
 
   if(!user){
 
-    document.getElementById("user").textContent =
-      "Откройте приложение через Telegram";
+    document.body.innerHTML =
+
+      "<div style='padding:40px;text-align:center;color:white'>" +
+
+      "<h2>Откройте приложение через Telegram</h2>" +
+
+      "</div>";
 
     return;
 
   }
 
-  currentUserId = String(user.id);
 
-  let name =
-    (user.first_name || "") +
+  currentUserId =
+    String(user.id);
+
+
+  const fullName =
+    ((user.first_name || "") +
     " " +
-    (user.last_name || "");
+    (user.last_name || "")).trim();
 
-  if(user.username){
-    name += " @" + user.username;
-  }
 
-  document.getElementById("user").textContent =
-    name.trim();
+  document.getElementById("profileName")
+    .textContent =
+      fullName ||
+      "Пользователь";
+
+
+  document.getElementById("profileId")
+    .textContent =
+      "Telegram ID: " +
+      currentUserId;
 
 
   /* АДМИН */
 
   if(currentUserId === ADMIN_ID){
 
-    document.getElementById("adminPanel").style.display =
-      "block";
+    document.getElementById("adminPanel")
+      .style.display =
+        "block";
 
   }
 
 
-  /* ПОЛУЧАЕМ ПОЛЬЗОВАТЕЛЯ */
+  /* ПОЛЬЗОВАТЕЛЬ */
 
   await loadUser();
+
+
+  /* СТАТИСТИКА */
+
   await loadAdminStats();
+
+
+  /* РЕФЕРАЛЫ */
+
+  await loadReferralStats();
 
 }
 
@@ -398,7 +607,10 @@ async function loadUser(){
     await supabaseClient
       .from("users")
       .select("*")
-      .eq("Ttelegram_id", currentUserId)
+      .eq(
+        "Ttelegram_id",
+        currentUserId
+      )
       .maybeSingle();
 
 
@@ -420,12 +632,56 @@ async function loadUser(){
 
   if(!data){
 
-    const { data:newUser, error:createError } =
+    const startParam =
+      tg?.initDataUnsafe?.start_param || "";
+
+
+    let referrerId = null;
+
+
+    /*
+       ЕСЛИ ПОЛЬЗОВАТЕЛЬ
+       ПРИШЁЛ ПО РЕФЕРАЛЬНОЙ ССЫЛКЕ
+    */
+
+    if(startParam){
+
+      const { data:referrer } =
+        await supabaseClient
+          .from("users")
+          .select("Ttelegram_id")
+          .eq(
+            "referral_code",
+            startParam
+          )
+          .maybeSingle();
+
+
+      if(referrer){
+
+        referrerId =
+          String(referrer.Ttelegram_id);
+
+      }
+
+    }
+
+
+    /* СОЗДАЁМ УНИКАЛЬНЫЙ КОД */
+
+    const referralCode =
+      generateReferralCode();
+
+
+    const { data:newUser,
+            error:createError } =
+
       await supabaseClient
         .from("users")
         .insert({
 
-          Ttelegram_id: currentUserId,
+          Ttelegram_id:
+            currentUserId,
 
           first_name:
             user.first_name || "",
@@ -433,9 +689,23 @@ async function loadUser(){
           username:
             user.username || "",
 
-          tg_balance: 0,
+          tg_balance:
+            0,
 
-          tusd_balance: 0
+          tusd_balance:
+            0,
+
+          referral_code:
+            referralCode,
+
+          referrer_id:
+            referrerId,
+
+          referral_tg_earnings:
+            0,
+
+          referral_tusd_earnings:
+            0
 
         })
         .select()
@@ -455,37 +725,278 @@ async function loadUser(){
 
     }
 
+
+    currentUserData =
+      newUser;
+
+
     updateBalance(
       newUser.tg_balance,
       newUser.tusd_balance
     );
+
+
+    await updateReferralBlock();
+
 
     return;
 
   }
 
 
-  /* ЕСЛИ ПОЛЬЗОВАТЕЛЬ ЕСТЬ */
+  /*
+     ПОЛЬЗОВАТЕЛЬ УЖЕ ЕСТЬ
+  */
+
+  currentUserData =
+    data;
+
+
+  /*
+     Если у старого пользователя
+     нет referral_code,
+     создаём его
+  */
+
+  if(!data.referral_code){
+
+    const newCode =
+      generateReferralCode();
+
+
+    const { data:updatedUser,
+            error:updateError } =
+
+      await supabaseClient
+        .from("users")
+        .update({
+
+          referral_code:
+            newCode
+
+        })
+        .eq(
+          "Ttelegram_id",
+          currentUserId
+        )
+        .select()
+        .single();
+
+
+    if(!updateError &&
+       updatedUser){
+
+      currentUserData =
+        updatedUser;
+
+    }
+
+  }
+
 
   updateBalance(
     data.tg_balance,
     data.tusd_balance
   );
 
+
+  await updateReferralBlock();
+
 }
 
 
 /* =========================
-   ПОКАЗАТЬ БАЛАНС
+   БАЛАНС
 ========================= */
 
-function updateBalance(tgBalance,tusdBalance){
+function updateBalance(
+  tgBalance,
+  tusdBalance
+){
 
-  document.getElementById("tgBalance").textContent =
-    Number(tgBalance || 0) + " TG";
+  document.getElementById(
+    "tgBalance"
+  ).textContent =
+    Number(tgBalance || 0) +
+    " TG";
 
-  document.getElementById("tusdBalance").textContent =
-    Number(tusdBalance || 0) + " TUSD";
+
+  document.getElementById(
+    "tusdBalance"
+  ).textContent =
+    Number(tusdBalance || 0) +
+    " TUSD";
+
+}
+
+
+/* =========================
+   РЕФЕРАЛЬНЫЙ БЛОК
+========================= */
+
+async function updateReferralBlock(){
+
+  if(!currentUserData) return;
+
+
+  let code =
+    currentUserData.referral_code;
+
+
+  if(!code) return;
+
+
+  const referralLink =
+    "https://t.me/TELEPATp2p_bot?startapp=" +
+    code;
+
+
+  document.getElementById(
+    "referralLink"
+  ).value =
+    referralLink;
+
+
+  document.getElementById(
+    "referralTGEarnings"
+  ).textContent =
+    Number(
+      currentUserData.referral_tg_earnings || 0
+    ) +
+    " TG";
+
+
+  document.getElementById(
+    "referralTUSDEarnings"
+  ).textContent =
+    Number(
+      currentUserData.referral_tusd_earnings || 0
+    ) +
+    " TUSD";
+
+}
+
+
+/* =========================
+   СТАТИСТИКА РЕФЕРАЛОВ
+========================= */
+
+async function loadReferralStats(){
+
+  if(!currentUserId) return;
+
+
+  const { count, error } =
+    await supabaseClient
+      .from("users")
+      .select(
+        "Ttelegram_id",
+        {
+          count:"exact",
+          head:true
+        }
+      )
+      .eq(
+        "referrer_id",
+        currentUserId
+      );
+
+
+  if(error){
+
+    console.error(error);
+
+    return;
+
+  }
+
+
+  document.getElementById(
+    "referralCount"
+  ).textContent =
+    count || 0;
+
+
+  if(currentUserData){
+
+    document.getElementById(
+      "referralTGEarnings"
+    ).textContent =
+      Number(
+        currentUserData.referral_tg_earnings || 0
+      ) +
+      " TG";
+
+
+    document.getElementById(
+      "referralTUSDEarnings"
+    ).textContent =
+      Number(
+        currentUserData.referral_tusd_earnings || 0
+      ) +
+      " TUSD";
+
+  }
+
+}
+
+
+/* =========================
+   КОПИРОВАНИЕ ССЫЛКИ
+========================= */
+
+async function copyReferralLink(){
+
+  const input =
+    document.getElementById(
+      "referralLink"
+    );
+
+
+  if(!input.value ||
+     input.value === "Загрузка..."){
+
+    return;
+
+  }
+
+
+  try{
+
+    await navigator.clipboard.writeText(
+      input.value
+    );
+
+
+    document.getElementById(
+      "referralStatus"
+    ).textContent =
+      "✅ Ссылка скопирована";
+
+
+  }catch(error){
+
+    input.select();
+
+    document.execCommand("copy");
+
+
+    document.getElementById(
+      "referralStatus"
+    ).textContent =
+      "✅ Ссылка скопирована";
+
+  }
+
+
+  setTimeout(() => {
+
+    document.getElementById(
+      "referralStatus"
+    ).textContent =
+      "";
+
+  },3000);
 
 }
 
@@ -519,36 +1030,32 @@ function exchange(){
 
 
 /* =========================
-   ИСТОРИЯ
-========================= */
-
-function history(){
-
-  alert(
-    "📜 История операций\n\n" +
-    "Следующим этапом подключим журнал операций."
-  );
-
-}
-
-
-/* =========================
    АДМИН: НАЧИСЛЕНИЕ
 ========================= */
 
 async function addBalance(){
 
   const amount =
-    prompt("Введите количество TG для начисления:");
+    prompt(
+      "Введите количество TG для начисления:"
+    );
+
 
   if(!amount) return;
+
 
   const number =
     Number(amount);
 
-  if(isNaN(number) || number <= 0){
 
-    alert("Введите положительное число.");
+  if(
+    isNaN(number) ||
+    number <= 0
+  ){
+
+    alert(
+      "Введите положительное число."
+    );
 
     return;
 
@@ -558,14 +1065,20 @@ async function addBalance(){
   const { data, error } =
     await supabaseClient
       .from("users")
-      .select("tg_balance")
-      .eq("Ttelegram_id", currentUserId)
+      .select("tg_balance,tusd_balance")
+      .eq(
+        "Ttelegram_id",
+        currentUserId
+      )
       .single();
 
 
   if(error){
 
-    alert("Ошибка загрузки баланса: " + error.message);
+    alert(
+      "Ошибка загрузки баланса: " +
+      error.message
+    );
 
     return;
 
@@ -573,16 +1086,23 @@ async function addBalance(){
 
 
   const newBalance =
-    Number(data.tg_balance || 0) + number;
+    Number(data.tg_balance || 0) +
+    number;
 
 
   const { error:updateError } =
     await supabaseClient
       .from("users")
       .update({
-        tg_balance:newBalance
+
+        tg_balance:
+          newBalance
+
       })
-      .eq("Ttelegram_id",currentUserId);
+      .eq(
+        "Ttelegram_id",
+        currentUserId
+      );
 
 
   if(updateError){
@@ -599,21 +1119,24 @@ async function addBalance(){
 
   updateBalance(
     newBalance,
-    document
-      .getElementById("tusdBalance")
-      .textContent
-      .replace(" TUSD","")
+    data.tusd_balance
   );
 
 
-  document.getElementById("adminMessage").innerHTML =
+  document.getElementById(
+    "adminMessage"
+  ).innerHTML =
+
     "<div class='admin-user'>" +
+
     "✅ Начислено <strong>" +
     number +
     " TG</strong><br><br>" +
+
     "Новый баланс: <strong>" +
     newBalance +
     " TG</strong>" +
+
     "</div>";
 
 
@@ -629,16 +1152,26 @@ async function addBalance(){
 async function removeBalance(){
 
   const amount =
-    prompt("Введите количество TG для списания:");
+    prompt(
+      "Введите количество TG для списания:"
+    );
+
 
   if(!amount) return;
+
 
   const number =
     Number(amount);
 
-  if(isNaN(number) || number <= 0){
 
-    alert("Введите положительное число.");
+  if(
+    isNaN(number) ||
+    number <= 0
+  ){
+
+    alert(
+      "Введите положительное число."
+    );
 
     return;
 
@@ -648,14 +1181,20 @@ async function removeBalance(){
   const { data, error } =
     await supabaseClient
       .from("users")
-      .select("tg_balance")
-      .eq("Ttelegram_id",currentUserId)
+      .select("tg_balance,tusd_balance")
+      .eq(
+        "Ttelegram_id",
+        currentUserId
+      )
       .single();
 
 
   if(error){
 
-    alert("Ошибка загрузки баланса: " + error.message);
+    alert(
+      "Ошибка загрузки баланса: " +
+      error.message
+    );
 
     return;
 
@@ -668,7 +1207,9 @@ async function removeBalance(){
 
   if(number > currentBalance){
 
-    alert("Недостаточно TG для списания.");
+    alert(
+      "Недостаточно TG для списания."
+    );
 
     return;
 
@@ -683,9 +1224,15 @@ async function removeBalance(){
     await supabaseClient
       .from("users")
       .update({
-        tg_balance:newBalance
+
+        tg_balance:
+          newBalance
+
       })
-      .eq("Ttelegram_id",currentUserId);
+      .eq(
+        "Ttelegram_id",
+        currentUserId
+      );
 
 
   if(updateError){
@@ -702,21 +1249,24 @@ async function removeBalance(){
 
   updateBalance(
     newBalance,
-    document
-      .getElementById("tusdBalance")
-      .textContent
-      .replace(" TUSD","")
+    data.tusd_balance
   );
 
 
-  document.getElementById("adminMessage").innerHTML =
+  document.getElementById(
+    "adminMessage"
+  ).innerHTML =
+
     "<div class='admin-user'>" +
+
     "➖ Списано <strong>" +
     number +
     " TG</strong><br><br>" +
+
     "Новый баланс: <strong>" +
     newBalance +
     " TG</strong>" +
+
     "</div>";
 
 
@@ -731,13 +1281,16 @@ async function removeBalance(){
 
 async function loadAdminStats(){
 
-  if(currentUserId !== ADMIN_ID) return;
+  if(currentUserId !== ADMIN_ID)
+    return;
 
 
   const { data, error } =
     await supabaseClient
       .from("users")
-      .select("tg_balance,tusd_balance");
+      .select(
+        "tg_balance,tusd_balance"
+      );
 
 
   if(error){
@@ -750,27 +1303,41 @@ async function loadAdminStats(){
 
 
   let totalTG = 0;
+
   let totalTUSD = 0;
 
 
   data.forEach(item => {
 
     totalTG +=
-      Number(item.tg_balance || 0);
+      Number(
+        item.tg_balance || 0
+      );
+
 
     totalTUSD +=
-      Number(item.tusd_balance || 0);
+      Number(
+        item.tusd_balance || 0
+      );
 
   });
 
 
-  document.getElementById("usersCount").textContent =
+  document.getElementById(
+    "usersCount"
+  ).textContent =
     data.length;
 
-  document.getElementById("totalTG").textContent =
+
+  document.getElementById(
+    "totalTG"
+  ).textContent =
     totalTG;
 
-  document.getElementById("totalTUSD").textContent =
+
+  document.getElementById(
+    "totalTUSD"
+  ).textContent =
     totalTUSD;
 
 }
@@ -786,7 +1353,12 @@ async function showUsers(){
     await supabaseClient
       .from("users")
       .select("*")
-      .order("created_at",{ascending:false});
+      .order(
+        "created_at",
+        {
+          ascending:false
+        }
+      );
 
 
   if(error){
@@ -803,12 +1375,16 @@ async function showUsers(){
 
   let html =
     "<div class='admin-user'>" +
-    "<strong>👥 Пользователи</strong><br><br>";
+
+    "<strong>👥 Пользователи</strong>" +
+
+    "<br><br>";
 
 
   if(!data.length){
 
-    html += "Пользователей пока нет.";
+    html +=
+      "Пользователей пока нет.";
 
   }
 
@@ -816,36 +1392,70 @@ async function showUsers(){
   data.forEach(item => {
 
     html +=
+
       "👤 " +
-      (item.first_name || "Без имени") +
-      (item.username ?
-        " @" + item.username :
-        "") +
+
+      (
+        item.first_name ||
+        "Без имени"
+      ) +
+
+      (
+        item.username
+          ? " @" + item.username
+          : ""
+      ) +
+
       "<br>" +
 
       "ID: " +
       item.Ttelegram_id +
+
       "<br>" +
 
       "TG: <strong>" +
-      Number(item.tg_balance || 0) +
+      Number(
+        item.tg_balance || 0
+      ) +
       "</strong>" +
 
       "<br>" +
 
       "TUSD: <strong>" +
-      Number(item.tusd_balance || 0) +
+      Number(
+        item.tusd_balance || 0
+      ) +
       "</strong>" +
+
+      "<br>" +
+
+      "Реф. код: <strong>" +
+      (
+        item.referral_code ||
+        "—"
+      ) +
+      "</strong>" +
+
+      "<br>" +
+
+      "Пригласил: " +
+      (
+        item.referrer_id ||
+        "—"
+      ) +
 
       "<hr>";
 
   });
 
 
-  html += "</div>";
+  html +=
+    "</div>";
 
 
-  document.getElementById("adminMessage").innerHTML =
+  document.getElementById(
+    "adminMessage"
+  ).innerHTML =
     html;
 
 }
@@ -855,11 +1465,27 @@ async function showUsers(){
    НАВИГАЦИЯ
 ========================= */
 
-function scrollToBalance(){
+function scrollToTop(){
 
   window.scrollTo({
+
     top:0,
+
     behavior:"smooth"
+
+  });
+
+}
+
+
+function scrollToBalance(){
+
+  document.getElementById(
+    "balanceSection"
+  ).scrollIntoView({
+
+    behavior:"smooth"
+
   });
 
 }
@@ -867,11 +1493,13 @@ function scrollToBalance(){
 
 function scrollToProfile(){
 
-  document
-    .getElementById("user")
-    .scrollIntoView({
-      behavior:"smooth"
-    });
+  document.getElementById(
+    "profileSection"
+  ).scrollIntoView({
+
+    behavior:"smooth"
+
+  });
 
 }
 
@@ -885,4 +1513,5 @@ startApp();
 </script>
 
 </body>
+
 </html>
