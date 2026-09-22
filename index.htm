@@ -3,7 +3,6 @@
 <html lang="ru">
 
 <head>
-      <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
 
 <meta charset="UTF-8">
 
@@ -15,6 +14,8 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
 
 <style>
 
@@ -185,6 +186,37 @@ button.admin{
   color:#f4cf70;
 }
 
+.wallet-box{
+  background:#111923;
+  border-radius:15px;
+  padding:15px;
+  margin-top:10px;
+}
+
+.wallet-address{
+  word-break:break-all;
+  color:#aeb8c6;
+  font-size:12px;
+  line-height:1.5;
+  margin-top:10px;
+}
+
+.wallet-status{
+  text-align:center;
+  color:#f4cf70;
+  min-height:20px;
+  margin-top:10px;
+  font-size:13px;
+}
+
+#ton-connect{
+  margin-top:10px;
+}
+
+#ton-connect button{
+  margin-top:0 !important;
+}
+
 .nav{
   position:fixed;
   bottom:0;
@@ -284,6 +316,50 @@ button.admin{
 
 <div class="profile-id" id="profileId">
 ID: ...
+</div>
+
+</div>
+
+
+<!-- TON КОШЕЛЁК -->
+
+<div class="card" id="walletSection">
+
+<div class="title">
+🔗 TON КОШЕЛЁК
+</div>
+
+<div class="referral-info">
+
+Подключи свой TON-кошелёк.
+
+<br><br>
+
+Поддерживаются кошельки, совместимые с TON Connect, например Tonkeeper и MyTonWallet.
+
+</div>
+
+<div id="ton-connect"></div>
+
+<div class="wallet-box">
+
+<div>
+👛 Подключённый адрес:
+</div>
+
+<div
+  id="walletAddress"
+  class="wallet-address"
+>
+Кошелёк не подключён
+</div>
+
+</div>
+
+<div
+  id="walletStatus"
+  class="wallet-status"
+>
 </div>
 
 </div>
@@ -457,7 +533,6 @@ ID: ...
 
 <script>
 
-
 /* =========================
    TELEGRAM
 ========================= */
@@ -512,430 +587,162 @@ let currentUserData = null;
 
 
 /* =========================
-   РЕФЕРАЛЬНЫЙ КОД
+   TON CONNECT
 ========================= */
 
-function generateReferralCode(){
+let tonConnectUI = null;
 
-  const random =
-    Math.random()
-      .toString(36)
-      .substring(2,10);
 
-  return "T" + random;
+/*
+  Адрес manifest пока указываем
+  на GitHub Pages.
+*/
 
-}
+const TON_CONNECT_MANIFEST =
+"https://z9884144065-gif.github.io/telepat-exchange/tonconnect-manifest.json";
 
 
 /* =========================
-   ЗАПУСК
+   ИНИЦИАЛИЗАЦИЯ КОШЕЛЬКА
 ========================= */
 
-async function startApp(){
+function initTonConnect(){
 
-  if(!user){
+  try{
 
-    document.body.innerHTML =
+    tonConnectUI =
+      new TON_CONNECT_UI.TonConnectUI({
 
-      "<div style='padding:40px;text-align:center;color:white'>" +
+        manifestUrl:
+          TON_CONNECT_MANIFEST,
 
-      "<h2>Откройте приложение через Telegram</h2>" +
+        buttonRootId:
+          "ton-connect"
 
-      "</div>";
-
-    return;
-
-  }
-
-
-  currentUserId =
-    String(user.id);
-
-
-  const fullName =
-    ((user.first_name || "") +
-    " " +
-    (user.last_name || "")).trim();
-
-
-  document.getElementById("profileName")
-    .textContent =
-      fullName ||
-      "Пользователь";
-
-
-  document.getElementById("profileId")
-    .textContent =
-      "Telegram ID: " +
-      currentUserId;
-
-
-  /* АДМИН */
-
-  if(currentUserId === ADMIN_ID){
-
-    document.getElementById("adminPanel")
-      .style.display =
-        "block";
-
-  }
-
-
-  /* ПОЛЬЗОВАТЕЛЬ */
-
-  await loadUser();
-
-
-  /* СТАТИСТИКА */
-
-  await loadAdminStats();
-
-
-  /* РЕФЕРАЛЫ */
-
-  await loadReferralStats();
-
-}
-
-
-/* =========================
-   ЗАГРУЗКА ПОЛЬЗОВАТЕЛЯ
-========================= */
-
-async function loadUser(){
-
-  const { data, error } =
-    await supabaseClient
-      .from("users")
-      .select("*")
-      .eq(
-        "Ttelegram_id",
-        currentUserId
-      )
-      .maybeSingle();
-
-
-  if(error){
-
-    console.error(error);
-
-    alert(
-      "Ошибка подключения к базе данных:\n" +
-      error.message
-    );
-
-    return;
-
-  }
-
-
-  /* ЕСЛИ ПОЛЬЗОВАТЕЛЯ НЕТ */
-
-  if(!data){
-
-    const startParam =
-      tg?.initDataUnsafe?.start_param || "";
-
-
-    let referrerId = null;
+      });
 
 
     /*
-       ЕСЛИ ПОЛЬЗОВАТЕЛЬ
-       ПРИШЁЛ ПО РЕФЕРАЛЬНОЙ ССЫЛКЕ
+      Когда кошелёк подключается
+      или отключается
     */
 
-    if(startParam){
+    tonConnectUI.onStatusChange(
+      async function(wallet){
 
-      const { data:referrer } =
-        await supabaseClient
-          .from("users")
-          .select("Ttelegram_id")
-          .eq(
-            "referral_code",
-            startParam
-          )
-          .maybeSingle();
+        if(wallet && wallet.account){
+
+          const address =
+            wallet.account.address;
+
+          document.getElementById(
+            "walletAddress"
+          ).textContent =
+            address;
 
 
-      if(referrer){
+          document.getElementById(
+            "walletStatus"
+          ).textContent =
+            "✅ Кошелёк подключён";
 
-        referrerId =
-          String(referrer.Ttelegram_id);
+
+          /*
+            Сохраняем публичный адрес
+            в Supabase
+          */
+
+          await saveWalletAddress(
+            address
+          );
+
+        }else{
+
+          document.getElementById(
+            "walletAddress"
+          ).textContent =
+            "Кошелёк не подключён";
+
+
+          document.getElementById(
+            "walletStatus"
+          ).textContent =
+            "";
+
+        }
 
       }
 
-    }
-
-
-    /* СОЗДАЁМ УНИКАЛЬНЫЙ КОД */
-
-    const referralCode =
-      generateReferralCode();
-
-
-    const { data:newUser,
-            error:createError } =
-
-      await supabaseClient
-        .from("users")
-        .insert({
-
-          Ttelegram_id:
-            currentUserId,
-
-          first_name:
-            user.first_name || "",
-
-          username:
-            user.username || "",
-
-          tg_balance:
-            0,
-
-          tusd_balance:
-            0,
-
-          referral_code:
-            referralCode,
-
-          referrer_id:
-            referrerId,
-
-          referral_tg_earnings:
-            0,
-
-          referral_tusd_earnings:
-            0
-
-        })
-        .select()
-        .single();
-
-
-    if(createError){
-
-      console.error(createError);
-
-      alert(
-        "Не удалось создать пользователя:\n" +
-        createError.message
-      );
-
-      return;
-
-    }
-
-
-    currentUserData =
-      newUser;
-
-
-    updateBalance(
-      newUser.tg_balance,
-      newUser.tusd_balance
     );
 
+  }catch(error){
 
-    await updateReferralBlock();
+    console.error(
+      "TON Connect error:",
+      error
+    );
 
-
-    return;
-
-  }
-
-
-  /*
-     ПОЛЬЗОВАТЕЛЬ УЖЕ ЕСТЬ
-  */
-
-  currentUserData =
-    data;
-
-
-  /*
-     Если у старого пользователя
-     нет referral_code,
-     создаём его
-  */
-
-  if(!data.referral_code){
-
-    const newCode =
-      generateReferralCode();
-
-
-    const { data:updatedUser,
-            error:updateError } =
-
-      await supabaseClient
-        .from("users")
-        .update({
-
-          referral_code:
-            newCode
-
-        })
-        .eq(
-          "Ttelegram_id",
-          currentUserId
-        )
-        .select()
-        .single();
-
-
-    if(!updateError &&
-       updatedUser){
-
-      currentUserData =
-        updatedUser;
-
-    }
+    document.getElementById(
+      "walletStatus"
+    ).textContent =
+      "Ошибка подключения TON Connect";
 
   }
-
-
-  updateBalance(
-    data.tg_balance,
-    data.tusd_balance
-  );
-
-
-  await updateReferralBlock();
 
 }
 
 
 /* =========================
-   БАЛАНС
+   СОХРАНЕНИЕ АДРЕСА
 ========================= */
 
-function updateBalance(
-  tgBalance,
-  tusdBalance
+async function saveWalletAddress(
+  address
 ){
-
-  document.getElementById(
-    "tgBalance"
-  ).textContent =
-    Number(tgBalance || 0) +
-    " TG";
-
-
-  document.getElementById(
-    "tusdBalance"
-  ).textContent =
-    Number(tusdBalance || 0) +
-    " TUSD";
-
-}
-
-
-/* =========================
-   РЕФЕРАЛЬНЫЙ БЛОК
-========================= */
-
-async function updateReferralBlock(){
-
-  if(!currentUserData) return;
-
-
-  let code =
-    currentUserData.referral_code;
-
-
-  if(!code) return;
-
-
-  const referralLink =
-    "https://t.me/TELEPATp2p_bot?startapp=" +
-    code;
-
-
-  document.getElementById(
-    "referralLink"
-  ).value =
-    referralLink;
-
-
-  document.getElementById(
-    "referralTGEarnings"
-  ).textContent =
-    Number(
-      currentUserData.referral_tg_earnings || 0
-    ) +
-    " TG";
-
-
-  document.getElementById(
-    "referralTUSDEarnings"
-  ).textContent =
-    Number(
-      currentUserData.referral_tusd_earnings || 0
-    ) +
-    " TUSD";
-
-}
-
-
-/* =========================
-   СТАТИСТИКА РЕФЕРАЛОВ
-========================= */
-
-async function loadReferralStats(){
 
   if(!currentUserId) return;
 
 
-  const { count, error } =
+  const { error } =
     await supabaseClient
       .from("users")
-      .select(
-        "Ttelegram_id",
-        {
-          count:"exact",
-          head:true
-        }
-      )
+      .update({
+
+        wallet_address:
+          address
+
+      })
       .eq(
-        "referrer_id",
+        "Ttelegram_id",
         currentUserId
       );
 
 
   if(error){
 
-    console.error(error);
+    console.error(
+      "Ошибка сохранения кошелька:",
+      error
+    );
+
+    document.getElementById(
+      "walletStatus"
+    ).textContent =
+      "Кошелёк подключён, но адрес не удалось сохранить.";
 
     return;
 
   }
 
 
-  document.getElementById(
-    "referralCount"
-  ).textContent =
-    count || 0;
-
+  /*
+    Обновляем локальные данные
+  */
 
   if(currentUserData){
 
-    document.getElementById(
-      "referralTGEarnings"
-    ).textContent =
-      Number(
-        currentUserData.referral_tg_earnings || 0
-      ) +
-      " TG";
-
-
-    document.getElementById(
-      "referralTUSDEarnings"
-    ).textContent =
-      Number(
-        currentUserData.referral_tusd_earnings || 0
-      ) +
-      " TUSD";
+    currentUserData.wallet_address =
+      address;
 
   }
 
@@ -943,576 +750,28 @@ async function loadReferralStats(){
 
 
 /* =========================
-   КОПИРОВАНИЕ ССЫЛКИ
+   ВОССТАНОВЛЕНИЕ КОШЕЛЬКА
 ========================= */
 
-async function copyReferralLink(){
-
-  const input =
-    document.getElementById(
-      "referralLink"
-    );
-
-
-  if(!input.value ||
-     input.value === "Загрузка..."){
-
-    return;
-
-  }
-
-
-  try{
-
-    await navigator.clipboard.writeText(
-      input.value
-    );
-
-
-    document.getElementById(
-      "referralStatus"
-    ).textContent =
-      "✅ Ссылка скопирована";
-
-
-  }catch(error){
-
-    input.select();
-
-    document.execCommand("copy");
-
-
-    document.getElementById(
-      "referralStatus"
-    ).textContent =
-      "✅ Ссылка скопирована";
-
-  }
-
-
-  setTimeout(() => {
-
-    document.getElementById(
-      "referralStatus"
-    ).textContent =
-      "";
-
-  },3000);
-
-}
-
-
-/* =========================
-   ПОПОЛНЕНИЕ
-========================= */
-
-function deposit(){
-
-  alert(
-    "💰 Пополнение\n\n" +
-    "Следующим этапом здесь создадим заявку на пополнение."
-  );
-
-}
-
-
-/* =========================
-   ОБМЕН
-========================= */
-
-function exchange(){
-
-  alert(
-    "🔄 Обмен\n\n" +
-    "Следующим этапом подключим обмен TG ↔ TUSD."
-  );
-
-}
-
-
-/* =========================
-   АДМИН: НАЧИСЛЕНИЕ
-========================= */
-
-async function addBalance(){
-
-  const amount =
-    prompt(
-      "Введите количество TG для начисления:"
-    );
-
-
-  if(!amount) return;
-
-
-  const number =
-    Number(amount);
-
+function restoreWalletAddress(){
 
   if(
-    isNaN(number) ||
-    number <= 0
+    !currentUserData ||
+    !currentUserData.wallet_address
   ){
 
-    alert(
-      "Введите положительное число."
-    );
-
     return;
 
   }
-
-
-  const { data, error } =
-    await supabaseClient
-      .from("users")
-      .select("tg_balance,tusd_balance")
-      .eq(
-        "Ttelegram_id",
-        currentUserId
-      )
-      .single();
-
-
-  if(error){
-
-    alert(
-      "Ошибка загрузки баланса: " +
-      error.message
-    );
-
-    return;
-
-  }
-
-
-  const newBalance =
-    Number(data.tg_balance || 0) +
-    number;
-
-
-  const { error:updateError } =
-    await supabaseClient
-      .from("users")
-      .update({
-
-        tg_balance:
-          newBalance
-
-      })
-      .eq(
-        "Ttelegram_id",
-        currentUserId
-      );
-
-
-  if(updateError){
-
-    alert(
-      "Ошибка изменения баланса:\n" +
-      updateError.message
-    );
-
-    return;
-
-  }
-
-
-  updateBalance(
-    newBalance,
-    data.tusd_balance
-  );
 
 
   document.getElementById(
-    "adminMessage"
-  ).innerHTML =
-
-    "<div class='admin-user'>" +
-
-    "✅ Начислено <strong>" +
-    number +
-    " TG</strong><br><br>" +
-
-    "Новый баланс: <strong>" +
-    newBalance +
-    " TG</strong>" +
-
-    "</div>";
-
-
-  await loadAdminStats();
-
-}
-
-
-/* =========================
-   АДМИН: СПИСАНИЕ
-========================= */
-
-async function removeBalance(){
-
-  const amount =
-    prompt(
-      "Введите количество TG для списания:"
-    );
-
-
-  if(!amount) return;
-
-
-  const number =
-    Number(amount);
-
-
-  if(
-    isNaN(number) ||
-    number <= 0
-  ){
-
-    alert(
-      "Введите положительное число."
-    );
-
-    return;
-
-  }
-
-
-  const { data, error } =
-    await supabaseClient
-      .from("users")
-      .select("tg_balance,tusd_balance")
-      .eq(
-        "Ttelegram_id",
-        currentUserId
-      )
-      .single();
-
-
-  if(error){
-
-    alert(
-      "Ошибка загрузки баланса: " +
-      error.message
-    );
-
-    return;
-
-  }
-
-
-  const currentBalance =
-    Number(data.tg_balance || 0);
-
-
-  if(number > currentBalance){
-
-    alert(
-      "Недостаточно TG для списания."
-    );
-
-    return;
-
-  }
-
-
-  const newBalance =
-    currentBalance - number;
-
-
-  const { error:updateError } =
-    await supabaseClient
-      .from("users")
-      .update({
-
-        tg_balance:
-          newBalance
-
-      })
-      .eq(
-        "Ttelegram_id",
-        currentUserId
-      );
-
-
-  if(updateError){
-
-    alert(
-      "Ошибка изменения баланса:\n" +
-      updateError.message
-    );
-
-    return;
-
-  }
-
-
-  updateBalance(
-    newBalance,
-    data.tusd_balance
-  );
-
-
-  document.getElementById(
-    "adminMessage"
-  ).innerHTML =
-
-    "<div class='admin-user'>" +
-
-    "➖ Списано <strong>" +
-    number +
-    " TG</strong><br><br>" +
-
-    "Новый баланс: <strong>" +
-    newBalance +
-    " TG</strong>" +
-
-    "</div>";
-
-
-  await loadAdminStats();
-
-}
-
-
-/* =========================
-   СТАТИСТИКА АДМИНА
-========================= */
-
-async function loadAdminStats(){
-
-  if(currentUserId !== ADMIN_ID)
-    return;
-
-
-  const { data, error } =
-    await supabaseClient
-      .from("users")
-      .select(
-        "tg_balance,tusd_balance"
-      );
-
-
-  if(error){
-
-    console.error(error);
-
-    return;
-
-  }
-
-
-  let totalTG = 0;
-
-  let totalTUSD = 0;
-
-
-  data.forEach(item => {
-
-    totalTG +=
-      Number(
-        item.tg_balance || 0
-      );
-
-
-    totalTUSD +=
-      Number(
-        item.tusd_balance || 0
-      );
-
-  });
-
-
-  document.getElementById(
-    "usersCount"
+    "walletAddress"
   ).textContent =
-    data.length;
+    currentUserData.wallet_address;
 
 
   document.getElementById(
-    "totalTG"
+    "walletStatus"
   ).textContent =
-    totalTG;
-
-
-  document.getElementById(
-    "totalTUSD"
-  ).textContent =
-    totalTUSD;
-
-}
-
-
-/* =========================
-   ПОЛЬЗОВАТЕЛИ
-========================= */
-
-async function showUsers(){
-
-  const { data, error } =
-    await supabaseClient
-      .from("users")
-      .select("*")
-      .order(
-        "created_at",
-        {
-          ascending:false
-        }
-      );
-
-
-  if(error){
-
-    alert(
-      "Ошибка загрузки пользователей:\n" +
-      error.message
-    );
-
-    return;
-
-  }
-
-
-  let html =
-    "<div class='admin-user'>" +
-
-    "<strong>👥 Пользователи</strong>" +
-
-    "<br><br>";
-
-
-  if(!data.length){
-
-    html +=
-      "Пользователей пока нет.";
-
-  }
-
-
-  data.forEach(item => {
-
-    html +=
-
-      "👤 " +
-
-      (
-        item.first_name ||
-        "Без имени"
-      ) +
-
-      (
-        item.username
-          ? " @" + item.username
-          : ""
-      ) +
-
-      "<br>" +
-
-      "ID: " +
-      item.Ttelegram_id +
-
-      "<br>" +
-
-      "TG: <strong>" +
-      Number(
-        item.tg_balance || 0
-      ) +
-      "</strong>" +
-
-      "<br>" +
-
-      "TUSD: <strong>" +
-      Number(
-        item.tusd_balance || 0
-      ) +
-      "</strong>" +
-
-      "<br>" +
-
-      "Реф. код: <strong>" +
-      (
-        item.referral_code ||
-        "—"
-      ) +
-      "</strong>" +
-
-      "<br>" +
-
-      "Пригласил: " +
-      (
-        item.referrer_id ||
-        "—"
-      ) +
-
-      "<hr>";
-
-  });
-
-
-  html +=
-    "</div>";
-
-
-  document.getElementById(
-    "adminMessage"
-  ).innerHTML =
-    html;
-
-}
-
-
-/* =========================
-   НАВИГАЦИЯ
-========================= */
-
-function scrollToTop(){
-
-  window.scrollTo({
-
-    top:0,
-
-    behavior:"smooth"
-
-  });
-
-}
-
-
-function scrollToBalance(){
-
-  document.getElementById(
-    "balanceSection"
-  ).scrollIntoView({
-
-    behavior:"smooth"
-
-  });
-
-}
-
-
-function scrollToProfile(){
-
-  document.getElementById(
-    "profileSection"
-  ).scrollIntoView({
-
-    behavior:"smooth"
-
-  });
-
-}
-
-
-/* =========================
-   СТАРТ
-========================= */
-
-startApp();
-
-</script>
-
-</body>
-
-</html>
+    "👛
