@@ -2,264 +2,76 @@
 <html lang="ru">
 
 <head>
-
 <meta charset="UTF-8">
 
 <meta name="viewport"
-      content="width=device-width,initial-scale=1,viewport-fit=cover">
+      content="width=device-width,initial-scale=1">
 
-<title>Телепат — Обменник</title>
+<title>Телепат — Тест</title>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
-
 <style>
 
-*{
-  box-sizing:border-box;
-}
-
 body{
-  margin:0;
-  background:#101722;
-  color:#fff;
-  font-family:Arial,sans-serif;
-  min-height:100vh;
+    margin:0;
+    background:#101722;
+    color:white;
+    font-family:Arial,sans-serif;
 }
 
 .app{
-  max-width:520px;
-  margin:auto;
-  padding:22px 16px 100px;
+    max-width:500px;
+    margin:auto;
+    padding:30px 20px;
 }
 
 h1{
-  font-size:27px;
-  text-align:center;
-  margin:8px 0 4px;
-  color:#f4cf70;
-}
-
-.sub{
-  text-align:center;
-  color:#9ca8b8;
-  margin-bottom:25px;
+    text-align:center;
+    color:#f4cf70;
 }
 
 .card{
-  background:linear-gradient(145deg,#202b3b,#151d29);
-  border:1px solid #6e5824;
-  border-radius:22px;
-  padding:22px;
-  margin-bottom:16px;
-  box-shadow:0 10px 30px #0005;
+    background:#202b3b;
+    border:1px solid #6e5824;
+    border-radius:20px;
+    padding:25px;
+    margin-top:20px;
 }
 
-.title{
-  color:#f4cf70;
-  font-size:14px;
-  letter-spacing:1px;
-  margin-bottom:12px;
+.item{
+    background:#111923;
+    border-radius:15px;
+    padding:18px;
+    margin-top:12px;
 }
 
-.profile-name{
-  font-size:20px;
-  font-weight:bold;
-  margin-bottom:5px;
+.label{
+    color:#9ca8b8;
+    font-size:13px;
+    margin-bottom:7px;
 }
 
-.profile-id{
-  color:#9ca8b8;
-  font-size:13px;
+.value{
+    font-size:20px;
+    font-weight:bold;
+    color:#f4cf70;
+    word-break:break-word;
+}
+
+.balance{
+    display:flex;
+    gap:10px;
+}
+
+.balance .item{
+    flex:1;
 }
 
 .status{
-  text-align:center;
-  color:#f4cf70;
-  font-size:13px;
-  min-height:20px;
-  margin-bottom:10px;
-}
-
-.row{
-  display:flex;
-  gap:10px;
-}
-
-.coin{
-  flex:1;
-  background:#111923;
-  border-radius:15px;
-  padding:14px;
-}
-
-.coin b{
-  display:block;
-  font-size:22px;
-  color:#f4cf70;
-}
-
-.coin span{
-  color:#aeb8c6;
-  font-size:13px;
-}
-
-button{
-  width:100%;
-  border:0;
-  border-radius:15px;
-  padding:15px;
-  margin-top:10px;
-  font-size:16px;
-  font-weight:bold;
-  background:#d8b44f;
-  color:#151515;
-}
-
-button.secondary{
-  background:#263344;
-  color:#fff;
-  border:1px solid #536174;
-}
-
-button.admin{
-  background:linear-gradient(135deg,#f4cf70,#b88620);
-  color:#171717;
-}
-
-button:active{
-  transform:scale(.98);
-}
-
-.referral-input{
-  width:100%;
-  padding:13px;
-  margin:10px 0;
-  border-radius:12px;
-  border:1px solid #536174;
-  background:#111923;
-  color:#fff;
-  font-size:13px;
-}
-
-.referral-info{
-  color:#aeb8c6;
-  font-size:14px;
-  line-height:1.6;
-}
-
-.referral-info strong{
-  color:#f4cf70;
-}
-
-#referralStatus{
-  text-align:center;
-  color:#f4cf70;
-  min-height:20px;
-}
-
-.stat{
-  display:flex;
-  justify-content:space-between;
-  padding:13px 0;
-  border-bottom:1px solid #354052;
-}
-
-.stat:last-child{
-  border-bottom:0;
-}
-
-.stat span{
-  color:#aeb8c6;
-}
-
-.stat b{
-  color:#f4cf70;
-}
-
-.admin-box{
-  display:none;
-}
-
-.admin-user{
-  background:#111923;
-  border-radius:15px;
-  padding:15px;
-  margin-top:10px;
-  line-height:1.7;
-}
-
-.admin-user strong{
-  color:#f4cf70;
-}
-
-.wallet-box{
-  background:#111923;
-  border-radius:15px;
-  padding:15px;
-  margin-top:10px;
-}
-
-.wallet-address{
-  word-break:break-all;
-  color:#aeb8c6;
-  font-size:12px;
-  line-height:1.5;
-  margin-top:10px;
-}
-
-.wallet-status{
-  text-align:center;
-  color:#f4cf70;
-  min-height:20px;
-  margin-top:10px;
-  font-size:13px;
-}
-
-#ton-connect{
-  margin-top:10px;
-}
-
-#ton-connect button{
-  margin-top:0 !important;
-}
-
-.nav{
-  position:fixed;
-  bottom:0;
-  left:0;
-  right:0;
-  background:#121a25;
-  border-top:1px solid #334052;
-  padding:10px;
-  display:flex;
-  justify-content:center;
-  gap:8px;
-  z-index:100;
-}
-
-.nav button{
-  width:auto;
-  margin:0;
-  padding:11px 13px;
-  font-size:13px;
-  background:#1e2938;
-  color:#fff;
-}
-
-.loading{
-  opacity:.6;
-}
-
-.error{
-  color:#ff8b8b;
-}
-
-.success{
-  color:#8be0a8;
+    text-align:center;
+    margin-top:20px;
+    color:#9ca8b8;
 }
 
 </style>
@@ -272,5 +84,177 @@ button:active{
 
 <h1>👑 ТЕЛЕПАТ</h1>
 
-<div class="sub">
-Виртуальный обменник
+<div class="card">
+
+<div class="item">
+
+<div class="label">
+👤 ИМЯ
+</div>
+
+<div class="value" id="name">
+Проверяем...
+</div>
+
+</div>
+
+
+<div class="item">
+
+<div class="label">
+🆔 TELEGRAM ID
+</div>
+
+<div class="value" id="telegramId">
+Проверяем...
+</div>
+
+</div>
+
+
+<div class="item">
+
+<div class="label">
+👤 USERNAME
+</div>
+
+<div class="value" id="username">
+Проверяем...
+</div>
+
+</div>
+
+
+<div class="balance">
+
+<div class="item">
+
+<div class="label">
+🪙 TG
+</div>
+
+<div class="value">
+0 TG
+</div>
+
+</div>
+
+
+<div class="item">
+
+<div class="label">
+💵 TUSD
+</div>
+
+<div class="value">
+0 TUSD
+</div>
+
+</div>
+
+</div>
+
+
+<div class="status"
+     id="status">
+
+Проверяем Telegram...
+
+</div>
+
+</div>
+
+</div>
+
+
+<script>
+
+const tg =
+window.Telegram?.WebApp;
+
+
+/* Запускаем Telegram WebApp */
+
+if(tg){
+
+    tg.ready();
+
+    tg.expand();
+
+}
+
+
+/* Получаем пользователя */
+
+const user =
+tg?.initDataUnsafe?.user;
+
+
+/* Показываем данные */
+
+if(user){
+
+    document.getElementById(
+        "name"
+    ).textContent =
+        (
+            user.first_name || ""
+        ) +
+        (
+            user.last_name
+            ? " " + user.last_name
+            : ""
+        );
+
+
+    document.getElementById(
+        "telegramId"
+    ).textContent =
+        user.id;
+
+
+    document.getElementById(
+        "username"
+    ).textContent =
+        user.username
+        ? "@" + user.username
+        : "нет username";
+
+
+    document.getElementById(
+        "status"
+    ).textContent =
+        "✅ Telegram ID успешно получен";
+
+}else{
+
+    document.getElementById(
+        "name"
+    ).textContent =
+        "Не найден";
+
+
+    document.getElementById(
+        "telegramId"
+    ).textContent =
+        "ID НЕ ПОЛУЧЕН";
+
+
+    document.getElementById(
+        "username"
+    ).textContent =
+        "Не найден";
+
+
+    document.getElementById(
+        "status"
+    ).textContent =
+        "❌ Telegram не передал данные пользователя";
+
+}
+
+</script>
+
+</body>
+
+</html>
