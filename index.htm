@@ -76,8 +76,6 @@ h1{
     word-break:break-word;
 }
 
-/* РАЗДЕЛЫ */
-
 .section{
     display:none;
 }
@@ -85,8 +83,6 @@ h1{
 .section.active{
     display:block;
 }
-
-/* НИЖНЕЕ МЕНЮ */
 
 .bottom-menu{
     position:fixed;
@@ -127,8 +123,6 @@ h1{
     color:#f4cf70;
 }
 
-/* ЗАГОЛОВКИ РАЗДЕЛОВ */
-
 .section-title{
     color:#f4cf70;
     text-align:center;
@@ -136,19 +130,166 @@ h1{
     margin:5px 0 20px;
 }
 
+
+/* =========================
+   ОБМЕН
+========================= */
+
+.exchange-card{
+    background:#202b3b;
+    border:1px solid #6e5824;
+    border-radius:22px;
+    padding:18px;
+}
+
+.exchange-label{
+    color:#9ca8b8;
+    font-size:13px;
+    margin-bottom:8px;
+}
+
+.exchange-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
+
+.coin-select{
+    flex:1;
+    position:relative;
+}
+
+.coin-button{
+    width:100%;
+    border:1px solid #6e5824;
+    border-radius:14px;
+    background:#111923;
+    color:#f4cf70;
+    padding:14px 12px;
+    font-size:16px;
+    font-weight:bold;
+    text-align:left;
+    cursor:pointer;
+}
+
+.arrow{
+    color:#f4cf70;
+    font-size:22px;
+    font-weight:bold;
+}
+
+.coin-list{
+    display:none;
+    position:absolute;
+    left:0;
+    right:0;
+    top:calc(100% + 6px);
+
+    background:#202b3b;
+    border:1px solid #6e5824;
+    border-radius:14px;
+
+    overflow:hidden;
+    z-index:50;
+}
+
+.coin-list.show{
+    display:block;
+}
+
+.coin-option{
+    padding:14px;
+    color:white;
+    background:#202b3b;
+    cursor:pointer;
+    border-bottom:1px solid #344052;
+}
+
+.coin-option:last-child{
+    border-bottom:0;
+}
+
+.coin-option:hover{
+    background:#2a394d;
+}
+
+.amount-box{
+    margin-top:18px;
+}
+
+.amount-input{
+    width:100%;
+    border:1px solid #6e5824;
+    border-radius:14px;
+    background:#111923;
+    color:white;
+    padding:14px;
+    font-size:18px;
+    outline:none;
+}
+
+.amount-input:focus{
+    border-color:#f4cf70;
+}
+
+.exchange-info{
+    margin-top:15px;
+    padding:12px;
+    background:#111923;
+    border-radius:12px;
+    text-align:center;
+    color:#9ca8b8;
+    font-size:13px;
+    line-height:1.5;
+}
+
+.exchange-button{
+    width:100%;
+    border:0;
+    border-radius:15px;
+    background:#f4cf70;
+    color:#101722;
+    padding:15px;
+    font-size:17px;
+    font-weight:bold;
+    margin-top:15px;
+    cursor:pointer;
+}
+
+.exchange-button:active{
+    transform:scale(.98);
+}
+
+.swap-button{
+    display:block;
+    margin:14px auto 0;
+
+    width:44px;
+    height:44px;
+
+    border:1px solid #6e5824;
+    border-radius:50%;
+
+    background:#111923;
+    color:#f4cf70;
+
+    font-size:22px;
+    cursor:pointer;
+}
+
+.notice{
+    margin-top:14px;
+    text-align:center;
+    color:#9ca8b8;
+    font-size:12px;
+    line-height:1.5;
+}
+
 .info{
     text-align:center;
     color:#b8c2d0;
     line-height:1.6;
     font-size:15px;
-}
-
-.big-balance{
-    text-align:center;
-    font-size:30px;
-    color:#f4cf70;
-    font-weight:bold;
-    margin:20px 0;
 }
 
 .action-button{
@@ -161,10 +302,6 @@ h1{
     font-size:16px;
     margin-top:12px;
     cursor:pointer;
-}
-
-.action-button:active{
-    transform:scale(.98);
 }
 
 </style></head><body><div class="app"><h1>👑 ТЕЛЕПАТ</h1><!-- =========================
@@ -190,14 +327,97 @@ h1{
      ОБМЕН
 ========================= --><div id="exchange" class="section"><div class="section-title">
 🔄 ОБМЕН
-</div><div class="card"><div class="info">
-Здесь будет обмен виртуальных балансов
-между TG и TUSD.
-</div><button class="action-button">
+</div><div class="exchange-card"><div class="exchange-label">
+Выберите направление обмена
+</div><div class="exchange-row"><div class="coin-select"><button
+class="coin-button"
+id="fromButton"
+onclick="toggleCoinList('fromList')"
+
+«»
+
+🪙 TG
+</button>
+
+<div
+    class="coin-list"
+    id="fromList"
+><div
+    class="coin-option"
+    onclick="selectFrom('TG')"
+>
+🪙 TG
+</div><div
+    class="coin-option"
+    onclick="selectFrom('TUSD')"
+>
+💵 TUSD
+</div></div></div><div class="arrow">
+→
+</div><div class="coin-select"><button
+class="coin-button"
+id="toButton"
+onclick="toggleCoinList('toList')"
+
+«»
+
+💵 TUSD
+</button>
+
+<div
+    class="coin-list"
+    id="toList"
+><div
+    class="coin-option"
+    onclick="selectTo('TG')"
+>
+🪙 TG
+</div><div
+    class="coin-option"
+    onclick="selectTo('TUSD')"
+>
+💵 TUSD
+</div></div></div></div><button
+class="swap-button"
+onclick="swapCoins()"
+
+«»
+
+⇄
+</button>
+
+<div class="amount-box"><div class="exchange-label">
+Количество
+</div><input
+id="amount"
+class="amount-input"
+type="number"
+min="0"
+step="any"
+placeholder="Введите количество"
+/>
+
+</div><div
+    id="exchangeInfo"
+    class="exchange-info"
+>
 🪙 TG → 💵 TUSD
-</button><button class="action-button">
-💵 TUSD → 🪙 TG
-</button></div></div><!-- =========================
+<br>
+Введите количество для расчёта.
+</div><button
+class="exchange-button"
+onclick="makeExchange()"
+
+«»
+
+🔄 Обменять
+</button>
+
+<div class="notice">
+Обмен пока работает как интерфейс.
+Реальное списание и зачисление балансов
+подключим следующим этапом.
+</div></div></div><!-- =========================
      ДРУЗЬЯ
 ========================= --><div id="friends" class="section"><div class="section-title">
 👥 ДРУЗЬЯ
@@ -262,34 +482,257 @@ onclick="showSection('earn', this)"
 </div><script>
 
 /* =========================
+   МОНЕТЫ
+========================= */
+
+let fromCoin = "TG";
+let toCoin = "TUSD";
+
+
+/* =========================
+   НАЗВАНИЕ МОНЕТЫ
+========================= */
+
+function coinName(coin){
+
+    if(coin === "TG"){
+        return "🪙 TG";
+    }
+
+    if(coin === "TUSD"){
+        return "💵 TUSD";
+    }
+
+    return coin;
+}
+
+
+/* =========================
+   ОТКРЫТЬ / ЗАКРЫТЬ СПИСОК
+========================= */
+
+function toggleCoinList(listId){
+
+    const list =
+        document.getElementById(listId);
+
+    const allLists =
+        document.querySelectorAll(".coin-list");
+
+    allLists.forEach(function(item){
+
+        if(item !== list){
+            item.classList.remove("show");
+        }
+
+    });
+
+    list.classList.toggle("show");
+}
+
+
+/* =========================
+   ВЫБОР МОНЕТЫ "ИЗ"
+========================= */
+
+function selectFrom(coin){
+
+    fromCoin = coin;
+
+    document.getElementById(
+        "fromButton"
+    ).textContent =
+        coinName(coin);
+
+    document.getElementById(
+        "fromList"
+    ).classList.remove("show");
+
+    updateExchangeInfo();
+}
+
+
+/* =========================
+   ВЫБОР МОНЕТЫ "В"
+========================= */
+
+function selectTo(coin){
+
+    toCoin = coin;
+
+    document.getElementById(
+        "toButton"
+    ).textContent =
+        coinName(coin);
+
+    document.getElementById(
+        "toList"
+    ).classList.remove("show");
+
+    updateExchangeInfo();
+}
+
+
+/* =========================
+   ОБМЕН МЕСТАМИ
+========================= */
+
+function swapCoins(){
+
+    const oldFrom =
+        fromCoin;
+
+    fromCoin =
+        toCoin;
+
+    toCoin =
+        oldFrom;
+
+    document.getElementById(
+        "fromButton"
+    ).textContent =
+        coinName(fromCoin);
+
+    document.getElementById(
+        "toButton"
+    ).textContent =
+        coinName(toCoin);
+
+    updateExchangeInfo();
+}
+
+
+/* =========================
+   ИНФОРМАЦИЯ ОБ ОБМЕНЕ
+========================= */
+
+function updateExchangeInfo(){
+
+    const info =
+        document.getElementById(
+            "exchangeInfo"
+        );
+
+    if(fromCoin === toCoin){
+
+        info.innerHTML =
+            "⚠️ Выберите разные монеты.";
+
+        return;
+    }
+
+    info.innerHTML =
+        coinName(fromCoin) +
+        " → " +
+        coinName(toCoin) +
+        "<br>" +
+        "Введите количество для расчёта.";
+}
+
+
+/* =========================
+   ОБМЕН
+========================= */
+
+function makeExchange(){
+
+    const amount =
+        Number(
+            document.getElementById(
+                "amount"
+            ).value
+        );
+
+    if(fromCoin === toCoin){
+
+        alert(
+            "Выберите разные монеты."
+        );
+
+        return;
+    }
+
+    if(!amount || amount <= 0){
+
+        alert(
+            "Введите количество для обмена."
+        );
+
+        return;
+    }
+
+    alert(
+        "Направление: " +
+        coinName(fromCoin) +
+        " → " +
+        coinName(toCoin) +
+        "\n\n" +
+        "Количество: " +
+        amount +
+        "\n\n" +
+        "Реальное проведение обмена подключим следующим этапом."
+    );
+}
+
+
+/* =========================
    ПЕРЕКЛЮЧЕНИЕ РАЗДЕЛОВ
 ========================= */
 
-function showSection(sectionId, button){
+function showSection(
+    sectionId,
+    button
+){
 
     const sections =
-        document.querySelectorAll(".section");
+        document.querySelectorAll(
+            ".section"
+        );
 
-    sections.forEach(function(section){
-        section.classList.remove("active");
-    });
+    sections.forEach(
+        function(section){
+
+            section.classList.remove(
+                "active"
+            );
+
+        }
+    );
 
     const selected =
-        document.getElementById(sectionId);
+        document.getElementById(
+            sectionId
+        );
 
     if(selected){
-        selected.classList.add("active");
+
+        selected.classList.add(
+            "active"
+        );
+
     }
 
     const buttons =
-        document.querySelectorAll(".menu-button");
+        document.querySelectorAll(
+            ".menu-button"
+        );
 
-    buttons.forEach(function(btn){
-        btn.classList.remove("active");
-    });
+    buttons.forEach(
+        function(btn){
+
+            btn.classList.remove(
+                "active"
+            );
+
+        }
+    );
 
     if(button){
-        button.classList.add("active");
+
+        button.classList.add(
+            "active"
+        );
+
     }
 }
 
@@ -303,7 +746,9 @@ document.addEventListener(
     async function(){
 
     const status =
-        document.getElementById("status");
+        document.getElementById(
+            "status"
+        );
 
     try{
 
