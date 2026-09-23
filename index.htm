@@ -1,15 +1,9 @@
 <!doctype html>
+
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-
-<title>Телепат — Обменник</title>
-
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<style>
+<meta name="viewport" content="width=device-width, initial-scale=1"><title>Телепат — Обменник</title><script src="https://telegram.org/js/telegram-web-app.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><style>
 body{
     margin:0;
     background:#101722;
@@ -69,56 +63,26 @@ h1{
     text-align:center;
     line-height:1.5;
     font-size:14px;
+    word-break:break-word;
 }
-</style>
-</head>
-
-<body>
-
-<div class="app">
-
-<h1>👑 ТЕЛЕПАТ</h1>
-
-<div class="card">
-
-<div class="item">
+</style></head><body><div class="app"><h1>👑 ТЕЛЕПАТ</h1><div class="card"><div class="item">
 <div class="label">👤 ИМЯ</div>
-<div id="name" class="value">Проверка...</div>
-</div>
-
-<div class="item">
+<div id="name" class="value">Загрузка...</div>
+</div><div class="item">
 <div class="label">🆔 TELEGRAM ID</div>
-<div id="telegramId" class="value">Проверка...</div>
-</div>
-
-<div class="item">
+<div id="telegramId" class="value">Загрузка...</div>
+</div><div class="item">
 <div class="label">👤 USERNAME</div>
-<div id="username" class="value">Проверка...</div>
-</div>
-
-<div class="balance">
-
-<div class="item">
+<div id="username" class="value">Загрузка...</div>
+</div><div class="balance"><div class="item">
 <div class="label">🪙 TG</div>
 <div id="tgBalance" class="value">0 TG</div>
-</div>
-
-<div class="item">
+</div><div class="item">
 <div class="label">💵 TUSD</div>
 <div id="tusdBalance" class="value">0 TUSD</div>
-</div>
-
-</div>
-
-<div id="status" class="status">
+</div></div><div id="status" class="status">
 ⏳ Запуск приложения...
-</div>
-
-</div>
-
-</div>
-
-<script>
+</div></div></div><script>
 
 document.addEventListener("DOMContentLoaded", async function(){
 
@@ -127,15 +91,18 @@ document.addEventListener("DOMContentLoaded", async function(){
     try {
 
         /* =========================
-           1. TELEGRAM
+           TELEGRAM
         ========================= */
 
-        status.textContent = "🔄 Получаем данные Telegram...";
+        status.textContent =
+            "🔄 Получаем данные Telegram...";
 
         const tg = window.Telegram?.WebApp;
 
         if (!tg) {
-            throw new Error("Telegram WebApp API не найден");
+            throw new Error(
+                "Telegram WebApp API не найден."
+            );
         }
 
         tg.ready();
@@ -145,11 +112,9 @@ document.addEventListener("DOMContentLoaded", async function(){
 
         if (!user) {
             throw new Error(
-                "Telegram не передал данные пользователя. Открой приложение именно через Telegram."
+                "Telegram не передал данные пользователя. Открой Mini App именно через Telegram."
             );
         }
-
-        /* Показываем Telegram */
 
         let fullName = user.first_name || "";
 
@@ -164,36 +129,31 @@ document.addEventListener("DOMContentLoaded", async function(){
             user.id;
 
         document.getElementById("username").textContent =
-            user.username ? "@" + user.username : "нет username";
+            user.username
+                ? "@" + user.username
+                : "нет username";
 
         const telegramId = String(user.id);
 
-        status.textContent =
-            "✅ Telegram ID получен: " + telegramId;
-
 
         /* =========================
-           2. ПРОВЕРКА SUPABASE
+           SUPABASE
         ========================= */
 
-        if (!window.supabase) {
-
-            throw new Error(
-                "Библиотека Supabase не загрузилась"
-            );
-
-        }
-
         status.textContent =
-            "🔄 Подключаемся к Supabase...";
+            "🔄 Подключаемся к базе...";
 
+        if (!window.supabase) {
+            throw new Error(
+                "Библиотека Supabase не загрузилась."
+            );
+        }
 
         const SUPABASE_URL =
             "https://jutszxuzjzyfxarceydw.supabase.co";
 
         const SUPABASE_KEY =
             "sb_publishable_geRczpRc3faUHRGto2ue7A_eFFiJDwO";
-
 
         const supabaseClient =
             window.supabase.createClient(
@@ -203,78 +163,122 @@ document.addEventListener("DOMContentLoaded", async function(){
 
 
         /* =========================
-           3. ИЩЕМ ПОЛЬЗОВАТЕЛЯ
+           ПРОВЕРЯЕМ ТАБЛИЦУ USERS
         ========================= */
+
+        status.textContent =
+            "🔄 Проверяем пользователя в базе...";
 
         const result = await supabaseClient
             .from("users")
-            .select("Telegram_id,tg_balance,tusd_balance")
+            .select("*")
             .eq("Telegram_id", telegramId)
             .maybeSingle();
 
 
+        console.log(
+            "Результат Supabase:",
+            result
+        );
+
+
+        /* =========================
+           ОШИБКА SUPABASE
+        ========================= */
+
         if (result.error) {
 
-            console.error(result.error);
-
             throw new Error(
-                "Supabase: " + result.error.message
+                "Supabase: " +
+                result.error.message +
+                " | Код: " +
+                result.error.code
             );
 
         }
 
 
         /* =========================
-           4. ПОЛЬЗОВАТЕЛЬ НЕ НАЙДЕН
+           ПОЛЬЗОВАТЕЛЯ НЕТ
         ========================= */
 
         if (!result.data) {
 
-            status.textContent =
-                "⚠️ Telegram ID получен, но пользователя нет в таблице users: " +
-                telegramId;
+            status.innerHTML =
+                "⚠️ Подключение к базе работает.<br><br>" +
+                "Но Telegram ID <b>" +
+                telegramId +
+                "</b> не найден в таблице users.";
 
             return;
         }
 
 
         /* =========================
-           5. БАЛАНС
+           ДАННЫЕ ПОЛЬЗОВАТЕЛЯ
+        ========================= */
+
+        const data = result.data;
+
+        console.log(
+            "Пользователь:",
+            data
+        );
+
+
+        /* =========================
+           БАЛАНС TG
         ========================= */
 
         const tgBalance =
-            Number(result.data.tg_balance || 0);
+            Number(data.tg_balance || 0);
+
+
+        /* =========================
+           БАЛАНС TUSD
+        ========================= */
 
         const tusdBalance =
-            Number(result.data.tusd_balance || 0);
+            Number(data.tusd_balance || 0);
 
 
-        document.getElementById("tgBalance").textContent =
-            tgBalance.toLocaleString("ru-RU", {
-                maximumFractionDigits:8
-            }) + " TG";
+        document.getElementById(
+            "tgBalance"
+        ).textContent =
+            tgBalance.toLocaleString(
+                "ru-RU",
+                {
+                    maximumFractionDigits:8
+                }
+            ) + " TG";
 
 
-        document.getElementById("tusdBalance").textContent =
-            tusdBalance.toLocaleString("ru-RU", {
-                maximumFractionDigits:8
-            }) + " TUSD";
+        document.getElementById(
+            "tusdBalance"
+        ).textContent =
+            tusdBalance.toLocaleString(
+                "ru-RU",
+                {
+                    maximumFractionDigits:8
+                }
+            ) + " TUSD";
 
+
+        /* =========================
+           ГОТОВО
+        ========================= */
 
         status.textContent =
-            "✅ Telegram и Supabase подключены. Баланс загружен.";
-
-
-        console.log(
-            "Данные пользователя:",
-            result.data
-        );
+            "✅ База подключена. Баланс загружен.";
 
     }
 
-    catch(error){
+    catch(error) {
 
-        console.error(error);
+        console.error(
+            "Ошибка приложения:",
+            error
+        );
 
         status.innerHTML =
             "❌ ОШИБКА<br><br>" +
@@ -284,7 +288,5 @@ document.addEventListener("DOMContentLoaded", async function(){
 
 });
 
-</script>
-
-</body>
+</script></body>
 </html>
