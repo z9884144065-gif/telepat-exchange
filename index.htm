@@ -2,76 +2,96 @@
 <html lang="ru">
 
 <head>
+
 <meta charset="UTF-8">
 
 <meta name="viewport"
-      content="width=device-width,initial-scale=1">
+content="width=device-width,initial-scale=1,viewport-fit=cover">
 
-<title>Телепат — Тест</title>
+<title>Телепат — Обменник</title>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 
+*{
+box-sizing:border-box;
+}
+
 body{
-    margin:0;
-    background:#101722;
-    color:white;
-    font-family:Arial,sans-serif;
+margin:0;
+background:#101722;
+color:#fff;
+font-family:Arial,sans-serif;
+min-height:100vh;
 }
 
 .app{
-    max-width:500px;
-    margin:auto;
-    padding:30px 20px;
+max-width:520px;
+margin:auto;
+padding:25px 18px 40px;
 }
 
 h1{
-    text-align:center;
-    color:#f4cf70;
+text-align:center;
+font-size:30px;
+color:#f4cf70;
+margin:10px 0 25px;
 }
 
 .card{
-    background:#202b3b;
-    border:1px solid #6e5824;
-    border-radius:20px;
-    padding:25px;
-    margin-top:20px;
+background:#202b3b;
+border:1px solid #6e5824;
+border-radius:22px;
+padding:22px;
+margin-bottom:18px;
 }
 
 .item{
-    background:#111923;
-    border-radius:15px;
-    padding:18px;
-    margin-top:12px;
+background:#111923;
+border-radius:16px;
+padding:17px;
+margin-top:12px;
 }
 
 .label{
-    color:#9ca8b8;
-    font-size:13px;
-    margin-bottom:7px;
+color:#9ca8b8;
+font-size:14px;
+margin-bottom:8px;
 }
 
 .value{
-    font-size:20px;
-    font-weight:bold;
-    color:#f4cf70;
-    word-break:break-word;
+color:#f4cf70;
+font-size:21px;
+font-weight:bold;
+word-break:break-word;
 }
 
 .balance{
-    display:flex;
-    gap:10px;
+display:flex;
+gap:10px;
 }
 
 .balance .item{
-    flex:1;
+flex:1;
 }
 
 .status{
-    text-align:center;
-    margin-top:20px;
-    color:#9ca8b8;
+text-align:center;
+font-size:14px;
+color:#aeb8c6;
+margin-top:18px;
+line-height:1.5;
+}
+
+.ok{
+color:#8be0a8;
+}
+
+.error{
+color:#ff8b8b;
 }
 
 </style>
@@ -84,7 +104,9 @@ h1{
 
 <h1>👑 ТЕЛЕПАТ</h1>
 
+
 <div class="card">
+
 
 <div class="item">
 
@@ -92,8 +114,12 @@ h1{
 👤 ИМЯ
 </div>
 
-<div class="value" id="name">
-Проверяем...
+<div
+id="name"
+class="value">
+
+Загрузка...
+
 </div>
 
 </div>
@@ -105,8 +131,12 @@ h1{
 🆔 TELEGRAM ID
 </div>
 
-<div class="value" id="telegramId">
-Проверяем...
+<div
+id="telegramId"
+class="value">
+
+Загрузка...
+
 </div>
 
 </div>
@@ -118,8 +148,12 @@ h1{
 👤 USERNAME
 </div>
 
-<div class="value" id="username">
-Проверяем...
+<div
+id="username"
+class="value">
+
+Загрузка...
+
 </div>
 
 </div>
@@ -127,14 +161,19 @@ h1{
 
 <div class="balance">
 
+
 <div class="item">
 
 <div class="label">
 🪙 TG
 </div>
 
-<div class="value">
+<div
+id="tgBalance"
+class="value">
+
 0 TG
+
 </div>
 
 </div>
@@ -146,21 +185,28 @@ h1{
 💵 TUSD
 </div>
 
-<div class="value">
+<div
+id="tusdBalance"
+class="value">
+
 0 TUSD
-</div>
 
 </div>
 
 </div>
 
 
-<div class="status"
-     id="status">
+</div>
 
-Проверяем Telegram...
+
+<div
+id="status"
+class="status">
+
+Подключение...
 
 </div>
+
 
 </div>
 
@@ -169,89 +215,307 @@ h1{
 
 <script>
 
+/* =========================================
+   TELEGRAM
+========================================= */
+
 const tg =
 window.Telegram?.WebApp;
 
 
-/* Запускаем Telegram WebApp */
-
 if(tg){
 
-    tg.ready();
+tg.ready();
 
-    tg.expand();
+tg.expand();
 
 }
 
 
-/* Получаем пользователя */
+/* =========================================
+   SUPABASE
+========================================= */
+
+const SUPABASE_URL =
+"https://jutszxuzjzyfxarceydw.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_geRczpRc3faUHRGto2ue7A_eFFiJDwO";
+
+
+const supabaseClient =
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+
+/* =========================================
+   ПОЛУЧАЕМ TELEGRAM USER
+========================================= */
+
+async function startApp(){
+
+try{
+
 
 const user =
 tg?.initDataUnsafe?.user;
 
 
-/* Показываем данные */
+if(!user){
 
-if(user){
+document.getElementById(
+"status"
+).textContent =
+"❌ Telegram пользователь не найден";
 
-    document.getElementById(
-        "name"
-    ).textContent =
-        (
-            user.first_name || ""
-        ) +
-        (
-            user.last_name
-            ? " " + user.last_name
-            : ""
-        );
+document.getElementById(
+"status"
+).className =
+"status error";
 
-
-    document.getElementById(
-        "telegramId"
-    ).textContent =
-        user.id;
-
-
-    document.getElementById(
-        "username"
-    ).textContent =
-        user.username
-        ? "@" + user.username
-        : "нет username";
-
-
-    document.getElementById(
-        "status"
-    ).textContent =
-        "✅ Telegram ID успешно получен";
-
-}else{
-
-    document.getElementById(
-        "name"
-    ).textContent =
-        "Не найден";
-
-
-    document.getElementById(
-        "telegramId"
-    ).textContent =
-        "ID НЕ ПОЛУЧЕН";
-
-
-    document.getElementById(
-        "username"
-    ).textContent =
-        "Не найден";
-
-
-    document.getElementById(
-        "status"
-    ).textContent =
-        "❌ Telegram не передал данные пользователя";
+return;
 
 }
+
+
+/* =========================================
+   ПОКАЗЫВАЕМ TELEGRAM ДАННЫЕ
+========================================= */
+
+
+document.getElementById(
+"name"
+).textContent =
+
+(
+user.first_name || ""
+)
+
++
+
+(
+user.last_name
+?
+" " + user.last_name
+:
+""
+);
+
+
+document.getElementById(
+"telegramId"
+).textContent =
+user.id;
+
+
+document.getElementById(
+"username"
+).textContent =
+
+user.username
+?
+"@" + user.username
+:
+"нет username";
+
+
+/* =========================================
+   ID ПОЛЬЗОВАТЕЛЯ
+========================================= */
+
+const telegramId =
+String(user.id);
+
+
+/* =========================================
+   ИЩЕМ ПОЛЬЗОВАТЕЛЯ В SUPABASE
+========================================= */
+
+const result =
+await supabaseClient
+
+.from("users")
+
+.select(
+"Telegram_id,tg_balance,tusd_balance"
+)
+
+.eq(
+"Telegram_id",
+telegramId
+)
+
+.maybeSingle();
+
+
+/* =========================================
+   ОШИБКА SUPABASE
+========================================= */
+
+if(result.error){
+
+console.error(
+"Supabase error:",
+result.error
+);
+
+document.getElementById(
+"status"
+).innerHTML =
+
+"❌ Ошибка чтения баланса<br>" +
+
+result.error.message;
+
+document.getElementById(
+"status"
+).className =
+"status error";
+
+return;
+
+}
+
+
+/* =========================================
+   ПОЛЬЗОВАТЕЛЬ НЕ НАЙДЕН
+========================================= */
+
+if(!result.data){
+
+document.getElementById(
+"tgBalance"
+).textContent =
+"0 TG";
+
+
+document.getElementById(
+"tusdBalance"
+).textContent =
+"0 TUSD";
+
+
+document.getElementById(
+"status"
+).textContent =
+
+"⚠️ Пользователь найден в Telegram, " +
+"но записи в Supabase нет.";
+
+return;
+
+}
+
+
+/* =========================================
+   ПОЛУЧАЕМ БАЛАНС
+========================================= */
+
+const tgBalance =
+Number(
+result.data.tg_balance || 0
+);
+
+
+const tusdBalance =
+Number(
+result.data.tusd_balance || 0
+);
+
+
+/* =========================================
+   ПОКАЗЫВАЕМ БАЛАНС
+========================================= */
+
+document.getElementById(
+"tgBalance"
+).textContent =
+
+tgBalance.toLocaleString(
+"ru-RU",
+{
+maximumFractionDigits:8
+}
+)
+
++
+
+" TG";
+
+
+document.getElementById(
+"tusdBalance"
+).textContent =
+
+tusdBalance.toLocaleString(
+"ru-RU",
+{
+maximumFractionDigits:8
+}
+)
+
++
+
+" TUSD";
+
+
+/* =========================================
+   УСПЕХ
+========================================= */
+
+document.getElementById(
+"status"
+).textContent =
+
+"✅ Баланс успешно загружен из Supabase";
+
+
+document.getElementById(
+"status"
+).className =
+"status ok";
+
+
+console.log(
+"Пользователь:",
+result.data
+);
+
+
+}catch(error){
+
+
+console.error(
+"Application error:",
+error
+);
+
+
+document.getElementById(
+"status"
+).textContent =
+
+"❌ Ошибка: " +
+error.message;
+
+
+document.getElementById(
+"status"
+).className =
+"status error";
+
+}
+
+}
+
+
+/* =========================================
+   ЗАПУСК
+========================================= */
+
+startApp();
 
 </script>
 
