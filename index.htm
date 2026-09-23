@@ -172,7 +172,7 @@ document.addEventListener("DOMContentLoaded", async function(){
         const result = await supabaseClient
             .from("users")
             .select("*")
-            .eq("Telegram_id", telegramId)
+            .eq("Ttelegram_id", telegramId)
             .maybeSingle();
 
 
