@@ -104,9 +104,7 @@ color:#ff8b8b;
 
 <h1>👑 ТЕЛЕПАТ</h1>
 
-
 <div class="card">
-
 
 <div class="item">
 
@@ -161,7 +159,6 @@ class="value">
 
 <div class="balance">
 
-
 <div class="item">
 
 <div class="label">
@@ -195,7 +192,6 @@ class="value">
 
 </div>
 
-
 </div>
 
 
@@ -203,10 +199,9 @@ class="value">
 id="status"
 class="status">
 
-Подключение...
+Подключение к базе...
 
 </div>
-
 
 </div>
 
@@ -221,7 +216,6 @@ class="status">
 
 const tg =
 window.Telegram?.WebApp;
-
 
 if(tg){
 
@@ -242,7 +236,6 @@ const SUPABASE_URL =
 const SUPABASE_KEY =
 "sb_publishable_geRczpRc3faUHRGto2ue7A_eFFiJDwO";
 
-
 const supabaseClient =
 window.supabase.createClient(
 SUPABASE_URL,
@@ -251,17 +244,20 @@ SUPABASE_KEY
 
 
 /* =========================================
-   ПОЛУЧАЕМ TELEGRAM USER
+   ЗАПУСК
 ========================================= */
 
 async function startApp(){
 
 try{
 
+/* Получаем пользователя Telegram */
 
 const user =
 tg?.initDataUnsafe?.user;
 
+
+/* Если Telegram пользователя нет */
 
 if(!user){
 
@@ -281,27 +277,23 @@ return;
 
 
 /* =========================================
-   ПОКАЗЫВАЕМ TELEGRAM ДАННЫЕ
+   ДАННЫЕ TELEGRAM
 ========================================= */
 
+let name =
+user.first_name || "";
+
+if(user.last_name){
+
+name +=
+" " + user.last_name;
+
+}
 
 document.getElementById(
 "name"
 ).textContent =
-
-(
-user.first_name || ""
-)
-
-+
-
-(
-user.last_name
-?
-" " + user.last_name
-:
-""
-);
+name || "Пользователь";
 
 
 document.getElementById(
@@ -322,7 +314,7 @@ user.username
 
 
 /* =========================================
-   ID ПОЛЬЗОВАТЕЛЯ
+   TELEGRAM ID
 ========================================= */
 
 const telegramId =
@@ -330,7 +322,7 @@ String(user.id);
 
 
 /* =========================================
-   ИЩЕМ ПОЛЬЗОВАТЕЛЯ В SUPABASE
+   ЗАПРОС В SUPABASE
 ========================================= */
 
 const result =
@@ -363,10 +355,8 @@ result.error
 
 document.getElementById(
 "status"
-).innerHTML =
-
-"❌ Ошибка чтения баланса<br>" +
-
+).textContent =
+"❌ Ошибка Supabase: " +
 result.error.message;
 
 document.getElementById(
@@ -380,145 +370,4 @@ return;
 
 
 /* =========================================
-   ПОЛЬЗОВАТЕЛЬ НЕ НАЙДЕН
-========================================= */
-
-if(!result.data){
-
-document.getElementById(
-"tgBalance"
-).textContent =
-"0 TG";
-
-
-document.getElementById(
-"tusdBalance"
-).textContent =
-"0 TUSD";
-
-
-document.getElementById(
-"status"
-).textContent =
-
-"⚠️ Пользователь найден в Telegram, " +
-"но записи в Supabase нет.";
-
-return;
-
-}
-
-
-/* =========================================
-   ПОЛУЧАЕМ БАЛАНС
-========================================= */
-
-const tgBalance =
-Number(
-result.data.tg_balance || 0
-);
-
-
-const tusdBalance =
-Number(
-result.data.tusd_balance || 0
-);
-
-
-/* =========================================
-   ПОКАЗЫВАЕМ БАЛАНС
-========================================= */
-
-document.getElementById(
-"tgBalance"
-).textContent =
-
-tgBalance.toLocaleString(
-"ru-RU",
-{
-maximumFractionDigits:8
-}
-)
-
-+
-
-" TG";
-
-
-document.getElementById(
-"tusdBalance"
-).textContent =
-
-tusdBalance.toLocaleString(
-"ru-RU",
-{
-maximumFractionDigits:8
-}
-)
-
-+
-
-" TUSD";
-
-
-/* =========================================
-   УСПЕХ
-========================================= */
-
-document.getElementById(
-"status"
-).textContent =
-
-"✅ Баланс успешно загружен из Supabase";
-
-
-document.getElementById(
-"status"
-).className =
-"status ok";
-
-
-console.log(
-"Пользователь:",
-result.data
-);
-
-
-}catch(error){
-
-
-console.error(
-"Application error:",
-error
-);
-
-
-document.getElementById(
-"status"
-).textContent =
-
-"❌ Ошибка: " +
-error.message;
-
-
-document.getElementById(
-"status"
-).className =
-"status error";
-
-}
-
-}
-
-
-/* =========================================
-   ЗАПУСК
-========================================= */
-
-startApp();
-
-</script>
-
-</body>
-
-</html>
+   ПОЛЬЗОВАТЕЛЬ НЕ
