@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 <title>Телепат — Обменник</title>
 
@@ -16,307 +16,207 @@
 
 body {
     margin: 0;
+    padding: 0 0 80px 0;
+    background: #f4f5f7;
+    color: #222;
     font-family: Arial, sans-serif;
-    background: linear-gradient(180deg, #101722, #172433);
-    color: white;
-    min-height: 100vh;
-    padding-bottom: 85px;
 }
 
 .container {
     max-width: 600px;
-    margin: 0 auto;
-    padding: 18px;
-}
-
-.header {
-    text-align: center;
-    font-size: 27px;
-    font-weight: bold;
-    margin-bottom: 20px;
+    margin: auto;
+    padding: 15px;
 }
 
 .card {
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.12);
+    background: white;
     border-radius: 18px;
     padding: 18px;
-    margin-bottom: 16px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.18);
+    margin-bottom: 15px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+}
+
+h2, h3 {
+    margin-top: 0;
 }
 
 .title {
-    font-size: 20px;
+    font-size: 24px;
     font-weight: bold;
+    text-align: center;
     margin-bottom: 15px;
 }
 
-.label {
-    color: #aeb9c8;
-    font-size: 13px;
-    margin-bottom: 6px;
-}
-
-.value {
-    font-size: 17px;
-    margin-bottom: 13px;
-}
-
-.balance-box {
-    display: flex;
-    gap: 10px;
-    margin-top: 12px;
-}
-
 .balance {
-    flex: 1;
-    background: rgba(255,255,255,0.07);
-    border-radius: 14px;
-    padding: 15px;
-    text-align: center;
-}
-
-.balance-icon {
-    font-size: 25px;
-}
-
-.balance-name {
-    color: #b8c4d3;
-    margin-top: 5px;
-}
-
-.balance-number {
     font-size: 20px;
     font-weight: bold;
-    margin-top: 5px;
+    margin: 8px 0;
 }
 
-.status {
-    margin-top: 15px;
-    padding: 12px;
-    border-radius: 12px;
-    background: rgba(0,0,0,0.18);
-    color: #b9c7d8;
+.small {
+    color: #777;
     font-size: 13px;
 }
 
-.exchange-box {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+input,
+select {
+    width: 100%;
+    padding: 14px;
+    margin-top: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    font-size: 16px;
+    background: white;
 }
 
-.coin-button {
-    flex: 1;
-    padding: 14px 10px;
+button {
+    width: 100%;
     border: none;
-    border-radius: 14px;
-    background: #253447;
-    color: white;
+    border-radius: 12px;
+    padding: 14px;
+    margin-top: 8px;
     font-size: 16px;
     font-weight: bold;
+    cursor: pointer;
 }
 
-.swap-button {
+.btn-main {
+    background: #222;
+    color: white;
+}
+
+.btn-buy {
+    background: #159447;
+    color: white;
+}
+
+.btn-cancel {
+    background: #e74c3c;
+    color: white;
+}
+
+.btn-secondary {
+    background: #eeeeee;
+    color: #222;
+}
+
+.exchange-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.exchange-row > div {
+    flex: 1;
+}
+
+.swap {
     width: 45px;
-    height: 45px;
-    border: none;
-    border-radius: 50%;
-    background: #33465d;
-    color: white;
-    font-size: 22px;
-}
-
-.coin-list {
-    display: none;
-    margin-top: 7px;
-    background: #202d3d;
-    border-radius: 13px;
-    overflow: hidden;
-}
-
-.coin-option {
-    padding: 14px;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
-}
-
-.coin-option:last-child {
-    border-bottom: none;
-}
-
-.amount-box {
-    margin-top: 18px;
-}
-
-.amount-input {
-    width: 100%;
-    padding: 15px;
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 13px;
-    background: rgba(0,0,0,0.18);
-    color: white;
-    font-size: 20px;
-    outline: none;
-}
-
-.amount-input:focus {
-    border-color: #5f8cff;
+    min-width: 45px;
+    padding: 10px 0;
+    background: #eeeeee;
 }
 
 .receive-box {
-    margin-top: 14px;
-    padding: 15px;
-    border-radius: 13px;
-    background: rgba(255,255,255,0.06);
-}
-
-.receive-number {
-    font-size: 23px;
-    font-weight: bold;
-    margin-top: 5px;
-}
-
-.exchange-info {
-    margin-top: 12px;
-    padding: 12px;
+    background: #f1f7ff;
     border-radius: 12px;
-    background: rgba(0,0,0,0.18);
-    color: #c7d2df;
-    font-size: 14px;
-    line-height: 1.5;
-}
-
-.primary-button {
-    width: 100%;
-    margin-top: 15px;
-    padding: 15px;
-    border: none;
-    border-radius: 14px;
-    background: #356df3;
-    color: white;
-    font-size: 17px;
-    font-weight: bold;
-}
-
-.secondary-button {
-    width: 100%;
-    margin-top: 10px;
     padding: 14px;
-    border: none;
-    border-radius: 14px;
-    background: #2b394b;
-    color: white;
-    font-size: 16px;
+    margin-top: 5px;
+    margin-bottom: 10px;
 }
 
-.notice {
-    margin-top: 12px;
-    color: #98a7b9;
-    font-size: 12px;
-    line-height: 1.5;
+.receive-value {
+    font-size: 22px;
+    font-weight: bold;
 }
 
 .order {
-    background: rgba(255,255,255,0.06);
-    border-radius: 15px;
-    padding: 15px;
+    border: 1px solid #e1e1e1;
+    border-radius: 14px;
+    padding: 14px;
     margin-top: 12px;
+    background: #fafafa;
 }
 
 .order-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    gap: 10px;
     margin-bottom: 10px;
 }
 
-.order-title {
-    font-weight: bold;
-    font-size: 17px;
-}
-
-.order-status {
-    font-size: 12px;
-    color: #70df91;
-}
-
-.order-row {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 8px;
-    color: #c3cfdd;
-}
-
-.order-value {
-    color: white;
+.order-amount {
+    font-size: 19px;
     font-weight: bold;
 }
 
-.buy-button {
-    width: 100%;
-    margin-top: 12px;
-    padding: 13px;
-    border: none;
-    border-radius: 12px;
-    background: #238b67;
-    color: white;
-    font-size: 16px;
-    font-weight: bold;
+.order-rate {
+    color: #666;
+    font-size: 14px;
 }
 
-.empty {
-    text-align: center;
-    color: #8998aa;
-    padding: 15px 5px;
+.status {
+    padding: 8px 12px;
+    background: #fff3cd;
+    border-radius: 10px;
+    margin-top: 10px;
+    font-size: 14px;
 }
 
-.bottom-nav {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 72px;
-    background: #101a27;
-    border-top: 1px solid rgba(255,255,255,0.1);
-    display: flex;
-    z-index: 100;
-}
-
-.nav-button {
-    flex: 1;
-    border: none;
-    background: transparent;
-    color: #8f9dad;
-    font-size: 11px;
-}
-
-.nav-button.active {
-    color: white;
-}
-
-.nav-icon {
-    display: block;
-    font-size: 22px;
-    margin-bottom: 3px;
-}
-
-.section {
+.hidden {
     display: none;
 }
 
-.section.active {
-    display: block;
+.nav {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 70px;
+    background: white;
+    border-top: 1px solid #ddd;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 1000;
 }
 
-.small {
-    font-size: 12px;
-    color: #9eacbc;
+.nav button {
+    background: none;
+    margin: 0;
+    padding: 5px;
+    font-size: 13px;
+    color: #555;
 }
 
-.limit-text {
+.nav button.active {
+    color: #000;
+    font-weight: bold;
+}
+
+.loading {
+    text-align: center;
+    padding: 20px;
+    color: #777;
+}
+
+.error {
+    color: #c0392b;
+    font-size: 14px;
     margin-top: 8px;
-    font-size: 12px;
-    color: #9eacbc;
+}
+
+.success {
+    color: #159447;
+    font-size: 14px;
+    margin-top: 8px;
+}
+
+hr {
+    border: 0;
+    border-top: 1px solid #eee;
+    margin: 15px 0;
 }
 </style>
 </head>
@@ -325,222 +225,151 @@ body {
 
 <div class="container">
 
-    <div class="header">
-        👑 ТЕЛЕПАТ
-    </div>
+    <div id="walletSection">
 
-    <!-- ========================= -->
-    <!-- КОШЕЛЁК -->
-    <!-- ========================= -->
-
-    <div id="walletSection" class="section active">
+        <div class="title">
+            👑 ТЕЛЕПАТ
+        </div>
 
         <div class="card">
+            <h3>👤 Имя</h3>
+            <div id="userName">Загрузка...</div>
 
-            <div class="title">👤 Профиль</div>
+            <hr>
 
-            <div class="label">Имя</div>
-            <div id="userName" class="value">Загрузка...</div>
+            <div class="small">🆔 TELEGRAM ID</div>
+            <div id="telegramId">Загрузка...</div>
 
-            <div class="label">Telegram ID</div>
-            <div id="telegramId" class="value">Загрузка...</div>
+            <hr>
 
-            <div class="label">Username</div>
-            <div id="username" class="value">Загрузка...</div>
+            <div class="small">👤 USERNAME</div>
+            <div id="username">Загрузка...</div>
 
-            <div class="balance-box">
+            <hr>
 
-                <div class="balance">
-                    <div class="balance-icon">🪙</div>
-                    <div class="balance-name">TG</div>
-                    <div id="tgBalance" class="balance-number">0 TG</div>
-                </div>
-
-                <div class="balance">
-                    <div class="balance-icon">💵</div>
-                    <div class="balance-name">TUSD</div>
-                    <div id="tusdBalance" class="balance-number">0 TUSD</div>
-                </div>
-
+            <div class="balance">
+                🪙 TG: <span id="tgBalance">0</span> TG
             </div>
 
-            <div id="status" class="status">
+            <div class="balance">
+                💵 TUSD: <span id="tusdBalance">0</span> TUSD
+            </div>
+
+            <div id="connectionStatus" class="status">
                 Подключение к базе...
             </div>
-
         </div>
 
     </div>
 
 
-    <!-- ========================= -->
-    <!-- ОБМЕН -->
-    <!-- ========================= -->
+    <div id="exchangeSection" class="hidden">
 
-    <div id="exchangeSection" class="section">
+        <div class="title">
+            🔄 Обмен
+        </div>
 
         <div class="card">
 
-            <div class="title">🔄 Обмен</div>
+            <h3>Обмен токенов</h3>
 
-            <div class="exchange-box">
+            <div class="exchange-row">
 
-                <button
-                    id="fromButton"
-                    class="coin-button"
-                    onclick="toggleCoinList('fromList')">
-                    🪙 TG
-                </button>
+                <div>
+                    <div class="small">Вы отдаёте</div>
 
-                <button
-                    class="swap-button"
-                    onclick="swapCoins()">
-                    ⇄
-                </button>
-
-                <button
-                    id="toButton"
-                    class="coin-button"
-                    onclick="toggleCoinList('toList')">
-                    💵 TUSD
-                </button>
-
-            </div>
-
-            <div id="fromList" class="coin-list">
-                <div class="coin-option" onclick="selectFrom('TG')">
-                    🪙 TG
-                </div>
-                <div class="coin-option" onclick="selectFrom('TUSD')">
-                    💵 TUSD
-                </div>
-            </div>
-
-            <div id="toList" class="coin-list">
-                <div class="coin-option" onclick="selectTo('TG')">
-                    🪙 TG
-                </div>
-                <div class="coin-option" onclick="selectTo('TUSD')">
-                    💵 TUSD
-                </div>
-            </div>
-
-
-            <div class="amount-box">
-
-                <div class="label">
-                    Вы отдаёте
+                    <select id="fromToken" onchange="updateExchange()">
+                        <option value="TG">TG</option>
+                        <option value="TUSD">TUSD</option>
+                    </select>
                 </div>
 
-                <input
-                    id="amount"
-                    class="amount-input"
-                    type="number"
-                    min="0"
-                    step="any"
-                    placeholder="Введите количество"
-                    oninput="updateExchangeCalculation()">
+                <button class="swap" onclick="swapTokens()">↕️</button>
 
-                <div id="balanceLimit" class="limit-text">
-                    Доступно: загрузка...
+                <div>
+                    <div class="small">Получаете</div>
+
+                    <select id="toToken" onchange="updateExchange()">
+                        <option value="TUSD">TUSD</option>
+                        <option value="TG">TG</option>
+                    </select>
                 </div>
 
             </div>
 
+            <div class="small" id="availableText">
+                Доступно: 0
+            </div>
+
+            <input
+                id="exchangeAmount"
+                type="number"
+                step="any"
+                min="0"
+                placeholder="Введите сумму"
+                oninput="updateExchange()"
+            >
 
             <div class="receive-box">
-
-                <div class="label">
-                    Вы получаете
-                </div>
-
-                <div id="receiveAmount" class="receive-number">
+                <div class="small">Вы получите</div>
+                <div class="receive-value" id="receiveAmount">
                     0
                 </div>
-
             </div>
 
-
-            <div id="exchangeInfo" class="exchange-info">
+            <div class="small">
                 Курс: 1 TG = 101 TUSD
             </div>
 
-            <button
-                class="primary-button"
-                onclick="showCreateOrder()">
-                📋 Создать ордер
-            </button>
-
-            <div class="notice">
-                Здесь можно создать предложение на продажу TG.
-                Другие пользователи смогут покупать его полностью
-                или частично.
-            </div>
-
         </div>
 
 
-        <!-- СОЗДАНИЕ ОРДЕРА -->
+        <div class="card">
 
-        <div id="createOrderCard" class="card" style="display:none;">
+            <h3>📋 Создать ордер</h3>
 
-            <div class="title">📋 Новый ордер</div>
-
-            <div class="label">
-                Сколько TG выставить на продажу?
+            <div class="small">
+                Ваш доступный TG:
+                <b id="availableTG">0</b> TG
             </div>
 
             <input
                 id="orderAmount"
-                class="amount-input"
                 type="number"
-                min="0"
                 step="any"
-                placeholder="Количество TG"
-                oninput="updateOrderCalculation()">
-
-            <div id="orderLimit" class="limit-text">
-                Доступно: загрузка...
-            </div>
+                min="0"
+                placeholder="Сколько TG выставить"
+                oninput="updateOrderCalculation()"
+            >
 
             <div class="receive-box">
-
-                <div class="label">
-                    Покупатель должен заплатить
+                <div class="small">Стоимость ордера</div>
+                <div class="receive-value">
+                    <span id="orderTUSD">0</span> TUSD
                 </div>
-
-                <div id="orderReceive" class="receive-number">
-                    0 TUSD
-                </div>
-
             </div>
 
-            <div class="exchange-info">
-                Курс: <b>1 TG = 101 TUSD</b>
-            </div>
-
-            <button
-                class="primary-button"
-                onclick="createOrder()">
+            <button class="btn-main" onclick="createOrder()">
                 🚀 Выставить ордер
             </button>
 
-            <button
-                class="secondary-button"
-                onclick="hideCreateOrder()">
-                Отмена
-            </button>
+            <div id="createOrderMessage"></div>
 
         </div>
 
 
-        <!-- ОТКРЫТЫЕ ОРДЕРА -->
-
         <div class="card">
 
-            <div class="title">📋 Открытые ордера</div>
+            <h3>📋 Открытые ордера</h3>
 
-            <div id="ordersList">
+            <button
+                class="btn-secondary"
+                onclick="loadOrders()"
+            >
+                🔄 Обновить
+            </button>
+
+            <div id="ordersList" class="loading">
                 Загрузка ордеров...
             </div>
 
@@ -549,39 +378,33 @@ body {
     </div>
 
 
-    <!-- ========================= -->
-    <!-- ДРУЗЬЯ -->
-    <!-- ========================= -->
+    <div id="friendsSection" class="hidden">
 
-    <div id="friendsSection" class="section">
+        <div class="title">
+            👥 Друзья
+        </div>
 
         <div class="card">
-
-            <div class="title">👥 Друзья</div>
-
-            <div class="empty">
-                Реферальная система будет подключена следующим этапом.
+            <h3>Реферальная система</h3>
+            <div class="small">
+                Здесь появится ваша реферальная ссылка.
             </div>
-
         </div>
 
     </div>
 
 
-    <!-- ========================= -->
-    <!-- ЗАРАБОТОК -->
-    <!-- ========================= -->
+    <div id="earnSection" class="hidden">
 
-    <div id="earnSection" class="section">
+        <div class="title">
+            💰 Заработок
+        </div>
 
         <div class="card">
-
-            <div class="title">💰 Заработок</div>
-
-            <div class="empty">
-                Раздел заработка будет подключён следующим этапом.
+            <h3>💰 Заработок</h3>
+            <div class="small">
+                Раздел находится в разработке.
             </div>
-
         </div>
 
     </div>
@@ -589,38 +412,35 @@ body {
 </div>
 
 
-<!-- ========================= -->
-<!-- НИЖНЕЕ МЕНЮ -->
-<!-- ========================= -->
-
-<div class="bottom-nav">
+<div class="nav">
 
     <button
-        class="nav-button active"
-        onclick="showSection('walletSection', this)">
-        <span class="nav-icon">💼</span>
-        Кошелёк
+        id="navWallet"
+        class="active"
+        onclick="showSection('wallet')"
+    >
+        💼<br>Кошелёк
     </button>
 
     <button
-        class="nav-button"
-        onclick="showSection('exchangeSection', this)">
-        <span class="nav-icon">🔄</span>
-        Обмен
+        id="navExchange"
+        onclick="showSection('exchange')"
+    >
+        🔄<br>Обмен
     </button>
 
     <button
-        class="nav-button"
-        onclick="showSection('friendsSection', this)">
-        <span class="nav-icon">👥</span>
-        Друзья
+        id="navFriends"
+        onclick="showSection('friends')"
+    >
+        👥<br>Друзья
     </button>
 
     <button
-        class="nav-button"
-        onclick="showSection('earnSection', this)">
-        <span class="nav-icon">💰</span>
-        Заработок
+        id="navEarn"
+        onclick="showSection('earn')"
+    >
+        💰<br>Заработок
     </button>
 
 </div>
@@ -628,19 +448,11 @@ body {
 
 <script>
 
-/* =========================================
-   TELEGRAM
-========================================= */
+const tg = window.Telegram.WebApp;
 
-const tgApp = window.Telegram.WebApp;
+tg.ready();
+tg.expand();
 
-tgApp.ready();
-tgApp.expand();
-
-
-/* =========================================
-   SUPABASE
-========================================= */
 
 const SUPABASE_URL =
     "https://jutszxuzjzyfxarceydw.supabase.co";
@@ -655,57 +467,221 @@ const supabaseClient =
     );
 
 
-/* =========================================
-   НАСТРОЙКИ ОБМЕНА
-========================================= */
-
 const TG_TO_TUSD_RATE = 101;
 
-let fromCoin = "TG";
-let toCoin = "TUSD";
-
+let telegramUser = null;
 let telegramId = null;
-
-let tgBalance = 0;
-let tusdBalance = 0;
+let currentUser = null;
 
 
-/* =========================================
-   ПОЛЬЗОВАТЕЛЬ
-========================================= */
+function formatNumber(value) {
+
+    const number = Number(value || 0);
+
+    return number.toLocaleString("ru-RU", {
+        maximumFractionDigits: 8
+    });
+}
+
+
+function showSection(section) {
+
+    document.getElementById("walletSection").classList.add("hidden");
+    document.getElementById("exchangeSection").classList.add("hidden");
+    document.getElementById("friendsSection").classList.add("hidden");
+    document.getElementById("earnSection").classList.add("hidden");
+
+    document.getElementById("navWallet").classList.remove("active");
+    document.getElementById("navExchange").classList.remove("active");
+    document.getElementById("navFriends").classList.remove("active");
+    document.getElementById("navEarn").classList.remove("active");
+
+
+    if (section === "wallet") {
+
+        document
+            .getElementById("walletSection")
+            .classList.remove("hidden");
+
+        document
+            .getElementById("navWallet")
+            .classList.add("active");
+
+    }
+
+
+    if (section === "exchange") {
+
+        document
+            .getElementById("exchangeSection")
+            .classList.remove("hidden");
+
+        document
+            .getElementById("navExchange")
+            .classList.add("active");
+
+        loadOrders();
+        reloadUserBalance();
+
+    }
+
+
+    if (section === "friends") {
+
+        document
+            .getElementById("friendsSection")
+            .classList.remove("hidden");
+
+        document
+            .getElementById("navFriends")
+            .classList.add("active");
+
+    }
+
+
+    if (section === "earn") {
+
+        document
+            .getElementById("earnSection")
+            .classList.remove("hidden");
+
+        document
+            .getElementById("navEarn")
+            .classList.add("active");
+
+    }
+
+}
+
+
+function swapTokens() {
+
+    const from = document.getElementById("fromToken");
+    const to = document.getElementById("toToken");
+
+    const oldFrom = from.value;
+
+    from.value = to.value;
+    to.value = oldFrom;
+
+    updateExchange();
+
+}
+
+
+function getBalance(token) {
+
+    if (!currentUser) {
+        return 0;
+    }
+
+    if (token === "TG") {
+        return Number(currentUser.tg_balance || 0);
+    }
+
+    if (token === "TUSD") {
+        return Number(currentUser.tusd_balance || 0);
+    }
+
+    return 0;
+}
+
+
+function updateExchange() {
+
+    const fromToken =
+        document.getElementById("fromToken").value;
+
+    const toToken =
+        document.getElementById("toToken").value;
+
+    const amount =
+        Number(document.getElementById("exchangeAmount").value || 0);
+
+
+    const balance = getBalance(fromToken);
+
+
+    document.getElementById("availableText").innerText =
+        "Доступно: " +
+        formatNumber(balance) +
+        " " +
+        fromToken;
+
+
+    let result = 0;
+
+
+    if (fromToken === "TG" && toToken === "TUSD") {
+
+        result = amount * TG_TO_TUSD_RATE;
+
+    } else if (
+        fromToken === "TUSD" &&
+        toToken === "TG"
+    ) {
+
+        result = amount / TG_TO_TUSD_RATE;
+
+    } else {
+
+        result = amount;
+
+    }
+
+
+    document.getElementById("receiveAmount").innerText =
+        formatNumber(result) +
+        " " +
+        toToken;
+
+}
+
+
+function updateOrderCalculation() {
+
+    const amount =
+        Number(document.getElementById("orderAmount").value || 0);
+
+    const tusd =
+        amount * TG_TO_TUSD_RATE;
+
+    document.getElementById("orderTUSD").innerText =
+        formatNumber(tusd);
+
+}
+
 
 async function loadUser() {
 
     try {
 
-        if (
-            !tgApp.initDataUnsafe ||
-            !tgApp.initDataUnsafe.user
-        ) {
+        telegramUser =
+            tg.initDataUnsafe &&
+            tg.initDataUnsafe.user;
 
-            document.getElementById("status").innerText =
-                "⚠️ Telegram-пользователь не определён.";
+
+        if (!telegramUser) {
+
+            document.getElementById("connectionStatus").innerText =
+                "Telegram пользователь не найден";
 
             return;
+
         }
 
 
-        const user =
-            tgApp.initDataUnsafe.user;
-
-
         telegramId =
-            String(user.id);
+            String(telegramUser.id);
 
 
         document.getElementById("userName").innerText =
             (
-                user.first_name || ""
-            )
-            +
+                telegramUser.first_name || ""
+            ) +
             (
-                user.last_name
-                    ? " " + user.last_name
+                telegramUser.last_name
+                    ? " " + telegramUser.last_name
                     : ""
             );
 
@@ -715,426 +691,132 @@ async function loadUser() {
 
 
         document.getElementById("username").innerText =
-            user.username
-                ? "@" + user.username
-                : "не указан";
+            telegramUser.username
+                ? "@" + telegramUser.username
+                : "нет";
 
 
-        const result =
+        const { data, error } =
             await supabaseClient
                 .from("users")
-                .select("*")
-                .eq("Ttelegram_id", telegramId)
+                .select(
+                    "Ttelegram_id,tg_balance,tusd_balance"
+                )
+                .eq(
+                    "Ttelegram_id",
+                    telegramId
+                )
                 .maybeSingle();
 
 
-        if (result.error) {
-
-            console.error(result.error);
-
-            document.getElementById("status").innerText =
-                "❌ Ошибка базы данных.";
-
-            return;
+        if (error) {
+            throw error;
         }
 
 
-        if (!result.data) {
+        if (!data) {
 
-            document.getElementById("status").innerText =
-                "⚠️ Пользователь не найден в базе.";
+            document.getElementById("connectionStatus").innerText =
+                "Пользователь не найден в базе";
 
             return;
+
         }
 
 
-        const data =
-            result.data;
+        currentUser = data;
+
+        updateUserInterface();
 
 
-        tgBalance =
-            Number(data.tg_balance || 0);
+        document.getElementById("connectionStatus").innerText =
+            "🟢 Подключение к базе активно";
 
 
-        tusdBalance =
-            Number(data.tusd_balance || 0);
-
-
-        updateBalances();
-
-
-        document.getElementById("status").innerText =
-            "✅ База подключена. Баланс загружен.";
-
-
-        updateExchangeCalculation();
-
-        updateOrderCalculation();
-
-        loadOrders();
-
-    }
-
-    catch (error) {
+    } catch (error) {
 
         console.error(error);
 
-        document.getElementById("status").innerText =
-            "❌ Ошибка подключения.";
+        document.getElementById("connectionStatus").innerText =
+            "Ошибка подключения: " +
+            error.message;
 
     }
 
 }
 
 
-/* =========================================
-   БАЛАНСЫ
-========================================= */
+function updateUserInterface() {
 
-function updateBalances() {
+    if (!currentUser) {
+        return;
+    }
+
 
     document.getElementById("tgBalance").innerText =
-        formatNumber(tgBalance) + " TG";
+        formatNumber(currentUser.tg_balance);
 
 
     document.getElementById("tusdBalance").innerText =
-        formatNumber(tusdBalance) + " TUSD";
+        formatNumber(currentUser.tusd_balance);
 
 
-    updateBalanceLimit();
+    document.getElementById("availableTG").innerText =
+        formatNumber(currentUser.tg_balance);
 
-}
 
-
-/* =========================================
-   ФОРМАТ ЧИСЕЛ
-========================================= */
-
-function formatNumber(value) {
-
-    return Number(value || 0)
-        .toFixed(8)
-        .replace(/\.?0+$/, "");
+    updateExchange();
 
 }
 
 
-/* =========================================
-   НАЗВАНИЕ МОНЕТЫ
-========================================= */
-
-function coinName(coin) {
-
-    if (coin === "TG") {
-        return "🪙 TG";
-    }
-
-    if (coin === "TUSD") {
-        return "💵 TUSD";
-    }
-
-    return coin;
-
-}
-
-
-/* =========================================
-   ВЫБОР МОНЕТЫ
-========================================= */
-
-function toggleCoinList(id) {
-
-    const element =
-        document.getElementById(id);
-
-
-    const visible =
-        element.style.display === "block";
-
-
-    document.getElementById("fromList").style.display =
-        "none";
-
-    document.getElementById("toList").style.display =
-        "none";
-
-
-    element.style.display =
-        visible ? "none" : "block";
-
-}
-
-
-function selectFrom(coin) {
-
-    fromCoin = coin;
-
-    document.getElementById("fromButton").innerText =
-        coinName(coin);
-
-
-    document.getElementById("fromList").style.display =
-        "none";
-
-
-    updateExchangeCalculation();
-
-}
-
-
-function selectTo(coin) {
-
-    toCoin = coin;
-
-    document.getElementById("toButton").innerText =
-        coinName(coin);
-
-
-    document.getElementById("toList").style.display =
-        "none";
-
-
-    updateExchangeCalculation();
-
-}
-
-
-/* =========================================
-   ПОМЕНЯТЬ НАПРАВЛЕНИЕ
-========================================= */
-
-function swapCoins() {
-
-    const oldFrom =
-        fromCoin;
-
-    fromCoin =
-        toCoin;
-
-    toCoin =
-        oldFrom;
-
-
-    document.getElementById("fromButton").innerText =
-        coinName(fromCoin);
-
-
-    document.getElementById("toButton").innerText =
-        coinName(toCoin);
-
-
-    updateExchangeCalculation();
-
-}
-
-
-/* =========================================
-   ЛИМИТ БАЛАНСА
-========================================= */
-
-function getAvailableBalance() {
-
-    if (fromCoin === "TG") {
-        return tgBalance;
-    }
-
-    if (fromCoin === "TUSD") {
-        return tusdBalance;
-    }
-
-    return 0;
-
-}
-
-
-function updateBalanceLimit() {
-
-    const available =
-        getAvailableBalance();
-
-
-    document.getElementById("balanceLimit").innerText =
-        "Доступно: " +
-        formatNumber(available) +
-        " " +
-        fromCoin;
-
-}
-
-
-/* =========================================
-   РАСЧЁТ ОБЫЧНОГО ОБМЕНА
-========================================= */
-
-function calculateReceive(amount) {
-
-    amount =
-        Number(amount || 0);
-
-
-    if (
-        !amount ||
-        amount <= 0 ||
-        fromCoin === toCoin
-    ) {
-        return 0;
-    }
-
-
-    if (
-        fromCoin === "TG" &&
-        toCoin === "TUSD"
-    ) {
-
-        return amount * TG_TO_TUSD_RATE;
-
-    }
-
-
-    if (
-        fromCoin === "TUSD" &&
-        toCoin === "TG"
-    ) {
-
-        return amount / TG_TO_TUSD_RATE;
-
-    }
-
-
-    return 0;
-
-}
-
-
-function updateExchangeCalculation() {
-
-    const input =
-        document.getElementById("amount");
-
-
-    const amount =
-        Number(input.value || 0);
-
-
-    const available =
-        getAvailableBalance();
-
-
-    updateBalanceLimit();
-
-
-    if (fromCoin === toCoin) {
-
-        document.getElementById("receiveAmount").innerText =
-            "—";
-
-        document.getElementById("exchangeInfo").innerText =
-            "⚠️ Выберите разные монеты.";
-
-        return;
-    }
-
-
-    if (amount > available) {
-
-        document.getElementById("exchangeInfo").innerText =
-            "⚠️ Нельзя указать больше доступного баланса.";
-
-    }
-    else {
-
-        document.getElementById("exchangeInfo").innerText =
-            "Курс: 1 TG = 101 TUSD";
-
-    }
-
-
-    const receive =
-        calculateReceive(amount);
-
-
-    document.getElementById("receiveAmount").innerText =
-        formatNumber(receive) +
-        " " +
-        toCoin;
-
-}
-
-
-/* =========================================
-   СОЗДАНИЕ ОРДЕРА
-========================================= */
-
-function showCreateOrder() {
+async function reloadUserBalance() {
 
     if (!telegramId) {
-
-        alert("Пользователь ещё не загружен.");
-
         return;
     }
 
 
-    document.getElementById("createOrderCard").style.display =
-        "block";
+    const { data, error } =
+        await supabaseClient
+            .from("users")
+            .select(
+                "Ttelegram_id,tg_balance,tusd_balance"
+            )
+            .eq(
+                "Ttelegram_id",
+                String(telegramId)
+            )
+            .maybeSingle();
 
 
-    document.getElementById("orderLimit").innerText =
-        "Доступно: " +
-        formatNumber(tgBalance) +
-        " TG";
+    if (error) {
+
+        console.error(error);
+
+        return;
+
+    }
 
 
-    document.getElementById("orderAmount").focus();
+    if (data) {
 
-}
+        currentUser = data;
 
+        updateUserInterface();
 
-function hideCreateOrder() {
-
-    document.getElementById("createOrderCard").style.display =
-        "none";
-
-
-    document.getElementById("orderAmount").value =
-        "";
-
-}
-
-
-function updateOrderCalculation() {
-
-    const amount =
-        Number(
-            document.getElementById("orderAmount").value || 0
-        );
-
-
-    document.getElementById("orderLimit").innerText =
-        "Доступно: " +
-        formatNumber(tgBalance) +
-        " TG";
-
-
-    const receive =
-        amount * TG_TO_TUSD_RATE;
-
-
-    document.getElementById("orderReceive").innerText =
-        formatNumber(receive) +
-        " TUSD";
+    }
 
 }
 
 
 async function createOrder() {
 
-    if (!telegramId) {
+    const message =
+        document.getElementById("createOrderMessage");
 
-        alert("Пользователь не найден.");
 
-        return;
-    }
+    message.innerHTML = "";
 
 
     const amount =
@@ -1145,273 +827,215 @@ async function createOrder() {
 
     if (!amount || amount <= 0) {
 
-        alert("Введите количество TG.");
+        message.innerHTML =
+            '<div class="error">Введите сумму TG.</div>';
 
         return;
+
     }
 
 
-    if (amount > tgBalance) {
+    const balance =
+        Number(currentUser?.tg_balance || 0);
 
-        alert(
-            "Нельзя выставить больше вашего баланса TG."
+
+    if (amount > balance) {
+
+        message.innerHTML =
+            '<div class="error">' +
+            'Недостаточно доступных TG. Доступно: ' +
+            formatNumber(balance) +
+            ' TG</div>';
+
+        return;
+
+    }
+
+
+    const tusdAmount =
+        amount * TG_TO_TUSD_RATE;
+
+
+    const confirmed =
+        confirm(
+            "Выставить ордер?\n\n" +
+            "TG: " +
+            formatNumber(amount) +
+            "\n" +
+            "Цена: " +
+            formatNumber(tusdAmount) +
+            " TUSD\n\n" +
+            "Эти TG будут зарезервированы."
         );
 
+
+    if (!confirmed) {
         return;
     }
 
 
     try {
 
-        const result =
-            await supabaseClient
-                .from("orders")
-                .insert({
-
-                    seller_id:
+        const { data, error } =
+            await supabaseClient.rpc(
+                "create_order",
+                {
+                    p_seller_id:
                         Number(telegramId),
 
-                    from_token:
-                        "TG",
-
-                    to_token:
-                        "TUSD",
-
-                    amount_total:
+                    p_tg_amount:
                         amount,
 
-                    amount_remaining:
-                        amount,
-
-                    rate:
-                        TG_TO_TUSD_RATE,
-
-                    status:
-                        "open"
-
-                });
-
-
-        if (result.error) {
-
-            console.error(result.error);
-
-            alert(
-                "Ошибка создания ордера: " +
-                result.error.message
+                    p_rate:
+                        TG_TO_TUSD_RATE
+                }
             );
 
-            return;
+
+        if (error) {
+            throw error;
+        }
+
+
+        if (!data || data.success !== true) {
+
+            throw new Error(
+                "Не удалось создать ордер"
+            );
+
+        }
+
+
+        message.innerHTML =
+            '<div class="success">' +
+            '✅ Ордер создан. ' +
+            formatNumber(amount) +
+            ' TG зарезервировано.' +
+            '</div>';
+
+
+        document.getElementById("orderAmount").value = "";
+        document.getElementById("orderTUSD").innerText = "0";
+
+
+        await reloadUserBalance();
+        await loadOrders();
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        message.innerHTML =
+            '<div class="error">' +
+            'Ошибка: ' +
+            error.message +
+            '</div>';
+
+    }
+
+}
+
+
+async function cancelOrder(orderId) {
+
+    const confirmed =
+        confirm(
+            "Отменить этот ордер?\n\n" +
+            "Оставшиеся TG будут возвращены на ваш баланс."
+        );
+
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    try {
+
+        const { data, error } =
+            await supabaseClient.rpc(
+                "cancel_order",
+                {
+                    p_order_id:
+                        Number(orderId),
+
+                    p_seller_id:
+                        Number(telegramId)
+                }
+            );
+
+
+        if (error) {
+            throw error;
+        }
+
+
+        if (!data || data.success !== true) {
+
+            throw new Error(
+                "Не удалось отменить ордер"
+            );
+
         }
 
 
         alert(
-            "✅ Ордер создан!\n\n" +
-            "Выставлено: " +
-            formatNumber(amount) +
-            " TG\n" +
-            "Цена: 1 TG = 101 TUSD\n" +
-            "К получению: " +
-            formatNumber(amount * TG_TO_TUSD_RATE) +
-            " TUSD"
+            "✅ Ордер отменён.\n\n" +
+            "Возвращено: " +
+            formatNumber(data.returned_tg) +
+            " TG"
         );
 
 
-        hideCreateOrder();
+        await reloadUserBalance();
+        await loadOrders();
 
-        loadOrders();
 
-    }
-
-    catch (error) {
+    } catch (error) {
 
         console.error(error);
 
-        alert("Ошибка создания ордера.");
+        alert(
+            "Ошибка отмены ордера:\n" +
+            error.message
+        );
 
     }
 
 }
 
 
-/* =========================================
-   ЗАГРУЗКА ОРДЕРОВ
-========================================= */
-
-async function loadOrders() {
-
-    const container =
-        document.getElementById("ordersList");
-
-
-    container.innerHTML =
-        "Загрузка ордеров...";
-
-
-    const result =
-        await supabaseClient
-            .from("orders")
-            .select("*")
-            .eq("status", "open")
-            .gt("amount_remaining", 0)
-            .order("created_at", {
-                ascending: false
-            });
-
-
-    if (result.error) {
-
-        console.error(result.error);
-
-        container.innerHTML =
-            "❌ Не удалось загрузить ордера.";
-
-        return;
-    }
-
-
-    const orders =
-        result.data || [];
-
-
-    if (!orders.length) {
-
-        container.innerHTML =
-            '<div class="empty">Открытых ордеров пока нет.</div>';
-
-        return;
-    }
-
-
-    container.innerHTML =
-        "";
-
-
-    orders.forEach(order => {
-
-        const isOwn =
-            String(order.seller_id) ===
-            String(telegramId);
-
-
-        const orderElement =
-            document.createElement("div");
-
-
-        orderElement.className =
-            "order";
-
-
-        const totalTUSD =
-            Number(order.amount_remaining) *
-            Number(order.rate);
-
-
-        orderElement.innerHTML =
-
-            '<div class="order-header">' +
-
-                '<div class="order-title">' +
-                    '🪙 Продажа TG' +
-                '</div>' +
-
-                '<div class="order-status">' +
-                    '● Открыт' +
-                '</div>' +
-
-            '</div>' +
-
-
-            '<div class="order-row">' +
-                '<span>Продавец</span>' +
-                '<span class="order-value">' +
-                    String(order.seller_id) +
-                '</span>' +
-            '</div>' +
-
-
-            '<div class="order-row">' +
-                '<span>Осталось</span>' +
-                '<span class="order-value">' +
-                    formatNumber(order.amount_remaining) +
-                    ' TG' +
-                '</span>' +
-            '</div>' +
-
-
-            '<div class="order-row">' +
-                '<span>Курс</span>' +
-                '<span class="order-value">' +
-                    '1 TG = ' +
-                    formatNumber(order.rate) +
-                    ' TUSD' +
-                '</span>' +
-            '</div>' +
-
-
-            '<div class="order-row">' +
-                '<span>Стоимость остатка</span>' +
-                '<span class="order-value">' +
-                    formatNumber(totalTUSD) +
-                    ' TUSD' +
-                '</span>' +
-            '</div>';
-
-
-        if (isOwn) {
-
-            orderElement.innerHTML +=
-                '<div class="notice">' +
-                'Это ваш ордер.' +
-                '</div>';
-
-        }
-        else {
-
-            orderElement.innerHTML +=
-
-                '<button class="buy-button" ' +
-                'onclick="buyOrderPrompt(' +
-                order.id +
-                ',' +
-                order.amount_remaining +
-                ',' +
-                order.rate +
-                ')">' +
-                '🛒 Купить' +
-                '</button>';
-
-        }
-
-
-        container.appendChild(orderElement);
-
-    });
-
-}
-
-
-/* =========================================
-   ПОКУПКА ОРДЕРА
-========================================= */
-
-async function buyOrderPrompt(
+async function buyOrder(
     orderId,
+    sellerId,
     remainingTG,
     rate
 ) {
 
-    if (!telegramId) {
+    if (
+        Number(sellerId) ===
+        Number(telegramId)
+    ) {
 
-        alert("Пользователь не найден.");
+        alert(
+            "Это ваш ордер.\n\n" +
+            "Свой ордер покупать нельзя.\n" +
+            "Вы можете его отменить."
+        );
 
         return;
+
     }
+
+
+    const buyerBalance =
+        Number(currentUser?.tusd_balance || 0);
 
 
     const maxTUSD =
         Math.min(
-            tusdBalance,
+            buyerBalance,
             Number(remainingTG) * Number(rate)
         );
 
@@ -1419,10 +1043,11 @@ async function buyOrderPrompt(
     if (maxTUSD <= 0) {
 
         alert(
-            "У вас нет TUSD для покупки."
+            "У вас недостаточно TUSD для покупки."
         );
 
         return;
+
     }
 
 
@@ -1430,9 +1055,9 @@ async function buyOrderPrompt(
         prompt(
             "Сколько TUSD вы хотите потратить?\n\n" +
             "Ваш баланс: " +
-            formatNumber(tusdBalance) +
+            formatNumber(buyerBalance) +
             " TUSD\n" +
-            "Максимум по ордеру: " +
+            "Максимум: " +
             formatNumber(maxTUSD) +
             " TUSD"
         );
@@ -1452,32 +1077,20 @@ async function buyOrderPrompt(
         alert("Введите корректную сумму.");
 
         return;
-    }
 
-
-    if (tusdAmount > tusdBalance) {
-
-        alert(
-            "Недостаточно TUSD.\n\n" +
-            "Ваш баланс: " +
-            formatNumber(tusdBalance) +
-            " TUSD"
-        );
-
-        return;
     }
 
 
     if (tusdAmount > maxTUSD) {
 
         alert(
-            "Сумма больше доступного остатка ордера.\n\n" +
-            "Максимум: " +
+            "Максимальная сумма покупки: " +
             formatNumber(maxTUSD) +
             " TUSD"
         );
 
         return;
+
     }
 
 
@@ -1485,49 +1098,26 @@ async function buyOrderPrompt(
         tusdAmount / Number(rate);
 
 
-    const confirmation =
+    const confirmed =
         confirm(
-            "Подтвердить покупку?\n\n" +
-
+            "Подтвердите покупку:\n\n" +
             "Вы отдаёте: " +
             formatNumber(tusdAmount) +
-            " TUSD\n\n" +
-
+            " TUSD\n" +
             "Вы получаете: " +
             formatNumber(tgAmount) +
-            " TG\n\n" +
-
-            "Курс: 1 TG = " +
-            formatNumber(rate) +
-            " TUSD"
+            " TG"
         );
 
 
-    if (!confirmation) {
+    if (!confirmed) {
         return;
     }
 
 
-    await executeBuy(
-        orderId,
-        tusdAmount
-    );
-
-}
-
-
-/* =========================================
-   ВЫПОЛНЕНИЕ ПОКУПКИ
-========================================= */
-
-async function executeBuy(
-    orderId,
-    tusdAmount
-) {
-
     try {
 
-        const result =
+        const { data, error } =
             await supabaseClient.rpc(
                 "buy_order",
                 {
@@ -1538,76 +1128,50 @@ async function executeBuy(
                         Number(telegramId),
 
                     p_tusd_amount:
-                        Number(tusdAmount)
+                        tusdAmount
                 }
             );
 
 
-        if (result.error) {
-
-            console.error(result.error);
-
-            alert(
-                "❌ Ошибка сделки:\n\n" +
-                result.error.message
-            );
-
-            return;
+        if (error) {
+            throw error;
         }
 
 
-        const response =
-            result.data;
+        if (!data || data.success !== true) {
 
-
-        if (
-            !response ||
-            response.success !== true
-        ) {
-
-            alert(
-                "❌ " +
-                (
-                    response &&
-                    response.message
-                        ? response.message
-                        : "Покупка не выполнена"
-                )
+            throw new Error(
+                "Покупка не выполнена"
             );
 
-            return;
         }
 
 
         alert(
             "✅ Покупка выполнена!\n\n" +
-
-            "Вы потратили: " +
-            formatNumber(response.tusd_amount) +
+            "Получено: " +
+            formatNumber(data.tg_amount) +
+            " TG\n" +
+            "Оплачено: " +
+            formatNumber(data.tusd_amount) +
             " TUSD\n\n" +
-
-            "Вы получили: " +
-            formatNumber(response.tg_amount) +
-            " TG\n\n" +
-
             "Осталось в ордере: " +
-            formatNumber(response.remaining_tg) +
+            formatNumber(data.remaining_tg) +
             " TG"
         );
 
 
         await reloadUserBalance();
-
         await loadOrders();
 
-    }
 
-    catch (error) {
+    } catch (error) {
 
         console.error(error);
 
         alert(
-            "❌ Ошибка выполнения сделки."
+            "Ошибка покупки:\n" +
+            error.message
         );
 
     }
@@ -1615,102 +1179,211 @@ async function executeBuy(
 }
 
 
-/* =========================================
-   ПОВТОРНАЯ ЗАГРУЗКА БАЛАНСА
-========================================= */
+async function loadOrders() {
 
-async function reloadUserBalance() {
-
-    if (!telegramId) {
-        return;
-    }
+    const list =
+        document.getElementById("ordersList");
 
 
-    const result =
-        await supabaseClient
-            .from("users")
-            .select("tg_balance,tusd_balance")
-            .eq("Ttelegram_id", telegramId)
-            .maybeSingle();
+    list.innerHTML =
+        '<div class="loading">Загрузка ордеров...</div>';
 
 
-    if (result.error) {
+    try {
 
-        console.error(result.error);
-
-        return;
-    }
-
-
-    if (!result.data) {
-        return;
-    }
-
-
-    tgBalance =
-        Number(result.data.tg_balance || 0);
-
-
-    tusdBalance =
-        Number(result.data.tusd_balance || 0);
+        const { data, error } =
+            await supabaseClient
+                .from("orders")
+                .select(
+                    "id,seller_id,from_token,to_token,amount_total,amount_remaining,rate,status,created_at"
+                )
+                .eq("status", "open")
+                .gt("amount_remaining", 0)
+                .order(
+                    "created_at",
+                    {
+                        ascending: false
+                    }
+                );
 
 
-    updateBalances();
-
-    updateExchangeCalculation();
-
-    updateOrderCalculation();
-
-}
+        if (error) {
+            throw error;
+        }
 
 
-/* =========================================
-   НАВИГАЦИЯ
-========================================= */
+        if (!data || data.length === 0) {
 
-function showSection(
-    sectionId,
-    button
-) {
+            list.innerHTML =
+                '<div class="loading">' +
+                'Открытых ордеров пока нет.' +
+                '</div>';
 
-    document
-        .querySelectorAll(".section")
-        .forEach(section => {
+            return;
 
-            section.classList.remove("active");
+        }
+
+
+        list.innerHTML = "";
+
+
+        data.forEach(order => {
+
+            const div =
+                document.createElement("div");
+
+            div.className = "order";
+
+
+            const isOwn =
+                Number(order.seller_id) ===
+                Number(telegramId);
+
+
+            const remaining =
+                Number(
+                    order.amount_remaining || 0
+                );
+
+
+            const rate =
+                Number(
+                    order.rate || TG_TO_TUSD_RATE
+                );
+
+
+            const totalTUSD =
+                remaining * rate;
+
+
+            let html = "";
+
+
+            html +=
+                '<div class="order-header">' +
+
+                '<div>' +
+                '<div class="order-amount">' +
+                formatNumber(remaining) +
+                ' TG</div>' +
+
+                '<div class="order-rate">' +
+                'Курс: 1 TG = ' +
+                formatNumber(rate) +
+                ' TUSD' +
+                '</div>' +
+
+                '</div>' +
+
+                '<div>' +
+                '<b>' +
+                formatNumber(totalTUSD) +
+                ' TUSD' +
+                '</b>' +
+                '</div>' +
+
+                '</div>';
+
+
+            html +=
+                '<div class="small">' +
+                'Продавец ID: ' +
+                order.seller_id +
+                '</div>';
+
+
+            html +=
+                '<div class="small">' +
+                'В ордере осталось: ' +
+                formatNumber(remaining) +
+                ' TG' +
+                '</div>';
+
+
+            if (isOwn) {
+
+                html +=
+                    '<div class="status">' +
+                    '🔒 Это ваш ордер. TG зарезервированы.' +
+                    '</div>' +
+
+                    '<button ' +
+                    'class="btn-cancel" ' +
+                    'onclick="cancelOrder(' +
+                    order.id +
+                    ')">' +
+                    '🗑 Отменить ордер' +
+                    '</button>';
+
+            } else {
+
+                html +=
+                    '<button ' +
+                    'class="btn-buy" ' +
+                    'onclick="buyOrder(' +
+                    order.id +
+                    ',' +
+                    order.seller_id +
+                    ',' +
+                    remaining +
+                    ',' +
+                    rate +
+                    ')">' +
+                    '🛒 Купить' +
+                    '</button>';
+
+            }
+
+
+            div.innerHTML = html;
+
+            list.appendChild(div);
 
         });
 
 
-    document
-        .getElementById(sectionId)
-        .classList.add("active");
+    } catch (error) {
 
+        console.error(error);
 
-    document
-        .querySelectorAll(".nav-button")
-        .forEach(nav => {
-
-            nav.classList.remove("active");
-
-        });
-
-
-    button.classList.add("active");
-
-
-    if (sectionId === "exchangeSection") {
-
-        loadOrders();
+        list.innerHTML =
+            '<div class="error">' +
+            'Ошибка загрузки ордеров: ' +
+            error.message +
+            '</div>';
 
     }
 
 }
 
 
-/* =========================================
-   ЗАПУСК
-========================================= */
+document.addEventListener(
+    "visibilitychange",
+    function() {
+
+        if (
+            document.visibilityState ===
+            "visible"
+        ) {
+
+            reloadUserBalance();
+
+            if (
+                !document
+                    .getElementById("exchangeSection")
+                    .classList
+                    .contains("hidden")
+            ) {
+
+                loadOrders();
+
+            }
+
+        }
+
+    }
+);
+
 
 loadUser();
 
