@@ -1,101 +1,76 @@
 <!doctype html>
 <html lang="ru">
-
 <head>
-
 <meta charset="UTF-8">
-
-<meta name="viewport"
-content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 
 <title>Телепат — Обменник</title>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-
-*{
-box-sizing:border-box;
-}
-
 body{
-margin:0;
-background:#101722;
-color:#fff;
-font-family:Arial,sans-serif;
-min-height:100vh;
+    margin:0;
+    background:#101722;
+    color:white;
+    font-family:Arial,sans-serif;
 }
 
 .app{
-max-width:520px;
-margin:auto;
-padding:25px 18px 40px;
+    max-width:520px;
+    margin:auto;
+    padding:25px 18px;
 }
 
 h1{
-text-align:center;
-font-size:30px;
-color:#f4cf70;
-margin:10px 0 25px;
+    text-align:center;
+    color:#f4cf70;
+    margin-bottom:25px;
 }
 
 .card{
-background:#202b3b;
-border:1px solid #6e5824;
-border-radius:22px;
-padding:22px;
-margin-bottom:18px;
+    background:#202b3b;
+    border:1px solid #6e5824;
+    border-radius:22px;
+    padding:20px;
 }
 
 .item{
-background:#111923;
-border-radius:16px;
-padding:17px;
-margin-top:12px;
+    background:#111923;
+    border-radius:15px;
+    padding:15px;
+    margin-top:12px;
 }
 
 .label{
-color:#9ca8b8;
-font-size:14px;
-margin-bottom:8px;
+    color:#9ca8b8;
+    font-size:13px;
+    margin-bottom:7px;
 }
 
 .value{
-color:#f4cf70;
-font-size:21px;
-font-weight:bold;
-word-break:break-word;
+    color:#f4cf70;
+    font-size:20px;
+    font-weight:bold;
 }
 
 .balance{
-display:flex;
-gap:10px;
+    display:flex;
+    gap:10px;
 }
 
 .balance .item{
-flex:1;
+    flex:1;
 }
 
 .status{
-text-align:center;
-font-size:14px;
-color:#aeb8c6;
-margin-top:18px;
-line-height:1.5;
+    margin-top:20px;
+    text-align:center;
+    line-height:1.5;
+    font-size:14px;
 }
-
-.ok{
-color:#8be0a8;
-}
-
-.error{
-color:#ff8b8b;
-}
-
 </style>
-
 </head>
 
 <body>
@@ -107,267 +82,209 @@ color:#ff8b8b;
 <div class="card">
 
 <div class="item">
-
-<div class="label">
-👤 ИМЯ
+<div class="label">👤 ИМЯ</div>
+<div id="name" class="value">Проверка...</div>
 </div>
-
-<div
-id="name"
-class="value">
-
-Загрузка...
-
-</div>
-
-</div>
-
 
 <div class="item">
-
-<div class="label">
-🆔 TELEGRAM ID
+<div class="label">🆔 TELEGRAM ID</div>
+<div id="telegramId" class="value">Проверка...</div>
 </div>
-
-<div
-id="telegramId"
-class="value">
-
-Загрузка...
-
-</div>
-
-</div>
-
 
 <div class="item">
-
-<div class="label">
-👤 USERNAME
+<div class="label">👤 USERNAME</div>
+<div id="username" class="value">Проверка...</div>
 </div>
-
-<div
-id="username"
-class="value">
-
-Загрузка...
-
-</div>
-
-</div>
-
 
 <div class="balance">
 
 <div class="item">
-
-<div class="label">
-🪙 TG
+<div class="label">🪙 TG</div>
+<div id="tgBalance" class="value">0 TG</div>
 </div>
-
-<div
-id="tgBalance"
-class="value">
-
-0 TG
-
-</div>
-
-</div>
-
 
 <div class="item">
-
-<div class="label">
-💵 TUSD
+<div class="label">💵 TUSD</div>
+<div id="tusdBalance" class="value">0 TUSD</div>
 </div>
 
-<div
-id="tusdBalance"
-class="value">
+</div>
 
-0 TUSD
-
+<div id="status" class="status">
+⏳ Запуск приложения...
 </div>
 
 </div>
 
 </div>
-
-
-<div
-id="status"
-class="status">
-
-Подключение к базе...
-
-</div>
-
-</div>
-
-</div>
-
 
 <script>
 
-/* =========================================
-   TELEGRAM
-========================================= */
+document.addEventListener("DOMContentLoaded", async function(){
 
-const tg =
-window.Telegram?.WebApp;
+    const status = document.getElementById("status");
 
-if(tg){
+    try {
 
-tg.ready();
+        /* =========================
+           1. TELEGRAM
+        ========================= */
 
-tg.expand();
+        status.textContent = "🔄 Получаем данные Telegram...";
 
-}
+        const tg = window.Telegram?.WebApp;
 
+        if (!tg) {
+            throw new Error("Telegram WebApp API не найден");
+        }
 
-/* =========================================
-   SUPABASE
-========================================= */
+        tg.ready();
+        tg.expand();
 
-const SUPABASE_URL =
-"https://jutszxuzjzyfxarceydw.supabase.co";
+        const user = tg.initDataUnsafe?.user;
 
-const SUPABASE_KEY =
-"sb_publishable_geRczpRc3faUHRGto2ue7A_eFFiJDwO";
+        if (!user) {
+            throw new Error(
+                "Telegram не передал данные пользователя. Открой приложение именно через Telegram."
+            );
+        }
 
-const supabaseClient =
-window.supabase.createClient(
-SUPABASE_URL,
-SUPABASE_KEY
-);
+        /* Показываем Telegram */
 
+        let fullName = user.first_name || "";
 
-/* =========================================
-   ЗАПУСК
-========================================= */
+        if (user.last_name) {
+            fullName += " " + user.last_name;
+        }
 
-async function startApp(){
+        document.getElementById("name").textContent =
+            fullName || "Пользователь";
 
-try{
+        document.getElementById("telegramId").textContent =
+            user.id;
 
-/* Получаем пользователя Telegram */
+        document.getElementById("username").textContent =
+            user.username ? "@" + user.username : "нет username";
 
-const user =
-tg?.initDataUnsafe?.user;
+        const telegramId = String(user.id);
 
-
-/* Если Telegram пользователя нет */
-
-if(!user){
-
-document.getElementById(
-"status"
-).textContent =
-"❌ Telegram пользователь не найден";
-
-document.getElementById(
-"status"
-).className =
-"status error";
-
-return;
-
-}
+        status.textContent =
+            "✅ Telegram ID получен: " + telegramId;
 
 
-/* =========================================
-   ДАННЫЕ TELEGRAM
-========================================= */
+        /* =========================
+           2. ПРОВЕРКА SUPABASE
+        ========================= */
 
-let name =
-user.first_name || "";
+        if (!window.supabase) {
 
-if(user.last_name){
+            throw new Error(
+                "Библиотека Supabase не загрузилась"
+            );
 
-name +=
-" " + user.last_name;
+        }
 
-}
-
-document.getElementById(
-"name"
-).textContent =
-name || "Пользователь";
+        status.textContent =
+            "🔄 Подключаемся к Supabase...";
 
 
-document.getElementById(
-"telegramId"
-).textContent =
-user.id;
+        const SUPABASE_URL =
+            "https://jutszxuzjzyfxarceydw.supabase.co";
+
+        const SUPABASE_KEY =
+            "sb_publishable_geRczpRc3faUHRGto2ue7A_eFFiJDwO";
 
 
-document.getElementById(
-"username"
-).textContent =
-
-user.username
-?
-"@" + user.username
-:
-"нет username";
+        const supabaseClient =
+            window.supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_KEY
+            );
 
 
-/* =========================================
-   TELEGRAM ID
-========================================= */
+        /* =========================
+           3. ИЩЕМ ПОЛЬЗОВАТЕЛЯ
+        ========================= */
 
-const telegramId =
-String(user.id);
-
-
-/* =========================================
-   ЗАПРОС В SUPABASE
-========================================= */
-
-const result =
-await supabaseClient
-
-.from("users")
-
-.select(
-"Telegram_id,tg_balance,tusd_balance"
-)
-
-.eq(
-"Telegram_id",
-telegramId
-)
-
-.maybeSingle();
+        const result = await supabaseClient
+            .from("users")
+            .select("Telegram_id,tg_balance,tusd_balance")
+            .eq("Telegram_id", telegramId)
+            .maybeSingle();
 
 
-/* =========================================
-   ОШИБКА SUPABASE
-========================================= */
+        if (result.error) {
 
-if(result.error){
+            console.error(result.error);
 
-console.error(
-"Supabase error:",
-result.error
-);
+            throw new Error(
+                "Supabase: " + result.error.message
+            );
 
-document.getElementById(
-"status"
-).textContent =
-"❌ Ошибка Supabase: " +
-result.error.message;
-
-document.getElementById(
-"status"
-).className =
-"status error";
-
-return;
-
-}
+        }
 
 
-/* =========================================
-   ПОЛЬЗОВАТЕЛЬ НЕ
+        /* =========================
+           4. ПОЛЬЗОВАТЕЛЬ НЕ НАЙДЕН
+        ========================= */
+
+        if (!result.data) {
+
+            status.textContent =
+                "⚠️ Telegram ID получен, но пользователя нет в таблице users: " +
+                telegramId;
+
+            return;
+        }
+
+
+        /* =========================
+           5. БАЛАНС
+        ========================= */
+
+        const tgBalance =
+            Number(result.data.tg_balance || 0);
+
+        const tusdBalance =
+            Number(result.data.tusd_balance || 0);
+
+
+        document.getElementById("tgBalance").textContent =
+            tgBalance.toLocaleString("ru-RU", {
+                maximumFractionDigits:8
+            }) + " TG";
+
+
+        document.getElementById("tusdBalance").textContent =
+            tusdBalance.toLocaleString("ru-RU", {
+                maximumFractionDigits:8
+            }) + " TUSD";
+
+
+        status.textContent =
+            "✅ Telegram и Supabase подключены. Баланс загружен.";
+
+
+        console.log(
+            "Данные пользователя:",
+            result.data
+        );
+
+    }
+
+    catch(error){
+
+        console.error(error);
+
+        status.innerHTML =
+            "❌ ОШИБКА<br><br>" +
+            error.message;
+
+    }
+
+});
+
+</script>
+
+</body>
+</html>
