@@ -101,6 +101,16 @@ button {
     color: #222;
 }
 
+.btn-gold {
+    background: #d6a400;
+    color: white;
+}
+
+.btn-blue {
+    background: #2481cc;
+    color: white;
+}
+
 .exchange-row {
     display: flex;
     gap: 10px;
@@ -213,6 +223,49 @@ button {
     margin-top: 8px;
 }
 
+.referral-link {
+    background: #f4f5f7;
+    border-radius: 12px;
+    padding: 12px;
+    font-size: 13px;
+    word-break: break-all;
+    margin-top: 10px;
+}
+
+.reward-box {
+    background: #fff8df;
+    border-radius: 14px;
+    padding: 15px;
+    margin-top: 12px;
+}
+
+.reward-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 6px;
+}
+
+.stats-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.stat {
+    flex: 1;
+    background: #f5f5f5;
+    border-radius: 12px;
+    padding: 12px;
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
 hr {
     border: 0;
     border-top: 1px solid #eee;
@@ -258,6 +311,23 @@ hr {
             <div id="connectionStatus" class="status">
                 Подключение к базе...
             </div>
+        </div>
+
+        <div class="card">
+
+            <h3>🎁 Бонус новичка</h3>
+
+            <div class="small">
+                При первом входе новый пользователь получает:
+            </div>
+
+            <div class="reward-box">
+                <div>🪙 +0.000001 TG</div>
+                <div>💵 +0.01 TUSD</div>
+            </div>
+
+            <div id="welcomeBonusMessage"></div>
+
         </div>
 
     </div>
@@ -385,10 +455,79 @@ hr {
         </div>
 
         <div class="card">
-            <h3>Реферальная система</h3>
+
+            <h3>🔗 Моя реферальная ссылка</h3>
+
             <div class="small">
-                Здесь появится ваша реферальная ссылка.
+                Приглашай друзей в Телепат. После их покупок ты получаешь:
+                <br><br>
+                🪙 <b>0,1%</b> от объёма TG
+                <br>
+                💵 <b>0,2%</b> от объёма TUSD
             </div>
+
+            <div
+                id="referralLink"
+                class="referral-link"
+            >
+                Загрузка...
+            </div>
+
+            <button
+                class="btn-secondary"
+                onclick="copyReferralLink()"
+            >
+                📋 Скопировать ссылку
+            </button>
+
+            <button
+                class="btn-blue"
+                onclick="shareReferralLink()"
+            >
+                📤 Пригласить друга
+            </button>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>📊 Моя статистика</h3>
+
+            <div class="stats-row">
+
+                <div class="stat">
+                    <div class="small">👥 Друзья</div>
+                    <div
+                        class="stat-number"
+                        id="referralCount"
+                    >
+                        0
+                    </div>
+                </div>
+
+                <div class="stat">
+                    <div class="small">🪙 TG</div>
+                    <div
+                        class="stat-number"
+                        id="referralTGEarned"
+                    >
+                        0
+                    </div>
+                </div>
+
+                <div class="stat">
+                    <div class="small">💵 TUSD</div>
+                    <div
+                        class="stat-number"
+                        id="referralTUSDEarned"
+                    >
+                        0
+                    </div>
+                </div>
+
+            </div>
+
         </div>
 
     </div>
@@ -400,11 +539,39 @@ hr {
             💰 Заработок
         </div>
 
+
         <div class="card">
-            <h3>💰 Заработок</h3>
+
+            <h3>☀️ Ежедневная награда</h3>
+
             <div class="small">
-                Раздел находится в разработке.
+                Каждый день можно получить
+                <b>0.01 TUSD</b>.
+                <br><br>
+                Награда доступна один раз в сутки.
             </div>
+
+            <button
+                id="dailyRewardButton"
+                class="btn-gold"
+                onclick="claimDailyReward()"
+            >
+                🎁 Получить 0.01 TUSD
+            </button>
+
+            <div id="dailyRewardMessage"></div>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>💰 Заработок</h3>
+
+            <div class="small">
+                Другие способы заработка будут добавлены позже.
+            </div>
+
         </div>
 
     </div>
@@ -469,9 +636,12 @@ const supabaseClient =
 
 const TG_TO_TUSD_RATE = 101;
 
+const BOT_USERNAME = "TELEPATp2p_bot";
+
 let telegramUser = null;
 let telegramId = null;
 let currentUser = null;
+let currentReferralLink = "";
 
 
 function formatNumber(value) {
@@ -536,6 +706,8 @@ function showSection(section) {
             .getElementById("navFriends")
             .classList.add("active");
 
+        loadReferralInfo();
+
     }
 
 
@@ -584,6 +756,7 @@ function getBalance(token) {
     }
 
     return 0;
+
 }
 
 
@@ -598,16 +771,13 @@ function updateExchange() {
     const amount =
         Number(document.getElementById("exchangeAmount").value || 0);
 
-
     const balance = getBalance(fromToken);
-
 
     document.getElementById("availableText").innerText =
         "Доступно: " +
         formatNumber(balance) +
         " " +
         fromToken;
-
 
     let result = 0;
 
@@ -700,7 +870,7 @@ async function loadUser() {
             await supabaseClient
                 .from("users")
                 .select(
-                    "Ttelegram_id,tg_balance,tusd_balance"
+                    "Ttelegram_id,tg_balance,tusd_balance,referrer_id,referral_tg_earned,referral_tusd_earned,welcome_bonus_claimed,last_daily_reward_at"
                 )
                 .eq(
                     "Ttelegram_id",
@@ -732,6 +902,14 @@ async function loadUser() {
         document.getElementById("connectionStatus").innerText =
             "🟢 Подключение к базе активно";
 
+
+        await processReferralStart();
+
+        await grantWelcomeBonus();
+
+        await loadReferralInfo();
+
+        await updateDailyRewardButton();
 
     } catch (error) {
 
@@ -781,7 +959,7 @@ async function reloadUserBalance() {
         await supabaseClient
             .from("users")
             .select(
-                "Ttelegram_id,tg_balance,tusd_balance"
+                "Ttelegram_id,tg_balance,tusd_balance,referrer_id,referral_tg_earned,referral_tusd_earned,welcome_bonus_claimed,last_daily_reward_at"
             )
             .eq(
                 "Ttelegram_id",
@@ -810,10 +988,571 @@ async function reloadUserBalance() {
 }
 
 
+async function processReferralStart() {
+
+    if (!telegramId) {
+        return;
+    }
+
+
+    const startParam =
+        tg.initDataUnsafe &&
+        tg.initDataUnsafe.start_param;
+
+
+    if (!startParam) {
+        return;
+    }
+
+
+    const referrerId =
+        Number(startParam);
+
+
+    if (!Number.isInteger(referrerId)) {
+        return;
+    }
+
+
+    if (
+        Number(referrerId) ===
+        Number(telegramId)
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        currentUser &&
+        currentUser.referrer_id
+    ) {
+
+        return;
+
+    }
+
+
+    try {
+
+        const { data, error } =
+            await supabaseClient.rpc(
+                "set_referrer",
+                {
+                    p_user_id:
+                        Number(telegramId),
+
+                    p_referrer_id:
+                        referrerId
+                }
+            );
+
+
+        if (error) {
+
+            console.error(
+                "Ошибка установки реферера:",
+                error
+            );
+
+            return;
+
+        }
+
+
+        console.log(
+            "Результат установки реферера:",
+            data
+        );
+
+
+        await reloadUserBalance();
+
+    } catch (error) {
+
+        console.error(error);
+
+    }
+
+}
+
+
+async function grantWelcomeBonus() {
+
+    if (!telegramId) {
+        return;
+    }
+
+
+    if (
+        currentUser &&
+        currentUser.welcome_bonus_claimed
+    ) {
+
+        document.getElementById(
+            "welcomeBonusMessage"
+        ).innerHTML =
+            '<div class="small">✅ Бонус новичка уже получен.</div>';
+
+        return;
+
+    }
+
+
+    try {
+
+        const { data, error } =
+            await supabaseClient.rpc(
+                "grant_welcome_bonus",
+                {
+                    p_user_id:
+                        Number(telegramId)
+                }
+            );
+
+
+        if (error) {
+            throw error;
+        }
+
+
+        if (
+            data &&
+            data.success === true
+        ) {
+
+            document.getElementById(
+                "welcomeBonusMessage"
+            ).innerHTML =
+                '<div class="success">' +
+                '🎉 Бонус новичка начислен!' +
+                '<br>+0.000001 TG' +
+                '<br>+0.01 TUSD' +
+                '</div>';
+
+
+            await reloadUserBalance();
+
+        } else {
+
+            document.getElementById(
+                "welcomeBonusMessage"
+            ).innerHTML =
+                '<div class="small">' +
+                '✅ Бонус новичка уже получен.' +
+                '</div>';
+
+        }
+
+    } catch (error) {
+
+        console.error(error);
+
+        document.getElementById(
+            "welcomeBonusMessage"
+        ).innerHTML =
+            '<div class="error">' +
+            'Не удалось проверить бонус новичка.' +
+            '</div>';
+
+    }
+
+}
+
+
+function getReferralLink() {
+
+    if (!telegramId) {
+        return "";
+    }
+
+
+    return (
+        "https://t.me/" +
+        BOT_USERNAME +
+        "?startapp=" +
+        telegramId
+    );
+
+}
+
+
+async function loadReferralInfo() {
+
+    if (!telegramId) {
+        return;
+    }
+
+
+    const link =
+        getReferralLink();
+
+
+    currentReferralLink =
+        link;
+
+
+    document.getElementById(
+        "referralLink"
+    ).innerText =
+        link;
+
+
+    try {
+
+        const { count, error: countError } =
+            await supabaseClient
+                .from("users")
+                .select(
+                    "Ttelegram_id",
+                    {
+                        count: "exact",
+                        head: true
+                    }
+                )
+                .eq(
+                    "referrer_id",
+                    Number(telegramId)
+                );
+
+
+        if (!countError) {
+
+            document.getElementById(
+                "referralCount"
+            ).innerText =
+                count || 0;
+
+        }
+
+
+        const { data, error } =
+            await supabaseClient
+                .from("users")
+                .select(
+                    "referral_tg_earned,referral_tusd_earned"
+                )
+                .eq(
+                    "Ttelegram_id",
+                    telegramId
+                )
+                .maybeSingle();
+
+
+        if (!error && data) {
+
+            document.getElementById(
+                "referralTGEarned"
+            ).innerText =
+                formatNumber(
+                    data.referral_tg_earned
+                );
+
+
+            document.getElementById(
+                "referralTUSDEarned"
+            ).innerText =
+                formatNumber(
+                    data.referral_tusd_earned
+                );
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Ошибка загрузки реферальной информации:",
+            error
+        );
+
+    }
+
+}
+
+
+async function copyReferralLink() {
+
+    if (!currentReferralLink) {
+
+        currentReferralLink =
+            getReferralLink();
+
+    }
+
+
+    if (!currentReferralLink) {
+
+        alert(
+            "Реферальная ссылка пока недоступна."
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        await navigator.clipboard.writeText(
+            currentReferralLink
+        );
+
+
+        alert(
+            "✅ Реферальная ссылка скопирована!"
+        );
+
+    } catch (error) {
+
+        prompt(
+            "Скопируйте вашу реферальную ссылку:",
+            currentReferralLink
+        );
+
+    }
+
+}
+
+
+function shareReferralLink() {
+
+    if (!currentReferralLink) {
+
+        currentReferralLink =
+            getReferralLink();
+
+    }
+
+
+    if (!currentReferralLink) {
+
+        alert(
+            "Реферальная ссылка пока недоступна."
+        );
+
+        return;
+
+    }
+
+
+    const text =
+        "👑 Заходи в Телепат P2P!\n\n" +
+        "🔄 Обменивай TG и TUSD\n" +
+        "🎁 Получай бонусы\n" +
+        "☀️ Получай ежедневную награду\n\n" +
+        currentReferralLink;
+
+
+    const shareUrl =
+        "https://t.me/share/url?url=" +
+        encodeURIComponent(currentReferralLink) +
+        "&text=" +
+        encodeURIComponent(text);
+
+
+    if (
+        tg &&
+        typeof tg.openTelegramLink === "function"
+    ) {
+
+        tg.openTelegramLink(
+            shareUrl
+        );
+
+    } else {
+
+        window.open(
+            shareUrl,
+            "_blank"
+        );
+
+    }
+
+}
+
+
+async function claimDailyReward() {
+
+    if (!telegramId) {
+
+        alert(
+            "Пользователь Telegram не найден."
+        );
+
+        return;
+
+    }
+
+
+    const button =
+        document.getElementById(
+            "dailyRewardButton"
+        );
+
+    const message =
+        document.getElementById(
+            "dailyRewardMessage"
+        );
+
+
+    button.disabled = true;
+
+    button.innerText =
+        "⏳ Проверяем...";
+
+
+    message.innerHTML = "";
+
+
+    try {
+
+        const { data, error } =
+            await supabaseClient.rpc(
+                "claim_daily_reward",
+                {
+                    p_user_id:
+                        Number(telegramId)
+                }
+            );
+
+
+        if (error) {
+            throw error;
+        }
+
+
+        if (
+            data &&
+            data.success === true
+        ) {
+
+            message.innerHTML =
+                '<div class="success">' +
+                '🎉 Вы получили +0.01 TUSD!' +
+                '</div>';
+
+
+            await reloadUserBalance();
+
+            button.innerText =
+                "✅ Сегодня уже получено";
+
+            button.disabled = true;
+
+        } else {
+
+            message.innerHTML =
+                '<div class="small">' +
+                '☀️ ' +
+                (
+                    data?.message ||
+                    "Сегодня награда уже получена."
+                ) +
+                '</div>';
+
+
+            button.innerText =
+                "⏳ Награда завтра";
+
+            button.disabled = true;
+
+        }
+
+    } catch (error) {
+
+        console.error(error);
+
+        message.innerHTML =
+            '<div class="error">' +
+            'Ошибка: ' +
+            error.message +
+            '</div>';
+
+
+        button.disabled = false;
+
+        button.innerText =
+            "🎁 Получить 0.01 TUSD";
+
+    }
+
+}
+
+
+async function updateDailyRewardButton() {
+
+    if (!telegramId || !currentUser) {
+        return;
+    }
+
+
+    const button =
+        document.getElementById(
+            "dailyRewardButton"
+        );
+
+
+    const lastReward =
+        currentUser.last_daily_reward_at;
+
+
+    if (!lastReward) {
+
+        button.disabled = false;
+
+        button.innerText =
+            "🎁 Получить 0.01 TUSD";
+
+        return;
+
+    }
+
+
+    const lastDate =
+        new Date(lastReward);
+
+
+    const now =
+        new Date();
+
+
+    const sameDay =
+        lastDate.getFullYear() ===
+        now.getFullYear() &&
+
+        lastDate.getMonth() ===
+        now.getMonth() &&
+
+        lastDate.getDate() ===
+        now.getDate();
+
+
+    if (sameDay) {
+
+        button.disabled = true;
+
+        button.innerText =
+            "⏳ Награда уже получена сегодня";
+
+    } else {
+
+        button.disabled = false;
+
+        button.innerText =
+            "🎁 Получить 0.01 TUSD";
+
+    }
+
+}
+
+
 async function createOrder() {
 
     const message =
-        document.getElementById("createOrderMessage");
+        document.getElementById(
+            "createOrderMessage"
+        );
 
 
     message.innerHTML = "";
@@ -821,7 +1560,9 @@ async function createOrder() {
 
     const amount =
         Number(
-            document.getElementById("orderAmount").value
+            document.getElementById(
+                "orderAmount"
+            ).value
         );
 
 
@@ -836,7 +1577,9 @@ async function createOrder() {
 
 
     const balance =
-        Number(currentUser?.tg_balance || 0);
+        Number(
+            currentUser?.tg_balance || 0
+        );
 
 
     if (amount > balance) {
@@ -853,7 +1596,8 @@ async function createOrder() {
 
 
     const tusdAmount =
-        amount * TG_TO_TUSD_RATE;
+        amount *
+        TG_TO_TUSD_RATE;
 
 
     const confirmed =
@@ -897,7 +1641,10 @@ async function createOrder() {
         }
 
 
-        if (!data || data.success !== true) {
+        if (
+            !data ||
+            data.success !== true
+        ) {
 
             throw new Error(
                 "Не удалось создать ордер"
@@ -914,13 +1661,18 @@ async function createOrder() {
             '</div>';
 
 
-        document.getElementById("orderAmount").value = "";
-        document.getElementById("orderTUSD").innerText = "0";
+        document.getElementById(
+            "orderAmount"
+        ).value = "";
+
+
+        document.getElementById(
+            "orderTUSD"
+        ).innerText = "0";
 
 
         await reloadUserBalance();
         await loadOrders();
-
 
     } catch (error) {
 
@@ -971,7 +1723,10 @@ async function cancelOrder(orderId) {
         }
 
 
-        if (!data || data.success !== true) {
+        if (
+            !data ||
+            data.success !== true
+        ) {
 
             throw new Error(
                 "Не удалось отменить ордер"
@@ -990,7 +1745,6 @@ async function cancelOrder(orderId) {
 
         await reloadUserBalance();
         await loadOrders();
-
 
     } catch (error) {
 
@@ -1030,13 +1784,16 @@ async function buyOrder(
 
 
     const buyerBalance =
-        Number(currentUser?.tusd_balance || 0);
+        Number(
+            currentUser?.tusd_balance || 0
+        );
 
 
     const maxTUSD =
         Math.min(
             buyerBalance,
-            Number(remainingTG) * Number(rate)
+            Number(remainingTG) *
+            Number(rate)
         );
 
 
@@ -1072,9 +1829,14 @@ async function buyOrder(
         Number(input);
 
 
-    if (!tusdAmount || tusdAmount <= 0) {
+    if (
+        !tusdAmount ||
+        tusdAmount <= 0
+    ) {
 
-        alert("Введите корректную сумму.");
+        alert(
+            "Введите корректную сумму."
+        );
 
         return;
 
@@ -1095,7 +1857,8 @@ async function buyOrder(
 
 
     const tgAmount =
-        tusdAmount / Number(rate);
+        tusdAmount /
+        Number(rate);
 
 
     const confirmed =
@@ -1138,11 +1901,38 @@ async function buyOrder(
         }
 
 
-        if (!data || data.success !== true) {
+        if (
+            !data ||
+            data.success !== true
+        ) {
 
             throw new Error(
                 "Покупка не выполнена"
             );
+
+        }
+
+
+        let referralText = "";
+
+
+        if (
+            Number(data.referral_tg_reward || 0) > 0 ||
+            Number(data.referral_tusd_reward || 0) > 0
+        ) {
+
+            referralText =
+                "\n\n🎁 Рефереру начислено:" +
+                "\n+" +
+                formatNumber(
+                    data.referral_tg_reward
+                ) +
+                " TG" +
+                "\n+" +
+                formatNumber(
+                    data.referral_tusd_reward
+                ) +
+                " TUSD";
 
         }
 
@@ -1157,13 +1947,13 @@ async function buyOrder(
             " TUSD\n\n" +
             "Осталось в ордере: " +
             formatNumber(data.remaining_tg) +
-            " TG"
+            " TG" +
+            referralText
         );
 
 
         await reloadUserBalance();
         await loadOrders();
-
 
     } catch (error) {
 
@@ -1182,7 +1972,9 @@ async function buyOrder(
 async function loadOrders() {
 
     const list =
-        document.getElementById("ordersList");
+        document.getElementById(
+            "ordersList"
+        );
 
 
     list.innerHTML =
@@ -1197,8 +1989,14 @@ async function loadOrders() {
                 .select(
                     "id,seller_id,from_token,to_token,amount_total,amount_remaining,rate,status,created_at"
                 )
-                .eq("status", "open")
-                .gt("amount_remaining", 0)
+                .eq(
+                    "status",
+                    "open"
+                )
+                .gt(
+                    "amount_remaining",
+                    0
+                )
                 .order(
                     "created_at",
                     {
@@ -1212,7 +2010,10 @@ async function loadOrders() {
         }
 
 
-        if (!data || data.length === 0) {
+        if (
+            !data ||
+            data.length === 0
+        ) {
 
             list.innerHTML =
                 '<div class="loading">' +
@@ -1230,9 +2031,13 @@ async function loadOrders() {
         data.forEach(order => {
 
             const div =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
 
-            div.className = "order";
+
+            div.className =
+                "order";
 
 
             const isOwn =
@@ -1248,7 +2053,8 @@ async function loadOrders() {
 
             const rate =
                 Number(
-                    order.rate || TG_TO_TUSD_RATE
+                    order.rate ||
+                    TG_TO_TUSD_RATE
                 );
 
 
@@ -1263,6 +2069,7 @@ async function loadOrders() {
                 '<div class="order-header">' +
 
                 '<div>' +
+
                 '<div class="order-amount">' +
                 formatNumber(remaining) +
                 ' TG</div>' +
@@ -1335,9 +2142,13 @@ async function loadOrders() {
             }
 
 
-            div.innerHTML = html;
+            div.innerHTML =
+                html;
 
-            list.appendChild(div);
+
+            list.appendChild(
+                div
+            );
 
         });
 
@@ -1368,9 +2179,16 @@ document.addEventListener(
 
             reloadUserBalance();
 
+            loadReferralInfo();
+
+            updateDailyRewardButton();
+
+
             if (
                 !document
-                    .getElementById("exchangeSection")
+                    .getElementById(
+                        "exchangeSection"
+                    )
                     .classList
                     .contains("hidden")
             ) {
