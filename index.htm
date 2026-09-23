@@ -3,7 +3,12 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1"><title>Телепат — Обменник</title><script src="https://telegram.org/js/telegram-web-app.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><style>
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>Телепат — Обменник</title><script src="https://telegram.org/js/telegram-web-app.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><style>
+
+*{
+    box-sizing:border-box;
+}
+
 body{
     margin:0;
     background:#101722;
@@ -14,20 +19,20 @@ body{
 .app{
     max-width:520px;
     margin:auto;
-    padding:25px 18px;
+    padding:20px 16px 90px;
 }
 
 h1{
     text-align:center;
     color:#f4cf70;
-    margin-bottom:25px;
+    margin:10px 0 22px;
 }
 
 .card{
     background:#202b3b;
     border:1px solid #6e5824;
     border-radius:22px;
-    padding:20px;
+    padding:18px;
 }
 
 .item{
@@ -35,6 +40,10 @@ h1{
     border-radius:15px;
     padding:15px;
     margin-top:12px;
+}
+
+.item:first-child{
+    margin-top:0;
 }
 
 .label{
@@ -45,7 +54,7 @@ h1{
 
 .value{
     color:#f4cf70;
-    font-size:20px;
+    font-size:19px;
     font-weight:bold;
 }
 
@@ -59,13 +68,108 @@ h1{
 }
 
 .status{
-    margin-top:20px;
+    margin-top:18px;
     text-align:center;
     line-height:1.5;
-    font-size:14px;
+    font-size:13px;
+    color:#b8c2d0;
     word-break:break-word;
 }
-</style></head><body><div class="app"><h1>👑 ТЕЛЕПАТ</h1><div class="card"><div class="item">
+
+/* РАЗДЕЛЫ */
+
+.section{
+    display:none;
+}
+
+.section.active{
+    display:block;
+}
+
+/* НИЖНЕЕ МЕНЮ */
+
+.bottom-menu{
+    position:fixed;
+    bottom:0;
+    left:0;
+    right:0;
+    max-width:520px;
+    margin:auto;
+
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+
+    background:#182230;
+    border-top:1px solid #6e5824;
+
+    padding:8px 5px;
+    z-index:100;
+}
+
+.menu-button{
+    border:0;
+    background:transparent;
+    color:#9ca8b8;
+
+    padding:8px 2px;
+
+    font-size:12px;
+    cursor:pointer;
+}
+
+.menu-icon{
+    display:block;
+    font-size:22px;
+    margin-bottom:4px;
+}
+
+.menu-button.active{
+    color:#f4cf70;
+}
+
+/* ЗАГОЛОВКИ РАЗДЕЛОВ */
+
+.section-title{
+    color:#f4cf70;
+    text-align:center;
+    font-size:23px;
+    margin:5px 0 20px;
+}
+
+.info{
+    text-align:center;
+    color:#b8c2d0;
+    line-height:1.6;
+    font-size:15px;
+}
+
+.big-balance{
+    text-align:center;
+    font-size:30px;
+    color:#f4cf70;
+    font-weight:bold;
+    margin:20px 0;
+}
+
+.action-button{
+    width:100%;
+    border:1px solid #8b6d29;
+    border-radius:14px;
+    background:#273548;
+    color:#f4cf70;
+    padding:15px;
+    font-size:16px;
+    margin-top:12px;
+    cursor:pointer;
+}
+
+.action-button:active{
+    transform:scale(.98);
+}
+
+</style></head><body><div class="app"><h1>👑 ТЕЛЕПАТ</h1><!-- =========================
+     КОШЕЛЁК
+========================= --><div id="wallet" class="section active"><div class="card"><div class="item">
 <div class="label">👤 ИМЯ</div>
 <div id="name" class="value">Загрузка...</div>
 </div><div class="item">
@@ -82,78 +186,220 @@ h1{
 <div id="tusdBalance" class="value">0 TUSD</div>
 </div></div><div id="status" class="status">
 ⏳ Запуск приложения...
-</div></div></div><script>
+</div></div></div><!-- =========================
+     ОБМЕН
+========================= --><div id="exchange" class="section"><div class="section-title">
+🔄 ОБМЕН
+</div><div class="card"><div class="info">
+Здесь будет обмен виртуальных балансов
+между TG и TUSD.
+</div><button class="action-button">
+🪙 TG → 💵 TUSD
+</button><button class="action-button">
+💵 TUSD → 🪙 TG
+</button></div></div><!-- =========================
+     ДРУЗЬЯ
+========================= --><div id="friends" class="section"><div class="section-title">
+👥 ДРУЗЬЯ
+</div><div class="card"><div class="info">
+Приглашайте друзей в Империю Телепат
+и развивайте свою команду.
+</div><button class="action-button">
+🔗 Моя реферальная ссылка
+</button></div></div><!-- =========================
+     ЗАРАБОТОК
+========================= --><div id="earn" class="section"><div class="section-title">
+💰 ЗАРАБОТОК
+</div><div class="card"><div class="info">
+Здесь появятся задания,
+награды и возможности заработка.
+</div><button class="action-button">
+🎁 Задания
+</button><button class="action-button">
+🏆 Мои награды
+</button></div></div></div><!-- =========================
+     НИЖНЕЕ МЕНЮ
+========================= --><div class="bottom-menu"><button
+class="menu-button active"
+onclick="showSection('wallet', this)"
 
-document.addEventListener("DOMContentLoaded", async function(){
+«»
 
-    const status = document.getElementById("status");
+<span class="menu-icon">💼</span>
+Кошелёк
+</button>
 
-    try {
+<button
+class="menu-button"
+onclick="showSection('exchange', this)"
 
-        /* =========================
-           TELEGRAM
-        ========================= */
+«»
+
+<span class="menu-icon">🔄</span>
+Обмен
+</button>
+
+<button
+class="menu-button"
+onclick="showSection('friends', this)"
+
+«»
+
+<span class="menu-icon">👥</span>
+Друзья
+</button>
+
+<button
+class="menu-button"
+onclick="showSection('earn', this)"
+
+«»
+
+<span class="menu-icon">💰</span>
+Заработок
+</button>
+
+</div><script>
+
+/* =========================
+   ПЕРЕКЛЮЧЕНИЕ РАЗДЕЛОВ
+========================= */
+
+function showSection(sectionId, button){
+
+    const sections =
+        document.querySelectorAll(".section");
+
+    sections.forEach(function(section){
+        section.classList.remove("active");
+    });
+
+    const selected =
+        document.getElementById(sectionId);
+
+    if(selected){
+        selected.classList.add("active");
+    }
+
+    const buttons =
+        document.querySelectorAll(".menu-button");
+
+    buttons.forEach(function(btn){
+        btn.classList.remove("active");
+    });
+
+    if(button){
+        button.classList.add("active");
+    }
+}
+
+
+/* =========================
+   ЗАПУСК
+========================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    async function(){
+
+    const status =
+        document.getElementById("status");
+
+    try{
+
+        /* TELEGRAM */
 
         status.textContent =
             "🔄 Получаем данные Telegram...";
 
-        const tg = window.Telegram?.WebApp;
+        const tg =
+            window.Telegram?.WebApp;
 
-        if (!tg) {
+        if(!tg){
+
             throw new Error(
                 "Telegram WebApp API не найден."
             );
+
         }
 
         tg.ready();
         tg.expand();
 
-        const user = tg.initDataUnsafe?.user;
+        const user =
+            tg.initDataUnsafe?.user;
 
-        if (!user) {
+        if(!user){
+
             throw new Error(
                 "Telegram не передал данные пользователя. Открой Mini App именно через Telegram."
             );
+
         }
 
-        let fullName = user.first_name || "";
 
-        if (user.last_name) {
-            fullName += " " + user.last_name;
+        /* ИМЯ */
+
+        let fullName =
+            user.first_name || "";
+
+        if(user.last_name){
+
+            fullName +=
+                " " + user.last_name;
+
         }
 
-        document.getElementById("name").textContent =
+        document.getElementById(
+            "name"
+        ).textContent =
             fullName || "Пользователь";
 
-        document.getElementById("telegramId").textContent =
+
+        /* TELEGRAM ID */
+
+        document.getElementById(
+            "telegramId"
+        ).textContent =
             user.id;
 
-        document.getElementById("username").textContent =
+
+        /* USERNAME */
+
+        document.getElementById(
+            "username"
+        ).textContent =
             user.username
                 ? "@" + user.username
                 : "нет username";
 
-        const telegramId = String(user.id);
+
+        const telegramId =
+            String(user.id);
 
 
-        /* =========================
-           SUPABASE
-        ========================= */
+        /* SUPABASE */
 
         status.textContent =
             "🔄 Подключаемся к базе...";
 
-        if (!window.supabase) {
+
+        if(!window.supabase){
+
             throw new Error(
                 "Библиотека Supabase не загрузилась."
             );
+
         }
+
 
         const SUPABASE_URL =
             "https://jutszxuzjzyfxarceydw.supabase.co";
 
+
         const SUPABASE_KEY =
             "sb_publishable_geRczpRc3faUHRGto2ue7A_eFFiJDwO";
+
 
         const supabaseClient =
             window.supabase.createClient(
@@ -162,18 +408,21 @@ document.addEventListener("DOMContentLoaded", async function(){
             );
 
 
-        /* =========================
-           ПРОВЕРЯЕМ ТАБЛИЦУ USERS
-        ========================= */
+        /* ПОИСК ПОЛЬЗОВАТЕЛЯ */
 
         status.textContent =
             "🔄 Проверяем пользователя в базе...";
 
-        const result = await supabaseClient
-            .from("users")
-            .select("*")
-            .eq("Ttelegram_id", telegramId)
-            .maybeSingle();
+
+        const result =
+            await supabaseClient
+                .from("users")
+                .select("*")
+                .eq(
+                    "Ttelegram_id",
+                    telegramId
+                )
+                .maybeSingle();
 
 
         console.log(
@@ -182,11 +431,7 @@ document.addEventListener("DOMContentLoaded", async function(){
         );
 
 
-        /* =========================
-           ОШИБКА SUPABASE
-        ========================= */
-
-        if (result.error) {
+        if(result.error){
 
             throw new Error(
                 "Supabase: " +
@@ -198,27 +443,24 @@ document.addEventListener("DOMContentLoaded", async function(){
         }
 
 
-        /* =========================
-           ПОЛЬЗОВАТЕЛЯ НЕТ
-        ========================= */
-
-        if (!result.data) {
+        if(!result.data){
 
             status.innerHTML =
                 "⚠️ Подключение к базе работает.<br><br>" +
-                "Но Telegram ID <b>" +
+                "Telegram ID <b>" +
                 telegramId +
                 "</b> не найден в таблице users.";
 
             return;
+
         }
 
 
-        /* =========================
-           ДАННЫЕ ПОЛЬЗОВАТЕЛЯ
-        ========================= */
+        /* ДАННЫЕ */
 
-        const data = result.data;
+        const data =
+            result.data;
+
 
         console.log(
             "Пользователь:",
@@ -226,20 +468,20 @@ document.addEventListener("DOMContentLoaded", async function(){
         );
 
 
-        /* =========================
-           БАЛАНС TG
-        ========================= */
+        /* TG */
 
         const tgBalance =
-            Number(data.tg_balance || 0);
+            Number(
+                data.tg_balance || 0
+            );
 
 
-        /* =========================
-           БАЛАНС TUSD
-        ========================= */
+        /* TUSD */
 
         const tusdBalance =
-            Number(data.tusd_balance || 0);
+            Number(
+                data.tusd_balance || 0
+            );
 
 
         document.getElementById(
@@ -264,16 +506,14 @@ document.addEventListener("DOMContentLoaded", async function(){
             ) + " TUSD";
 
 
-        /* =========================
-           ГОТОВО
-        ========================= */
+        /* ГОТОВО */
 
         status.textContent =
             "✅ База подключена. Баланс загружен.";
 
     }
 
-    catch(error) {
+    catch(error){
 
         console.error(
             "Ошибка приложения:",
