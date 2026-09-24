@@ -719,6 +719,7 @@ AI учитывается по цене 0.01 USD.
 <label>Telegram ID получателя</label>
 <input id="adminTargetId"
        type="number"
+       inputmode="numeric"
        placeholder="Telegram ID">
 
 <label style="margin-top:9px">Токен</label>
@@ -732,6 +733,7 @@ AI учитывается по цене 0.01 USD.
 <input id="adminAmount"
        type="number"
        inputmode="decimal"
+       min="0"
        step="any"
        placeholder="Количество">
 
@@ -1589,22 +1591,71 @@ async function loadOrders(){
 
 
 /* =========================================================
-   ORDER CARD
+   MY ORDERS
 ========================================================= */
 
 async function loadMyOrders(){
-    const list=document.getElementById('myOrdersList');
+
+    const list =
+        document.getElementById('myOrdersList');
+
     if(!list || !USER_ID) return;
-    const fromToken=document.getElementById('fromToken')?.value;
-    const toToken=document.getElementById('toToken')?.value;
-    if(!fromToken || !toToken){ list.innerHTML='<div class="info">Выберите направление обмена.</div>'; return; }
-    list.innerHTML='<div class="info">Загрузка моих ордеров...</div>';
-    const {data,error}=await supabaseClient.rpc('get_p2p_orders',{p_from_token:fromToken,p_to_token:toToken,p_sort:'new'});
-    if(error){ console.error(error); list.innerHTML='<div class="error">Не удалось загрузить мои ордера.</div>'; return; }
-    const mine=(data||[]).filter(o=>String(o.creator_id)===String(USER_ID));
-    list.innerHTML=mine.length ? mine.map(orderCard).join('') : '<div class="info">У вас пока нет открытых ордеров по этому направлению.</div>';
+
+    const fromToken =
+        document.getElementById('fromToken')?.value;
+
+    const toToken =
+        document.getElementById('toToken')?.value;
+
+    if(!fromToken || !toToken){
+
+        list.innerHTML =
+            '<div class="info">Выберите направление обмена.</div>';
+
+        return;
+    }
+
+    list.innerHTML =
+        '<div class="info">Загрузка моих ордеров...</div>';
+
+    const {data,error} =
+        await supabaseClient.rpc(
+            'get_p2p_orders',
+            {
+                p_from_token:fromToken,
+                p_to_token:toToken,
+                p_sort:'new'
+            }
+        );
+
+    if(error){
+
+        console.error(error);
+
+        list.innerHTML =
+            '<div class="error">Не удалось загрузить мои ордера.</div>';
+
+        return;
+    }
+
+    const mine =
+        (data || [])
+        .filter(
+            o =>
+                String(o.creator_id) ===
+                String(USER_ID)
+        );
+
+    list.innerHTML =
+        mine.length
+        ? mine.map(orderCard).join('')
+        : '<div class="info">У вас пока нет открытых ордеров по этому направлению.</div>';
 }
 
+
+/* =========================================================
+   ORDER CARD
+========================================================= */
 
 function orderCard(order){
 
@@ -1839,6 +1890,7 @@ async function acceptP2POrder(orderId){
 
     await loadUser();
     await loadOrders();
+    await loadMyOrders();
     await loadMyTrades();
 }
 
@@ -1884,6 +1936,7 @@ async function cancelP2POrder(orderId){
 
     await loadUser();
     await loadOrders();
+    await loadMyOrders();
 }
 
 
@@ -2196,8 +2249,12 @@ async function loadAdminStats(){
         .textContent =
         fmt(ai);
 
-    const adminTUSD=document.getElementById('adminTUSD');
-    if(adminTUSD) adminTUSD.textContent=fmt(tusd);
+    const adminTUSD =
+        document.getElementById('adminTUSD');
+
+    if(adminTUSD)
+        adminTUSD.textContent =
+            fmt(tusd);
 }
 
 
@@ -2208,10 +2265,12 @@ async function loadAdminStats(){
 async function adminTransfer(){
 
     if(USER_ID !== ADMIN_ID){
+
         showMessage(
             'Нет доступа',
             'error'
         );
+
         return;
     }
 
@@ -2228,46 +2287,142 @@ async function adminTransfer(){
             document.getElementById('adminAmount').value
         );
 
-    if(!target || amount <= 0){
+    if(!target){
 
         showMessage(
-            'Заполните данные',
+            'Введите Telegram ID пользователя',
             'error'
         );
 
         return;
     }
 
-    const {data,error} =
-        await supabaseClient.rpc(
-            'admin_transfer_token',
-            {
-                p_admin_id:USER_ID,
-                p_target_id:target,
-                p_token:token,
-                p_amount:amount
-            }
-        );
-
-    if(error){
+    if(!amount || amount <= 0){
 
         showMessage(
-            error.message,
+            'Введите сумму больше 0',
             'error'
         );
 
         return;
     }
 
-    showMessage(
-        '💰 Перевод выполнен',
-        'success'
-    );
+    if(!['TG','AI','TUSD'].includes(token)){
 
-    document.getElementById('adminAmount')
-        .value = '';
+        showMessage(
+            'Неизвестный токен',
+            'error'
+        );
 
-    await loadAdminStats();
+        return;
+    }
+
+    const button =
+        document.querySelector(
+            '#section-admin button[onclick="adminTransfer()"]'
+        );
+
+    if(button){
+        button.disabled = true;
+        button.textContent = '⏳ ПЕРЕВОД...';
+    }
+
+    try{
+
+        const {data,error} =
+            await supabaseClient.rpc(
+                'admin_transfer_token',
+                {
+                    p_admin_id:USER_ID,
+                    p_user_id:target,
+                    p_token:token,
+                    p_amount:amount
+                }
+            );
+
+        if(error){
+
+            console.error(
+                'admin_transfer_token error:',
+                error
+            );
+
+            showMessage(
+                error.message,
+                'error'
+            );
+
+            return;
+        }
+
+        console.log(
+            'admin_transfer_token result:',
+            data
+        );
+
+        if(!data || data.success !== true){
+
+            showMessage(
+                data?.message ||
+                'Перевод не выполнен',
+                'error'
+            );
+
+            return;
+        }
+
+        const newBalance =
+            data.new_balance !== undefined
+            ? fmt(data.new_balance)
+            : '';
+
+        showMessage(
+            `💰 ${fmt(amount)} ${token} начислено пользователю ${target}` +
+            (
+                newBalance
+                ? ` • Новый баланс: ${newBalance} ${token}`
+                : ''
+            ),
+            'success'
+        );
+
+        document.getElementById('adminAmount')
+            .value = '';
+
+        await loadAdminStats();
+
+        /*
+           Если администратор переводит токены самому себе,
+           сразу обновляем отображаемый кошелёк.
+        */
+        if(target === USER_ID){
+            await loadUser();
+        }
+
+    }catch(error){
+
+        console.error(
+            'adminTransfer exception:',
+            error
+        );
+
+        showMessage(
+            error.message ||
+            'Ошибка перевода',
+            'error'
+        );
+
+    }finally{
+
+        if(button){
+
+            button.disabled = false;
+
+            button.textContent =
+                '💰 ВЫПОЛНИТЬ ПЕРЕВОД';
+        }
+
+    }
 }
 
 
@@ -2284,9 +2439,11 @@ document.addEventListener(
         updateOrderForm();
 
         if(USER_ID === ADMIN_ID){
+
             document
                 .getElementById('nav-admin')
                 .classList.remove('hidden');
+
         }
 
     }
