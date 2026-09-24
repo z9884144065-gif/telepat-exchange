@@ -1592,6 +1592,9 @@ async function loadOrders(){
 
 /* =========================================================
    MY ORDERS
+   ИСПРАВЛЕНО:
+   показываем ВСЕ открытые ордера текущего пользователя
+   по всем возможным направлениям.
 ========================================================= */
 
 async function loadMyOrders(){
@@ -1601,55 +1604,184 @@ async function loadMyOrders(){
 
     if(!list || !USER_ID) return;
 
-    const fromToken =
-        document.getElementById('fromToken')?.value;
-
-    const toToken =
-        document.getElementById('toToken')?.value;
-
-    if(!fromToken || !toToken){
-
-        list.innerHTML =
-            '<div class="info">Выберите направление обмена.</div>';
-
-        return;
-    }
-
     list.innerHTML =
-        '<div class="info">Загрузка моих ордеров...</div>';
+        '<div class="info">Загрузка всех моих ордеров...</div>';
 
-    const {data,error} =
-        await supabaseClient.rpc(
-            'get_p2p_orders',
-            {
-                p_from_token:fromToken,
-                p_to_token:toToken,
-                p_sort:'new'
+    /*
+       Все возможные направления:
+       
+       TG  → AI
+       TG  → TUSD
+       AI  → TG
+       AI  → TUSD
+       TUSD → TG
+       TUSD → AI
+       
+       Поэтому выбранное направление в форме обмена
+       больше НЕ ограничивает список «МОИ ОРДЕРА».
+    */
+
+    const pairs = [
+        ['TG','AI'],
+        ['TG','TUSD'],
+        ['AI','TG'],
+        ['AI','TUSD'],
+        ['TUSD','TG'],
+        ['TUSD','AI']
+    ];
+
+    try{
+
+        const results =
+            await Promise.all(
+                pairs.map(
+                    ([from,to]) =>
+                        supabaseClient.rpc(
+                            'get_p2p_orders',
+                            {
+                                p_from_token:from,
+                                p_to_token:to,
+                                p_sort:'new'
+                            }
+                        )
+                )
+            );
+
+        const allOrders = [];
+
+        results.forEach((result,index)=>{
+
+            const {data,error} = result;
+
+            if(error){
+
+                console.error(
+                    `Ошибка загрузки ${pairs[index][0]} → ${pairs[index][1]}:`,
+                    error
+                );
+
+                return;
             }
-        );
 
-    if(error){
+            if(Array.isArray(data)){
 
-        console.error(error);
+                data.forEach(order=>{
+
+                    /*
+                       Оставляем только ордера,
+                       созданные текущим пользователем.
+                    */
+
+                    if(
+                        String(order.creator_id) ===
+                        String(USER_ID)
+                    ){
+
+                        allOrders.push(order);
+
+                    }
+
+                });
+
+            }
+
+        });
+
+        /*
+           Убираем возможные дубликаты
+           по ID ордера.
+        */
+
+        const uniqueOrders =
+            Array.from(
+                new Map(
+                    allOrders.map(
+                        order =>
+                            [String(order.id),order]
+                    )
+                ).values()
+            );
+
+        /*
+           Сортируем общий список
+           согласно выбранной сортировке.
+        */
+
+        const sort =
+            document.getElementById('orderSort')?.value ||
+            'new';
+
+        uniqueOrders.sort((a,b)=>{
+
+            if(sort === 'amount'){
+
+                return num(b.from_amount) -
+                       num(a.from_amount);
+
+            }
+
+            if(sort === 'price'){
+
+                return num(b.rate) -
+                       num(a.rate);
+
+            }
+
+            if(sort === 'rank'){
+
+                return num(b.creator_rank_level) -
+                       num(a.creator_rank_level);
+
+            }
+
+            return new Date(b.created_at) -
+                   new Date(a.created_at);
+
+        });
+
+        /*
+           Если открытых ордеров нет.
+        */
+
+        if(uniqueOrders.length === 0){
+
+            list.innerHTML =
+                `<div class="info">
+                    У вас пока нет открытых ордеров.
+                 </div>`;
+
+            return;
+        }
+
+        /*
+           Показываем количество найденных
+           открытых ордеров.
+        */
 
         list.innerHTML =
-            '<div class="error">Не удалось загрузить мои ордера.</div>';
+            `
+            <div class="info" style="margin-bottom:8px">
+                Ваших открытых ордеров:
+                <b>${uniqueOrders.length}</b>
+            </div>
+            ` +
+            uniqueOrders
+                .map(orderCard)
+                .join('');
 
-        return;
-    }
+    }catch(error){
 
-    const mine =
-        (data || [])
-        .filter(
-            o =>
-                String(o.creator_id) ===
-                String(USER_ID)
+        console.error(
+            'loadMyOrders error:',
+            error
         );
 
-    list.innerHTML =
-        mine.length
-        ? mine.map(orderCard).join('')
-        : '<div class="info">У вас пока нет открытых ордеров по этому направлению.</div>';
+        list.innerHTML =
+            `<div class="error">
+                Не удалось загрузить мои ордера.
+             </div>`;
+
+    }
 }
 
 
@@ -1771,8 +1903,7 @@ function orderCard(order){
                 <span>Обратный курс</span>
                 <span>
                     1 ${esc(order.to_token)}
-                    = ${fmt(reverse,12)}
-                    ${esc(order.from_token)}
+                    = ${fmt(reverse,12)} ${esc(order.from_token)}
                 </span>
             </div>
 
@@ -1834,6 +1965,7 @@ function orderCard(order){
             </div>
 
         </div>
+
     </div>`;
 }
 
