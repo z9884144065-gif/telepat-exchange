@@ -1,1 +1,252 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Телепат — тест OTP</title>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: white;
+    }
+
+    .box {
+      max-width: 420px;
+      margin: 40px auto;
+      padding: 25px;
+      background: #222;
+      border-radius: 18px;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 14px;
+      margin: 8px 0;
+      border-radius: 10px;
+      border: 1px solid #555;
+      background: #111;
+      color: white;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 10px;
+      background: #d4af37;
+      color: #111;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+    }
+
+    #codeBox {
+      display: none;
+      margin-top: 15px;
+    }
+
+    #status {
+      margin-top: 18px;
+      padding: 12px;
+      border-radius: 10px;
+      background: #333;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="box">
+
+  <h1>👑 Телепат</h1>
+
+  <p>Тест входа по одноразовому коду</p>
+
+  <input
+    id="email"
+    type="email"
+    value="smotroboi@gmail.com"
+    placeholder="Введите Email"
+  >
+
+  <button id="sendBtn" onclick="sendCode()">
+    📩 Получить код
+  </button>
+
+  <div id="codeBox">
+
+    <input
+      id="code"
+      type="text"
+      inputmode="numeric"
+      maxlength="6"
+      placeholder="Введите 6-значный код"
+    >
+
+    <button onclick="verifyCode()">
+      🔐 Войти
+    </button>
+
+  </div>
+
+  <div id="status">
+    Готово к проверке.
+  </div>
+
+</div>
+
+<script>
+
+  const SUPABASE_URL =
+    "https://jutszxuzjzyfxarceydw.supabase.co";
+
+  const SUPABASE_ANON_KEY =
+    "ВСТАВЬ_СЮДА_СВОЙ_PUBLISHABLE_ИЛИ_ANON_KEY";
+
+  const supabaseClient =
+    window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_ANON_KEY
+    );
+
+
+  function showStatus(message) {
+    document.getElementById("status").textContent = message;
+  }
+
+
+  async function sendCode() {
+
+    const email =
+      document.getElementById("email").value.trim();
+
+    if (!email) {
+      showStatus("Введите Email.");
+      return;
+    }
+
+    const button =
+      document.getElementById("sendBtn");
+
+    button.disabled = true;
+
+    showStatus("📩 Отправляем одноразовый код...");
+
+    try {
+
+      const { error } =
+        await supabaseClient.auth.signInWithOtp({
+          email: email,
+          options: {
+            shouldCreateUser: false
+          }
+        });
+
+      if (error) {
+
+        showStatus(
+          "❌ Ошибка отправки:\n\n" +
+          error.message
+        );
+
+        button.disabled = false;
+        return;
+      }
+
+      document.getElementById("codeBox").style.display =
+        "block";
+
+      showStatus(
+        "✅ Код отправлен!\n\n" +
+        "Проверь почту:\n" +
+        email +
+        "\n\n" +
+        "Введи полученный код."
+      );
+
+    } catch (error) {
+
+      showStatus(
+        "❌ Ошибка:\n\n" +
+        error.message
+      );
+
+      button.disabled = false;
+    }
+  }
+
+
+  async function verifyCode() {
+
+    const email =
+      document.getElementById("email").value.trim();
+
+    const token =
+      document.getElementById("code").value.trim();
+
+    if (!token) {
+      showStatus("Введите одноразовый код.");
+      return;
+    }
+
+    showStatus("🔐 Проверяем код...");
+
+    try {
+
+      const { data, error } =
+        await supabaseClient.auth.verifyOtp({
+          email: email,
+          token: token,
+          type: "email"
+        });
+
+      if (error) {
+
+        showStatus(
+          "❌ Код не принят:\n\n" +
+          error.message
+        );
+
+        return;
+      }
+
+      showStatus(
+        "🎉 ВХОД ВЫПОЛНЕН!\n\n" +
+        "Email:\n" +
+        data.user.email +
+        "\n\n" +
+        "Auth ID:\n" +
+        data.user.id
+      );
+
+    } catch (error) {
+
+      showStatus(
+        "❌ Ошибка проверки:\n\n" +
+        error.message
+      );
+    }
+  }
+
+</script>
+
+</body>
+</html>
