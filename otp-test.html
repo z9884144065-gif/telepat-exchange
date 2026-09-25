@@ -1,250 +1,2569 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Телепат — тест OTP</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Телепат — Обменник</title>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <style>
-    body {
-      margin: 0;
-      padding: 20px;
-      font-family: Arial, sans-serif;
-      background: #111;
-      color: white;
+<style>
+:root{
+    --bg:#0b1018;
+    --card:#141c28;
+    --card2:#1a2432;
+    --line:#344154;
+    --gold:#f4cf70;
+    --gold2:#d9ad3e;
+    --text:#fff;
+    --muted:#9da9b9;
+    --green:#39d98a;
+    --red:#ff647c;
+    --blue:#55a7ff;
+}
+
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{
+    margin:0;
+    background:
+      radial-gradient(circle at 50% -10%,#26334a 0,#0b1018 42%),
+      var(--bg);
+    color:var(--text);
+    font-family:Arial,sans-serif;
+    min-height:100vh;
+}
+.app{
+    max-width:560px;
+    margin:auto;
+    padding:16px 14px 92px;
+}
+h1{
+    text-align:center;
+    color:var(--gold);
+    margin:5px 0 3px;
+    font-size:28px;
+    letter-spacing:1px;
+}
+.subtitle{
+    text-align:center;
+    color:var(--muted);
+    font-size:13px;
+    margin-bottom:18px;
+}
+.card{
+    background:linear-gradient(145deg,#1b2636,#111925);
+    border:1px solid #39475b;
+    border-radius:20px;
+    padding:17px;
+    margin-bottom:13px;
+    box-shadow:0 12px 30px #0007;
+}
+.card.gold{
+    border-color:#80652b;
+}
+.section-title{
+    color:var(--gold);
+    font-size:14px;
+    font-weight:bold;
+    letter-spacing:.7px;
+    margin-bottom:13px;
+}
+.row{display:flex;gap:10px}
+.row>*{flex:1}
+button,select,input{
+    width:100%;
+    border-radius:13px;
+    border:1px solid #45536a;
+    font-size:15px;
+}
+button{
+    padding:13px;
+    margin-top:9px;
+    border:0;
+    background:linear-gradient(135deg,#f5d477,#c99629);
+    color:#17120a;
+    font-weight:bold;
+}
+button.secondary{
+    background:#263345;
+    color:#fff;
+    border:1px solid #4a596d;
+}
+button.danger{
+    background:#542330;
+    color:#fff;
+    border:1px solid #884050;
+}
+button.small{
+    width:auto;
+    padding:8px 11px;
+    margin:0;
+    font-size:12px;
+}
+button:disabled{
+    opacity:.45;
+}
+select,input{
+    background:#0d1520;
+    color:#fff;
+    padding:12px;
+    outline:none;
+}
+label{
+    display:block;
+    color:#aeb8c6;
+    font-size:12px;
+    margin-bottom:6px;
+}
+.balance-main{
+    text-align:center;
+    font-size:31px;
+    font-weight:bold;
+    color:var(--gold);
+    margin:3px 0 15px;
+}
+.token-box{
+    background:#0d1520;
+    border:1px solid #303d50;
+    border-radius:14px;
+    padding:12px;
+}
+.token-name{
+    color:var(--muted);
+    font-size:12px;
+}
+.token-value{
+    color:#fff;
+    font-size:20px;
+    font-weight:bold;
+    margin-top:4px;
+}
+.info{
+    color:var(--muted);
+    font-size:12px;
+    line-height:1.45;
+}
+.success{color:var(--green)}
+.error{color:var(--red)}
+.rank-box{
+    border:1px solid #66572e;
+    background:linear-gradient(145deg,#272313,#17150e);
+    border-radius:16px;
+    padding:14px;
+}
+.rank-name{
+    font-size:22px;
+    font-weight:bold;
+    color:var(--gold);
+}
+.progress{
+    height:8px;
+    background:#080b10;
+    border-radius:99px;
+    overflow:hidden;
+    margin-top:10px;
+}
+.progress>div{
+    height:100%;
+    background:linear-gradient(90deg,#b98b27,#ffe38a);
+}
+.exchange-grid{
+    display:grid;
+    grid-template-columns:1fr 34px 1fr;
+    gap:8px;
+    align-items:end;
+}
+.swap{
+    width:34px;
+    height:34px;
+    padding:0;
+    border-radius:50%;
+    margin:0 0 5px;
+    font-size:17px;
+}
+.amount-wrap{
+    margin-top:9px;
+}
+.available{
+    color:#7f8c9f;
+    font-size:11px;
+    margin-top:5px;
+}
+.receive-preview{
+    margin-top:12px;
+    background:#0c141f;
+    border:1px solid #3d4a5d;
+    border-radius:14px;
+    padding:12px;
+}
+.rate-line{
+    color:#cbd4df;
+    font-size:12px;
+    margin-top:7px;
+}
+.sort-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
+.sort-row label{
+    margin:0;
+    white-space:nowrap;
+}
+.sort-row select{
+    max-width:190px;
+}
+.order{
+    border:1px solid var(--rank-color,#435166);
+    border-radius:15px;
+    margin-top:9px;
+    overflow:hidden;
+    background:linear-gradient(145deg,#151e2b,#101721);
+    box-shadow:0 0 16px var(--rank-glow,transparent);
+}
+.order-head{
+    padding:12px;
+    cursor:pointer;
+}
+.order-line{
+    display:flex;
+    justify-content:space-between;
+    gap:8px;
+    align-items:center;
+}
+.order-main{
+    font-weight:bold;
+    font-size:14px;
+}
+.order-price{
+    color:#cfd8e4;
+    font-size:11px;
+    margin-top:4px;
+}
+.rank-badge{
+    white-space:nowrap;
+    color:var(--rank-color,#fff);
+    text-shadow:0 0 9px var(--rank-glow,transparent);
+    font-weight:bold;
+    font-size:12px;
+}
+.order-stats{
+    display:flex;
+    gap:10px;
+    color:#aeb8c6;
+    font-size:11px;
+    margin-top:7px;
+}
+.order-expanded{
+    display:none;
+    border-top:1px solid #303b4b;
+    padding:12px;
+}
+.order.opened .order-expanded{
+    display:block;
+}
+.detail{
+    display:flex;
+    justify-content:space-between;
+    padding:6px 0;
+    border-bottom:1px solid #263141;
+    font-size:12px;
+}
+.detail span:first-child{color:#8996a7}
+.detail span:last-child{text-align:right}
+.profile-link{
+    color:var(--gold);
+    cursor:pointer;
+}
+.order-actions{
+    display:flex;
+    gap:8px;
+    margin-top:10px;
+}
+.order-actions button{margin:0}
+.profile-card{
+    position:fixed;
+    z-index:1000;
+    inset:0;
+    background:#0009;
+    display:none;
+    align-items:flex-end;
+    justify-content:center;
+    padding:12px;
+}
+.profile-card.show{display:flex}
+.profile-inner{
+    width:min(540px,100%);
+    background:linear-gradient(145deg,#1d2939,#101721);
+    border:1px solid #68562a;
+    border-radius:22px;
+    padding:18px;
+    box-shadow:0 -15px 50px #000b;
+}
+.profile-title{
+    color:var(--gold);
+    font-size:21px;
+    font-weight:bold;
+}
+.stats-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:8px;
+    margin-top:12px;
+}
+.stat{
+    background:#0d1520;
+    border:1px solid #2d3a4c;
+    border-radius:13px;
+    padding:11px;
+}
+.stat b{display:block;font-size:18px}
+.stat span{color:#8f9bab;font-size:11px}
+.rating{
+    display:flex;
+    gap:8px;
+}
+.rating button{margin:0}
+.trade-item{
+    background:#0d1520;
+    border:1px solid #2e3a4c;
+    border-radius:14px;
+    padding:11px;
+    margin-top:8px;
+}
+.nav{
+    position:fixed;
+    z-index:900;
+    bottom:0;
+    left:0;
+    right:0;
+    background:#0e151fef;
+    backdrop-filter:blur(12px);
+    border-top:1px solid #303d4f;
+    padding:8px 6px calc(8px + env(safe-area-inset-bottom));
+    display:flex;
+    justify-content:center;
+    gap:5px;
+}
+.nav button{
+    width:auto;
+    flex:1;
+    max-width:120px;
+    padding:10px 6px;
+    margin:0;
+    background:#1b2635;
+    color:#d9e0e8;
+    font-size:11px;
+}
+.nav button.active{
+    background:#80652d;
+    color:#fff;
+}
+.hidden{display:none!important}
+.message{
+    position:fixed;
+    z-index:2000;
+    left:12px;
+    right:12px;
+    top:12px;
+    padding:13px;
+    border-radius:14px;
+    background:#1b2737;
+    border:1px solid #4c5b70;
+    display:none;
+    text-align:center;
+    font-size:13px;
+}
+.message.show{display:block}
+.admin{
+    border-color:#8a6b28;
+}
+@media(max-width:390px){
+    .exchange-grid{
+        grid-template-columns:1fr;
     }
-
-    .box {
-      max-width: 420px;
-      margin: 40px auto;
-      padding: 25px;
-      background: #222;
-      border-radius: 18px;
+    .swap{
+        margin:auto;
     }
-
-    h1 {
-      text-align: center;
+    .row{
+        flex-direction:column;
     }
-
-    input {
-      width: 100%;
-      box-sizing: border-box;
-      padding: 14px;
-      margin: 8px 0;
-      border-radius: 10px;
-      border: 1px solid #555;
-      background: #111;
-      color: white;
-      font-size: 16px;
-    }
-
-    button {
-      width: 100%;
-      padding: 14px;
-      margin-top: 10px;
-      border: none;
-      border-radius: 10px;
-      background: #d4af37;
-      color: #111;
-      font-size: 16px;
-      font-weight: bold;
-    }
-
-    button:disabled {
-      opacity: 0.5;
-    }
-
-    #codeBox {
-      display: none;
-      margin-top: 15px;
-    }
-
-    #status {
-      margin-top: 18px;
-      padding: 12px;
-      border-radius: 10px;
-      background: #333;
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-  </style>
+}
+</style>
 </head>
 
 <body>
 
-<div class="box">
+<div id="message" class="message"></div>
 
-  <h1>👑 Телепат</h1>
+<div class="app">
 
-  <p>Тест входа по одноразовому коду</p>
+<h1>👑 ТЕЛЕПАТ</h1>
+<div class="subtitle">Виртуальный P2P-обменник</div>
 
-  <input
-    id="email"
-    type="email"
-    value="smotroboi@gmail.com"
-    placeholder="Введите Email"
-  >
+<!-- ================= WALLET ================= -->
 
-  <button id="sendBtn" onclick="sendCode()">
-    📩 Получить код
-  </button>
+<section id="section-wallet">
 
-  <div id="codeBox">
+<div class="card gold">
+<div class="section-title">👤 МОЙ ПРОФИЛЬ</div>
 
-    <input
-      id="code"
-      type="text"
-      inputmode="numeric"
-      maxlength="6"
-      placeholder="Введите 6-значный код"
-    >
+<div id="userName">Загрузка...</div>
+<div class="info" id="telegramId"></div>
 
-    <button onclick="verifyCode()">
-      🔐 Войти
-    </button>
-
-  </div>
-
-  <div id="status">
-    Готово к проверке.
-  </div>
+<div class="rank-box" style="margin-top:12px">
+<div class="info">ТЕКУЩИЙ ТИТУЛ</div>
+<div class="rank-name" id="rankName">Крестьянин</div>
+<div class="info" id="rankRequirement">Загрузка...</div>
+<div class="progress">
+<div id="rankProgress" style="width:0%"></div>
+</div>
+</div>
 
 </div>
 
+<div class="card">
+
+<div class="section-title">💰 МОЙ КОШЕЛЁК</div>
+
+<div class="row">
+
+<div class="token-box">
+<div class="token-name">Телепат Голд</div>
+<div class="token-value" id="tgBalance">0 TG</div>
+</div>
+
+<div class="token-box">
+<div class="token-name">AI</div>
+<div class="token-value" id="aiBalance">0 AI</div>
+</div>
+
+</div>
+
+<div class="token-box" style="margin-top:10px">
+<div class="token-name">Телепат Доллар</div>
+<div class="token-value" id="tusdBalance">0 TUSD</div>
+</div>
+
+<div class="info" style="margin-top:10px">
+TG учитывается для титула по цене 100 USD.<br>
+AI учитывается по цене 0.01 USD.
+</div>
+
+</div>
+
+<div class="card">
+<div class="section-title">🎁 БОНУС</div>
+<div id="bonusStatus" class="info">Проверка...</div>
+<button onclick="claimWelcomeBonus()">🎁 Получить приветственный бонус</button>
+</div>
+
+</section>
+
+
+<!-- ================= EXCHANGE ================= -->
+
+<section id="section-exchange" class="hidden">
+
+<div class="card gold">
+
+<div class="section-title">🔄 СОЗДАТЬ P2P-ОРДЕР</div>
+
+<div class="exchange-grid">
+
+<div>
+<label>Отдаю</label>
+<select id="fromToken" onchange="updateOrderForm()">
+<option value="TG">TG</option>
+<option value="AI">AI</option>
+<option value="TUSD">TUSD</option>
+</select>
+
+<div class="amount-wrap">
+<input id="fromAmount"
+       type="number"
+       inputmode="decimal"
+       min="0"
+       step="any"
+       placeholder="Количество"
+       oninput="updateOrderForm()">
+</div>
+
+<div class="available" id="availableBalance">
+Доступно: 0
+</div>
+</div>
+
+<button class="swap" onclick="swapTokens()">⇄</button>
+
+<div>
+<label>Получаю</label>
+<select id="toToken" onchange="updateOrderForm()">
+<option value="TUSD">TUSD</option>
+<option value="TG">TG</option>
+<option value="AI">AI</option>
+</select>
+
+<div class="amount-wrap">
+<input id="toAmount"
+       type="number"
+       inputmode="decimal"
+       min="0"
+       step="any"
+       placeholder="Количество"
+       oninput="updateOrderForm()">
+</div>
+
+<div class="available">
+Цена устанавливается вами
+</div>
+</div>
+
+</div>
+
+<div class="receive-preview">
+
+<div class="info">КУРС ВАШЕГО ОРДЕРА</div>
+
+<div id="ratePreview">
+Укажите количество
+</div>
+
+<div class="rate-line" id="reverseRate">
+Обратный курс: —
+</div>
+
+</div>
+
+<button onclick="createP2POrder()">
+🚀 СОЗДАТЬ ОРДЕР
+</button>
+
+<div class="info" style="margin-top:9px">
+При создании ордера количество в поле «Отдаю» блокируется.
+При отмене оно автоматически возвращается на ваш баланс.
+</div>
+
+</div>
+
+
+<!-- ================= ORDER BOOK ================= -->
+
+<div class="card">
+
+<div class="section-title">📋 ДОСТУПНЫЕ ОРДЕРА</div>
+
+<div class="sort-row">
+<label>Сортировка:</label>
+<select id="orderSort" onchange="loadOrders()">
+<option value="rank">По титулу</option>
+<option value="price">По выгодной цене</option>
+<option value="new">Сначала новые</option>
+<option value="amount">По количеству</option>
+</select>
+</div>
+
+<div class="info" id="orderBookTitle" style="margin-top:10px">
+Выберите направление обмена
+</div>
+
+<div id="ordersList">
+Загрузка...
+</div>
+
+<div class="card">
+<div class="section-title">📌 МОИ ОРДЕРА</div>
+<div id="myOrdersList">Загрузка...</div>
+</div>
+
+</div>
+
+
+<!-- ================= MY TRADES ================= -->
+
+<div class="card">
+
+<div class="section-title">🤝 МОИ СДЕЛКИ</div>
+
+<div id="myTrades">
+Загрузка...
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ================= FRIENDS ================= -->
+
+<section id="section-friends" class="hidden">
+
+<div class="card">
+
+<div class="section-title">👥 ДРУЗЬЯ И РЕФЕРАЛЫ</div>
+
+<div class="info">
+Приглашайте участников по своей персональной ссылке.
+</div>
+
+<input id="refLink"
+       readonly
+       style="margin-top:10px">
+
+<button onclick="copyRefLink()">
+📋 СКОПИРОВАТЬ ССЫЛКУ
+</button>
+
+<div class="row" style="margin-top:12px">
+
+<div class="token-box">
+<div class="token-name">Заработано TG</div>
+<div class="token-value" id="refTG">0</div>
+</div>
+
+<div class="token-box">
+<div class="token-name">Заработано TUSD</div>
+<div class="token-value" id="refTUSD">0</div>
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ================= EARN ================= -->
+
+<section id="section-earn" class="hidden">
+
+<div class="card">
+
+<div class="section-title">💎 ЗАРАБОТОК</div>
+
+<div class="rank-box">
+
+<div class="rank-name" id="earnRank">Крестьянин</div>
+
+<div class="info" style="margin-top:6px">
+Ваш уровень определяется балансами TG + AI.
+</div>
+
+<div id="earnDetails" class="info" style="margin-top:10px">
+Загрузка...
+</div>
+
+</div>
+
+<button onclick="claimDailyReward()">
+🎁 ПОЛУЧИТЬ ЕЖЕДНЕВНУЮ НАГРАДУ
+</button>
+
+<div id="dailyStatus" class="info" style="margin-top:9px"></div>
+
+</div>
+
+</section>
+
+
+<!-- ================= ADMIN ================= -->
+
+<section id="section-admin" class="hidden">
+
+<div class="card admin">
+
+<div class="section-title">👑 АДМИН-ПАНЕЛЬ</div>
+
+<div class="stats-grid">
+
+<div class="stat">
+<b id="adminUsers">0</b>
+<span>Пользователей</span>
+</div>
+
+<div class="stat">
+<b id="adminOrders">0</b>
+<span>Открытых ордеров</span>
+</div>
+
+<div class="stat">
+<b id="adminTG">0</b>
+<span>Общий TG</span>
+</div>
+
+<div class="stat">
+<b id="adminAI">0</b>
+<span>Общий AI</span>
+</div>
+
+<div class="stat">
+<b id="adminTUSD">0</b>
+<span>Общий TUSD</span>
+</div>
+
+</div>
+
+<button class="secondary" onclick="loadAdminStats()">
+🔄 ОБНОВИТЬ СТАТИСТИКУ
+</button>
+
+</div>
+
+
+<div class="card admin">
+
+<div class="section-title">💸 ПЕРЕВОД ТОКЕНОВ</div>
+
+<label>Telegram ID получателя</label>
+<input id="adminTargetId"
+       type="number"
+       placeholder="Telegram ID">
+
+<label style="margin-top:9px">Токен</label>
+<select id="adminToken">
+<option value="TG">TG</option>
+<option value="AI">AI</option>
+<option value="TUSD">TUSD</option>
+</select>
+
+<label style="margin-top:9px">Количество</label>
+<input id="adminAmount"
+       type="number"
+       inputmode="decimal"
+       step="any"
+       placeholder="Количество">
+
+<button onclick="adminTransfer()">
+💰 ВЫПОЛНИТЬ ПЕРЕВОД
+</button>
+
+</div>
+
+<!-- ================= ADD TOKEN ================= -->
+
+<div class="card admin">
+
+<div class="section-title">🪙 ДОБАВИТЬ ТОКЕН</div>
+
+<label>Название токена</label>
+<input id="listingTokenName" type="text" placeholder="Например: Telepat Gold">
+
+<label style="margin-top:9px">Символ токена</label>
+<input id="listingTokenSymbol" type="text" maxlength="20" placeholder="Например: TG">
+
+<label style="margin-top:9px">Jetton Master</label>
+<input id="listingJettonMaster" type="text" placeholder="Адрес Jetton Master">
+
+<label style="margin-top:9px">Сеть</label>
+<select id="listingNetwork">
+<option value="TON">TON</option>
+</select>
+
+<label style="margin-top:9px">Decimals</label>
+<input id="listingDecimals" type="number" value="9" min="0" max="18">
+
+<label style="margin-top:9px">Общий supply</label>
+<input id="listingTotalSupply" type="number" inputmode="decimal" min="0" step="any" placeholder="Например: 10000000" oninput="calculateListingPreview()">
+
+<div class="receive-preview" style="margin-top:12px">
+<div class="info">УСЛОВИЯ ЛИСТИНГА</div>
+<div class="detail"><span>Supply проекта</span><span id="listingSupplyPercentPreview">10%</span></div>
+<div class="detail"><span>Количество токенов</span><span id="listingSupplyAmountPreview">0</span></div>
+<div class="detail"><span>Оплата листинга</span><span id="listingFeePreview">100 TUSD</span></div>
+</div>
+
+<button id="createListingButton" onclick="createTokenListing()">
+➕ СОЗДАТЬ ЗАЯВКУ НА ЛИСТИНГ
+</button>
+
+<div id="listingCreateResult" class="info" style="margin-top:9px"></div>
+
+</div>
+
+</section>
+
+</div>
+
+
+<!-- ================= PROFILE MODAL ================= -->
+
+<div id="profileModal" class="profile-card" onclick="closeProfile(event)">
+
+<div class="profile-inner" onclick="event.stopPropagation()">
+
+<div class="section-title">👤 ПРОФИЛЬ УЧАСТНИКА</div>
+
+<div class="profile-title" id="profileRank">
+Загрузка...
+</div>
+
+<div class="info" id="profileId"></div>
+
+<div class="stats-grid">
+
+<div class="stat">
+<b id="profileTrades">0</b>
+<span>Сделок</span>
+</div>
+
+<div class="stat">
+<b id="profileSuccess">0%</b>
+<span>Успешность</span>
+</div>
+
+<div class="stat">
+<b id="profileLikes">0</b>
+<span>👍 Лайков</span>
+</div>
+
+<div class="stat">
+<b id="profileDislikes">0</b>
+<span>👎 Дизлайков</span>
+</div>
+
+</div>
+
+<div class="info" id="profileCancelled" style="margin-top:10px"></div>
+
+<button class="secondary" onclick="closeProfile()">
+Закрыть
+</button>
+
+</div>
+</div>
+
+
+<!-- ================= NAV ================= -->
+
+<div class="nav">
+
+<button id="nav-wallet"
+        class="active"
+        onclick="showSection('wallet')">
+🏠 Кошелёк
+</button>
+
+<button id="nav-exchange"
+        onclick="showSection('exchange')">
+🔄 Обмен
+</button>
+
+<button id="nav-friends"
+        onclick="showSection('friends')">
+👥 Друзья
+</button>
+
+<button id="nav-earn"
+        onclick="showSection('earn')">
+💎 Заработок
+</button>
+
+<button id="nav-admin"
+        class="hidden"
+        onclick="showSection('admin')">
+👑 Админ
+</button>
+
+</div>
+
+
 <script>
 
-  const SUPABASE_URL =
-    "https://jutszxuzjzyfxarceydw.supabase.co";
+/* =========================================================
+   TELEPAT
+========================================================= */
 
-  const SUPABASE_ANON_KEY =
-    "sb_publishable_geRczpRc3faUHRGto2ue7A_eFFiJDwO";
+const SUPABASE_URL =
+    'https://jutszxuzjzyfxarceydw.supabase.co';
 
-  const supabaseClient =
+const SUPABASE_KEY =
+    'sb_publishable_geRczpRc3faUHRGto2ue7A_eFFiJDwO';
+
+const ADMIN_ID = 949707357;
+
+const TG_USD = 100;
+const AI_USD = 0.01;
+
+const supabaseClient =
     window.supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_ANON_KEY
+        SUPABASE_URL,
+        SUPABASE_KEY
     );
 
+const telegram =
+    window.Telegram?.WebApp;
 
-  function showStatus(message) {
-    document.getElementById("status").textContent = message;
-  }
+if(telegram){
+    telegram.ready();
+    telegram.expand();
+}
+
+const tgUser =
+    telegram?.initDataUnsafe?.user || null;
+
+const USER_ID =
+    Number(tgUser?.id || 0);
+
+let currentUser = null;
 
 
-  async function sendCode() {
+/* =========================================================
+   RANKS
+========================================================= */
 
-    const email =
-      document.getElementById("email").value.trim();
+const RANKS = [
+    {level:1,name:'Крестьянин',req:0.20},
+    {level:2,name:'Вольный',req:0.40},
+    {level:3,name:'Гражданин',req:0.80},
+    {level:4,name:'Оруженосец',req:1.60},
+    {level:5,name:'Мечник',req:3.20},
+    {level:6,name:'Десятник',req:6.40},
+    {level:7,name:'Сотник',req:12.80},
+    {level:8,name:'Тысячник',req:25.60},
+    {level:9,name:'Рыцарь',req:51.20},
+    {level:10,name:'Железный рыцарь',req:102.40},
+    {level:11,name:'Бронзовый рыцарь',req:204.80},
+    {level:12,name:'Серебряный рыцарь',req:409.60},
+    {level:13,name:'Золотой рыцарь',req:819.20},
+    {level:14,name:'Барон',req:1638.40},
+    {level:15,name:'Виконт',req:3276.80},
+    {level:16,name:'Граф',req:6553.60},
+    {level:17,name:'Маркиз',req:13107.20},
+    {level:18,name:'Герцог',req:26214.40},
+    {level:19,name:'Князь',req:52428.80},
+    {level:20,name:'Король',req:104857.60},
+    {level:21,name:'Император',req:209715.20}
+];
 
-    if (!email) {
-      showStatus("Введите Email.");
-      return;
+const RANK_COLORS = [
+    '#ffffff',
+    '#d8d8d8',
+    '#b9c5b9',
+    '#75c99a',
+    '#58b5e9',
+    '#4f8cff',
+    '#3974d9',
+    '#6673e8',
+    '#4169e1',
+    '#7389bd',
+    '#b87333',
+    '#bfc2c9',
+    '#e0bd45',
+    '#9b59b6',
+    '#8e44ad',
+    '#e0b72f',
+    '#e68a27',
+    '#24c8aa',
+    '#f5cf3d',
+    '#f7b83f',
+    '#ffd700'
+];
+
+function rankColor(level){
+    return RANK_COLORS[
+        Math.max(0,Math.min(RANK_COLORS.length-1,
+        Number(level||1)-1))
+    ];
+}
+
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+function esc(value){
+    return String(value ?? '')
+        .replaceAll('&','&amp;')
+        .replaceAll('<','&lt;')
+        .replaceAll('>','&gt;')
+        .replaceAll('"','&quot;')
+        .replaceAll("'","&#039;");
+}
+
+function num(value){
+    const n = Number(value);
+    return Number.isFinite(n) ? n : 0;
+}
+
+function fmt(value, max=8){
+    return num(value).toLocaleString('ru-RU',{
+        maximumFractionDigits:max
+    });
+}
+
+function tokenBalance(token){
+    if(!currentUser) return 0;
+
+    if(token === 'TG')
+        return num(currentUser.tg_balance);
+
+    if(token === 'AI')
+        return num(currentUser.ai_balance);
+
+    if(token === 'TUSD')
+        return num(currentUser.tusd_balance);
+
+    return 0;
+}
+
+function showMessage(text,type='info'){
+    const el = document.getElementById('message');
+
+    el.textContent = text;
+
+    el.style.borderColor =
+        type === 'error' ? '#8b3f4c' :
+        type === 'success' ? '#397b5b' :
+        '#4c5b70';
+
+    el.classList.add('show');
+
+    setTimeout(()=>{
+        el.classList.remove('show');
+    },3000);
+}
+
+
+/* =========================================================
+   LOAD USER
+========================================================= */
+
+async function loadUser(){
+
+    if(!USER_ID){
+        showMessage(
+            'Открой приложение внутри Telegram',
+            'error'
+        );
+        return;
     }
 
-    const button =
-      document.getElementById("sendBtn");
+    const {data,error} =
+        await supabaseClient
+            .from('users')
+            .select('*')
+            .eq('telegram_id',USER_ID)
+            .maybeSingle();
 
-    button.disabled = true;
+    if(error){
+        console.error(error);
+        showMessage(
+            'Ошибка загрузки пользователя',
+            'error'
+        );
+        return;
+    }
 
-    showStatus("📩 Отправляем одноразовый код...");
+    currentUser = data;
 
-    try {
+    renderUser();
 
-      const { error } =
-        await supabaseClient.auth.signInWithOtp({
-          email: email,
-          options: {
-            shouldCreateUser: false
-          }
-        });
+    if(USER_ID === ADMIN_ID){
+        document
+            .getElementById('nav-admin')
+            .classList.remove('hidden');
+    }
 
-      if (error) {
+    loadReferral();
 
-        showStatus(
-          "❌ Ошибка отправки:\n\n" +
-          error.message
+    updateOrderForm();
+}
+
+
+/* =========================================================
+   RENDER USER
+========================================================= */
+
+function renderUser(){
+
+    if(!currentUser) return;
+
+    const name =
+        [
+            tgUser?.first_name || '',
+            tgUser?.last_name || ''
+        ]
+        .join(' ')
+        .trim() ||
+        tgUser?.username ||
+        'Пользователь Telegram';
+
+    document.getElementById('userName')
+        .textContent = name;
+
+    document.getElementById('telegramId')
+        .textContent =
+        `Telegram ID: ${USER_ID}`;
+
+    document.getElementById('tgBalance')
+        .textContent =
+        `${fmt(currentUser.tg_balance)} TG`;
+
+    document.getElementById('aiBalance')
+        .textContent =
+        `${fmt(currentUser.ai_balance)} AI`;
+
+    document.getElementById('tusdBalance')
+        .textContent =
+        `${fmt(currentUser.tusd_balance)} TUSD`;
+
+    const rankLevel =
+        Number(currentUser.rank_level || 1);
+
+    const rankName =
+        currentUser.rank_name ||
+        RANKS[rankLevel-1]?.name ||
+        'Крестьянин';
+
+    document.getElementById('rankName')
+        .textContent =
+        `👑 ${rankName}`;
+
+    document.getElementById('earnRank')
+        .textContent =
+        rankName;
+
+    const rank =
+        RANKS[rankLevel-1] || RANKS[0];
+
+    const tgUsd =
+        num(currentUser.tg_balance) * TG_USD;
+
+    const aiUsd =
+        num(currentUser.ai_balance) * AI_USD;
+
+    const required =
+        rank.req;
+
+    const requiredEach =
+        required / 2;
+
+    const tgPart =
+        Math.min(100,(tgUsd/requiredEach)*100);
+
+    const aiPart =
+        Math.min(100,(aiUsd/requiredEach)*100);
+
+    const progress =
+        Math.min(tgPart,aiPart);
+
+    document.getElementById('rankProgress')
+        .style.width =
+        `${progress}%`;
+
+    document.getElementById('rankRequirement')
+        .textContent =
+        `Для титула: ${fmt(required,2)} USD. ` +
+        `Нужно TG: ${fmt(requiredEach,2)} USD + ` +
+        `AI: ${fmt(requiredEach,2)} USD.`;
+
+    document.getElementById('earnDetails')
+        .innerHTML =
+        `TG: <b>${fmt(tgUsd,2)} USD</b><br>` +
+        `AI: <b>${fmt(aiUsd,2)} USD</b><br>` +
+        `Требование текущего титула: <b>${fmt(required,2)} USD</b>`;
+
+    const claimed =
+        Boolean(currentUser.welcome_bonus_claimed);
+
+    document.getElementById('bonusStatus')
+        .textContent =
+        claimed
+        ? 'Приветственный бонус уже получен.'
+        : 'Приветственный бонус доступен.';
+
+    document.getElementById('refTG')
+        .textContent =
+        fmt(currentUser.referral_tg_earned);
+
+    document.getElementById('refTUSD')
+        .textContent =
+        fmt(currentUser.referral_tusd_earned);
+}
+
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+function showSection(name){
+
+    const sections = [
+        'wallet',
+        'exchange',
+        'friends',
+        'earn',
+        'admin'
+    ];
+
+    sections.forEach(s=>{
+        document
+            .getElementById(`section-${s}`)
+            .classList.toggle(
+                'hidden',
+                s !== name
+            );
+
+        const nav =
+            document.getElementById(`nav-${s}`);
+
+        if(nav){
+            nav.classList.toggle(
+                'active',
+                s === name
+            );
+        }
+    });
+
+    if(name === 'exchange'){
+        loadOrders();
+        loadMyOrders();
+        loadMyTrades();
+    }
+
+    if(name === 'admin' && USER_ID === ADMIN_ID){
+        loadAdminStats();
+    }
+
+    window.scrollTo({
+        top:0,
+        behavior:'smooth'
+    });
+}
+
+
+/* =========================================================
+   BONUS
+========================================================= */
+
+async function claimWelcomeBonus(){
+
+    if(!USER_ID) return;
+
+    const {data,error} =
+        await supabaseClient.rpc(
+            'grant_welcome_bonus',
+            {
+                p_user_id:USER_ID
+            }
         );
 
-        button.disabled = false;
+    if(error){
+        showMessage(
+            error.message,
+            'error'
+        );
         return;
-      }
-
-      document.getElementById("codeBox").style.display =
-        "block";
-
-      showStatus(
-        "✅ Код отправлен!\n\n" +
-        "Проверь почту:\n" +
-        email +
-        "\n\n" +
-        "Введи полученный код."
-      );
-
-    } catch (error) {
-
-      showStatus(
-        "❌ Ошибка:\n\n" +
-        error.message
-      );
-
-      button.disabled = false;
     }
-  }
+
+    showMessage(
+        '🎁 Бонус обработан',
+        'success'
+    );
+
+    await loadUser();
+}
 
 
-  async function verifyCode() {
+/* =========================================================
+   DAILY REWARD
+========================================================= */
 
-    const email =
-      document.getElementById("email").value.trim();
+async function claimDailyReward(){
+
+    if(!USER_ID) return;
+
+    const {data,error} =
+        await supabaseClient.rpc(
+            'claim_daily_reward',
+            {
+                p_user_id:USER_ID
+            }
+        );
+
+    if(error){
+        document.getElementById('dailyStatus')
+            .textContent =
+            error.message;
+        return;
+    }
+
+    document.getElementById('dailyStatus')
+        .textContent =
+        typeof data === 'string'
+        ? data
+        : '🎁 Награда обработана';
+
+    showMessage(
+        'Ежедневная награда обработана',
+        'success'
+    );
+
+    await loadUser();
+}
+
+
+/* =========================================================
+   REFERRALS
+========================================================= */
+
+async function loadReferral(){
+
+    if(!USER_ID) return;
+
+    const botUsername =
+        tgUser?.username
+        ? tgUser.username
+        : '';
+
+    /*
+       Если username бота неизвестен,
+       оставляем универсальный формат.
+    */
+
+    const link =
+        `https://t.me/${botUsername}?start=${USER_ID}`;
+
+    document.getElementById('refLink')
+        .value = link;
+}
+
+async function copyRefLink(){
+
+    const value =
+        document.getElementById('refLink').value;
+
+    try{
+        await navigator.clipboard.writeText(value);
+        showMessage(
+            'Ссылка скопирована',
+            'success'
+        );
+    }catch(e){
+        showMessage(
+            'Не удалось скопировать',
+            'error'
+        );
+    }
+}
+
+
+/* =========================================================
+   UNIVERSAL EXCHANGE FORM
+========================================================= */
+
+function updateOrderForm(){
+
+    const from =
+        document.getElementById('fromToken').value;
+
+    const to =
+        document.getElementById('toToken').value;
+
+    if(from === to){
+
+        const options =
+            ['TG','AI','TUSD']
+            .filter(x=>x!==from);
+
+        document.getElementById('toToken').value =
+            options[0];
+    }
+
+    const finalFrom =
+        document.getElementById('fromToken').value;
+
+    const balance =
+        tokenBalance(finalFrom);
+
+    document.getElementById('availableBalance')
+        .textContent =
+        `Доступно: ${fmt(balance)} ${finalFrom}`;
+
+    const a =
+        num(document.getElementById('fromAmount').value);
+
+    const b =
+        num(document.getElementById('toAmount').value);
+
+    const rate =
+        a > 0 && b > 0
+        ? b/a
+        : 0;
+
+    const reverse =
+        rate > 0
+        ? 1/rate
+        : 0;
+
+    if(rate > 0){
+
+        document.getElementById('ratePreview')
+            .textContent =
+            `1 ${finalFrom} = ${fmt(rate,12)} ` +
+            `${document.getElementById('toToken').value}`;
+
+        document.getElementById('reverseRate')
+            .textContent =
+            `Обратный курс: 1 ${
+                document.getElementById('toToken').value
+            } = ${fmt(reverse,12)} ${finalFrom}`;
+
+    }else{
+
+        document.getElementById('ratePreview')
+            .textContent =
+            'Укажите количество';
+
+        document.getElementById('reverseRate')
+            .textContent =
+            'Обратный курс: —';
+    }
+
+    document.getElementById('orderBookTitle')
+        .textContent =
+        `Показываются ордера: ${
+            document.getElementById('toToken').value
+        } → ${
+            finalFrom
+        }`;
+}
+
+function swapTokens(){
+
+    const from =
+        document.getElementById('fromToken');
+
+    const to =
+        document.getElementById('toToken');
+
+    const oldFrom =
+        from.value;
+
+    from.value =
+        to.value;
+
+    to.value =
+        oldFrom;
+
+    const a =
+        document.getElementById('fromAmount').value;
+
+    const b =
+        document.getElementById('toAmount').value;
+
+    document.getElementById('fromAmount').value =
+        b;
+
+    document.getElementById('toAmount').value =
+        a;
+
+    updateOrderForm();
+}
+
+
+/* =========================================================
+   CREATE P2P ORDER
+========================================================= */
+
+async function createP2POrder(){
+
+    if(!USER_ID || !currentUser){
+        showMessage(
+            'Пользователь не загружен',
+            'error'
+        );
+        return;
+    }
+
+    const from =
+        document.getElementById('fromToken').value;
+
+    const to =
+        document.getElementById('toToken').value;
+
+    const amountFrom =
+        num(document.getElementById('fromAmount').value);
+
+    const amountTo =
+        num(document.getElementById('toAmount').value);
+
+    if(from === to){
+        showMessage(
+            'Выберите разные токены',
+            'error'
+        );
+        return;
+    }
+
+    if(amountFrom <= 0 || amountTo <= 0){
+        showMessage(
+            'Укажите оба количества',
+            'error'
+        );
+        return;
+    }
+
+    const balance =
+        tokenBalance(from);
+
+    if(amountFrom > balance){
+        showMessage(
+            `Недостаточно ${from}`,
+            'error'
+        );
+        return;
+    }
+
+    const {data,error} =
+        await supabaseClient.rpc(
+            'create_p2p_order',
+            {
+                p_user_id:USER_ID,
+                p_from_token:from,
+                p_to_token:to,
+                p_from_amount:amountFrom,
+                p_to_amount:amountTo
+            }
+        );
+
+    if(error){
+        console.error(error);
+
+        showMessage(
+            error.message,
+            'error'
+        );
+
+        return;
+    }
+
+    document.getElementById('fromAmount')
+        .value = '';
+
+    document.getElementById('toAmount')
+        .value = '';
+
+    showMessage(
+        '🚀 Ордер создан',
+        'success'
+    );
+
+    await loadUser();
+    await loadOrders();
+    await loadMyOrders();
+}
+
+
+/* =========================================================
+   LOAD ORDER BOOK
+========================================================= */
+
+async function loadOrders(){
+
+    const list =
+        document.getElementById('ordersList');
+
+    if(!list) return;
+
+    const userFrom =
+        document.getElementById('fromToken').value;
+
+    const userTo =
+        document.getElementById('toToken').value;
+
+    /*
+       Если пользователь отдаёт TG и хочет TUSD,
+       ему нужны ордера TUSD → TG.
+    */
+
+    const counterFrom =
+        userTo;
+
+    const counterTo =
+        userFrom;
+
+    const sort =
+        document.getElementById('orderSort').value;
+
+    document.getElementById('orderBookTitle')
+        .textContent =
+        `Совместимые ордера: ${counterFrom} → ${counterTo}`;
+
+    list.innerHTML =
+        '<div class="info">Загрузка ордеров...</div>';
+
+    const {data,error} =
+        await supabaseClient.rpc(
+            'get_p2p_orders',
+            {
+                p_from_token:counterFrom,
+                p_to_token:counterTo,
+                p_sort:sort
+            }
+        );
+
+    if(error){
+        console.error(error);
+
+        list.innerHTML =
+            `<div class="error">${esc(error.message)}</div>`;
+
+        return;
+    }
+
+    if(!data || data.length === 0){
+
+        list.innerHTML =
+            `<div class="info" style="padding:12px 0">
+                Пока нет подходящих ордеров.
+             </div>`;
+
+        return;
+    }
+
+    list.innerHTML =
+        data.map(orderCard).join('');
+}
+
+
+/* =========================================================
+   ORDER CARD
+========================================================= */
+
+async function loadMyOrders(){
+
+    const list = document.getElementById('myOrdersList');
+
+    if(!list || !USER_ID) return;
+
+    list.innerHTML =
+        '<div class="info">Загрузка моих ордеров...</div>';
+
+    /*
+       У пользователя могут быть ордера по любому из шести
+       направлений. Раньше здесь использовалось только текущее
+       направление формы обмена, из-за чего остальные ордера
+       исчезали из раздела «Мои ордера».
+    */
+    const directions = [
+        ['TG','TUSD'],
+        ['TUSD','TG'],
+        ['TG','AI'],
+        ['AI','TG'],
+        ['TUSD','AI'],
+        ['AI','TUSD']
+    ];
+
+    const results = await Promise.all(
+        directions.map(async ([fromToken,toToken]) => {
+            const {data,error} =
+                await supabaseClient.rpc(
+                    'get_p2p_orders',
+                    {
+                        p_from_token:fromToken,
+                        p_to_token:toToken,
+                        p_sort:'new'
+                    }
+                );
+
+            if(error){
+                console.error(
+                    `get_p2p_orders ${fromToken} -> ${toToken}:`,
+                    error
+                );
+                return [];
+            }
+
+            return Array.isArray(data) ? data : [];
+        })
+    );
+
+    const seen = new Set();
+    const mine = [];
+
+    results.flat().forEach(order => {
+        const id = String(order?.id || '');
+
+        if(!id || seen.has(id)) return;
+
+        if(String(order?.creator_id) !== String(USER_ID)) return;
+
+        seen.add(id);
+        mine.push(order);
+    });
+
+    mine.sort((a,b) =>
+        new Date(b.created_at || 0) -
+        new Date(a.created_at || 0)
+    );
+
+    list.innerHTML = mine.length
+        ? mine.map(orderCard).join('')
+        : '<div class="info">У вас пока нет открытых ордеров.</div>';
+}
+
+
+function orderCard(order){
+
+    const isMine =
+        Number(order.creator_id) === USER_ID;
+
+    const color =
+        rankColor(order.creator_rank_level);
+
+    const glow =
+        `${color}55`;
+
+    const rate =
+        num(order.rate);
+
+    const reverse =
+        rate > 0
+        ? 1/rate
+        : 0;
+
+    const date =
+        new Date(order.created_at)
+            .toLocaleString('ru-RU');
+
+    return `
+    <div class="order"
+         id="order-${esc(order.id)}"
+         style="
+           --rank-color:${color};
+           --rank-glow:${glow};
+         ">
+
+        <div class="order-head"
+             onclick="toggleOrder('${esc(order.id)}')">
+
+            <div class="order-line">
+
+                <div class="order-main">
+                    ${fmt(order.from_amount)}
+                    ${esc(order.from_token)}
+                    →
+                    ${fmt(order.to_amount)}
+                    ${esc(order.to_token)}
+                </div>
+
+                <div class="rank-badge">
+                    👑 ${esc(order.creator_rank_name)}
+                </div>
+
+            </div>
+
+            <div class="order-price">
+                1 ${esc(order.from_token)}
+                = ${fmt(rate,12)}
+                ${esc(order.to_token)}
+            </div>
+
+            <div class="order-stats">
+
+                <span>
+                    👍 ${num(order.likes)}
+                </span>
+
+                <span>
+                    👎 ${num(order.dislikes)}
+                </span>
+
+                <span>
+                    🤝 ${num(order.completed_trades)}
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="order-expanded">
+
+            <div class="detail">
+                <span>Владелец</span>
+                <span class="profile-link"
+                      onclick="openProfile(${Number(order.creator_id)});event.stopPropagation()">
+                    👤 ${Number(order.creator_id)}
+                </span>
+            </div>
+
+            <div class="detail">
+                <span>Отдаёт</span>
+                <span>
+                    ${fmt(order.from_amount)}
+                    ${esc(order.from_token)}
+                </span>
+            </div>
+
+            <div class="detail">
+                <span>Получает</span>
+                <span>
+                    ${fmt(order.to_amount)}
+                    ${esc(order.to_token)}
+                </span>
+            </div>
+
+            <div class="detail">
+                <span>Курс сделки</span>
+                <span>
+                    1 ${esc(order.from_token)}
+                    = ${fmt(rate,12)}
+                    ${esc(order.to_token)}
+                </span>
+            </div>
+
+            <div class="detail">
+                <span>Обратный курс</span>
+                <span>
+                    1 ${esc(order.to_token)}
+                    = ${fmt(reverse,12)}
+                    ${esc(order.from_token)}
+                </span>
+            </div>
+
+            <div class="detail">
+                <span>Титул</span>
+                <span style="
+                    color:${color};
+                    text-shadow:0 0 9px ${glow};
+                    font-weight:bold">
+                    👑 ${esc(order.creator_rank_name)}
+                </span>
+            </div>
+
+            <div class="detail">
+                <span>Репутация</span>
+                <span>
+                    👍 ${num(order.likes)}
+                    &nbsp;
+                    👎 ${num(order.dislikes)}
+                </span>
+            </div>
+
+            <div class="detail">
+                <span>Сделки</span>
+                <span>
+                    ${num(order.completed_trades)}
+                </span>
+            </div>
+
+            <div class="detail">
+                <span>Создан</span>
+                <span>${esc(date)}</span>
+            </div>
+
+            <div class="order-actions">
+
+                <button class="secondary"
+                        onclick="openProfile(${Number(order.creator_id)});event.stopPropagation()">
+                    👤 ПРОФИЛЬ
+                </button>
+
+                ${
+                    isMine
+                    ? `
+                    <button class="danger"
+                            onclick="cancelP2POrder('${esc(order.id)}');event.stopPropagation()">
+                        ❌ ОТМЕНИТЬ
+                    </button>
+                    `
+                    :
+                    `
+                    <button
+                        onclick="acceptP2POrder('${esc(order.id)}');event.stopPropagation()">
+                        🤝 ПРИНЯТЬ ОРДЕР
+                    </button>
+                    `
+                }
+
+            </div>
+
+        </div>
+    </div>`;
+}
+
+
+function toggleOrder(id){
+
+    const el =
+        document.getElementById(`order-${id}`);
+
+    if(el){
+        el.classList.toggle('opened');
+    }
+}
+
+
+/* =========================================================
+   ACCEPT ORDER
+========================================================= */
+
+async function acceptP2POrder(orderId){
+
+    if(!USER_ID) return;
+
+    const ok =
+        confirm(
+            'Принять этот ордер и провести сделку?'
+        );
+
+    if(!ok) return;
+
+    const {data,error} =
+        await supabaseClient.rpc(
+            'accept_p2p_order',
+            {
+                p_order_id:orderId,
+                p_buyer_id:USER_ID
+            }
+        );
+
+    if(error){
+
+        showMessage(
+            error.message,
+            'error'
+        );
+
+        return;
+    }
+
+    showMessage(
+        '🤝 Сделка успешно завершена',
+        'success'
+    );
+
+    await loadUser();
+    await loadOrders();
+    await loadMyTrades();
+}
+
+
+/* =========================================================
+   CANCEL ORDER
+========================================================= */
+
+async function cancelP2POrder(orderId){
+
+    if(!USER_ID) return;
+
+    const ok =
+        confirm(
+            'Отменить ордер и вернуть заблокированные средства?'
+        );
+
+    if(!ok) return;
+
+    const {data,error} =
+        await supabaseClient.rpc(
+            'cancel_p2p_order',
+            {
+                p_order_id:orderId,
+                p_user_id:USER_ID
+            }
+        );
+
+    if(error){
+
+        showMessage(
+            error.message,
+            'error'
+        );
+
+        return;
+    }
+
+    showMessage(
+        'Ордер отменён. Средства возвращены.',
+        'success'
+    );
+
+    await loadUser();
+    await loadOrders();
+}
+
+
+/* =========================================================
+   PROFILE
+========================================================= */
+
+async function openProfile(userId){
+
+    const modal =
+        document.getElementById('profileModal');
+
+    modal.classList.add('show');
+
+    document.getElementById('profileRank')
+        .textContent =
+        'Загрузка...';
+
+    const {data,error} =
+        await supabaseClient.rpc(
+            'get_p2p_profile',
+            {
+                p_user_id:Number(userId)
+            }
+        );
+
+    if(error){
+
+        document.getElementById('profileRank')
+            .textContent =
+            'Ошибка';
+
+        showMessage(
+            error.message,
+            'error'
+        );
+
+        return;
+    }
+
+    const profile =
+        Array.isArray(data)
+        ? data[0]
+        : data;
+
+    if(!profile){
+
+        document.getElementById('profileRank')
+            .textContent =
+            'Пользователь не найден';
+
+        return;
+    }
+
+    const completed =
+        num(profile.completed_trades);
+
+    const cancelled =
+        num(profile.cancelled_trades);
+
+    const total =
+        completed + cancelled;
+
+    const success =
+        total > 0
+        ? (completed/total)*100
+        : 100;
+
+    const color =
+        rankColor(profile.rank_level);
+
+    document.getElementById('profileRank')
+        .innerHTML =
+        `<span style="
+            color:${color};
+            text-shadow:0 0 12px ${color}66">
+            👑 ${esc(profile.rank_name)}
+         </span>`;
+
+    document.getElementById('profileId')
+        .textContent =
+        `Telegram ID: ${Number(profile.telegram_id)}`;
+
+    document.getElementById('profileTrades')
+        .textContent =
+        completed;
+
+    document.getElementById('profileSuccess')
+        .textContent =
+        `${success.toFixed(1)}%`;
+
+    document.getElementById('profileLikes')
+        .textContent =
+        num(profile.likes);
+
+    document.getElementById('profileDislikes')
+        .textContent =
+        num(profile.dislikes);
+
+    document.getElementById('profileCancelled')
+        .textContent =
+        `Отменённых ордеров: ${cancelled}`;
+}
+
+function closeProfile(event){
+
+    if(event &&
+       event.target !==
+       document.getElementById('profileModal')){
+        return;
+    }
+
+    document.getElementById('profileModal')
+        .classList.remove('show');
+}
+
+
+/* =========================================================
+   MY TRADES
+========================================================= */
+
+const reviewBusy = new Set();
+
+async function loadMyTrades(){
+
+    const box =
+        document.getElementById('myTrades');
+
+    if(!box || !USER_ID) return;
+
+    const {data,error} =
+        await supabaseClient.rpc(
+            'get_p2p_my_trades',
+            {
+                p_user_id:USER_ID
+            }
+        );
+
+    if(error){
+        console.error(error);
+
+        box.innerHTML =
+            `<div class="error">
+                Не удалось загрузить историю сделок.
+             </div>`;
+
+        return;
+    }
+
+    if(!data || data.length === 0){
+        box.innerHTML =
+            `<div class="info">
+                Пока нет завершённых сделок.
+             </div>`;
+        return;
+    }
+
+    box.innerHTML =
+        data.map(trade=>{
+
+            const tradeId =
+                String(trade?.id || '');
+
+            const rated =
+                trade.my_rating !== null &&
+                trade.my_rating !== undefined;
+
+            if(!tradeId){
+                return '';
+            }
+
+            return `
+            <div class="trade-item" id="trade-${esc(tradeId)}">
+
+                <div class="order-main">
+                    ${fmt(trade.my_give_amount)}
+                    ${esc(trade.my_give_token)}
+                    →
+                    ${fmt(trade.my_get_amount)}
+                    ${esc(trade.my_get_token)}
+                </div>
+
+                <div class="info" style="margin-top:5px">
+                    Сделка с пользователем:
+                    ${Number(trade.other_user_id)}
+                </div>
+
+                ${
+                    rated
+                    ?
+                    `<div class="success"
+                          style="margin-top:8px">
+                        Оценка поставлена:
+                        ${Number(trade.my_rating) > 0 ? '👍' : '👎'}
+                     </div>`
+                    :
+                    `
+                    <div class="rating" style="margin-top:8px">
+
+                        <button
+                          id="review-like-${esc(tradeId)}"
+                          onclick="rateTrade('${esc(tradeId)}',1)">
+                          👍 ЛАЙК
+                        </button>
+
+                        <button
+                          id="review-dislike-${esc(tradeId)}"
+                          class="danger"
+                          onclick="rateTrade('${esc(tradeId)}',-1)">
+                          👎 ДИЗЛАЙК
+                        </button>
+
+                    </div>
+                    `
+                }
+
+            </div>`;
+        }).join('');
+}
+
+
+/* =========================================================
+   RATE TRADE
+========================================================= */
+
+async function rateTrade(tradeId,rating){
+
+    const id = String(tradeId || '').trim();
+    const value = Number(rating);
+
+    if(!USER_ID){
+        showMessage('Пользователь не определён.', 'error');
+        return;
+    }
+
+    if(!id){
+        showMessage('Не удалось определить сделку.', 'error');
+        return;
+    }
+
+    if(value !== 1 && value !== -1){
+        showMessage('Недопустимая оценка.', 'error');
+        return;
+    }
+
+    if(reviewBusy.has(id)) return;
+    reviewBusy.add(id);
+
+    const likeButton =
+        document.getElementById(`review-like-${id}`);
+    const dislikeButton =
+        document.getElementById(`review-dislike-${id}`);
+
+    if(likeButton) likeButton.disabled = true;
+    if(dislikeButton) dislikeButton.disabled = true;
+
+    try{
+        const {data,error} =
+            await supabaseClient.rpc(
+                'add_p2p_review',
+                {
+                    p_trade_id:id,
+                    p_reviewer_id:String(USER_ID),
+                    p_rating:value
+                }
+            );
+
+        if(error){
+            console.error('add_p2p_review:', error);
+
+            showMessage(
+                error.message || 'Не удалось сохранить отзыв.',
+                'error'
+            );
+
+            if(likeButton) likeButton.disabled = false;
+            if(dislikeButton) dislikeButton.disabled = false;
+            return;
+        }
+
+        if(data !== true){
+            showMessage(
+                'Сервер не подтвердил сохранение отзыва.',
+                'error'
+            );
+            if(likeButton) likeButton.disabled = false;
+            if(dislikeButton) dislikeButton.disabled = false;
+            return;
+        }
+
+        showMessage(
+            value > 0
+                ? '👍 Лайк поставлен'
+                : '👎 Дизлайк поставлен',
+            'success'
+        );
+
+        await loadMyTrades();
+
+    }finally{
+        reviewBusy.delete(id);
+    }
+}
+
+
+/* =========================================================
+   ADMIN
+========================================================= */
+
+async function loadAdminStats(){
+
+    if(USER_ID !== ADMIN_ID) return;
+
+    const {data:users,error:usersError} =
+        await supabaseClient
+            .from('users')
+            .select(
+                'tg_balance,ai_balance,tusd_balance',
+                {count:'exact'}
+            );
+
+    if(usersError){
+        showMessage(
+            usersError.message,
+            'error'
+        );
+        return;
+    }
+
+    const {count:ordersCount} =
+        await supabaseClient
+            .from('p2p_orders')
+            .select('*',{
+                count:'exact',
+                head:true
+            })
+            .eq('status','open');
+
+    let tg = 0;
+    let ai = 0;
+    let tusd = 0;
+
+    (users || []).forEach(u=>{
+        tg += num(u.tg_balance);
+        ai += num(u.ai_balance);
+        tusd += num(u.tusd_balance);
+    });
+
+    document.getElementById('adminUsers')
+        .textContent =
+        (users || []).length;
+
+    document.getElementById('adminOrders')
+        .textContent =
+        ordersCount || 0;
+
+    document.getElementById('adminTG')
+        .textContent =
+        fmt(tg);
+
+    document.getElementById('adminAI')
+        .textContent =
+        fmt(ai);
+
+    const adminTUSD=document.getElementById('adminTUSD');
+    if(adminTUSD) adminTUSD.textContent=fmt(tusd);
+}
+
+
+/* =========================================================
+   TOKEN LISTING
+========================================================= */
+
+let listingSupplyPercent = 10;
+let listingFeeTUSD = 100;
+
+function calculateListingPreview(){
+    const supply = num(document.getElementById('listingTotalSupply')?.value);
+    const amount = supply * listingSupplyPercent / 100;
+    const amountEl = document.getElementById('listingSupplyAmountPreview');
+    const percentEl = document.getElementById('listingSupplyPercentPreview');
+    const feeEl = document.getElementById('listingFeePreview');
+    if(amountEl) amountEl.textContent = fmt(amount,12);
+    if(percentEl) percentEl.textContent = `${fmt(listingSupplyPercent,2)}%`;
+    if(feeEl) feeEl.textContent = `${fmt(listingFeeTUSD,2)} TUSD`;
+}
+
+async function loadListingSettings(){
+    if(USER_ID !== ADMIN_ID) return;
+    try{
+        const {data,error} = await supabaseClient
+            .from('telepat_settings')
+            .select('setting_key,setting_value')
+            .in('setting_key',['listing_fee_tusd','listing_supply_percent']);
+        if(error){
+            console.warn('Не удалось загрузить настройки листинга:',error);
+            return;
+        }
+        (data || []).forEach(row=>{
+            const value = Number(row.setting_value);
+            if(!Number.isFinite(value)) return;
+            if(row.setting_key === 'listing_fee_tusd') listingFeeTUSD = value;
+            if(row.setting_key === 'listing_supply_percent') listingSupplyPercent = value;
+        });
+        calculateListingPreview();
+    }catch(error){
+        console.warn('loadListingSettings error:',error);
+    }
+}
+
+async function createTokenListing(){
+    if(USER_ID !== ADMIN_ID){
+        showMessage('Нет доступа','error');
+        return;
+    }
+
+    const name = document.getElementById('listingTokenName').value.trim();
+    const symbol = document.getElementById('listingTokenSymbol').value.trim();
+    const jettonMaster = document.getElementById('listingJettonMaster').value.trim();
+    const network = document.getElementById('listingNetwork').value;
+    const decimals = Number(document.getElementById('listingDecimals').value);
+    const totalSupply = num(document.getElementById('listingTotalSupply').value);
+    const resultEl = document.getElementById('listingCreateResult');
+    const button = document.getElementById('createListingButton');
+
+    if(!name){ showMessage('Введите название токена','error'); return; }
+    if(!symbol){ showMessage('Введите символ токена','error'); return; }
+    if(!jettonMaster){ showMessage('Введите Jetton Master','error'); return; }
+    if(!Number.isInteger(decimals) || decimals < 0 || decimals > 18){
+        showMessage('Decimals должен быть от 0 до 18','error');
+        return;
+    }
+    if(totalSupply <= 0){ showMessage('Введите общий supply больше 0','error'); return; }
+
+    if(button){ button.disabled = true; button.textContent = '⏳ СОЗДАНИЕ ЗАЯВКИ...'; }
+    if(resultEl) resultEl.textContent = 'Создаём заявку...';
+
+    try{
+        const {data,error} = await supabaseClient.rpc('telepat_create_listing',{
+            p_telegram_id:USER_ID,
+            p_token_name:name,
+            p_token_symbol:symbol,
+            p_jetton_master:jettonMaster,
+            p_network:network,
+            p_decimals:decimals,
+            p_total_supply:totalSupply,
+            p_description:null,
+            p_logo_url:null
+        });
+
+        if(error){
+            console.error('telepat_create_listing error:',error);
+            if(resultEl) resultEl.innerHTML = `<span class="error">${esc(error.message)}</span>`;
+            showMessage(error.message,'error');
+            return;
+        }
+
+        const listing = Array.isArray(data) ? data[0] : data;
+        const supplyAmount = listing?.supply_amount ?? (totalSupply * listingSupplyPercent / 100);
+        const fee = listing?.listing_fee_tusd ?? listingFeeTUSD;
+
+        if(resultEl){
+            resultEl.innerHTML =
+                `<span class="success">` +
+                `✅ Заявка создана. ID: ${esc(listing?.id || '')}<br>` +
+                `Токенов к передаче: <b>${fmt(supplyAmount,12)}</b><br>` +
+                `Оплата листинга: <b>${fmt(fee,2)} TUSD</b>` +
+                `</span>`;
+        }
+
+        showMessage('🪙 Заявка на листинг создана','success');
+        document.getElementById('listingTokenName').value = '';
+        document.getElementById('listingTokenSymbol').value = '';
+        document.getElementById('listingJettonMaster').value = '';
+        document.getElementById('listingDecimals').value = '9';
+        document.getElementById('listingTotalSupply').value = '';
+        calculateListingPreview();
+
+    }catch(error){
+        console.error('createTokenListing exception:',error);
+        if(resultEl) resultEl.innerHTML = `<span class="error">${esc(error.message || 'Ошибка создания заявки')}</span>`;
+        showMessage(error.message || 'Ошибка создания заявки','error');
+    }finally{
+        if(button){ button.disabled = false; button.textContent = '➕ СОЗДАТЬ ЗАЯВКУ НА ЛИСТИНГ'; }
+    }
+}
+
+
+/* =========================================================
+   ADMIN TRANSFER
+========================================================= */
+
+async function adminTransfer(){
+
+    if(USER_ID !== ADMIN_ID){
+        showMessage(
+            'Нет доступа',
+            'error'
+        );
+        return;
+    }
+
+    const target =
+        Number(
+            document.getElementById('adminTargetId').value
+        );
 
     const token =
-      document.getElementById("code").value.trim();
+        document.getElementById('adminToken').value;
 
-    if (!token) {
-      showStatus("Введите одноразовый код.");
-      return;
-    }
+    const amount =
+        num(
+            document.getElementById('adminAmount').value
+        );
 
-    showStatus("🔐 Проверяем код...");
+    if(!target || amount <= 0){
 
-    try {
-
-      const { data, error } =
-        await supabaseClient.auth.verifyOtp({
-          email: email,
-          token: token,
-          type: "email"
-        });
-
-      if (error) {
-
-        showStatus(
-          "❌ Код не принят:\n\n" +
-          error.message
+        showMessage(
+            'Заполните данные',
+            'error'
         );
 
         return;
-      }
-
-      showStatus(
-        "🎉 ВХОД ВЫПОЛНЕН!\n\n" +
-        "Email:\n" +
-        data.user.email +
-        "\n\n" +
-        "Auth ID:\n" +
-        data.user.id
-      );
-
-    } catch (error) {
-
-      showStatus(
-        "❌ Ошибка проверки:\n\n" +
-        error.message
-      );
     }
-  }
+
+    const {data,error} =
+        await supabaseClient.rpc(
+            'admin_transfer_token',
+            {
+                p_admin_id:USER_ID,
+                p_target_id:target,
+                p_token:token,
+                p_amount:amount
+            }
+        );
+
+    if(error){
+
+        showMessage(
+            error.message,
+            'error'
+        );
+
+        return;
+    }
+
+    showMessage(
+        '💰 Перевод выполнен',
+        'success'
+    );
+
+    document.getElementById('adminAmount')
+        .value = '';
+
+    await loadAdminStats();
+}
+
+
+/* =========================================================
+   INIT
+========================================================= */
+
+document.addEventListener(
+    'DOMContentLoaded',
+    async ()=>{
+
+        await loadUser();
+
+        updateOrderForm();
+
+        if(USER_ID === ADMIN_ID){
+            document
+                .getElementById('nav-admin')
+                .classList.remove('hidden');
+            await loadListingSettings();
+            calculateListingPreview();
+        }
+
+    }
+);
 
 </script>
 
