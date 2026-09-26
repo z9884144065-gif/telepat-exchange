@@ -27,386 +27,97 @@
 html{background:var(--bg)}
 body{
     margin:0;
-    background:
-      radial-gradient(circle at 50% -10%,#26334a 0,#0b1018 42%),
-      var(--bg);
+    background:radial-gradient(circle at 50% -10%,#26334a 0,#0b1018 42%),var(--bg);
     color:var(--text);
     font-family:Arial,sans-serif;
     min-height:100vh;
 }
-.app{
-    max-width:560px;
-    margin:auto;
-    padding:16px 14px 92px;
-}
-h1{
-    text-align:center;
-    color:var(--gold);
-    margin:5px 0 3px;
-    font-size:28px;
-    letter-spacing:1px;
-}
-.subtitle{
-    text-align:center;
-    color:var(--muted);
-    font-size:13px;
-    margin-bottom:18px;
-}
+.app{max-width:560px;margin:auto;padding:16px 14px 92px;}
+h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:28px;letter-spacing:1px;}
+.subtitle{text-align:center;color:var(--muted);font-size:13px;margin-bottom:18px;}
 .card{
     background:linear-gradient(145deg,#1b2636,#111925);
-    border:1px solid #39475b;
-    border-radius:20px;
-    padding:17px;
-    margin-bottom:13px;
-    box-shadow:0 12px 30px #0007;
+    border:1px solid #39475b;border-radius:20px;padding:17px;
+    margin-bottom:13px;box-shadow:0 12px 30px #0007;
 }
-.card.gold{
-    border-color:#80652b;
-}
-.section-title{
-    color:var(--gold);
-    font-size:14px;
-    font-weight:bold;
-    letter-spacing:.7px;
-    margin-bottom:13px;
-}
+.card.gold{border-color:#80652b;}
+.section-title{color:var(--gold);font-size:14px;font-weight:bold;letter-spacing:.7px;margin-bottom:13px;}
 .row{display:flex;gap:10px}
 .row>*{flex:1}
-button,select,input{
-    width:100%;
-    border-radius:13px;
-    border:1px solid #45536a;
-    font-size:15px;
-}
-button{
-    padding:13px;
-    margin-top:9px;
-    border:0;
-    background:linear-gradient(135deg,#f5d477,#c99629);
-    color:#17120a;
-    font-weight:bold;
-}
-button.secondary{
-    background:#263345;
-    color:#fff;
-    border:1px solid #4a596d;
-}
-button.danger{
-    background:#542330;
-    color:#fff;
-    border:1px solid #884050;
-}
-button.small{
-    width:auto;
-    padding:8px 11px;
-    margin:0;
-    font-size:12px;
-}
-button:disabled{
-    opacity:.45;
-}
-select,input{
-    background:#0d1520;
-    color:#fff;
-    padding:12px;
-    outline:none;
-}
-label{
-    display:block;
-    color:#aeb8c6;
-    font-size:12px;
-    margin-bottom:6px;
-}
-.balance-main{
-    text-align:center;
-    font-size:31px;
-    font-weight:bold;
-    color:var(--gold);
-    margin:3px 0 15px;
-}
-.token-box{
-    background:#0d1520;
-    border:1px solid #303d50;
-    border-radius:14px;
-    padding:12px;
-}
-.token-name{
-    color:var(--muted);
-    font-size:12px;
-}
-.token-value{
-    color:#fff;
-    font-size:20px;
-    font-weight:bold;
-    margin-top:4px;
-}
-.info{
-    color:var(--muted);
-    font-size:12px;
-    line-height:1.45;
-}
+button,select,input{width:100%;border-radius:13px;border:1px solid #45536a;font-size:15px;}
+button{padding:13px;margin-top:9px;border:0;background:linear-gradient(135deg,#f5d477,#c99629);color:#17120a;font-weight:bold;}
+button.secondary{background:#263345;color:#fff;border:1px solid #4a596d;}
+button.danger{background:#542330;color:#fff;border:1px solid #884050;}
+button.small{width:auto;padding:8px 11px;margin:0;font-size:12px;}
+button:disabled{opacity:.45;}
+select,input{background:#0d1520;color:#fff;padding:12px;outline:none;}
+label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
+.token-box{background:#0d1520;border:1px solid #303d50;border-radius:14px;padding:12px;}
+.token-name{color:var(--muted);font-size:12px;}
+.token-value{color:#fff;font-size:20px;font-weight:bold;margin-top:4px;}
+.info{color:var(--muted);font-size:12px;line-height:1.45;}
 .success{color:var(--green)}
 .error{color:var(--red)}
-.rank-box{
-    border:1px solid #66572e;
-    background:linear-gradient(145deg,#272313,#17150e);
-    border-radius:16px;
-    padding:14px;
-}
-.rank-name{
-    font-size:22px;
-    font-weight:bold;
-    color:var(--gold);
-}
-.progress{
-    height:8px;
-    background:#080b10;
-    border-radius:99px;
-    overflow:hidden;
-    margin-top:10px;
-}
-.progress>div{
-    height:100%;
-    background:linear-gradient(90deg,#b98b27,#ffe38a);
-}
-.exchange-grid{
-    display:grid;
-    grid-template-columns:1fr 34px 1fr;
-    gap:8px;
-    align-items:end;
-}
-.swap{
-    width:34px;
-    height:34px;
-    padding:0;
-    border-radius:50%;
-    margin:0 0 5px;
-    font-size:17px;
-}
-.amount-wrap{
-    margin-top:9px;
-}
-.available{
-    color:#7f8c9f;
-    font-size:11px;
-    margin-top:5px;
-}
-.receive-preview{
-    margin-top:12px;
-    background:#0c141f;
-    border:1px solid #3d4a5d;
-    border-radius:14px;
-    padding:12px;
-}
-.rate-line{
-    color:#cbd4df;
-    font-size:12px;
-    margin-top:7px;
-}
-.sort-row{
-    display:flex;
-    align-items:center;
-    gap:8px;
-}
-.sort-row label{
-    margin:0;
-    white-space:nowrap;
-}
-.sort-row select{
-    max-width:190px;
-}
-.order{
-    border:1px solid var(--rank-color,#435166);
-    border-radius:15px;
-    margin-top:9px;
-    overflow:hidden;
-    background:linear-gradient(145deg,#151e2b,#101721);
-    box-shadow:0 0 16px var(--rank-glow,transparent);
-}
-.order-head{
-    padding:12px;
-    cursor:pointer;
-}
-.order-line{
-    display:flex;
-    justify-content:space-between;
-    gap:8px;
-    align-items:center;
-}
-.order-main{
-    font-weight:bold;
-    font-size:14px;
-}
-.order-price{
-    color:#cfd8e4;
-    font-size:11px;
-    margin-top:4px;
-}
-.rank-badge{
-    white-space:nowrap;
-    color:var(--rank-color,#fff);
-    text-shadow:0 0 9px var(--rank-glow,transparent);
-    font-weight:bold;
-    font-size:12px;
-}
-.order-stats{
-    display:flex;
-    gap:10px;
-    color:#aeb8c6;
-    font-size:11px;
-    margin-top:7px;
-}
-.order-expanded{
-    display:none;
-    border-top:1px solid #303b4b;
-    padding:12px;
-}
-.order.opened .order-expanded{
-    display:block;
-}
-.detail{
-    display:flex;
-    justify-content:space-between;
-    padding:6px 0;
-    border-bottom:1px solid #263141;
-    font-size:12px;
-}
+.rank-box{border:1px solid #66572e;background:linear-gradient(145deg,#272313,#17150e);border-radius:16px;padding:14px;}
+.rank-name{font-size:22px;font-weight:bold;color:var(--gold);}
+.progress{height:8px;background:#080b10;border-radius:99px;overflow:hidden;margin-top:10px;}
+.progress>div{height:100%;background:linear-gradient(90deg,#b98b27,#ffe38a);}
+.exchange-grid{display:grid;grid-template-columns:1fr 34px 1fr;gap:8px;align-items:end;}
+.swap{width:34px;height:34px;padding:0;border-radius:50%;margin:0 0 5px;font-size:17px;}
+.amount-wrap{margin-top:9px;}
+.available{color:#7f8c9f;font-size:11px;margin-top:5px;}
+.receive-preview{margin-top:12px;background:#0c141f;border:1px solid #3d4a5d;border-radius:14px;padding:12px;}
+.rate-line{color:#cbd4df;font-size:12px;margin-top:7px;}
+.sort-row{display:flex;align-items:center;gap:8px;}
+.sort-row label{margin:0;white-space:nowrap;}
+.sort-row select{max-width:190px;}
+.order{border:1px solid var(--rank-color,#435166);border-radius:15px;margin-top:9px;overflow:hidden;background:linear-gradient(145deg,#151e2b,#101721);box-shadow:0 0 16px var(--rank-glow,transparent);}
+.order-head{padding:12px;cursor:pointer;}
+.order-line{display:flex;justify-content:space-between;gap:8px;align-items:center;}
+.order-main{font-weight:bold;font-size:14px;}
+.order-price{color:#cfd8e4;font-size:11px;margin-top:4px;}
+.rank-badge{white-space:nowrap;color:var(--rank-color,#fff);text-shadow:0 0 9px var(--rank-glow,transparent);font-weight:bold;font-size:12px;}
+.order-stats{display:flex;gap:10px;color:#aeb8c6;font-size:11px;margin-top:7px;}
+.order-expanded{display:none;border-top:1px solid #303b4b;padding:12px;}
+.order.opened .order-expanded{display:block;}
+.detail{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #263141;font-size:12px;}
 .detail span:first-child{color:#8996a7}
 .detail span:last-child{text-align:right}
-.profile-link{
-    color:var(--gold);
-    cursor:pointer;
-}
-.order-actions{
-    display:flex;
-    gap:8px;
-    margin-top:10px;
-}
+.profile-link{color:var(--gold);cursor:pointer;}
+.order-actions{display:flex;gap:8px;margin-top:10px;}
 .order-actions button{margin:0}
-.profile-card{
-    position:fixed;
-    z-index:1000;
-    inset:0;
-    background:#0009;
-    display:none;
-    align-items:flex-end;
-    justify-content:center;
-    padding:12px;
-}
+.profile-card{position:fixed;z-index:1000;inset:0;background:#0009;display:none;align-items:flex-end;justify-content:center;padding:12px;}
 .profile-card.show{display:flex}
-.profile-inner{
-    width:min(540px,100%);
-    background:linear-gradient(145deg,#1d2939,#101721);
-    border:1px solid #68562a;
-    border-radius:22px;
-    padding:18px;
-    box-shadow:0 -15px 50px #000b;
-}
-.profile-title{
-    color:var(--gold);
-    font-size:21px;
-    font-weight:bold;
-}
-.stats-grid{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:8px;
-    margin-top:12px;
-}
-.stat{
-    background:#0d1520;
-    border:1px solid #2d3a4c;
-    border-radius:13px;
-    padding:11px;
-}
+.profile-inner{width:min(540px,100%);background:linear-gradient(145deg,#1d2939,#101721);border:1px solid #68562a;border-radius:22px;padding:18px;box-shadow:0 -15px 50px #000b;}
+.profile-title{color:var(--gold);font-size:21px;font-weight:bold;}
+.stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:12px;}
+.stat{background:#0d1520;border:1px solid #2d3a4c;border-radius:13px;padding:11px;}
 .stat b{display:block;font-size:18px}
 .stat span{color:#8f9bab;font-size:11px}
-.rating{
-    display:flex;
-    gap:8px;
-}
+.rating{display:flex;gap:8px;}
 .rating button{margin:0}
-.trade-item{
-    background:#0d1520;
-    border:1px solid #2e3a4c;
-    border-radius:14px;
-    padding:11px;
-    margin-top:8px;
-}
-.nav{
-    position:fixed;
-    z-index:900;
-    bottom:0;
-    left:0;
-    right:0;
-    background:#0e151fef;
-    backdrop-filter:blur(12px);
-    border-top:1px solid #303d4f;
-    padding:8px 6px calc(8px + env(safe-area-inset-bottom));
-    display:flex;
-    justify-content:center;
-    gap:5px;
-}
-.nav button{
-    width:auto;
-    flex:1;
-    max-width:120px;
-    padding:10px 6px;
-    margin:0;
-    background:#1b2635;
-    color:#d9e0e8;
-    font-size:11px;
-}
-.nav button.active{
-    background:#80652d;
-    color:#fff;
-}
+.trade-item{background:#0d1520;border:1px solid #2e3a4c;border-radius:14px;padding:11px;margin-top:8px;}
+.nav{position:fixed;z-index:900;bottom:0;left:0;right:0;background:#0e151fef;backdrop-filter:blur(12px);border-top:1px solid #303d4f;padding:8px 6px calc(8px + env(safe-area-inset-bottom));display:flex;justify-content:center;gap:5px;}
+.nav button{width:auto;flex:1;max-width:120px;padding:10px 6px;margin:0;background:#1b2635;color:#d9e0e8;font-size:11px;}
+.nav button.active{background:#80652d;color:#fff;}
 .hidden{display:none!important}
-.message{
-    position:fixed;
-    z-index:2000;
-    left:12px;
-    right:12px;
-    top:12px;
-    padding:13px;
-    border-radius:14px;
-    background:#1b2737;
-    border:1px solid #4c5b70;
-    display:none;
-    text-align:center;
-    font-size:13px;
-}
+.message{position:fixed;z-index:2000;left:12px;right:12px;top:12px;padding:13px;border-radius:14px;background:#1b2737;border:1px solid #4c5b70;display:none;text-align:center;font-size:13px;}
 .message.show{display:block}
-.auth-status{
-    position:fixed;
-    z-index:2500;
-    left:0;
-    right:0;
-    top:0;
-    padding:6px 12px;
-    font-size:11px;
-    text-align:center;
-    font-weight:bold;
-    display:none;
-}
+.auth-status{position:fixed;z-index:2500;left:0;right:0;top:0;padding:6px 12px;font-size:11px;text-align:center;font-weight:bold;display:none;}
 .auth-status.show{display:block}
 .auth-status.loading{background:#3a4a63;color:#fff}
 .auth-status.success{background:#1f6e3f;color:#fff}
 .auth-status.error{background:#8b3f4c;color:#fff}
-.admin{
-    border-color:#8a6b28;
-}
-@media(max-width:390px){
-    .exchange-grid{
-        grid-template-columns:1fr;
-    }
-    .swap{
-        margin:auto;
-    }
-    .row{
-        flex-direction:column;
-    }
-}
+.admin{border-color:#8a6b28;}
+.pool-card{background:#0d1520;border:1px solid #2d3a4c;border-radius:14px;padding:12px;margin-top:8px;}
+.pool-card .pool-token{font-weight:bold;color:var(--gold);font-size:15px;}
+.pool-card .pool-line{color:#cfd8e4;font-size:12px;margin-top:5px;display:flex;justify-content:space-between;}
+.pool-card .pool-line span:first-child{color:#8996a7;}
+.pool-card .pool-total{color:var(--green);font-weight:bold;}
+.modal-overlay{position:fixed;z-index:3000;inset:0;background:#0009;display:none;align-items:center;justify-content:center;padding:16px;}
+.modal-overlay.show{display:flex}
+.modal-box{width:min(420px,100%);background:linear-gradient(145deg,#1d2939,#101721);border:1px solid #68562a;border-radius:20px;padding:18px;}
+@media(max-width:390px){.exchange-grid{grid-template-columns:1fr;}.swap{margin:auto;}.row{flex-direction:column;}}
 </style>
 </head>
 
@@ -426,7 +137,6 @@ label{
 
 <div class="card gold">
 <div class="section-title">👤 МОЙ ПРОФИЛЬ</div>
-
 <div id="userName">Загрузка...</div>
 <div class="info" id="telegramId"></div>
 
@@ -434,41 +144,18 @@ label{
 <div class="info">ТЕКУЩИЙ ТИТУЛ</div>
 <div class="rank-name" id="rankName">Крестьянин</div>
 <div class="info" id="rankRequirement">Загрузка...</div>
-<div class="progress">
-<div id="rankProgress" style="width:0%"></div>
+<div class="progress"><div id="rankProgress" style="width:0%"></div></div>
 </div>
-</div>
-
 </div>
 
 <div class="card">
-
 <div class="section-title">💰 МОЙ КОШЕЛЁК</div>
-
 <div class="row">
-
-<div class="token-box">
-<div class="token-name">Телепат Голд</div>
-<div class="token-value" id="tgBalance">0 TG</div>
+<div class="token-box"><div class="token-name">Телепат Голд</div><div class="token-value" id="tgBalance">0 TG</div></div>
+<div class="token-box"><div class="token-name">AI</div><div class="token-value" id="aiBalance">0 AI</div></div>
 </div>
-
-<div class="token-box">
-<div class="token-name">AI</div>
-<div class="token-value" id="aiBalance">0 AI</div>
-</div>
-
-</div>
-
-<div class="token-box" style="margin-top:10px">
-<div class="token-name">Телепат Доллар</div>
-<div class="token-value" id="tusdBalance">0 TUSD</div>
-</div>
-
-<div class="info" style="margin-top:10px">
-TG учитывается для титула по цене 100 USD.<br>
-AI учитывается по цене 0.01 USD.
-</div>
-
+<div class="token-box" style="margin-top:10px"><div class="token-name">Телепат Доллар</div><div class="token-value" id="tusdBalance">0 TUSD</div></div>
+<div class="info" style="margin-top:10px">TG учитывается для титула по цене 100 USD.<br>AI учитывается по цене 0.01 USD.</div>
 </div>
 
 <div class="card">
@@ -479,38 +166,21 @@ AI учитывается по цене 0.01 USD.
 
 </section>
 
-
 <!-- ================= EXCHANGE ================= -->
 
 <section id="section-exchange" class="hidden">
 
 <div class="card gold">
-
 <div class="section-title">🔄 СОЗДАТЬ P2P-ОРДЕР</div>
 
 <div class="exchange-grid">
-
 <div>
 <label>Отдаю</label>
 <select id="fromToken" onchange="updateOrderForm()">
-<option value="TG">TG</option>
-<option value="AI">AI</option>
-<option value="TUSD">TUSD</option>
+<option value="TG">TG</option><option value="AI">AI</option><option value="TUSD">TUSD</option>
 </select>
-
-<div class="amount-wrap">
-<input id="fromAmount"
-       type="number"
-       inputmode="decimal"
-       min="0"
-       step="any"
-       placeholder="Количество"
-       oninput="updateOrderForm()">
-</div>
-
-<div class="available" id="availableBalance">
-Доступно: 0
-</div>
+<div class="amount-wrap"><input id="fromAmount" type="number" inputmode="decimal" min="0" step="any" placeholder="Количество" oninput="updateOrderForm()"></div>
+<div class="available" id="availableBalance">Доступно: 0</div>
 </div>
 
 <button class="swap" onclick="swapTokens()">⇄</button>
@@ -518,60 +188,36 @@ AI учитывается по цене 0.01 USD.
 <div>
 <label>Получаю</label>
 <select id="toToken" onchange="updateOrderForm()">
-<option value="TUSD">TUSD</option>
-<option value="TG">TG</option>
-<option value="AI">AI</option>
+<option value="TUSD">TUSD</option><option value="TG">TG</option><option value="AI">AI</option>
 </select>
-
-<div class="amount-wrap">
-<input id="toAmount"
-       type="number"
-       inputmode="decimal"
-       min="0"
-       step="any"
-       placeholder="Количество"
-       oninput="updateOrderForm()">
+<div class="amount-wrap"><input id="toAmount" type="number" inputmode="decimal" min="0" step="any" placeholder="Количество" oninput="updateOrderForm()"></div>
+<div class="available">Цена устанавливается вами</div>
 </div>
-
-<div class="available">
-Цена устанавливается вами
-</div>
-</div>
-
 </div>
 
 <div class="receive-preview">
-
 <div class="info">КУРС ВАШЕГО ОРДЕРА</div>
-
-<div id="ratePreview">
-Укажите количество
+<div id="ratePreview">Укажите количество</div>
+<div class="rate-line" id="reverseRate">Обратный курс: —</div>
 </div>
 
-<div class="rate-line" id="reverseRate">
-Обратный курс: —
+<button onclick="createP2POrder()">🚀 СОЗДАТЬ ОРДЕР</button>
+<div class="info" style="margin-top:9px">При создании ордера количество в поле «Отдаю» блокируется. При отмене оно автоматически возвращается. Комиссия 0.1% идёт в пул ликвидности.</div>
 </div>
 
+<!-- ================= POOLS ================= -->
+
+<div class="card">
+<div class="section-title">💧 ПУЛЫ ЛИКВИДНОСТИ</div>
+<div class="info" style="margin-bottom:10px">Внесите TUSD в пул любого токена — поддержите его ликвидность.</div>
+<div id="poolsList">Загрузка...</div>
+<button class="secondary" onclick="loadTokenReserves()">🔄 Обновить пулы</button>
 </div>
-
-<button onclick="createP2POrder()">
-🚀 СОЗДАТЬ ОРДЕР
-</button>
-
-<div class="info" style="margin-top:9px">
-При создании ордера количество в поле «Отдаю» блокируется.
-При отмене оно автоматически возвращается на ваш баланс.
-</div>
-
-</div>
-
 
 <!-- ================= ORDER BOOK ================= -->
 
 <div class="card">
-
 <div class="section-title">📋 ДОСТУПНЫЕ ОРДЕРА</div>
-
 <div class="sort-row">
 <label>Сортировка:</label>
 <select id="orderSort" onchange="loadOrders()">
@@ -581,206 +227,91 @@ AI учитывается по цене 0.01 USD.
 <option value="amount">По количеству</option>
 </select>
 </div>
-
-<div class="info" id="orderBookTitle" style="margin-top:10px">
-Выберите направление обмена
-</div>
-
-<div id="ordersList">
-Загрузка...
-</div>
+<div class="info" id="orderBookTitle" style="margin-top:10px">Выберите направление обмена</div>
+<div id="ordersList">Загрузка...</div>
 
 <div class="card">
 <div class="section-title">📌 МОИ ОРДЕРА</div>
 <div id="myOrdersList">Загрузка...</div>
 </div>
-
 </div>
-
-
-<!-- ================= MY TRADES ================= -->
 
 <div class="card">
-
 <div class="section-title">🤝 МОИ СДЕЛКИ</div>
-
-<div id="myTrades">
-Загрузка...
-</div>
-
+<div id="myTrades">Загрузка...</div>
 </div>
 
 </section>
-
 
 <!-- ================= FRIENDS ================= -->
 
 <section id="section-friends" class="hidden">
-
 <div class="card">
-
 <div class="section-title">👥 ДРУЗЬЯ И РЕФЕРАЛЫ</div>
-
-<div class="info">
-Приглашайте участников по своей персональной ссылке.
-</div>
-
-<input id="refLink"
-       readonly
-       style="margin-top:10px">
-
-<button onclick="copyRefLink()">
-📋 СКОПИРОВАТЬ ССЫЛКУ
-</button>
-
+<div class="info">Приглашайте участников по своей персональной ссылке.</div>
+<input id="refLink" readonly style="margin-top:10px">
+<button onclick="copyRefLink()">📋 СКОПИРОВАТЬ ССЫЛКУ</button>
 <div class="row" style="margin-top:12px">
-
-<div class="token-box">
-<div class="token-name">Заработано TG</div>
-<div class="token-value" id="refTG">0</div>
+<div class="token-box"><div class="token-name">Заработано TG</div><div class="token-value" id="refTG">0</div></div>
+<div class="token-box"><div class="token-name">Заработано TUSD</div><div class="token-value" id="refTUSD">0</div></div>
 </div>
-
-<div class="token-box">
-<div class="token-name">Заработано TUSD</div>
-<div class="token-value" id="refTUSD">0</div>
 </div>
-
-</div>
-
-</div>
-
 </section>
-
 
 <!-- ================= EARN ================= -->
 
 <section id="section-earn" class="hidden">
-
 <div class="card">
-
 <div class="section-title">💎 ЗАРАБОТОК</div>
-
 <div class="rank-box">
-
 <div class="rank-name" id="earnRank">Крестьянин</div>
-
-<div class="info" style="margin-top:6px">
-Ваш уровень определяется балансами TG + AI.
+<div class="info" style="margin-top:6px">Ваш уровень определяется балансами TG + AI.</div>
+<div id="earnDetails" class="info" style="margin-top:10px">Загрузка...</div>
 </div>
-
-<div id="earnDetails" class="info" style="margin-top:10px">
-Загрузка...
-</div>
-
-</div>
-
-<button onclick="claimDailyReward()">
-🎁 ПОЛУЧИТЬ ЕЖЕДНЕВНУЮ НАГРАДУ
-</button>
-
+<button onclick="claimDailyReward()">🎁 ПОЛУЧИТЬ ЕЖЕДНЕВНУЮ НАГРАДУ</button>
 <div id="dailyStatus" class="info" style="margin-top:9px"></div>
-
 </div>
-
 </section>
-
 
 <!-- ================= ADMIN ================= -->
 
 <section id="section-admin" class="hidden">
 
 <div class="card admin">
-
 <div class="section-title">👑 АДМИН-ПАНЕЛЬ</div>
-
 <div class="stats-grid">
-
-<div class="stat">
-<b id="adminUsers">0</b>
-<span>Пользователей</span>
+<div class="stat"><b id="adminUsers">0</b><span>Пользователей</span></div>
+<div class="stat"><b id="adminOrders">0</b><span>Открытых ордеров</span></div>
+<div class="stat"><b id="adminTG">0</b><span>Общий TG</span></div>
+<div class="stat"><b id="adminAI">0</b><span>Общий AI</span></div>
+<div class="stat"><b id="adminTUSD">0</b><span>Общий TUSD</span></div>
 </div>
-
-<div class="stat">
-<b id="adminOrders">0</b>
-<span>Открытых ордеров</span>
+<button class="secondary" onclick="loadAdminStats()">🔄 ОБНОВИТЬ СТАТИСТИКУ</button>
 </div>
-
-<div class="stat">
-<b id="adminTG">0</b>
-<span>Общий TG</span>
-</div>
-
-<div class="stat">
-<b id="adminAI">0</b>
-<span>Общий AI</span>
-</div>
-
-<div class="stat">
-<b id="adminTUSD">0</b>
-<span>Общий TUSD</span>
-</div>
-
-</div>
-
-<button class="secondary" onclick="loadAdminStats()">
-🔄 ОБНОВИТЬ СТАТИСТИКУ
-</button>
-
-</div>
-
 
 <div class="card admin">
-
 <div class="section-title">💸 ПЕРЕВОД ТОКЕНОВ</div>
-
 <label>Telegram ID получателя</label>
-<input id="adminTargetId"
-       type="number"
-       placeholder="Telegram ID">
-
+<input id="adminTargetId" type="number" placeholder="Telegram ID">
 <label style="margin-top:9px">Токен</label>
-<select id="adminToken">
-<option value="TG">TG</option>
-<option value="AI">AI</option>
-<option value="TUSD">TUSD</option>
-</select>
-
+<select id="adminToken"><option value="TG">TG</option><option value="AI">AI</option><option value="TUSD">TUSD</option></select>
 <label style="margin-top:9px">Количество</label>
-<input id="adminAmount"
-       type="number"
-       inputmode="decimal"
-       step="any"
-       placeholder="Количество">
-
-<button onclick="adminTransfer()">
-💰 ВЫПОЛНИТЬ ПЕРЕВОД
-</button>
-
+<input id="adminAmount" type="number" inputmode="decimal" step="any" placeholder="Количество">
+<button onclick="adminTransfer()">💰 ВЫПОЛНИТЬ ПЕРЕВОД</button>
 </div>
 
-<!-- ================= ADD TOKEN ================= -->
-
 <div class="card admin">
-
 <div class="section-title">🪙 ДОБАВИТЬ ТОКЕН</div>
-
 <label>Название токена</label>
 <input id="listingTokenName" type="text" placeholder="Например: Telepat Gold">
-
 <label style="margin-top:9px">Символ токена</label>
 <input id="listingTokenSymbol" type="text" maxlength="20" placeholder="Например: TG">
-
 <label style="margin-top:9px">Jetton Master</label>
 <input id="listingJettonMaster" type="text" placeholder="Адрес Jetton Master">
-
 <label style="margin-top:9px">Сеть</label>
-<select id="listingNetwork">
-<option value="TON">TON</option>
-</select>
-
+<select id="listingNetwork"><option value="TON">TON</option></select>
 <label style="margin-top:9px">Decimals</label>
 <input id="listingDecimals" type="number" value="9" min="0" max="18">
-
 <label style="margin-top:9px">Общий supply</label>
 <input id="listingTotalSupply" type="number" inputmode="decimal" min="0" step="any" placeholder="Например: 10000000" oninput="calculateListingPreview()">
 
@@ -791,116 +322,66 @@ AI учитывается по цене 0.01 USD.
 <div class="detail"><span>Оплата листинга</span><span id="listingFeePreview">100 TUSD</span></div>
 </div>
 
-<button id="createListingButton" onclick="createTokenListing()">
-➕ СОЗДАТЬ ЗАЯВКУ НА ЛИСТИНГ
-</button>
-
+<button id="createListingButton" onclick="createTokenListing()">➕ СОЗДАТЬ ЗАЯВКУ НА ЛИСТИНГ</button>
 <div id="listingCreateResult" class="info" style="margin-top:9px"></div>
-
 </div>
 
 </section>
 
 </div>
 
-
 <!-- ================= PROFILE MODAL ================= -->
 
 <div id="profileModal" class="profile-card" onclick="closeProfile(event)">
-
 <div class="profile-inner" onclick="event.stopPropagation()">
-
 <div class="section-title">👤 ПРОФИЛЬ УЧАСТНИКА</div>
-
-<div class="profile-title" id="profileRank">
-Загрузка...
-</div>
-
+<div class="profile-title" id="profileRank">Загрузка...</div>
 <div class="info" id="profileId"></div>
-
 <div class="stats-grid">
-
-<div class="stat">
-<b id="profileTrades">0</b>
-<span>Сделок</span>
+<div class="stat"><b id="profileTrades">0</b><span>Сделок</span></div>
+<div class="stat"><b id="profileSuccess">0%</b><span>Успешность</span></div>
+<div class="stat"><b id="profileLikes">0</b><span>👍 Лайков</span></div>
+<div class="stat"><b id="profileDislikes">0</b><span>👎 Дизлайков</span></div>
 </div>
-
-<div class="stat">
-<b id="profileSuccess">0%</b>
-<span>Успешность</span>
-</div>
-
-<div class="stat">
-<b id="profileLikes">0</b>
-<span>👍 Лайков</span>
-</div>
-
-<div class="stat">
-<b id="profileDislikes">0</b>
-<span>👎 Дизлайков</span>
-</div>
-
-</div>
-
 <div class="info" id="profileCancelled" style="margin-top:10px"></div>
-
-<button class="secondary" onclick="closeProfile()">
-Закрыть
-</button>
-
+<button class="secondary" onclick="closeProfile()">Закрыть</button>
 </div>
 </div>
 
+<!-- ================= ADD LIQUIDITY MODAL ================= -->
+
+<div id="addLiqModal" class="modal-overlay" onclick="closeAddLiq(event)">
+<div class="modal-box" onclick="event.stopPropagation()">
+<div class="section-title">💧 ДОБАВИТЬ В ПУЛ ЛИКВИДНОСТИ</div>
+<div class="info">Токен</div>
+<div id="addLiqToken" style="font-size:22px;font-weight:bold;color:var(--gold);margin:8px 0 14px">—</div>
+<label>Сумма в TUSD</label>
+<input id="addLiqAmount" type="number" inputmode="decimal" min="0" step="any" placeholder="Например: 100">
+<div class="info" style="margin-top:8px" id="addLiqAvailable">Доступно TUSD: 0</div>
+<button onclick="confirmAddLiquidity()">✅ ВНЕСТИ</button>
+<button class="secondary" onclick="closeAddLiq()">Отмена</button>
+</div>
+</div>
 
 <!-- ================= NAV ================= -->
 
 <div class="nav">
-
-<button id="nav-wallet"
-        class="active"
-        onclick="showSection('wallet')">
-🏠 Кошелёк
-</button>
-
-<button id="nav-exchange"
-        onclick="showSection('exchange')">
-🔄 Обмен
-</button>
-
-<button id="nav-friends"
-        onclick="showSection('friends')">
-👥 Друзья
-</button>
-
-<button id="nav-earn"
-        onclick="showSection('earn')">
-💎 Заработок
-</button>
-
-<button id="nav-admin"
-        class="hidden"
-        onclick="showSection('admin')">
-👑 Админ
-</button>
-
+<button id="nav-wallet" class="active" onclick="showSection('wallet')">🏠 Кошелёк</button>
+<button id="nav-exchange" onclick="showSection('exchange')">🔄 Обмен</button>
+<button id="nav-friends" onclick="showSection('friends')">👥 Друзья</button>
+<button id="nav-earn" onclick="showSection('earn')">💎 Заработок</button>
+<button id="nav-admin" class="hidden" onclick="showSection('admin')">👑 Админ</button>
 </div>
 <script>
 
 /* =========================================================
-   TELEPAT — AUTH LAYER (Этап 2)
+   TELEPAT — AUTH LAYER
 ========================================================= */
 
-const SUPABASE_URL =
-    'https://jutszxuzjzyfxarceydw.supabase.co';
-
-const SUPABASE_KEY =
-    'sb_publishable_geRczpRc3faUHRGto2ue7A_eFFiJDwO';
-
-const EDGE_FUNCTION_URL =
-    `${SUPABASE_URL}/functions/v1/telegram-auth`;
-
+const SUPABASE_URL = 'https://jutszxuzjzyfxarceydw.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_geRczpRc3faUHRGto2ue7A_eFFiJDwO';
+const EDGE_FUNCTION_URL = `${SUPABASE_URL}/functions/v1/telegram-auth`;
 const ADMIN_ID = 949707357;
-
 const TG_USD = 100;
 const AI_USD = 0.01;
 
@@ -910,10 +391,7 @@ function setAuthStatus(state, text){
     const el = document.getElementById('authStatus');
     if(!el) return;
     el.classList.remove('loading','success','error');
-    if(state === 'hide'){
-        el.classList.remove('show');
-        return;
-    }
+    if(state === 'hide'){ el.classList.remove('show'); return; }
     el.classList.add(state, 'show');
     el.textContent = text;
     if(state === 'success'){
@@ -923,15 +401,11 @@ function setAuthStatus(state, text){
 
 async function refreshJwt(){
     const initData = window.Telegram?.WebApp?.initData;
-
     if(!initData){
         setAuthStatus('error','⚠️ Telegram initData недоступен');
-        console.warn('initData is empty');
         return null;
     }
-
     setAuthStatus('loading','⏳ Проверка подписи Telegram…');
-
     try{
         const resp = await fetch(EDGE_FUNCTION_URL, {
             method: 'POST',
@@ -942,27 +416,19 @@ async function refreshJwt(){
             },
             body: JSON.stringify({ initData }),
         });
-
         if(!resp.ok){
-            const errText = await resp.text();
-            console.error('telegram-auth HTTP', resp.status, errText);
             setAuthStatus('error', `❌ Авторизация не прошла (${resp.status})`);
             return null;
         }
-
         const data = await resp.json();
-
         if(!data?.access_token){
             setAuthStatus('error','❌ Сервер не выдал токен');
             return null;
         }
-
         __jwt = data.access_token;
         sessionStorage.setItem('__jwt', __jwt);
-
         setAuthStatus('success','✅ Авторизован');
         return __jwt;
-
     }catch(err){
         console.error('refreshJwt error', err);
         setAuthStatus('error','❌ Ошибка соединения');
@@ -978,29 +444,18 @@ const supabaseClient = window.supabase.createClient(
         global: {
             fetch: async (url, options = {}) => {
                 const headers = new Headers(options.headers || {});
-                if(__jwt){
-                    headers.set('Authorization', `Bearer ${__jwt}`);
-                }
+                if(__jwt) headers.set('Authorization', `Bearer ${__jwt}`);
                 return fetch(url, { ...options, headers });
             },
         },
     }
 );
 
-const telegram =
-    window.Telegram?.WebApp;
+const telegram = window.Telegram?.WebApp;
+if(telegram){ telegram.ready(); telegram.expand(); }
 
-if(telegram){
-    telegram.ready();
-    telegram.expand();
-}
-
-const tgUser =
-    telegram?.initDataUnsafe?.user || null;
-
-const USER_ID =
-    Number(tgUser?.id || 0);
-
+const tgUser = telegram?.initDataUnsafe?.user || null;
+const USER_ID = Number(tgUser?.id || 0);
 let currentUser = null;
 
 
@@ -1040,10 +495,7 @@ const RANK_COLORS = [
 ];
 
 function rankColor(level){
-    return RANK_COLORS[
-        Math.max(0,Math.min(RANK_COLORS.length-1,
-        Number(level||1)-1))
-    ];
+    return RANK_COLORS[Math.max(0,Math.min(RANK_COLORS.length-1,Number(level||1)-1))];
 }
 
 
@@ -1053,11 +505,8 @@ function rankColor(level){
 
 function esc(value){
     return String(value ?? '')
-        .replaceAll('&','&amp;')
-        .replaceAll('<','&lt;')
-        .replaceAll('>','&gt;')
-        .replaceAll('"','&quot;')
-        .replaceAll("'","&#039;");
+        .replaceAll('&','&amp;').replaceAll('<','&lt;')
+        .replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'","&#039;");
 }
 
 function num(value){
@@ -1066,9 +515,7 @@ function num(value){
 }
 
 function fmt(value, max=8){
-    return num(value).toLocaleString('ru-RU',{
-        maximumFractionDigits:max
-    });
+    return num(value).toLocaleString('ru-RU',{maximumFractionDigits:max});
 }
 
 function tokenBalance(token){
@@ -1082,12 +529,10 @@ function tokenBalance(token){
 function showMessage(text,type='info'){
     const el = document.getElementById('message');
     el.textContent = text;
-    el.style.borderColor =
-        type === 'error' ? '#8b3f4c' :
-        type === 'success' ? '#397b5b' :
-        '#4c5b70';
+    el.style.borderColor = type === 'error' ? '#8b3f4c' :
+                           type === 'success' ? '#397b5b' : '#4c5b70';
     el.classList.add('show');
-    setTimeout(()=>el.classList.remove('show'),3000);
+    setTimeout(()=>el.classList.remove('show'), 3000);
 }
 
 
@@ -1096,31 +541,16 @@ function showMessage(text,type='info'){
 ========================================================= */
 
 async function loadUser(){
-    if(!USER_ID){
-        showMessage('Открой приложение внутри Telegram','error');
-        return;
-    }
-
-    const {data,error} =
-        await supabaseClient
-            .from('users')
-            .select('*')
-            .eq('Ttelegram_id', String(USER_ID))
-            .maybeSingle();
-
-    if(error){
-        console.error(error);
-        showMessage('Ошибка загрузки пользователя','error');
-        return;
-    }
-
+    if(!USER_ID){ showMessage('Открой приложение внутри Telegram','error'); return; }
+    const {data,error} = await supabaseClient
+        .from('users').select('*')
+        .eq('Ttelegram_id', String(USER_ID)).maybeSingle();
+    if(error){ console.error(error); showMessage('Ошибка загрузки пользователя','error'); return; }
     currentUser = data;
     renderUser();
-
     if(USER_ID === ADMIN_ID){
         document.getElementById('nav-admin').classList.remove('hidden');
     }
-
     loadReferral();
     updateOrderForm();
 }
@@ -1132,13 +562,8 @@ async function loadUser(){
 
 function renderUser(){
     if(!currentUser) return;
-
-    const name =
-        [tgUser?.first_name || '', tgUser?.last_name || '']
-        .join(' ').trim() ||
-        tgUser?.username ||
-        'Пользователь Telegram';
-
+    const name = [tgUser?.first_name || '', tgUser?.last_name || ''].join(' ').trim()
+        || tgUser?.username || 'Пользователь Telegram';
     document.getElementById('userName').textContent = name;
     document.getElementById('telegramId').textContent = `Telegram ID: ${USER_ID}`;
     document.getElementById('tgBalance').textContent = `${fmt(currentUser.tg_balance)} TG`;
@@ -1147,7 +572,6 @@ function renderUser(){
 
     const rankLevel = Number(currentUser.rank_level || 1);
     const rankName = currentUser.rank_name || RANKS[rankLevel-1]?.name || 'Крестьянин';
-
     document.getElementById('rankName').textContent = `👑 ${rankName}`;
     document.getElementById('earnRank').textContent = rankName;
 
@@ -1159,22 +583,17 @@ function renderUser(){
     const tgPart = Math.min(100,(tgUsd/requiredEach)*100);
     const aiPart = Math.min(100,(aiUsd/requiredEach)*100);
     const progress = Math.min(tgPart,aiPart);
-
     document.getElementById('rankProgress').style.width = `${progress}%`;
     document.getElementById('rankRequirement').textContent =
-        `Для титула: ${fmt(required,2)} USD. ` +
-        `Нужно TG: ${fmt(requiredEach,2)} USD + ` +
-        `AI: ${fmt(requiredEach,2)} USD.`;
+        `Для титула: ${fmt(required,2)} USD. Нужно TG: ${fmt(requiredEach,2)} USD + AI: ${fmt(requiredEach,2)} USD.`;
 
     document.getElementById('earnDetails').innerHTML =
-        `TG: <b>${fmt(tgUsd,2)} USD</b><br>` +
-        `AI: <b>${fmt(aiUsd,2)} USD</b><br>` +
+        `TG: <b>${fmt(tgUsd,2)} USD</b><br>AI: <b>${fmt(aiUsd,2)} USD</b><br>` +
         `Требование текущего титула: <b>${fmt(required,2)} USD</b>`;
 
     const claimed = Boolean(currentUser.welcome_bonus_claimed);
     document.getElementById('bonusStatus').textContent =
         claimed ? 'Приветственный бонус уже получен.' : 'Приветственный бонус доступен.';
-
     document.getElementById('refTG').textContent = fmt(currentUser.referral_tg_earned);
     document.getElementById('refTUSD').textContent = fmt(currentUser.referral_tusd_earned);
 }
@@ -1191,66 +610,49 @@ function showSection(name){
         const nav = document.getElementById(`nav-${s}`);
         if(nav) nav.classList.toggle('active', s === name);
     });
-
     if(name === 'exchange'){
         loadOrders();
         loadMyOrders();
         loadMyTrades();
+        loadTokenReserves();
     }
-    if(name === 'admin' && USER_ID === ADMIN_ID){
-        loadAdminStats();
-    }
+    if(name === 'admin' && USER_ID === ADMIN_ID){ loadAdminStats(); }
     window.scrollTo({top:0,behavior:'smooth'});
 }
 
 
 /* =========================================================
-   BONUS — вызывает grant_welcome_bonus_v2
+   BONUS
 ========================================================= */
 
 async function claimWelcomeBonus(){
     if(!USER_ID) return;
-
     const {data,error} = await supabaseClient.rpc('grant_welcome_bonus_v2');
-
-    if(error){
-        showMessage(error.message,'error');
-        return;
-    }
-
+    if(error){ showMessage(error.message,'error'); return; }
     const ok = data?.success === true;
     const msg = data?.message || (ok ? '🎁 Бонус начислен' : 'Не удалось начислить бонус');
-
     showMessage(msg, ok ? 'success' : 'error');
     await loadUser();
 }
 
 
 /* =========================================================
-   DAILY REWARD — вызывает claim_daily_reward_v2
+   DAILY REWARD
 ========================================================= */
 
 async function claimDailyReward(){
     if(!USER_ID) return;
-
     const {data,error} = await supabaseClient.rpc('claim_daily_reward_v2');
-
     if(error){
         document.getElementById('dailyStatus').textContent = error.message;
         showMessage(error.message,'error');
         return;
     }
-
     const ok = data?.success === true;
-    const msg = data?.message ||
-        (typeof data === 'string' ? data : '🎁 Награда обработана');
-
+    const msg = data?.message || (typeof data === 'string' ? data : '🎁 Награда обработана');
     document.getElementById('dailyStatus').textContent = msg;
     showMessage(msg, ok ? 'success' : 'error');
-
-    if(ok){
-        await loadUser();
-    }
+    if(ok) await loadUser();
 }
 
 
@@ -1261,8 +663,8 @@ async function claimDailyReward(){
 async function loadReferral(){
     if(!USER_ID) return;
     const botUsername = 'TELEPATp2p_bot';
-    const link = `https://t.me/${botUsername}?start=${USER_ID}`;
-    document.getElementById('refLink').value = link;
+    document.getElementById('refLink').value =
+        `https://t.me/${botUsername}?start=${USER_ID}`;
 }
 
 async function copyRefLink(){
@@ -1270,9 +672,102 @@ async function copyRefLink(){
     try{
         await navigator.clipboard.writeText(value);
         showMessage('Ссылка скопирована','success');
-    }catch(e){
-        showMessage('Не удалось скопировать','error');
+    }catch(e){ showMessage('Не удалось скопировать','error'); }
+}
+
+
+/* =========================================================
+   POOLS (Пулы ликвидности)
+========================================================= */
+
+let currentPools = {};
+let addLiqToken = null;
+
+async function loadTokenReserves(){
+    const box = document.getElementById('poolsList');
+    if(!box) return;
+    box.innerHTML = '<div class="info">Загрузка пулов...</div>';
+
+    const tokens = ['TG', 'AI', 'TUSD'];
+    const results = await Promise.all(tokens.map(async t => {
+        const {data,error} = await supabaseClient.rpc('get_token_reserve',{p_token_symbol:t});
+        if(error){ console.error('get_token_reserve', t, error); return null; }
+        return data;
+    }));
+
+    currentPools = {};
+    const valid = results.filter(Boolean);
+    if(valid.length === 0){
+        box.innerHTML = '<div class="info">Не удалось загрузить пулы.</div>';
+        return;
     }
+
+    valid.forEach(r=>{ currentPools[r.token_symbol] = r; });
+
+    box.innerHTML = valid.map(r=>{
+        const amount = num(r.reserve_amount);
+        const tusd = num(r.reserve_tusd);
+        const price = r.price_tusd;
+        const tokenUsd = r.token_tusd_value;
+        const total = num(r.total_tusd_value);
+
+        let tokenLine = `${fmt(amount,6)} ${r.token_symbol}`;
+        if(tokenUsd !== null && tokenUsd !== undefined && tokenUsd > 0){
+            tokenLine += ` ≈ ${fmt(tokenUsd,2)} TUSD`;
+        }
+
+        return `
+        <div class="pool-card">
+            <div class="pool-token">🪙 ${esc(r.token_symbol)}</div>
+            <div class="pool-line"><span>Токенов в пуле:</span><span>${tokenLine}</span></div>
+            <div class="pool-line"><span>TUSD внесено:</span><span>${fmt(tusd,2)} TUSD</span></div>
+            <div class="pool-line"><span class="pool-total">Итого: ${fmt(total,2)} TUSD</span></div>
+            <button class="small" style="margin-top:10px" onclick="openAddLiq('${esc(r.token_symbol)}')">➕ Добавить TUSD</button>
+        </div>`;
+    }).join('');
+}
+
+function openAddLiq(token){
+    if(!token) return;
+    addLiqToken = token;
+    const modal = document.getElementById('addLiqModal');
+    document.getElementById('addLiqToken').textContent = token;
+    document.getElementById('addLiqAmount').value = '';
+    const bal = tokenBalance('TUSD');
+    document.getElementById('addLiqAvailable').textContent =
+        `Доступно TUSD: ${fmt(bal)}`;
+    modal.classList.add('show');
+}
+
+function closeAddLiq(event){
+    if(event && event.target !== document.getElementById('addLiqModal')) return;
+    document.getElementById('addLiqModal').classList.remove('show');
+    addLiqToken = null;
+}
+
+async function confirmAddLiquidity(){
+    if(!addLiqToken){ return; }
+    const amount = num(document.getElementById('addLiqAmount').value);
+    if(amount <= 0){ showMessage('Введите сумму больше 0','error'); return; }
+
+    const {data,error} = await supabaseClient.rpc('add_pool_liquidity',{
+        p_token_symbol: addLiqToken,
+        p_tusd_amount: amount
+    });
+
+    if(error){ showMessage(error.message,'error'); return; }
+
+    if(data && data.success === false){
+        showMessage(data.message || 'Ошибка','error');
+        return;
+    }
+
+    showMessage(`💧 Добавлено ${fmt(amount,2)} TUSD в пул ${addLiqToken}`,'success');
+    document.getElementById('addLiqModal').classList.remove('show');
+    addLiqToken = null;
+
+    await loadUser();
+    await loadTokenReserves();
 }
 
 
@@ -1283,15 +778,14 @@ async function copyRefLink(){
 function updateOrderForm(){
     const from = document.getElementById('fromToken').value;
     const to = document.getElementById('toToken').value;
-
     if(from === to){
         const options = ['TG','AI','TUSD'].filter(x=>x!==from);
         document.getElementById('toToken').value = options[0];
     }
-
     const finalFrom = document.getElementById('fromToken').value;
     const balance = tokenBalance(finalFrom);
-    document.getElementById('availableBalance').textContent = `Доступно: ${fmt(balance)} ${finalFrom}`;
+    document.getElementById('availableBalance').textContent =
+        `Доступно: ${fmt(balance)} ${finalFrom}`;
 
     const a = num(document.getElementById('fromAmount').value);
     const b = num(document.getElementById('toAmount').value);
@@ -1307,7 +801,6 @@ function updateOrderForm(){
         document.getElementById('ratePreview').textContent = 'Укажите количество';
         document.getElementById('reverseRate').textContent = 'Обратный курс: —';
     }
-
     document.getElementById('orderBookTitle').textContent =
         `Показываются ордера: ${document.getElementById('toToken').value} → ${finalFrom}`;
 }
@@ -1318,7 +811,6 @@ function swapTokens(){
     const oldFrom = from.value;
     from.value = to.value;
     to.value = oldFrom;
-
     const a = document.getElementById('fromAmount').value;
     const b = document.getElementById('toAmount').value;
     document.getElementById('fromAmount').value = b;
@@ -1328,14 +820,11 @@ function swapTokens(){
 
 
 /* =========================================================
-   CREATE P2P ORDER — вызывает _v2
+   CREATE P2P ORDER
 ========================================================= */
 
 async function createP2POrder(){
-    if(!USER_ID || !currentUser){
-        showMessage('Пользователь не загружен','error');
-        return;
-    }
+    if(!USER_ID || !currentUser){ showMessage('Пользователь не загружен','error'); return; }
 
     const from = document.getElementById('fromToken').value;
     const to = document.getElementById('toToken').value;
@@ -1346,7 +835,11 @@ async function createP2POrder(){
     if(amountFrom <= 0 || amountTo <= 0){ showMessage('Укажите оба количества','error'); return; }
 
     const balance = tokenBalance(from);
-    if(amountFrom > balance){ showMessage(`Недостаточно ${from}`,'error'); return; }
+    const fee = amountFrom * 0.001;
+    if(amountFrom + fee > balance){
+        showMessage(`Недостаточно ${from} (нужно ${fmt(amountFrom+fee, 6)} с комиссией)`,'error');
+        return;
+    }
 
     const {data,error} = await supabaseClient.rpc('create_p2p_order_v2',{
         p_from_token:from,
@@ -1364,6 +857,7 @@ async function createP2POrder(){
     await loadUser();
     await loadOrders();
     await loadMyOrders();
+    await loadTokenReserves();
 }
 
 
@@ -1374,7 +868,6 @@ async function createP2POrder(){
 async function loadOrders(){
     const list = document.getElementById('ordersList');
     if(!list) return;
-
     const userFrom = document.getElementById('fromToken').value;
     const userTo = document.getElementById('toToken').value;
     const counterFrom = userTo;
@@ -1383,7 +876,6 @@ async function loadOrders(){
 
     document.getElementById('orderBookTitle').textContent =
         `Совместимые ордера: ${counterFrom} → ${counterTo}`;
-
     list.innerHTML = '<div class="info">Загрузка ордеров...</div>';
 
     const {data,error} = await supabaseClient.rpc('get_p2p_orders',{
@@ -1392,17 +884,11 @@ async function loadOrders(){
         p_sort:sort
     });
 
-    if(error){
-        console.error(error);
-        list.innerHTML = `<div class="error">${esc(error.message)}</div>`;
-        return;
-    }
-
+    if(error){ console.error(error); list.innerHTML = `<div class="error">${esc(error.message)}</div>`; return; }
     if(!data || data.length === 0){
-        list.innerHTML = `<div class="info" style="padding:12px 0">Пока нет подходящих ордеров.</div>`;
+        list.innerHTML = '<div class="info" style="padding:12px 0">Пока нет подходящих ордеров.</div>';
         return;
     }
-
     list.innerHTML = data.map(orderCard).join('');
 }
 
@@ -1414,7 +900,6 @@ async function loadOrders(){
 async function loadMyOrders(){
     const list = document.getElementById('myOrdersList');
     if(!list || !USER_ID) return;
-
     list.innerHTML = '<div class="info">Загрузка моих ордеров...</div>';
 
     const directions = [
@@ -1426,9 +911,7 @@ async function loadMyOrders(){
     const results = await Promise.all(
         directions.map(async ([fromToken,toToken]) => {
             const {data,error} = await supabaseClient.rpc('get_p2p_orders',{
-                p_from_token:fromToken,
-                p_to_token:toToken,
-                p_sort:'new'
+                p_from_token:fromToken, p_to_token:toToken, p_sort:'new'
             });
             if(error){ console.error(error); return []; }
             return Array.isArray(data) ? data : [];
@@ -1437,14 +920,13 @@ async function loadMyOrders(){
 
     const seen = new Set();
     const mine = [];
-    results.flat().forEach(order => {
+    results.flat().forEach(order=>{
         const id = String(order?.id || '');
         if(!id || seen.has(id)) return;
         if(String(order?.creator_id) !== String(USER_ID)) return;
         seen.add(id);
         mine.push(order);
     });
-
     mine.sort((a,b)=> new Date(b.created_at||0) - new Date(a.created_at||0));
 
     list.innerHTML = mine.length
@@ -1461,10 +943,27 @@ function orderCard(order){
     const reverse = rate > 0 ? 1/rate : 0;
     const date = new Date(order.created_at).toLocaleString('ru-RU');
 
+    // Пул токена, который продаётся (from_token)
+    const pool = currentPools[String(order.from_token).toUpperCase()];
+    let poolLine = '';
+    if(pool){
+        const amount = num(pool.reserve_amount);
+        const tusd = num(pool.reserve_tusd);
+        const total = num(pool.total_tusd_value);
+        let tokensText = `${fmt(amount,6)} ${esc(order.from_token)}`;
+        if(tusd > 0){
+            tokensText += ` + ${fmt(tusd,2)} TUSD`;
+        }
+        poolLine = `
+            <div class="detail">
+                <span>💧 Резерв ${esc(order.from_token)}</span>
+                <span>${tokensText}<br>≈ ${fmt(total,2)} TUSD</span>
+            </div>`;
+    }
+
     return `
     <div class="order" id="order-${esc(order.id)}"
          style="--rank-color:${color};--rank-glow:${glow}">
-
         <div class="order-head" onclick="toggleOrder('${esc(order.id)}')">
             <div class="order-line">
                 <div class="order-main">
@@ -1482,7 +981,6 @@ function orderCard(order){
                 <span>🤝 ${num(order.completed_trades)}</span>
             </div>
         </div>
-
         <div class="order-expanded">
             <div class="detail">
                 <span>Владелец</span>
@@ -1491,14 +989,8 @@ function orderCard(order){
                     👤 ${Number(order.creator_id)}
                 </span>
             </div>
-            <div class="detail">
-                <span>Отдаёт</span>
-                <span>${fmt(order.from_amount)} ${esc(order.from_token)}</span>
-            </div>
-            <div class="detail">
-                <span>Получает</span>
-                <span>${fmt(order.to_amount)} ${esc(order.to_token)}</span>
-            </div>
+            <div class="detail"><span>Отдаёт</span><span>${fmt(order.from_amount)} ${esc(order.from_token)}</span></div>
+            <div class="detail"><span>Получает</span><span>${fmt(order.to_amount)} ${esc(order.to_token)}</span></div>
             <div class="detail">
                 <span>Курс сделки</span>
                 <span>1 ${esc(order.from_token)} = ${fmt(rate,12)} ${esc(order.to_token)}</span>
@@ -1513,19 +1005,10 @@ function orderCard(order){
                     👑 ${esc(order.creator_rank_name)}
                 </span>
             </div>
-            <div class="detail">
-                <span>Репутация</span>
-                <span>👍 ${num(order.likes)} &nbsp; 👎 ${num(order.dislikes)}</span>
-            </div>
-            <div class="detail">
-                <span>Сделки</span>
-                <span>${num(order.completed_trades)}</span>
-            </div>
-            <div class="detail">
-                <span>Создан</span>
-                <span>${esc(date)}</span>
-            </div>
-
+            <div class="detail"><span>Репутация</span><span>👍 ${num(order.likes)} 👎 ${num(order.dislikes)}</span></div>
+            <div class="detail"><span>Сделки</span><span>${num(order.completed_trades)}</span></div>
+            ${poolLine}
+            <div class="detail"><span>Создан</span><span>${esc(date)}</span></div>
             <div class="order-actions">
                 <button class="secondary"
                         onclick="openProfile(${Number(order.creator_id)});event.stopPropagation()">
@@ -1553,7 +1036,7 @@ function toggleOrder(id){
 
 
 /* =========================================================
-   ACCEPT ORDER — вызывает _v2
+   ACCEPT ORDER
 ========================================================= */
 
 async function acceptP2POrder(orderId){
@@ -1570,11 +1053,12 @@ async function acceptP2POrder(orderId){
     await loadUser();
     await loadOrders();
     await loadMyTrades();
+    await loadTokenReserves();
 }
 
 
 /* =========================================================
-   CANCEL ORDER — вызывает _v2
+   CANCEL ORDER
 ========================================================= */
 
 async function cancelP2POrder(orderId){
@@ -1626,8 +1110,7 @@ async function openProfile(userId){
 
     document.getElementById('profileRank').innerHTML =
         `<span style="color:${color};text-shadow:0 0 12px ${color}66">
-            👑 ${esc(profile.rank_name)}
-         </span>`;
+            👑 ${esc(profile.rank_name)}</span>`;
 
     const profileTgId = profile.Ttelegram_id ?? profile.telegram_id ?? profile.user_id ?? '—';
     document.getElementById('profileId').textContent = `Telegram ID: ${profileTgId}`;
@@ -1660,12 +1143,11 @@ async function loadMyTrades(){
 
     if(error){
         console.error(error);
-        box.innerHTML = `<div class="error">Не удалось загрузить историю сделок.</div>`;
+        box.innerHTML = '<div class="error">Не удалось загрузить историю сделок.</div>';
         return;
     }
-
     if(!data || data.length === 0){
-        box.innerHTML = `<div class="info">Пока нет завершённых сделок.</div>`;
+        box.innerHTML = '<div class="info">Пока нет завершённых сделок.</div>';
         return;
     }
 
@@ -1685,8 +1167,7 @@ async function loadMyTrades(){
             </div>
             ${rated
                 ? `<div class="success" style="margin-top:8px">
-                     Оценка поставлена: ${Number(trade.my_rating) > 0 ? '👍' : '👎'}
-                   </div>`
+                     Оценка поставлена: ${Number(trade.my_rating) > 0 ? '👍' : '👎'}</div>`
                 : `<div class="rating" style="margin-top:8px">
                      <button id="review-like-${esc(tradeId)}" onclick="rateTrade('${esc(tradeId)}',1)">👍 ЛАЙК</button>
                      <button id="review-dislike-${esc(tradeId)}" class="danger" onclick="rateTrade('${esc(tradeId)}',-1)">👎 ДИЗЛАЙК</button>
@@ -1697,13 +1178,12 @@ async function loadMyTrades(){
 
 
 /* =========================================================
-   RATE TRADE — вызывает _v2
+   RATE TRADE
 ========================================================= */
 
 async function rateTrade(tradeId,rating){
     const id = String(tradeId || '').trim();
     const value = Number(rating);
-
     if(!USER_ID){ showMessage('Пользователь не определён.','error'); return; }
     if(!id){ showMessage('Не удалось определить сделку.','error'); return; }
     if(value !== 1 && value !== -1){ showMessage('Недопустимая оценка.','error'); return; }
@@ -1717,24 +1197,20 @@ async function rateTrade(tradeId,rating){
 
     try{
         const {data,error} = await supabaseClient.rpc('add_p2p_review_v2',{
-            p_trade_id:id,
-            p_rating:value
+            p_trade_id:id, p_rating:value
         });
-
         if(error){
             showMessage(error.message || 'Не удалось сохранить отзыв.','error');
             if(likeButton) likeButton.disabled = false;
             if(dislikeButton) dislikeButton.disabled = false;
             return;
         }
-
         if(data !== true){
             showMessage('Сервер не подтвердил сохранение отзыва.','error');
             if(likeButton) likeButton.disabled = false;
             if(dislikeButton) dislikeButton.disabled = false;
             return;
         }
-
         showMessage(value > 0 ? '👍 Лайк поставлен' : '👎 Дизлайк поставлен','success');
         await loadMyTrades();
     }finally{
@@ -1751,15 +1227,11 @@ async function loadAdminStats(){
     if(USER_ID !== ADMIN_ID) return;
 
     const {data:users,error:usersError} = await supabaseClient
-        .from('users')
-        .select('tg_balance,ai_balance,tusd_balance',{count:'exact'});
-
+        .from('users').select('tg_balance,ai_balance,tusd_balance',{count:'exact'});
     if(usersError){ showMessage(usersError.message,'error'); return; }
 
     const {count:ordersCount} = await supabaseClient
-        .from('p2p_orders')
-        .select('*',{count:'exact',head:true})
-        .eq('status','open');
+        .from('p2p_orders').select('*',{count:'exact',head:true}).eq('status','open');
 
     let tg = 0, ai = 0, tusd = 0;
     (users || []).forEach(u=>{
@@ -1838,7 +1310,6 @@ async function createTokenListing(){
 
     try{
         const {data,error} = await supabaseClient.rpc('telepat_create_listing',{
-            p_telegram_id:USER_ID,
             p_token_name:name,
             p_token_symbol:symbol,
             p_jetton_master:jettonMaster,
@@ -1868,7 +1339,6 @@ async function createTokenListing(){
                 `Оплата листинга: <b>${fmt(fee,2)} TUSD</b>` +
                 `</span>`;
         }
-
         showMessage('🪙 Заявка на листинг создана','success');
 
         document.getElementById('listingTokenName').value = '';
@@ -1877,7 +1347,6 @@ async function createTokenListing(){
         document.getElementById('listingDecimals').value = '9';
         document.getElementById('listingTotalSupply').value = '';
         calculateListingPreview();
-
     }catch(error){
         console.error(error);
         if(resultEl) resultEl.innerHTML = `<span class="error">${esc(error.message || 'Ошибка создания заявки')}</span>`;
@@ -1889,7 +1358,7 @@ async function createTokenListing(){
 
 
 /* =========================================================
-   ADMIN TRANSFER — вызывает _v2
+   ADMIN TRANSFER
 ========================================================= */
 
 async function adminTransfer(){
@@ -1902,17 +1371,11 @@ async function adminTransfer(){
     if(!target || amount <= 0){ showMessage('Заполните данные','error'); return; }
 
     const {data,error} = await supabaseClient.rpc('admin_transfer_token_v2',{
-        p_target_id:target,
-        p_token:token,
-        p_amount:amount
+        p_target_id:target, p_token:token, p_amount:amount
     });
 
     if(error){ showMessage(error.message,'error'); return; }
-
-    if(data && data.success === false){
-        showMessage(data.message || 'Ошибка перевода','error');
-        return;
-    }
+    if(data && data.success === false){ showMessage(data.message || 'Ошибка перевода','error'); return; }
 
     showMessage('💰 Перевод выполнен','success');
     document.getElementById('adminAmount').value = '';
