@@ -1888,8 +1888,7 @@ async function adminTransfer(){
 
     if(!target || amount <= 0){ showMessage('Заполните данные','error'); return; }
 
-    const {data,error} = await supabaseClient.rpc('admin_transfer_token',{
-        p_admin_id:USER_ID,
+        const {data,error} = await supabaseClient.rpc('admin_transfer_token_v2',{
         p_target_id:target,
         p_token:token,
         p_amount:amount
