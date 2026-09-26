@@ -377,6 +377,22 @@ label{
     font-size:13px;
 }
 .message.show{display:block}
+.auth-status{
+    position:fixed;
+    z-index:2500;
+    left:0;
+    right:0;
+    top:0;
+    padding:6px 12px;
+    font-size:11px;
+    text-align:center;
+    font-weight:bold;
+    display:none;
+}
+.auth-status.show{display:block}
+.auth-status.loading{background:#3a4a63;color:#fff}
+.auth-status.success{background:#1f6e3f;color:#fff}
+.auth-status.error{background:#8b3f4c;color:#fff}
 .admin{
     border-color:#8a6b28;
 }
@@ -392,10 +408,10 @@ label{
     }
 }
 </style>
-</head>
+</head> 
+    <body>
 
-<body>
-
+<div id="authStatus" class="auth-status"></div>
 <div id="message" class="message"></div>
 
 <div class="app">
@@ -872,7 +888,7 @@ AI учитывается по цене 0.01 USD.
 <script>
 
 /* =========================================================
-   TELEPAT
+   TELEPAT — AUTH LAYER (Этап 2)
 ========================================================= */
 
 const SUPABASE_URL =
@@ -881,16 +897,105 @@ const SUPABASE_URL =
 const SUPABASE_KEY =
     'sb_publishable_geRczpRc3faUHRGto2ue7A_eFFiJDwO';
 
+const EDGE_FUNCTION_URL =
+    `${SUPABASE_URL}/functions/v1/telegram-auth`;
+
 const ADMIN_ID = 949707357;
 
 const TG_USD = 100;
 const AI_USD = 0.01;
 
-const supabaseClient =
-    window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
-    );
+let __jwt = sessionStorage.getItem('__jwt') || null;
+
+/* ---------------------------------------------------------
+   Статус авторизации — маленькая плашка сверху экрана
+--------------------------------------------------------- */
+function setAuthStatus(state, text){
+    const el = document.getElementById('authStatus');
+    if(!el) return;
+    el.classList.remove('loading','success','error');
+    if(state === 'hide'){
+        el.classList.remove('show');
+        return;
+    }
+    el.classList.add(state, 'show');
+    el.textContent = text;
+    if(state === 'success'){
+        setTimeout(()=>el.classList.remove('show'), 2500);
+    }
+}
+
+/* ---------------------------------------------------------
+   Получение JWT от Edge Function
+--------------------------------------------------------- */
+async function refreshJwt(){
+    const initData = window.Telegram?.WebApp?.initData;
+
+    if(!initData){
+        setAuthStatus('error','⚠️ Telegram initData недоступен');
+        console.warn('initData is empty');
+        return null;
+    }
+
+    setAuthStatus('loading','⏳ Проверка подписи Telegram…');
+
+    try{
+        const resp = await fetch(EDGE_FUNCTION_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'apikey': SUPABASE_KEY,
+                'Authorization': `Bearer ${SUPABASE_KEY}`,
+            },
+            body: JSON.stringify({ initData }),
+        });
+
+        if(!resp.ok){
+            const errText = await resp.text();
+            console.error('telegram-auth HTTP', resp.status, errText);
+            setAuthStatus('error', `❌ Авторизация не прошла (${resp.status})`);
+            return null;
+        }
+
+        const data = await resp.json();
+
+        if(!data?.access_token){
+            setAuthStatus('error','❌ Сервер не выдал токен');
+            return null;
+        }
+
+        __jwt = data.access_token;
+        sessionStorage.setItem('__jwt', __jwt);
+
+        setAuthStatus('success','✅ Авторизован');
+        return __jwt;
+
+    }catch(err){
+        console.error('refreshJwt error', err);
+        setAuthStatus('error','❌ Ошибка соединения');
+        return null;
+    }
+}
+
+/* ---------------------------------------------------------
+   Supabase-клиент с автоподстановкой JWT
+--------------------------------------------------------- */
+const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY,
+    {
+        auth: { persistSession: false, autoRefreshToken: false },
+        global: {
+            fetch: async (url, options = {}) => {
+                const headers = new Headers(options.headers || {});
+                if(__jwt){
+                    headers.set('Authorization', `Bearer ${__jwt}`);
+                }
+                return fetch(url, { ...options, headers });
+            },
+        },
+    }
+);
 
 const telegram =
     window.Telegram?.WebApp;
@@ -938,27 +1043,10 @@ const RANKS = [
 ];
 
 const RANK_COLORS = [
-    '#ffffff',
-    '#d8d8d8',
-    '#b9c5b9',
-    '#75c99a',
-    '#58b5e9',
-    '#4f8cff',
-    '#3974d9',
-    '#6673e8',
-    '#4169e1',
-    '#7389bd',
-    '#b87333',
-    '#bfc2c9',
-    '#e0bd45',
-    '#9b59b6',
-    '#8e44ad',
-    '#e0b72f',
-    '#e68a27',
-    '#24c8aa',
-    '#f5cf3d',
-    '#f7b83f',
-    '#ffd700'
+    '#ffffff','#d8d8d8','#b9c5b9','#75c99a','#58b5e9','#4f8cff',
+    '#3974d9','#6673e8','#4169e1','#7389bd','#b87333','#bfc2c9',
+    '#e0bd45','#9b59b6','#8e44ad','#e0b72f','#e68a27','#24c8aa',
+    '#f5cf3d','#f7b83f','#ffd700'
 ];
 
 function rankColor(level){
@@ -995,34 +1083,21 @@ function fmt(value, max=8){
 
 function tokenBalance(token){
     if(!currentUser) return 0;
-
-    if(token === 'TG')
-        return num(currentUser.tg_balance);
-
-    if(token === 'AI')
-        return num(currentUser.ai_balance);
-
-    if(token === 'TUSD')
-        return num(currentUser.tusd_balance);
-
+    if(token === 'TG') return num(currentUser.tg_balance);
+    if(token === 'AI') return num(currentUser.ai_balance);
+    if(token === 'TUSD') return num(currentUser.tusd_balance);
     return 0;
 }
 
 function showMessage(text,type='info'){
     const el = document.getElementById('message');
-
     el.textContent = text;
-
     el.style.borderColor =
         type === 'error' ? '#8b3f4c' :
         type === 'success' ? '#397b5b' :
         '#4c5b70';
-
     el.classList.add('show');
-
-    setTimeout(()=>{
-        el.classList.remove('show');
-    },3000);
+    setTimeout(()=>el.classList.remove('show'),3000);
 }
 
 
@@ -1031,12 +1106,8 @@ function showMessage(text,type='info'){
 ========================================================= */
 
 async function loadUser(){
-
     if(!USER_ID){
-        showMessage(
-            'Открой приложение внутри Telegram',
-            'error'
-        );
+        showMessage('Открой приложение внутри Telegram','error');
         return;
     }
 
@@ -1049,25 +1120,18 @@ async function loadUser(){
 
     if(error){
         console.error(error);
-        showMessage(
-            'Ошибка загрузки пользователя',
-            'error'
-        );
+        showMessage('Ошибка загрузки пользователя','error');
         return;
     }
 
     currentUser = data;
-
     renderUser();
 
     if(USER_ID === ADMIN_ID){
-        document
-            .getElementById('nav-admin')
-            .classList.remove('hidden');
+        document.getElementById('nav-admin').classList.remove('hidden');
     }
 
     loadReferral();
-
     updateOrderForm();
 }
 
@@ -1077,110 +1141,52 @@ async function loadUser(){
 ========================================================= */
 
 function renderUser(){
-
     if(!currentUser) return;
 
     const name =
-        [
-            tgUser?.first_name || '',
-            tgUser?.last_name || ''
-        ]
-        .join(' ')
-        .trim() ||
+        [tgUser?.first_name || '', tgUser?.last_name || '']
+        .join(' ').trim() ||
         tgUser?.username ||
         'Пользователь Telegram';
 
-    document.getElementById('userName')
-        .textContent = name;
+    document.getElementById('userName').textContent = name;
+    document.getElementById('telegramId').textContent = `Telegram ID: ${USER_ID}`;
+    document.getElementById('tgBalance').textContent = `${fmt(currentUser.tg_balance)} TG`;
+    document.getElementById('aiBalance').textContent = `${fmt(currentUser.ai_balance)} AI`;
+    document.getElementById('tusdBalance').textContent = `${fmt(currentUser.tusd_balance)} TUSD`;
 
-    document.getElementById('telegramId')
-        .textContent =
-        `Telegram ID: ${USER_ID}`;
+    const rankLevel = Number(currentUser.rank_level || 1);
+    const rankName = currentUser.rank_name || RANKS[rankLevel-1]?.name || 'Крестьянин';
 
-    document.getElementById('tgBalance')
-        .textContent =
-        `${fmt(currentUser.tg_balance)} TG`;
+    document.getElementById('rankName').textContent = `👑 ${rankName}`;
+    document.getElementById('earnRank').textContent = rankName;
 
-    document.getElementById('aiBalance')
-        .textContent =
-        `${fmt(currentUser.ai_balance)} AI`;
+    const rank = RANKS[rankLevel-1] || RANKS[0];
+    const tgUsd = num(currentUser.tg_balance) * TG_USD;
+    const aiUsd = num(currentUser.ai_balance) * AI_USD;
+    const required = rank.req;
+    const requiredEach = required / 2;
+    const tgPart = Math.min(100,(tgUsd/requiredEach)*100);
+    const aiPart = Math.min(100,(aiUsd/requiredEach)*100);
+    const progress = Math.min(tgPart,aiPart);
 
-    document.getElementById('tusdBalance')
-        .textContent =
-        `${fmt(currentUser.tusd_balance)} TUSD`;
-
-    const rankLevel =
-        Number(currentUser.rank_level || 1);
-
-    const rankName =
-        currentUser.rank_name ||
-        RANKS[rankLevel-1]?.name ||
-        'Крестьянин';
-
-    document.getElementById('rankName')
-        .textContent =
-        `👑 ${rankName}`;
-
-    document.getElementById('earnRank')
-        .textContent =
-        rankName;
-
-    const rank =
-        RANKS[rankLevel-1] || RANKS[0];
-
-    const tgUsd =
-        num(currentUser.tg_balance) * TG_USD;
-
-    const aiUsd =
-        num(currentUser.ai_balance) * AI_USD;
-
-    const required =
-        rank.req;
-
-    const requiredEach =
-        required / 2;
-
-    const tgPart =
-        Math.min(100,(tgUsd/requiredEach)*100);
-
-    const aiPart =
-        Math.min(100,(aiUsd/requiredEach)*100);
-
-    const progress =
-        Math.min(tgPart,aiPart);
-
-    document.getElementById('rankProgress')
-        .style.width =
-        `${progress}%`;
-
-    document.getElementById('rankRequirement')
-        .textContent =
+    document.getElementById('rankProgress').style.width = `${progress}%`;
+    document.getElementById('rankRequirement').textContent =
         `Для титула: ${fmt(required,2)} USD. ` +
         `Нужно TG: ${fmt(requiredEach,2)} USD + ` +
         `AI: ${fmt(requiredEach,2)} USD.`;
 
-    document.getElementById('earnDetails')
-        .innerHTML =
+    document.getElementById('earnDetails').innerHTML =
         `TG: <b>${fmt(tgUsd,2)} USD</b><br>` +
         `AI: <b>${fmt(aiUsd,2)} USD</b><br>` +
         `Требование текущего титула: <b>${fmt(required,2)} USD</b>`;
 
-    const claimed =
-        Boolean(currentUser.welcome_bonus_claimed);
+    const claimed = Boolean(currentUser.welcome_bonus_claimed);
+    document.getElementById('bonusStatus').textContent =
+        claimed ? 'Приветственный бонус уже получен.' : 'Приветственный бонус доступен.';
 
-    document.getElementById('bonusStatus')
-        .textContent =
-        claimed
-        ? 'Приветственный бонус уже получен.'
-        : 'Приветственный бонус доступен.';
-
-    document.getElementById('refTG')
-        .textContent =
-        fmt(currentUser.referral_tg_earned);
-
-    document.getElementById('refTUSD')
-        .textContent =
-        fmt(currentUser.referral_tusd_earned);
+    document.getElementById('refTG').textContent = fmt(currentUser.referral_tg_earned);
+    document.getElementById('refTUSD').textContent = fmt(currentUser.referral_tusd_earned);
 }
 
 
@@ -1189,32 +1195,11 @@ function renderUser(){
 ========================================================= */
 
 function showSection(name){
-
-    const sections = [
-        'wallet',
-        'exchange',
-        'friends',
-        'earn',
-        'admin'
-    ];
-
+    const sections = ['wallet','exchange','friends','earn','admin'];
     sections.forEach(s=>{
-        document
-            .getElementById(`section-${s}`)
-            .classList.toggle(
-                'hidden',
-                s !== name
-            );
-
-        const nav =
-            document.getElementById(`nav-${s}`);
-
-        if(nav){
-            nav.classList.toggle(
-                'active',
-                s === name
-            );
-        }
+        document.getElementById(`section-${s}`).classList.toggle('hidden', s !== name);
+        const nav = document.getElementById(`nav-${s}`);
+        if(nav) nav.classList.toggle('active', s === name);
     });
 
     if(name === 'exchange'){
@@ -1222,15 +1207,10 @@ function showSection(name){
         loadMyOrders();
         loadMyTrades();
     }
-
     if(name === 'admin' && USER_ID === ADMIN_ID){
         loadAdminStats();
     }
-
-    window.scrollTo({
-        top:0,
-        behavior:'smooth'
-    });
+    window.scrollTo({top:0,behavior:'smooth'});
 }
 
 
@@ -1239,30 +1219,10 @@ function showSection(name){
 ========================================================= */
 
 async function claimWelcomeBonus(){
-
     if(!USER_ID) return;
-
-    const {data,error} =
-        await supabaseClient.rpc(
-            'grant_welcome_bonus',
-            {
-                p_user_id:USER_ID
-            }
-        );
-
-    if(error){
-        showMessage(
-            error.message,
-            'error'
-        );
-        return;
-    }
-
-    showMessage(
-        '🎁 Бонус обработан',
-        'success'
-    );
-
+    const {data,error} = await supabaseClient.rpc('grant_welcome_bonus',{p_user_id:USER_ID});
+    if(error){ showMessage(error.message,'error'); return; }
+    showMessage('🎁 Бонус обработан','success');
     await loadUser();
 }
 
@@ -1272,35 +1232,15 @@ async function claimWelcomeBonus(){
 ========================================================= */
 
 async function claimDailyReward(){
-
     if(!USER_ID) return;
-
-    const {data,error} =
-        await supabaseClient.rpc(
-            'claim_daily_reward',
-            {
-                p_user_id:USER_ID
-            }
-        );
-
+    const {data,error} = await supabaseClient.rpc('claim_daily_reward',{p_user_id:USER_ID});
     if(error){
-        document.getElementById('dailyStatus')
-            .textContent =
-            error.message;
+        document.getElementById('dailyStatus').textContent = error.message;
         return;
     }
-
-    document.getElementById('dailyStatus')
-        .textContent =
-        typeof data === 'string'
-        ? data
-        : '🎁 Награда обработана';
-
-    showMessage(
-        'Ежедневная награда обработана',
-        'success'
-    );
-
+    document.getElementById('dailyStatus').textContent =
+        typeof data === 'string' ? data : '🎁 Награда обработана';
+    showMessage('Ежедневная награда обработана','success');
     await loadUser();
 }
 
@@ -1310,42 +1250,19 @@ async function claimDailyReward(){
 ========================================================= */
 
 async function loadReferral(){
-
     if(!USER_ID) return;
-
-    const botUsername =
-        tgUser?.username
-        ? tgUser.username
-        : '';
-
-    /*
-       Если username бота неизвестен,
-       оставляем универсальный формат.
-    */
-
-    const link =
-        `https://t.me/${botUsername}?start=${USER_ID}`;
-
-    document.getElementById('refLink')
-        .value = link;
+    const botUsername = 'TELEPATp2p_bot';
+    const link = `https://t.me/${botUsername}?start=${USER_ID}`;
+    document.getElementById('refLink').value = link;
 }
 
 async function copyRefLink(){
-
-    const value =
-        document.getElementById('refLink').value;
-
+    const value = document.getElementById('refLink').value;
     try{
         await navigator.clipboard.writeText(value);
-        showMessage(
-            'Ссылка скопирована',
-            'success'
-        );
+        showMessage('Ссылка скопирована','success');
     }catch(e){
-        showMessage(
-            'Не удалось скопировать',
-            'error'
-        );
+        showMessage('Не удалось скопировать','error');
     }
 }
 
@@ -1355,111 +1272,48 @@ async function copyRefLink(){
 ========================================================= */
 
 function updateOrderForm(){
-
-    const from =
-        document.getElementById('fromToken').value;
-
-    const to =
-        document.getElementById('toToken').value;
+    const from = document.getElementById('fromToken').value;
+    const to = document.getElementById('toToken').value;
 
     if(from === to){
-
-        const options =
-            ['TG','AI','TUSD']
-            .filter(x=>x!==from);
-
-        document.getElementById('toToken').value =
-            options[0];
+        const options = ['TG','AI','TUSD'].filter(x=>x!==from);
+        document.getElementById('toToken').value = options[0];
     }
 
-    const finalFrom =
-        document.getElementById('fromToken').value;
+    const finalFrom = document.getElementById('fromToken').value;
+    const balance = tokenBalance(finalFrom);
+    document.getElementById('availableBalance').textContent = `Доступно: ${fmt(balance)} ${finalFrom}`;
 
-    const balance =
-        tokenBalance(finalFrom);
-
-    document.getElementById('availableBalance')
-        .textContent =
-        `Доступно: ${fmt(balance)} ${finalFrom}`;
-
-    const a =
-        num(document.getElementById('fromAmount').value);
-
-    const b =
-        num(document.getElementById('toAmount').value);
-
-    const rate =
-        a > 0 && b > 0
-        ? b/a
-        : 0;
-
-    const reverse =
-        rate > 0
-        ? 1/rate
-        : 0;
+    const a = num(document.getElementById('fromAmount').value);
+    const b = num(document.getElementById('toAmount').value);
+    const rate = a > 0 && b > 0 ? b/a : 0;
+    const reverse = rate > 0 ? 1/rate : 0;
 
     if(rate > 0){
-
-        document.getElementById('ratePreview')
-            .textContent =
-            `1 ${finalFrom} = ${fmt(rate,12)} ` +
-            `${document.getElementById('toToken').value}`;
-
-        document.getElementById('reverseRate')
-            .textContent =
-            `Обратный курс: 1 ${
-                document.getElementById('toToken').value
-            } = ${fmt(reverse,12)} ${finalFrom}`;
-
+        document.getElementById('ratePreview').textContent =
+            `1 ${finalFrom} = ${fmt(rate,12)} ${document.getElementById('toToken').value}`;
+        document.getElementById('reverseRate').textContent =
+            `Обратный курс: 1 ${document.getElementById('toToken').value} = ${fmt(reverse,12)} ${finalFrom}`;
     }else{
-
-        document.getElementById('ratePreview')
-            .textContent =
-            'Укажите количество';
-
-        document.getElementById('reverseRate')
-            .textContent =
-            'Обратный курс: —';
+        document.getElementById('ratePreview').textContent = 'Укажите количество';
+        document.getElementById('reverseRate').textContent = 'Обратный курс: —';
     }
 
-    document.getElementById('orderBookTitle')
-        .textContent =
-        `Показываются ордера: ${
-            document.getElementById('toToken').value
-        } → ${
-            finalFrom
-        }`;
+    document.getElementById('orderBookTitle').textContent =
+        `Показываются ордера: ${document.getElementById('toToken').value} → ${finalFrom}`;
 }
 
 function swapTokens(){
+    const from = document.getElementById('fromToken');
+    const to = document.getElementById('toToken');
+    const oldFrom = from.value;
+    from.value = to.value;
+    to.value = oldFrom;
 
-    const from =
-        document.getElementById('fromToken');
-
-    const to =
-        document.getElementById('toToken');
-
-    const oldFrom =
-        from.value;
-
-    from.value =
-        to.value;
-
-    to.value =
-        oldFrom;
-
-    const a =
-        document.getElementById('fromAmount').value;
-
-    const b =
-        document.getElementById('toAmount').value;
-
-    document.getElementById('fromAmount').value =
-        b;
-
-    document.getElementById('toAmount').value =
-        a;
-
+    const a = document.getElementById('fromAmount').value;
+    const b = document.getElementById('toAmount').value;
+    document.getElementById('fromAmount').value = b;
+    document.getElementById('toAmount').value = a;
     updateOrderForm();
 }
 
@@ -1469,87 +1323,35 @@ function swapTokens(){
 ========================================================= */
 
 async function createP2POrder(){
-
     if(!USER_ID || !currentUser){
-        showMessage(
-            'Пользователь не загружен',
-            'error'
-        );
+        showMessage('Пользователь не загружен','error');
         return;
     }
 
-    const from =
-        document.getElementById('fromToken').value;
+    const from = document.getElementById('fromToken').value;
+    const to = document.getElementById('toToken').value;
+    const amountFrom = num(document.getElementById('fromAmount').value);
+    const amountTo = num(document.getElementById('toAmount').value);
 
-    const to =
-        document.getElementById('toToken').value;
+    if(from === to){ showMessage('Выберите разные токены','error'); return; }
+    if(amountFrom <= 0 || amountTo <= 0){ showMessage('Укажите оба количества','error'); return; }
 
-    const amountFrom =
-        num(document.getElementById('fromAmount').value);
+    const balance = tokenBalance(from);
+    if(amountFrom > balance){ showMessage(`Недостаточно ${from}`,'error'); return; }
 
-    const amountTo =
-        num(document.getElementById('toAmount').value);
+    const {data,error} = await supabaseClient.rpc('create_p2p_order',{
+        p_user_id:USER_ID,
+        p_from_token:from,
+        p_to_token:to,
+        p_from_amount:amountFrom,
+        p_to_amount:amountTo
+    });
 
-    if(from === to){
-        showMessage(
-            'Выберите разные токены',
-            'error'
-        );
-        return;
-    }
+    if(error){ console.error(error); showMessage(error.message,'error'); return; }
 
-    if(amountFrom <= 0 || amountTo <= 0){
-        showMessage(
-            'Укажите оба количества',
-            'error'
-        );
-        return;
-    }
-
-    const balance =
-        tokenBalance(from);
-
-    if(amountFrom > balance){
-        showMessage(
-            `Недостаточно ${from}`,
-            'error'
-        );
-        return;
-    }
-
-    const {data,error} =
-        await supabaseClient.rpc(
-            'create_p2p_order',
-            {
-                p_user_id:USER_ID,
-                p_from_token:from,
-                p_to_token:to,
-                p_from_amount:amountFrom,
-                p_to_amount:amountTo
-            }
-        );
-
-    if(error){
-        console.error(error);
-
-        showMessage(
-            error.message,
-            'error'
-        );
-
-        return;
-    }
-
-    document.getElementById('fromAmount')
-        .value = '';
-
-    document.getElementById('toAmount')
-        .value = '';
-
-    showMessage(
-        '🚀 Ордер создан',
-        'success'
-    );
+    document.getElementById('fromAmount').value = '';
+    document.getElementById('toAmount').value = '';
+    showMessage('🚀 Ордер создан','success');
 
     await loadUser();
     await loadOrders();
@@ -1562,143 +1364,80 @@ async function createP2POrder(){
 ========================================================= */
 
 async function loadOrders(){
-
-    const list =
-        document.getElementById('ordersList');
-
+    const list = document.getElementById('ordersList');
     if(!list) return;
 
-    const userFrom =
-        document.getElementById('fromToken').value;
+    const userFrom = document.getElementById('fromToken').value;
+    const userTo = document.getElementById('toToken').value;
+    const counterFrom = userTo;
+    const counterTo = userFrom;
+    const sort = document.getElementById('orderSort').value;
 
-    const userTo =
-        document.getElementById('toToken').value;
-
-    /*
-       Если пользователь отдаёт TG и хочет TUSD,
-       ему нужны ордера TUSD → TG.
-    */
-
-    const counterFrom =
-        userTo;
-
-    const counterTo =
-        userFrom;
-
-    const sort =
-        document.getElementById('orderSort').value;
-
-    document.getElementById('orderBookTitle')
-        .textContent =
+    document.getElementById('orderBookTitle').textContent =
         `Совместимые ордера: ${counterFrom} → ${counterTo}`;
 
-    list.innerHTML =
-        '<div class="info">Загрузка ордеров...</div>';
+    list.innerHTML = '<div class="info">Загрузка ордеров...</div>';
 
-    const {data,error} =
-        await supabaseClient.rpc(
-            'get_p2p_orders',
-            {
-                p_from_token:counterFrom,
-                p_to_token:counterTo,
-                p_sort:sort
-            }
-        );
+    const {data,error} = await supabaseClient.rpc('get_p2p_orders',{
+        p_from_token:counterFrom,
+        p_to_token:counterTo,
+        p_sort:sort
+    });
 
     if(error){
         console.error(error);
-
-        list.innerHTML =
-            `<div class="error">${esc(error.message)}</div>`;
-
+        list.innerHTML = `<div class="error">${esc(error.message)}</div>`;
         return;
     }
 
     if(!data || data.length === 0){
-
-        list.innerHTML =
-            `<div class="info" style="padding:12px 0">
-                Пока нет подходящих ордеров.
-             </div>`;
-
+        list.innerHTML = `<div class="info" style="padding:12px 0">Пока нет подходящих ордеров.</div>`;
         return;
     }
 
-    list.innerHTML =
-        data.map(orderCard).join('');
+    list.innerHTML = data.map(orderCard).join('');
 }
 
 
 /* =========================================================
-   ORDER CARD
+   MY ORDERS
 ========================================================= */
 
 async function loadMyOrders(){
-
     const list = document.getElementById('myOrdersList');
-
     if(!list || !USER_ID) return;
 
-    list.innerHTML =
-        '<div class="info">Загрузка моих ордеров...</div>';
+    list.innerHTML = '<div class="info">Загрузка моих ордеров...</div>';
 
-    /*
-       У пользователя могут быть ордера по любому из шести
-       направлений. Раньше здесь использовалось только текущее
-       направление формы обмена, из-за чего остальные ордера
-       исчезали из раздела «Мои ордера».
-    */
     const directions = [
-        ['TG','TUSD'],
-        ['TUSD','TG'],
-        ['TG','AI'],
-        ['AI','TG'],
-        ['TUSD','AI'],
-        ['AI','TUSD']
+        ['TG','TUSD'],['TUSD','TG'],
+        ['TG','AI'],['AI','TG'],
+        ['TUSD','AI'],['AI','TUSD']
     ];
 
     const results = await Promise.all(
         directions.map(async ([fromToken,toToken]) => {
-            const {data,error} =
-                await supabaseClient.rpc(
-                    'get_p2p_orders',
-                    {
-                        p_from_token:fromToken,
-                        p_to_token:toToken,
-                        p_sort:'new'
-                    }
-                );
-
-            if(error){
-                console.error(
-                    `get_p2p_orders ${fromToken} -> ${toToken}:`,
-                    error
-                );
-                return [];
-            }
-
+            const {data,error} = await supabaseClient.rpc('get_p2p_orders',{
+                p_from_token:fromToken,
+                p_to_token:toToken,
+                p_sort:'new'
+            });
+            if(error){ console.error(error); return []; }
             return Array.isArray(data) ? data : [];
         })
     );
 
     const seen = new Set();
     const mine = [];
-
     results.flat().forEach(order => {
         const id = String(order?.id || '');
-
         if(!id || seen.has(id)) return;
-
         if(String(order?.creator_id) !== String(USER_ID)) return;
-
         seen.add(id);
         mine.push(order);
     });
 
-    mine.sort((a,b) =>
-        new Date(b.created_at || 0) -
-        new Date(a.created_at || 0)
-    );
+    mine.sort((a,b)=> new Date(b.created_at||0) - new Date(a.created_at||0));
 
     list.innerHTML = mine.length
         ? mine.map(orderCard).join('')
@@ -1707,82 +1446,36 @@ async function loadMyOrders(){
 
 
 function orderCard(order){
-
-    const isMine =
-        Number(order.creator_id) === USER_ID;
-
-    const color =
-        rankColor(order.creator_rank_level);
-
-    const glow =
-        `${color}55`;
-
-    const rate =
-        num(order.rate);
-
-    const reverse =
-        rate > 0
-        ? 1/rate
-        : 0;
-
-    const date =
-        new Date(order.created_at)
-            .toLocaleString('ru-RU');
+    const isMine = Number(order.creator_id) === USER_ID;
+    const color = rankColor(order.creator_rank_level);
+    const glow = `${color}55`;
+    const rate = num(order.rate);
+    const reverse = rate > 0 ? 1/rate : 0;
+    const date = new Date(order.created_at).toLocaleString('ru-RU');
 
     return `
-    <div class="order"
-         id="order-${esc(order.id)}"
-         style="
-           --rank-color:${color};
-           --rank-glow:${glow};
-         ">
+    <div class="order" id="order-${esc(order.id)}"
+         style="--rank-color:${color};--rank-glow:${glow}">
 
-        <div class="order-head"
-             onclick="toggleOrder('${esc(order.id)}')">
-
+        <div class="order-head" onclick="toggleOrder('${esc(order.id)}')">
             <div class="order-line">
-
                 <div class="order-main">
-                    ${fmt(order.from_amount)}
-                    ${esc(order.from_token)}
-                    →
-                    ${fmt(order.to_amount)}
-                    ${esc(order.to_token)}
+                    ${fmt(order.from_amount)} ${esc(order.from_token)}
+                    → ${fmt(order.to_amount)} ${esc(order.to_token)}
                 </div>
-
-                <div class="rank-badge">
-                    👑 ${esc(order.creator_rank_name)}
-                </div>
-
+                <div class="rank-badge">👑 ${esc(order.creator_rank_name)}</div>
             </div>
-
             <div class="order-price">
-                1 ${esc(order.from_token)}
-                = ${fmt(rate,12)}
-                ${esc(order.to_token)}
+                1 ${esc(order.from_token)} = ${fmt(rate,12)} ${esc(order.to_token)}
             </div>
-
             <div class="order-stats">
-
-                <span>
-                    👍 ${num(order.likes)}
-                </span>
-
-                <span>
-                    👎 ${num(order.dislikes)}
-                </span>
-
-                <span>
-                    🤝 ${num(order.completed_trades)}
-                </span>
-
+                <span>👍 ${num(order.likes)}</span>
+                <span>👎 ${num(order.dislikes)}</span>
+                <span>🤝 ${num(order.completed_trades)}</span>
             </div>
-
         </div>
 
-
         <div class="order-expanded">
-
             <div class="detail">
                 <span>Владелец</span>
                 <span class="profile-link"
@@ -1790,111 +1483,64 @@ function orderCard(order){
                     👤 ${Number(order.creator_id)}
                 </span>
             </div>
-
             <div class="detail">
                 <span>Отдаёт</span>
-                <span>
-                    ${fmt(order.from_amount)}
-                    ${esc(order.from_token)}
-                </span>
+                <span>${fmt(order.from_amount)} ${esc(order.from_token)}</span>
             </div>
-
             <div class="detail">
                 <span>Получает</span>
-                <span>
-                    ${fmt(order.to_amount)}
-                    ${esc(order.to_token)}
-                </span>
+                <span>${fmt(order.to_amount)} ${esc(order.to_token)}</span>
             </div>
-
             <div class="detail">
                 <span>Курс сделки</span>
-                <span>
-                    1 ${esc(order.from_token)}
-                    = ${fmt(rate,12)}
-                    ${esc(order.to_token)}
-                </span>
+                <span>1 ${esc(order.from_token)} = ${fmt(rate,12)} ${esc(order.to_token)}</span>
             </div>
-
             <div class="detail">
                 <span>Обратный курс</span>
-                <span>
-                    1 ${esc(order.to_token)}
-                    = ${fmt(reverse,12)}
-                    ${esc(order.from_token)}
-                </span>
+                <span>1 ${esc(order.to_token)} = ${fmt(reverse,12)} ${esc(order.from_token)}</span>
             </div>
-
             <div class="detail">
                 <span>Титул</span>
-                <span style="
-                    color:${color};
-                    text-shadow:0 0 9px ${glow};
-                    font-weight:bold">
+                <span style="color:${color};text-shadow:0 0 9px ${glow};font-weight:bold">
                     👑 ${esc(order.creator_rank_name)}
                 </span>
             </div>
-
             <div class="detail">
                 <span>Репутация</span>
-                <span>
-                    👍 ${num(order.likes)}
-                    &nbsp;
-                    👎 ${num(order.dislikes)}
-                </span>
+                <span>👍 ${num(order.likes)} &nbsp; 👎 ${num(order.dislikes)}</span>
             </div>
-
             <div class="detail">
                 <span>Сделки</span>
-                <span>
-                    ${num(order.completed_trades)}
-                </span>
+                <span>${num(order.completed_trades)}</span>
             </div>
-
             <div class="detail">
                 <span>Создан</span>
                 <span>${esc(date)}</span>
             </div>
 
             <div class="order-actions">
-
                 <button class="secondary"
                         onclick="openProfile(${Number(order.creator_id)});event.stopPropagation()">
                     👤 ПРОФИЛЬ
                 </button>
-
-                ${
-                    isMine
-                    ? `
-                    <button class="danger"
-                            onclick="cancelP2POrder('${esc(order.id)}');event.stopPropagation()">
+                ${isMine
+                    ? `<button class="danger"
+                               onclick="cancelP2POrder('${esc(order.id)}');event.stopPropagation()">
                         ❌ ОТМЕНИТЬ
-                    </button>
-                    `
-                    :
-                    `
-                    <button
-                        onclick="acceptP2POrder('${esc(order.id)}');event.stopPropagation()">
+                       </button>`
+                    : `<button
+                               onclick="acceptP2POrder('${esc(order.id)}');event.stopPropagation()">
                         🤝 ПРИНЯТЬ ОРДЕР
-                    </button>
-                    `
-                }
-
+                       </button>`}
             </div>
-
         </div>
     </div>`;
 }
 
 
 function toggleOrder(id){
-
-    const el =
-        document.getElementById(`order-${id}`);
-
-    if(el){
-        el.classList.toggle('opened');
-    }
+    const el = document.getElementById(`order-${id}`);
+    if(el) el.classList.toggle('opened');
 }
 
 
@@ -1903,40 +1549,17 @@ function toggleOrder(id){
 ========================================================= */
 
 async function acceptP2POrder(orderId){
-
     if(!USER_ID) return;
+    if(!confirm('Принять этот ордер и провести сделку?')) return;
 
-    const ok =
-        confirm(
-            'Принять этот ордер и провести сделку?'
-        );
+    const {data,error} = await supabaseClient.rpc('accept_p2p_order',{
+        p_order_id:orderId,
+        p_buyer_id:USER_ID
+    });
 
-    if(!ok) return;
+    if(error){ showMessage(error.message,'error'); return; }
 
-    const {data,error} =
-        await supabaseClient.rpc(
-            'accept_p2p_order',
-            {
-                p_order_id:orderId,
-                p_buyer_id:USER_ID
-            }
-        );
-
-    if(error){
-
-        showMessage(
-            error.message,
-            'error'
-        );
-
-        return;
-    }
-
-    showMessage(
-        '🤝 Сделка успешно завершена',
-        'success'
-    );
-
+    showMessage('🤝 Сделка успешно завершена','success');
     await loadUser();
     await loadOrders();
     await loadMyTrades();
@@ -1948,40 +1571,17 @@ async function acceptP2POrder(orderId){
 ========================================================= */
 
 async function cancelP2POrder(orderId){
-
     if(!USER_ID) return;
+    if(!confirm('Отменить ордер и вернуть заблокированные средства?')) return;
 
-    const ok =
-        confirm(
-            'Отменить ордер и вернуть заблокированные средства?'
-        );
+    const {data,error} = await supabaseClient.rpc('cancel_p2p_order',{
+        p_order_id:orderId,
+        p_user_id:USER_ID
+    });
 
-    if(!ok) return;
+    if(error){ showMessage(error.message,'error'); return; }
 
-    const {data,error} =
-        await supabaseClient.rpc(
-            'cancel_p2p_order',
-            {
-                p_order_id:orderId,
-                p_user_id:USER_ID
-            }
-        );
-
-    if(error){
-
-        showMessage(
-            error.message,
-            'error'
-        );
-
-        return;
-    }
-
-    showMessage(
-        'Ордер отменён. Средства возвращены.',
-        'success'
-    );
-
+    showMessage('Ордер отменён. Средства возвращены.','success');
     await loadUser();
     await loadOrders();
 }
@@ -1992,112 +1592,48 @@ async function cancelP2POrder(orderId){
 ========================================================= */
 
 async function openProfile(userId){
-
-    const modal =
-        document.getElementById('profileModal');
-
+    const modal = document.getElementById('profileModal');
     modal.classList.add('show');
+    document.getElementById('profileRank').textContent = 'Загрузка...';
 
-    document.getElementById('profileRank')
-        .textContent =
-        'Загрузка...';
-
-    const {data,error} =
-        await supabaseClient.rpc(
-            'get_p2p_profile',
-            {
-                p_user_id:Number(userId)
-            }
-        );
+    const {data,error} = await supabaseClient.rpc('get_p2p_profile',{
+        p_user_id:Number(userId)
+    });
 
     if(error){
-
-        document.getElementById('profileRank')
-            .textContent =
-            'Ошибка';
-
-        showMessage(
-            error.message,
-            'error'
-        );
-
+        document.getElementById('profileRank').textContent = 'Ошибка';
+        showMessage(error.message,'error');
         return;
     }
 
-    const profile =
-        Array.isArray(data)
-        ? data[0]
-        : data;
-
+    const profile = Array.isArray(data) ? data[0] : data;
     if(!profile){
-
-        document.getElementById('profileRank')
-            .textContent =
-            'Пользователь не найден';
-
+        document.getElementById('profileRank').textContent = 'Пользователь не найден';
         return;
     }
 
-    const completed =
-        num(profile.completed_trades);
+    const completed = num(profile.completed_trades);
+    const cancelled = num(profile.cancelled_trades);
+    const total = completed + cancelled;
+    const success = total > 0 ? (completed/total)*100 : 100;
+    const color = rankColor(profile.rank_level);
 
-    const cancelled =
-        num(profile.cancelled_trades);
-
-    const total =
-        completed + cancelled;
-
-    const success =
-        total > 0
-        ? (completed/total)*100
-        : 100;
-
-    const color =
-        rankColor(profile.rank_level);
-
-    document.getElementById('profileRank')
-        .innerHTML =
-        `<span style="
-            color:${color};
-            text-shadow:0 0 12px ${color}66">
+    document.getElementById('profileRank').innerHTML =
+        `<span style="color:${color};text-shadow:0 0 12px ${color}66">
             👑 ${esc(profile.rank_name)}
          </span>`;
 
-    document.getElementById('profileId')
-        .textContent =
-        `Telegram ID: ${Number(profile.telegram_id)}`;
-
-    document.getElementById('profileTrades')
-        .textContent =
-        completed;
-
-    document.getElementById('profileSuccess')
-        .textContent =
-        `${success.toFixed(1)}%`;
-
-    document.getElementById('profileLikes')
-        .textContent =
-        num(profile.likes);
-
-    document.getElementById('profileDislikes')
-        .textContent =
-        num(profile.dislikes);
-
-    document.getElementById('profileCancelled')
-        .textContent =
-        `Отменённых ордеров: ${cancelled}`;
+    document.getElementById('profileId').textContent = `Telegram ID: ${Number(profile.telegram_id)}`;
+    document.getElementById('profileTrades').textContent = completed;
+    document.getElementById('profileSuccess').textContent = `${success.toFixed(1)}%`;
+    document.getElementById('profileLikes').textContent = num(profile.likes);
+    document.getElementById('profileDislikes').textContent = num(profile.dislikes);
+    document.getElementById('profileCancelled').textContent = `Отменённых ордеров: ${cancelled}`;
 }
 
 function closeProfile(event){
-
-    if(event &&
-       event.target !==
-       document.getElementById('profileModal')){
-        return;
-    }
-
-    document.getElementById('profileModal')
-        .classList.remove('show');
+    if(event && event.target !== document.getElementById('profileModal')) return;
+    document.getElementById('profileModal').classList.remove('show');
 }
 
 
@@ -2108,100 +1644,48 @@ function closeProfile(event){
 const reviewBusy = new Set();
 
 async function loadMyTrades(){
-
-    const box =
-        document.getElementById('myTrades');
-
+    const box = document.getElementById('myTrades');
     if(!box || !USER_ID) return;
 
-    const {data,error} =
-        await supabaseClient.rpc(
-            'get_p2p_my_trades',
-            {
-                p_user_id:USER_ID
-            }
-        );
+    const {data,error} = await supabaseClient.rpc('get_p2p_my_trades',{
+        p_user_id:USER_ID
+    });
 
     if(error){
         console.error(error);
-
-        box.innerHTML =
-            `<div class="error">
-                Не удалось загрузить историю сделок.
-             </div>`;
-
+        box.innerHTML = `<div class="error">Не удалось загрузить историю сделок.</div>`;
         return;
     }
 
     if(!data || data.length === 0){
-        box.innerHTML =
-            `<div class="info">
-                Пока нет завершённых сделок.
-             </div>`;
+        box.innerHTML = `<div class="info">Пока нет завершённых сделок.</div>`;
         return;
     }
 
-    box.innerHTML =
-        data.map(trade=>{
+    box.innerHTML = data.map(trade=>{
+        const tradeId = String(trade?.id || '');
+        const rated = trade.my_rating !== null && trade.my_rating !== undefined;
+        if(!tradeId) return '';
 
-            const tradeId =
-                String(trade?.id || '');
-
-            const rated =
-                trade.my_rating !== null &&
-                trade.my_rating !== undefined;
-
-            if(!tradeId){
-                return '';
-            }
-
-            return `
-            <div class="trade-item" id="trade-${esc(tradeId)}">
-
-                <div class="order-main">
-                    ${fmt(trade.my_give_amount)}
-                    ${esc(trade.my_give_token)}
-                    →
-                    ${fmt(trade.my_get_amount)}
-                    ${esc(trade.my_get_token)}
-                </div>
-
-                <div class="info" style="margin-top:5px">
-                    Сделка с пользователем:
-                    ${Number(trade.other_user_id)}
-                </div>
-
-                ${
-                    rated
-                    ?
-                    `<div class="success"
-                          style="margin-top:8px">
-                        Оценка поставлена:
-                        ${Number(trade.my_rating) > 0 ? '👍' : '👎'}
-                     </div>`
-                    :
-                    `
-                    <div class="rating" style="margin-top:8px">
-
-                        <button
-                          id="review-like-${esc(tradeId)}"
-                          onclick="rateTrade('${esc(tradeId)}',1)">
-                          👍 ЛАЙК
-                        </button>
-
-                        <button
-                          id="review-dislike-${esc(tradeId)}"
-                          class="danger"
-                          onclick="rateTrade('${esc(tradeId)}',-1)">
-                          👎 ДИЗЛАЙК
-                        </button>
-
-                    </div>
-                    `
-                }
-
-            </div>`;
-        }).join('');
+        return `
+        <div class="trade-item" id="trade-${esc(tradeId)}">
+            <div class="order-main">
+                ${fmt(trade.my_give_amount)} ${esc(trade.my_give_token)}
+                → ${fmt(trade.my_get_amount)} ${esc(trade.my_get_token)}
+            </div>
+            <div class="info" style="margin-top:5px">
+                Сделка с пользователем: ${Number(trade.other_user_id)}
+            </div>
+            ${rated
+                ? `<div class="success" style="margin-top:8px">
+                     Оценка поставлена: ${Number(trade.my_rating) > 0 ? '👍' : '👎'}
+                   </div>`
+                : `<div class="rating" style="margin-top:8px">
+                     <button id="review-like-${esc(tradeId)}" onclick="rateTrade('${esc(tradeId)}',1)">👍 ЛАЙК</button>
+                     <button id="review-dislike-${esc(tradeId)}" class="danger" onclick="rateTrade('${esc(tradeId)}',-1)">👎 ДИЗЛАЙК</button>
+                   </div>`}
+        </div>`;
+    }).join('');
 }
 
 
@@ -2210,79 +1694,43 @@ async function loadMyTrades(){
 ========================================================= */
 
 async function rateTrade(tradeId,rating){
-
     const id = String(tradeId || '').trim();
     const value = Number(rating);
 
-    if(!USER_ID){
-        showMessage('Пользователь не определён.', 'error');
-        return;
-    }
-
-    if(!id){
-        showMessage('Не удалось определить сделку.', 'error');
-        return;
-    }
-
-    if(value !== 1 && value !== -1){
-        showMessage('Недопустимая оценка.', 'error');
-        return;
-    }
-
+    if(!USER_ID){ showMessage('Пользователь не определён.','error'); return; }
+    if(!id){ showMessage('Не удалось определить сделку.','error'); return; }
+    if(value !== 1 && value !== -1){ showMessage('Недопустимая оценка.','error'); return; }
     if(reviewBusy.has(id)) return;
     reviewBusy.add(id);
 
-    const likeButton =
-        document.getElementById(`review-like-${id}`);
-    const dislikeButton =
-        document.getElementById(`review-dislike-${id}`);
-
+    const likeButton = document.getElementById(`review-like-${id}`);
+    const dislikeButton = document.getElementById(`review-dislike-${id}`);
     if(likeButton) likeButton.disabled = true;
     if(dislikeButton) dislikeButton.disabled = true;
 
     try{
-        const {data,error} =
-            await supabaseClient.rpc(
-                'add_p2p_review',
-                {
-                    p_trade_id:id,
-                    p_reviewer_id:String(USER_ID),
-                    p_rating:value
-                }
-            );
+        const {data,error} = await supabaseClient.rpc('add_p2p_review',{
+            p_trade_id:id,
+            p_reviewer_id:String(USER_ID),
+            p_rating:value
+        });
 
         if(error){
-            console.error('add_p2p_review:', error);
-
-            showMessage(
-                error.message || 'Не удалось сохранить отзыв.',
-                'error'
-            );
-
+            showMessage(error.message || 'Не удалось сохранить отзыв.','error');
             if(likeButton) likeButton.disabled = false;
             if(dislikeButton) dislikeButton.disabled = false;
             return;
         }
 
         if(data !== true){
-            showMessage(
-                'Сервер не подтвердил сохранение отзыва.',
-                'error'
-            );
+            showMessage('Сервер не подтвердил сохранение отзыва.','error');
             if(likeButton) likeButton.disabled = false;
             if(dislikeButton) dislikeButton.disabled = false;
             return;
         }
 
-        showMessage(
-            value > 0
-                ? '👍 Лайк поставлен'
-                : '👎 Дизлайк поставлен',
-            'success'
-        );
-
+        showMessage(value > 0 ? '👍 Лайк поставлен' : '👎 Дизлайк поставлен','success');
         await loadMyTrades();
-
     }finally{
         reviewBusy.delete(id);
     }
@@ -2294,62 +1742,32 @@ async function rateTrade(tradeId,rating){
 ========================================================= */
 
 async function loadAdminStats(){
-
     if(USER_ID !== ADMIN_ID) return;
 
-    const {data:users,error:usersError} =
-        await supabaseClient
-            .from('users')
-            .select(
-                'tg_balance,ai_balance,tusd_balance',
-                {count:'exact'}
-            );
+    const {data:users,error:usersError} = await supabaseClient
+        .from('users')
+        .select('tg_balance,ai_balance,tusd_balance',{count:'exact'});
 
-    if(usersError){
-        showMessage(
-            usersError.message,
-            'error'
-        );
-        return;
-    }
+    if(usersError){ showMessage(usersError.message,'error'); return; }
 
-    const {count:ordersCount} =
-        await supabaseClient
-            .from('p2p_orders')
-            .select('*',{
-                count:'exact',
-                head:true
-            })
-            .eq('status','open');
+    const {count:ordersCount} = await supabaseClient
+        .from('p2p_orders')
+        .select('*',{count:'exact',head:true})
+        .eq('status','open');
 
-    let tg = 0;
-    let ai = 0;
-    let tusd = 0;
-
+    let tg = 0, ai = 0, tusd = 0;
     (users || []).forEach(u=>{
         tg += num(u.tg_balance);
         ai += num(u.ai_balance);
         tusd += num(u.tusd_balance);
     });
 
-    document.getElementById('adminUsers')
-        .textContent =
-        (users || []).length;
-
-    document.getElementById('adminOrders')
-        .textContent =
-        ordersCount || 0;
-
-    document.getElementById('adminTG')
-        .textContent =
-        fmt(tg);
-
-    document.getElementById('adminAI')
-        .textContent =
-        fmt(ai);
-
-    const adminTUSD=document.getElementById('adminTUSD');
-    if(adminTUSD) adminTUSD.textContent=fmt(tusd);
+    document.getElementById('adminUsers').textContent = (users || []).length;
+    document.getElementById('adminOrders').textContent = ordersCount || 0;
+    document.getElementById('adminTG').textContent = fmt(tg);
+    document.getElementById('adminAI').textContent = fmt(ai);
+    const adminTUSD = document.getElementById('adminTUSD');
+    if(adminTUSD) adminTUSD.textContent = fmt(tusd);
 }
 
 
@@ -2378,10 +1796,7 @@ async function loadListingSettings(){
             .from('telepat_settings')
             .select('setting_key,setting_value')
             .in('setting_key',['listing_fee_tusd','listing_supply_percent']);
-        if(error){
-            console.warn('Не удалось загрузить настройки листинга:',error);
-            return;
-        }
+        if(error){ console.warn(error); return; }
         (data || []).forEach(row=>{
             const value = Number(row.setting_value);
             if(!Number.isFinite(value)) return;
@@ -2389,16 +1804,11 @@ async function loadListingSettings(){
             if(row.setting_key === 'listing_supply_percent') listingSupplyPercent = value;
         });
         calculateListingPreview();
-    }catch(error){
-        console.warn('loadListingSettings error:',error);
-    }
+    }catch(error){ console.warn(error); }
 }
 
 async function createTokenListing(){
-    if(USER_ID !== ADMIN_ID){
-        showMessage('Нет доступа','error');
-        return;
-    }
+    if(USER_ID !== ADMIN_ID){ showMessage('Нет доступа','error'); return; }
 
     const name = document.getElementById('listingTokenName').value.trim();
     const symbol = document.getElementById('listingTokenSymbol').value.trim();
@@ -2413,8 +1823,7 @@ async function createTokenListing(){
     if(!symbol){ showMessage('Введите символ токена','error'); return; }
     if(!jettonMaster){ showMessage('Введите Jetton Master','error'); return; }
     if(!Number.isInteger(decimals) || decimals < 0 || decimals > 18){
-        showMessage('Decimals должен быть от 0 до 18','error');
-        return;
+        showMessage('Decimals должен быть от 0 до 18','error'); return;
     }
     if(totalSupply <= 0){ showMessage('Введите общий supply больше 0','error'); return; }
 
@@ -2435,7 +1844,7 @@ async function createTokenListing(){
         });
 
         if(error){
-            console.error('telepat_create_listing error:',error);
+            console.error(error);
             if(resultEl) resultEl.innerHTML = `<span class="error">${esc(error.message)}</span>`;
             showMessage(error.message,'error');
             return;
@@ -2455,6 +1864,7 @@ async function createTokenListing(){
         }
 
         showMessage('🪙 Заявка на листинг создана','success');
+
         document.getElementById('listingTokenName').value = '';
         document.getElementById('listingTokenSymbol').value = '';
         document.getElementById('listingJettonMaster').value = '';
@@ -2463,7 +1873,7 @@ async function createTokenListing(){
         calculateListingPreview();
 
     }catch(error){
-        console.error('createTokenListing exception:',error);
+        console.error(error);
         if(resultEl) resultEl.innerHTML = `<span class="error">${esc(error.message || 'Ошибка создания заявки')}</span>`;
         showMessage(error.message || 'Ошибка создания заявки','error');
     }finally{
@@ -2477,67 +1887,25 @@ async function createTokenListing(){
 ========================================================= */
 
 async function adminTransfer(){
+    if(USER_ID !== ADMIN_ID){ showMessage('Нет доступа','error'); return; }
 
-    if(USER_ID !== ADMIN_ID){
-        showMessage(
-            'Нет доступа',
-            'error'
-        );
-        return;
-    }
+    const target = Number(document.getElementById('adminTargetId').value);
+    const token = document.getElementById('adminToken').value;
+    const amount = num(document.getElementById('adminAmount').value);
 
-    const target =
-        Number(
-            document.getElementById('adminTargetId').value
-        );
+    if(!target || amount <= 0){ showMessage('Заполните данные','error'); return; }
 
-    const token =
-        document.getElementById('adminToken').value;
+    const {data,error} = await supabaseClient.rpc('admin_transfer_token',{
+        p_admin_id:USER_ID,
+        p_target_id:target,
+        p_token:token,
+        p_amount:amount
+    });
 
-    const amount =
-        num(
-            document.getElementById('adminAmount').value
-        );
+    if(error){ showMessage(error.message,'error'); return; }
 
-    if(!target || amount <= 0){
-
-        showMessage(
-            'Заполните данные',
-            'error'
-        );
-
-        return;
-    }
-
-    const {data,error} =
-        await supabaseClient.rpc(
-            'admin_transfer_token',
-            {
-                p_admin_id:USER_ID,
-                p_target_id:target,
-                p_token:token,
-                p_amount:amount
-            }
-        );
-
-    if(error){
-
-        showMessage(
-            error.message,
-            'error'
-        );
-
-        return;
-    }
-
-    showMessage(
-        '💰 Перевод выполнен',
-        'success'
-    );
-
-    document.getElementById('adminAmount')
-        .value = '';
-
+    showMessage('💰 Перевод выполнен','success');
+    document.getElementById('adminAmount').value = '';
     await loadAdminStats();
 }
 
@@ -2546,24 +1914,20 @@ async function adminTransfer(){
    INIT
 ========================================================= */
 
-document.addEventListener(
-    'DOMContentLoaded',
-    async ()=>{
+document.addEventListener('DOMContentLoaded', async ()=>{
+    // Сначала получаем JWT от Edge Function,
+    // потом уже грузим пользователя — чтобы запрос шёл с авторизацией.
+    await refreshJwt();
 
-        await loadUser();
+    await loadUser();
+    updateOrderForm();
 
-        updateOrderForm();
-
-        if(USER_ID === ADMIN_ID){
-            document
-                .getElementById('nav-admin')
-                .classList.remove('hidden');
-            await loadListingSettings();
-            calculateListingPreview();
-        }
-
+    if(USER_ID === ADMIN_ID){
+        document.getElementById('nav-admin').classList.remove('hidden');
+        await loadListingSettings();
+        calculateListingPreview();
     }
-);
+});
 
 </script>
 
