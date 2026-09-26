@@ -408,8 +408,9 @@ label{
     }
 }
 </style>
-</head> 
-    <body>
+</head>
+
+<body>
 
 <div id="authStatus" class="auth-status"></div>
 <div id="message" class="message"></div>
@@ -883,8 +884,6 @@ AI учитывается по цене 0.01 USD.
 </button>
 
 </div>
-
-
 <script>
 
 /* =========================================================
@@ -907,9 +906,6 @@ const AI_USD = 0.01;
 
 let __jwt = sessionStorage.getItem('__jwt') || null;
 
-/* ---------------------------------------------------------
-   Статус авторизации — маленькая плашка сверху экрана
---------------------------------------------------------- */
 function setAuthStatus(state, text){
     const el = document.getElementById('authStatus');
     if(!el) return;
@@ -925,9 +921,6 @@ function setAuthStatus(state, text){
     }
 }
 
-/* ---------------------------------------------------------
-   Получение JWT от Edge Function
---------------------------------------------------------- */
 async function refreshJwt(){
     const initData = window.Telegram?.WebApp?.initData;
 
@@ -977,9 +970,6 @@ async function refreshJwt(){
     }
 }
 
-/* ---------------------------------------------------------
-   Supabase-клиент с автоподстановкой JWT
---------------------------------------------------------- */
 const supabaseClient = window.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_KEY,
@@ -1103,6 +1093,7 @@ function showMessage(text,type='info'){
 
 /* =========================================================
    LOAD USER
+   ВАЖНО: колонка в базе называется "Ttelegram_id" (с большой T)
 ========================================================= */
 
 async function loadUser(){
@@ -1115,7 +1106,7 @@ async function loadUser(){
         await supabaseClient
             .from('users')
             .select('*')
-            .eq('telegram_id',USER_ID)
+            .eq('Ttelegram_id', String(USER_ID))
             .maybeSingle();
 
     if(error){
@@ -1446,7 +1437,7 @@ async function loadMyOrders(){
 
 
 function orderCard(order){
-    const isMine = Number(order.creator_id) === USER_ID;
+    const isMine = String(order.creator_id) === String(USER_ID);
     const color = rankColor(order.creator_rank_level);
     const glow = `${color}55`;
     const rate = num(order.rate);
@@ -1554,7 +1545,7 @@ async function acceptP2POrder(orderId){
 
     const {data,error} = await supabaseClient.rpc('accept_p2p_order',{
         p_order_id:orderId,
-        p_buyer_id:USER_ID
+        p_buyer_id:String(USER_ID)
     });
 
     if(error){ showMessage(error.message,'error'); return; }
@@ -1576,7 +1567,7 @@ async function cancelP2POrder(orderId){
 
     const {data,error} = await supabaseClient.rpc('cancel_p2p_order',{
         p_order_id:orderId,
-        p_user_id:USER_ID
+        p_user_id:String(USER_ID)
     });
 
     if(error){ showMessage(error.message,'error'); return; }
@@ -1623,7 +1614,9 @@ async function openProfile(userId){
             👑 ${esc(profile.rank_name)}
          </span>`;
 
-    document.getElementById('profileId').textContent = `Telegram ID: ${Number(profile.telegram_id)}`;
+    // В базе колонка называется Ttelegram_id (с большой T)
+    const profileTgId = profile.Ttelegram_id ?? profile.telegram_id ?? profile.user_id ?? '—';
+    document.getElementById('profileId').textContent = `Telegram ID: ${profileTgId}`;
     document.getElementById('profileTrades').textContent = completed;
     document.getElementById('profileSuccess').textContent = `${success.toFixed(1)}%`;
     document.getElementById('profileLikes').textContent = num(profile.likes);
@@ -1648,7 +1641,7 @@ async function loadMyTrades(){
     if(!box || !USER_ID) return;
 
     const {data,error} = await supabaseClient.rpc('get_p2p_my_trades',{
-        p_user_id:USER_ID
+        p_user_id:String(USER_ID)
     });
 
     if(error){
@@ -1915,10 +1908,7 @@ async function adminTransfer(){
 ========================================================= */
 
 document.addEventListener('DOMContentLoaded', async ()=>{
-    // Сначала получаем JWT от Edge Function,
-    // потом уже грузим пользователя — чтобы запрос шёл с авторизацией.
     await refreshJwt();
-
     await loadUser();
     updateOrderForm();
 
