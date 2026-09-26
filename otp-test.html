@@ -1093,7 +1093,6 @@ function showMessage(text,type='info'){
 
 /* =========================================================
    LOAD USER
-   Колонка в базе называется "Ttelegram_id" (с большой T)
 ========================================================= */
 
 async function loadUser(){
@@ -1206,33 +1205,52 @@ function showSection(name){
 
 
 /* =========================================================
-   BONUS
+   BONUS — вызывает grant_welcome_bonus_v2
 ========================================================= */
 
 async function claimWelcomeBonus(){
     if(!USER_ID) return;
-    const {data,error} = await supabaseClient.rpc('grant_welcome_bonus',{p_user_id:String(USER_ID)});
-    if(error){ showMessage(error.message,'error'); return; }
-    showMessage('🎁 Бонус обработан','success');
+
+    const {data,error} = await supabaseClient.rpc('grant_welcome_bonus_v2');
+
+    if(error){
+        showMessage(error.message,'error');
+        return;
+    }
+
+    const ok = data?.success === true;
+    const msg = data?.message || (ok ? '🎁 Бонус начислен' : 'Не удалось начислить бонус');
+
+    showMessage(msg, ok ? 'success' : 'error');
     await loadUser();
 }
 
 
 /* =========================================================
-   DAILY REWARD
+   DAILY REWARD — вызывает claim_daily_reward_v2
 ========================================================= */
 
 async function claimDailyReward(){
     if(!USER_ID) return;
-    const {data,error} = await supabaseClient.rpc('claim_daily_reward',{p_user_id:String(USER_ID)});
+
+    const {data,error} = await supabaseClient.rpc('claim_daily_reward_v2');
+
     if(error){
         document.getElementById('dailyStatus').textContent = error.message;
+        showMessage(error.message,'error');
         return;
     }
-    document.getElementById('dailyStatus').textContent =
-        typeof data === 'string' ? data : '🎁 Награда обработана';
-    showMessage('Ежедневная награда обработана','success');
-    await loadUser();
+
+    const ok = data?.success === true;
+    const msg = data?.message ||
+        (typeof data === 'string' ? data : '🎁 Награда обработана');
+
+    document.getElementById('dailyStatus').textContent = msg;
+    showMessage(msg, ok ? 'success' : 'error');
+
+    if(ok){
+        await loadUser();
+    }
 }
 
 
@@ -1310,7 +1328,7 @@ function swapTokens(){
 
 
 /* =========================================================
-   CREATE P2P ORDER — вызывает _v2 (ID берётся из JWT)
+   CREATE P2P ORDER — вызывает _v2
 ========================================================= */
 
 async function createP2POrder(){
@@ -1535,7 +1553,7 @@ function toggleOrder(id){
 
 
 /* =========================================================
-   ACCEPT ORDER — вызывает _v2 (ID покупателя из JWT)
+   ACCEPT ORDER — вызывает _v2
 ========================================================= */
 
 async function acceptP2POrder(orderId){
@@ -1556,7 +1574,7 @@ async function acceptP2POrder(orderId){
 
 
 /* =========================================================
-   CANCEL ORDER — вызывает _v2 (ID пользователя из JWT)
+   CANCEL ORDER — вызывает _v2
 ========================================================= */
 
 async function cancelP2POrder(orderId){
@@ -1585,7 +1603,7 @@ async function openProfile(userId){
     document.getElementById('profileRank').textContent = 'Загрузка...';
 
     const {data,error} = await supabaseClient.rpc('get_p2p_profile',{
-        p_user_id:Number(userId)
+        p_user_id:String(userId)
     });
 
     if(error){
@@ -1679,7 +1697,7 @@ async function loadMyTrades(){
 
 
 /* =========================================================
-   RATE TRADE — вызывает _v2 (ID рецензента из JWT)
+   RATE TRADE — вызывает _v2
 ========================================================= */
 
 async function rateTrade(tradeId,rating){
@@ -1871,7 +1889,7 @@ async function createTokenListing(){
 
 
 /* =========================================================
-   ADMIN TRANSFER — вызывает _v2 (ID админа из JWT)
+   ADMIN TRANSFER — вызывает _v2
 ========================================================= */
 
 async function adminTransfer(){
@@ -1890,6 +1908,11 @@ async function adminTransfer(){
     });
 
     if(error){ showMessage(error.message,'error'); return; }
+
+    if(data && data.success === false){
+        showMessage(data.message || 'Ошибка перевода','error');
+        return;
+    }
 
     showMessage('💰 Перевод выполнен','success');
     document.getElementById('adminAmount').value = '';
