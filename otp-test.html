@@ -1093,7 +1093,7 @@ function showMessage(text,type='info'){
 
 /* =========================================================
    LOAD USER
-   ВАЖНО: колонка в базе называется "Ttelegram_id" (с большой T)
+   Колонка в базе называется "Ttelegram_id" (с большой T)
 ========================================================= */
 
 async function loadUser(){
@@ -1211,7 +1211,7 @@ function showSection(name){
 
 async function claimWelcomeBonus(){
     if(!USER_ID) return;
-    const {data,error} = await supabaseClient.rpc('grant_welcome_bonus',{p_user_id:USER_ID});
+    const {data,error} = await supabaseClient.rpc('grant_welcome_bonus',{p_user_id:String(USER_ID)});
     if(error){ showMessage(error.message,'error'); return; }
     showMessage('🎁 Бонус обработан','success');
     await loadUser();
@@ -1224,7 +1224,7 @@ async function claimWelcomeBonus(){
 
 async function claimDailyReward(){
     if(!USER_ID) return;
-    const {data,error} = await supabaseClient.rpc('claim_daily_reward',{p_user_id:USER_ID});
+    const {data,error} = await supabaseClient.rpc('claim_daily_reward',{p_user_id:String(USER_ID)});
     if(error){
         document.getElementById('dailyStatus').textContent = error.message;
         return;
@@ -1310,7 +1310,7 @@ function swapTokens(){
 
 
 /* =========================================================
-   CREATE P2P ORDER
+   CREATE P2P ORDER — вызывает _v2 (ID берётся из JWT)
 ========================================================= */
 
 async function createP2POrder(){
@@ -1330,8 +1330,7 @@ async function createP2POrder(){
     const balance = tokenBalance(from);
     if(amountFrom > balance){ showMessage(`Недостаточно ${from}`,'error'); return; }
 
-    const {data,error} = await supabaseClient.rpc('create_p2p_order',{
-        p_user_id:USER_ID,
+    const {data,error} = await supabaseClient.rpc('create_p2p_order_v2',{
         p_from_token:from,
         p_to_token:to,
         p_from_amount:amountFrom,
@@ -1536,16 +1535,15 @@ function toggleOrder(id){
 
 
 /* =========================================================
-   ACCEPT ORDER
+   ACCEPT ORDER — вызывает _v2 (ID покупателя из JWT)
 ========================================================= */
 
 async function acceptP2POrder(orderId){
     if(!USER_ID) return;
     if(!confirm('Принять этот ордер и провести сделку?')) return;
 
-    const {data,error} = await supabaseClient.rpc('accept_p2p_order',{
-        p_order_id:orderId,
-        p_buyer_id:String(USER_ID)
+    const {data,error} = await supabaseClient.rpc('accept_p2p_order_v2',{
+        p_order_id:orderId
     });
 
     if(error){ showMessage(error.message,'error'); return; }
@@ -1558,16 +1556,15 @@ async function acceptP2POrder(orderId){
 
 
 /* =========================================================
-   CANCEL ORDER
+   CANCEL ORDER — вызывает _v2 (ID пользователя из JWT)
 ========================================================= */
 
 async function cancelP2POrder(orderId){
     if(!USER_ID) return;
     if(!confirm('Отменить ордер и вернуть заблокированные средства?')) return;
 
-    const {data,error} = await supabaseClient.rpc('cancel_p2p_order',{
-        p_order_id:orderId,
-        p_user_id:String(USER_ID)
+    const {data,error} = await supabaseClient.rpc('cancel_p2p_order_v2',{
+        p_order_id:orderId
     });
 
     if(error){ showMessage(error.message,'error'); return; }
@@ -1614,7 +1611,6 @@ async function openProfile(userId){
             👑 ${esc(profile.rank_name)}
          </span>`;
 
-    // В базе колонка называется Ttelegram_id (с большой T)
     const profileTgId = profile.Ttelegram_id ?? profile.telegram_id ?? profile.user_id ?? '—';
     document.getElementById('profileId').textContent = `Telegram ID: ${profileTgId}`;
     document.getElementById('profileTrades').textContent = completed;
@@ -1683,7 +1679,7 @@ async function loadMyTrades(){
 
 
 /* =========================================================
-   RATE TRADE
+   RATE TRADE — вызывает _v2 (ID рецензента из JWT)
 ========================================================= */
 
 async function rateTrade(tradeId,rating){
@@ -1702,9 +1698,8 @@ async function rateTrade(tradeId,rating){
     if(dislikeButton) dislikeButton.disabled = true;
 
     try{
-        const {data,error} = await supabaseClient.rpc('add_p2p_review',{
+        const {data,error} = await supabaseClient.rpc('add_p2p_review_v2',{
             p_trade_id:id,
-            p_reviewer_id:String(USER_ID),
             p_rating:value
         });
 
@@ -1876,7 +1871,7 @@ async function createTokenListing(){
 
 
 /* =========================================================
-   ADMIN TRANSFER
+   ADMIN TRANSFER — вызывает _v2 (ID админа из JWT)
 ========================================================= */
 
 async function adminTransfer(){
@@ -1888,7 +1883,7 @@ async function adminTransfer(){
 
     if(!target || amount <= 0){ showMessage('Заполните данные','error'); return; }
 
-        const {data,error} = await supabaseClient.rpc('admin_transfer_token_v2',{
+    const {data,error} = await supabaseClient.rpc('admin_transfer_token_v2',{
         p_target_id:target,
         p_token:token,
         p_amount:amount
