@@ -117,6 +117,13 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 .modal-overlay{position:fixed;z-index:3000;inset:0;background:#0009;display:none;align-items:center;justify-content:center;padding:16px;}
 .modal-overlay.show{display:flex}
 .modal-box{width:min(420px,100%);background:linear-gradient(145deg,#1d2939,#101721);border:1px solid #68562a;border-radius:20px;padding:18px;}
+/* ===== Кнопка рекламы ===== */
+.btn-ad{
+    background:linear-gradient(135deg,#55a7ff,#2b7de0) !important;
+    color:#fff !important;
+    box-shadow:0 6px 20px rgba(85,167,255,0.4);
+}
+.btn-ad:active{transform:scale(0.97);}
 @media(max-width:390px){.exchange-grid{grid-template-columns:1fr;}.swap{margin:auto;}.row{flex-direction:column;}}
 </style>
 </head>
@@ -163,6 +170,15 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 <div id="bonusStatus" class="info">Проверка...</div>
 <button onclick="claimWelcomeBonus()">🎁 Получить приветственный бонус</button>
 </div>
+
+<!-- ===== РЕКЛАМА (НОВАЯ КАРТОЧКА) ===== -->
+<div class="card gold">
+<div class="section-title">🎬 ЗАРАБОТОК НА РЕКЛАМЕ</div>
+<div class="info">Смотрите короткие видео и получайте TG-токены прямо на кошелёк. До 150 просмотров в день!</div>
+<button class="btn-ad" onclick="openAdPage()">🎬 СМОТРЕТЬ РЕКЛАМУ</button>
+<div class="info" style="margin-top:8px">💰 Награда за просмотр: ~0.00015 TG</div>
+</div>
+<!-- ===== /РЕКЛАМА ===== -->
 
 </section>
 
@@ -599,6 +615,18 @@ function showMessage(text,type='info'){
                            type === 'success' ? '#397b5b' : '#4c5b70';
     el.classList.add('show');
     setTimeout(()=>el.classList.remove('show'), 3000);
+}
+
+
+/* =========================================================
+   РЕКЛАМА — ОТКРЫТИЕ СТРАНИЦЫ ПРОСМОТРА
+========================================================= */
+
+function openAdPage(){
+    // v=N — параметр для обхода кеша Telegram. Увеличивай при обновлении ad.html.
+    const url = 'https://z9884144065-gif.github.io/telepat-ads/ad.html?v=1';
+    // Открываем внутри текущего WebView Mini App
+    window.location.href = url;
 }
 
 
