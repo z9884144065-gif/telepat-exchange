@@ -326,6 +326,72 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 <div id="listingCreateResult" class="info" style="margin-top:9px"></div>
 </div>
 
+<!-- ================= РАЗДАЧА В ЧАТАХ ================= -->
+
+<div class="card admin">
+<div class="section-title">🎁 РАЗДАЧА В ЧАТАХ</div>
+
+<button class="secondary" onclick="loadAdminChats()">🔄 ЗАГРУЗИТЬ СПИСОК ЧАТОВ</button>
+
+<div id="adminChatsList" style="margin-top:12px">
+<div class="info">Нажми «Загрузить список чатов».</div>
+</div>
+
+<div id="adminChatEdit" class="hidden" style="margin-top:16px;padding:12px;border:1px solid #4a596d;border-radius:13px;background:#0d1520">
+<div class="section-title" id="adminChatEditTitle">⚙️ НАСТРОЙКА ЧАТА</div>
+
+<label>Включено</label>
+<select id="ce_enabled">
+<option value="true">Да</option>
+<option value="false">Нет</option>
+</select>
+
+<label style="margin-top:9px">Токен награды</label>
+<select id="ce_token">
+<option value="">TUSD (по умолчанию)</option>
+</select>
+
+<label style="margin-top:9px">Награда за сообщение</label>
+<input id="ce_reward" type="number" inputmode="decimal" step="0.000001" placeholder="Например: 0.0002">
+
+<label style="margin-top:9px">Бюджет (0 = без лимита)</label>
+<input id="ce_budget" type="number" inputmode="decimal" step="0.000001" placeholder="Например: 1000">
+
+<label style="margin-top:9px">Кулдаун между сообщениями (сек)</label>
+<input id="ce_cooldown" type="number" inputmode="numeric" step="1" placeholder="Например: 5">
+
+<label style="margin-top:9px">Дневной лимит сообщений в чате (0 = без лимита)</label>
+<input id="ce_daily" type="number" inputmode="numeric" step="1" placeholder="Например: 500">
+
+<label style="margin-top:9px">Макс. сообщений на юзера в день (0 = без лимита)</label>
+<input id="ce_maxmsg" type="number" inputmode="numeric" step="1" placeholder="Например: 50">
+
+<label style="margin-top:9px">Мин. слов в сообщении</label>
+<input id="ce_minwords" type="number" inputmode="numeric" step="1" placeholder="Например: 1">
+
+<label style="margin-top:9px">Мин. символов в сообщении</label>
+<input id="ce_minchars" type="number" inputmode="numeric" step="1" placeholder="Например: 1">
+
+<label style="margin-top:9px">Исключать команды (начинаются с /)</label>
+<select id="ce_exclcmd">
+<option value="true">Да</option>
+<option value="false">Нет</option>
+</select>
+
+<label style="margin-top:9px">Исключать сообщения только из эмодзи</label>
+<select id="ce_exclemoji">
+<option value="true">Да</option>
+<option value="false">Нет</option>
+</select>
+
+<div class="row" style="margin-top:12px">
+<button onclick="saveAdminChatReward()">💾 СОХРАНИТЬ</button>
+<button class="secondary" onclick="closeAdminChatEdit()">Отмена</button>
+</div>
+<div id="adminChatEditStatus" class="info" style="margin-top:9px"></div>
+</div>
+</div>
+
 </section>
 
 </div>
@@ -616,7 +682,10 @@ function showSection(name){
         loadMyTrades();
         loadTokenReserves();
     }
-    if(name === 'admin' && USER_ID === ADMIN_ID){ loadAdminStats(); }
+    if(name === 'admin' && USER_ID === ADMIN_ID){
+        loadAdminStats();
+        loadAdminChats();
+    }
     window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -943,7 +1012,6 @@ function orderCard(order){
     const reverse = rate > 0 ? 1/rate : 0;
     const date = new Date(order.created_at).toLocaleString('ru-RU');
 
-    // Пул токена, который продаётся (from_token)
     const pool = currentPools[String(order.from_token).toUpperCase()];
     let poolLine = '';
     if(pool){
@@ -1246,6 +1314,136 @@ async function loadAdminStats(){
     document.getElementById('adminAI').textContent = fmt(ai);
     const adminTUSD = document.getElementById('adminTUSD');
     if(adminTUSD) adminTUSD.textContent = fmt(tusd);
+}
+
+
+/* =========================================================
+   РАЗДАЧА В ЧАТАХ (ADMIN)
+========================================================= */
+
+let ADMIN_CHAT_TOKENS = [];
+let ADMIN_CHAT_CURRENT = null;
+let ADMIN_CHAT_ROWS = [];
+
+async function loadAdminChatTokens(){
+    if(ADMIN_CHAT_TOKENS.length) return ADMIN_CHAT_TOKENS;
+    const {data,error} = await supabaseClient.rpc('telepat_admin_list_tokens');
+    if(error){ console.warn('tokens load error', error); return []; }
+    ADMIN_CHAT_TOKENS = Array.isArray(data) ? data : [];
+    return ADMIN_CHAT_TOKENS;
+}
+
+async function loadAdminChats(){
+    const box = document.getElementById('adminChatsList');
+    if(!box) return;
+    box.innerHTML = '<div class="info">Загрузка...</div>';
+    await loadAdminChatTokens();
+
+    const {data,error} = await supabaseClient.rpc('telepat_admin_list_chats');
+    if(error){
+        box.innerHTML = `<div class="error">Ошибка: ${esc(error.message)}</div>`;
+        return;
+    }
+    if(!data || data.length === 0){
+        box.innerHTML = '<div class="info">Пока нет подключённых чатов.</div>';
+        return;
+    }
+    ADMIN_CHAT_ROWS = data;
+    box.innerHTML = '';
+    data.forEach(row=>{
+        const div = document.createElement('div');
+        div.className = 'pool-card';
+        const statusClass = row.enabled ? 'success' : 'error';
+        const statusText = row.enabled ? 'ВКЛ' : 'ВЫКЛ';
+        const title = esc(row.chat_title || '(без названия)');
+        const reward = row.reward_per_message ? `${fmt(row.reward_per_message)} за сообщение` : 'не настроено';
+        div.innerHTML =
+            `<div class="order-line">` +
+                `<div>` +
+                    `<div class="pool-token">📢 ${title}</div>` +
+                    `<div class="info" style="margin-top:4px">${esc(row.chat_telegram_id)}</div>` +
+                    `<div class="${statusClass}" style="font-size:12px;margin-top:5px">${statusText} • ${esc(reward)}</div>` +
+                `</div>` +
+                `<button class="secondary small" onclick="openAdminChatEdit('${esc(row.chat_telegram_id)}')">⚙️</button>` +
+            `</div>`;
+        box.appendChild(div);
+    });
+}
+
+async function openAdminChatEdit(chatTgId){
+    const chat = ADMIN_CHAT_ROWS.find(c => String(c.chat_telegram_id) === String(chatTgId));
+    if(!chat) return;
+    ADMIN_CHAT_CURRENT = chat;
+
+    document.getElementById('adminChatEditTitle').textContent =
+        '⚙️ ' + (chat.chat_title || chat.chat_telegram_id);
+    document.getElementById('ce_enabled').value = chat.enabled ? 'true' : 'false';
+    document.getElementById('ce_reward').value = chat.reward_per_message ?? '';
+    document.getElementById('ce_budget').value = chat.budget ?? 0;
+    document.getElementById('ce_cooldown').value = chat.cooldown_seconds ?? 0;
+    document.getElementById('ce_daily').value = chat.daily_message_limit ?? 0;
+    document.getElementById('ce_maxmsg').value = chat.max_messages_per_user_day ?? 0;
+    document.getElementById('ce_minwords').value = chat.min_words ?? 1;
+    document.getElementById('ce_minchars').value = chat.min_chars ?? 1;
+    document.getElementById('ce_exclcmd').value = chat.exclude_commands === false ? 'false' : 'true';
+    document.getElementById('ce_exclemoji').value = chat.exclude_emoji_only === false ? 'false' : 'true';
+
+    const sel = document.getElementById('ce_token');
+    sel.innerHTML = '<option value="">TUSD (по умолчанию)</option>';
+    ADMIN_CHAT_TOKENS.forEach(t=>{
+        const opt = document.createElement('option');
+        opt.value = t.id;
+        opt.textContent = `${t.symbol} — ${t.name || ''}`;
+        sel.appendChild(opt);
+    });
+    sel.value = chat.reward_token_id || '';
+
+    document.getElementById('adminChatEditStatus').textContent = '';
+    document.getElementById('adminChatEdit').classList.remove('hidden');
+}
+
+function closeAdminChatEdit(){
+    document.getElementById('adminChatEdit').classList.add('hidden');
+    ADMIN_CHAT_CURRENT = null;
+}
+
+async function saveAdminChatReward(){
+    if(!ADMIN_CHAT_CURRENT) return;
+    const status = document.getElementById('adminChatEditStatus');
+    status.className = 'info';
+    status.textContent = 'Сохранение...';
+
+    const tokenVal = document.getElementById('ce_token').value;
+    const payload = {
+        p_chat_telegram_id: Number(ADMIN_CHAT_CURRENT.chat_telegram_id),
+        p_enabled: document.getElementById('ce_enabled').value === 'true',
+        p_token_id: tokenVal ? tokenVal : null,
+        p_reward_per_message: num(document.getElementById('ce_reward').value),
+        p_budget: num(document.getElementById('ce_budget').value),
+        p_cooldown_seconds: Math.floor(num(document.getElementById('ce_cooldown').value)),
+        p_daily_message_limit: Math.floor(num(document.getElementById('ce_daily').value)),
+        p_max_messages_per_user_day: Math.floor(num(document.getElementById('ce_maxmsg').value)),
+        p_min_words: Math.floor(num(document.getElementById('ce_minwords').value) || 1),
+        p_min_chars: Math.floor(num(document.getElementById('ce_minchars').value) || 1),
+        p_exclude_commands: document.getElementById('ce_exclcmd').value === 'true',
+        p_exclude_emoji_only: document.getElementById('ce_exclemoji').value === 'true',
+    };
+
+    const {data,error} = await supabaseClient.rpc('telepat_admin_update_chat_reward', payload);
+    if(error){
+        status.className = 'error';
+        status.textContent = 'Ошибка: ' + error.message;
+        return;
+    }
+    if(data && data.ok){
+        status.className = 'success';
+        status.textContent = '✅ Сохранено';
+        await loadAdminChats();
+        setTimeout(()=>closeAdminChatEdit(), 900);
+    }else{
+        status.className = 'error';
+        status.textContent = 'Ошибка: ' + ((data && data.reason) || 'unknown');
+    }
 }
 
 
