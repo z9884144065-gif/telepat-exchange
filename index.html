@@ -435,6 +435,8 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 <select id="ce_token"><option value="">TUSD (по умолчанию)</option></select>
 <label style="margin-top:9px">Награда за сообщение</label>
 <input id="ce_reward" type="number" inputmode="decimal" step="0.000001" placeholder="Например: 0.0002">
+<label style="margin-top:9px">Отвечать в чате каждые N сообщений (1 = каждое)</label>
+<input id="ce_notify_n" type="number" inputmode="numeric" step="1" min="1" placeholder="Например: 1" value="1">
 <label style="margin-top:9px">Бюджет (0 = без лимита)</label>
 <input id="ce_budget" type="number" inputmode="decimal" step="0.000001" placeholder="Например: 1000">
 <label style="margin-top:9px">Кулдаун между сообщениями (сек)</label>
@@ -630,7 +632,6 @@ async function loadUser(){
     let {data, error} = await supabaseClient.from('users').select('*').eq('Ttelegram_id', String(USER_ID)).maybeSingle();
     if(error){ console.error(error); showMessage('Ошибка загрузки пользователя','error'); return; }
     
-    // === АВТОСОЗДАНИЕ ПОЛЬЗОВАТЕЛЯ ПРИ ПЕРВОМ ВХОДЕ ===
     if(!data){
         console.log('Новый пользователь, создаём запись...');
         
@@ -698,7 +699,6 @@ function renderUser(){
     document.getElementById('refTG').textContent = fmt(currentUser.referral_tg_earned);
     document.getElementById('refTUSD').textContent = fmt(currentUser.referral_tusd_earned);
 
-    // Отображение пригласившего
     const refInfo = document.getElementById('referrerInfo');
     if(refInfo){
         refInfo.textContent = currentUser.referrer_id ? `ID ${currentUser.referrer_id}` : 'Нет (вы вошли самостоятельно)';
@@ -1362,6 +1362,7 @@ async function openAdminChatEdit(chatTgId){
     document.getElementById('adminChatEditTitle').textContent = '⚙️ ' + (chat.chat_title || chat.chat_telegram_id);
     document.getElementById('ce_enabled').value = chat.enabled ? 'true' : 'false';
     document.getElementById('ce_reward').value = chat.reward_per_message ?? '';
+    document.getElementById('ce_notify_n').value = chat.notify_every_n ?? 1;
     document.getElementById('ce_budget').value = chat.budget ?? 0;
     document.getElementById('ce_cooldown').value = chat.cooldown_seconds ?? 0;
     document.getElementById('ce_daily').value = chat.daily_message_limit ?? 0;
@@ -1386,6 +1387,7 @@ async function saveAdminChatReward(){
     const status = document.getElementById('adminChatEditStatus');
     status.className = 'info'; status.textContent = 'Сохранение...';
     const tokenVal = document.getElementById('ce_token').value;
+    const notifyN = parseInt(document.getElementById('ce_notify_n').value) || 1;
     const payload = {
         p_chat_telegram_id: Number(ADMIN_CHAT_CURRENT.chat_telegram_id),
         p_enabled: document.getElementById('ce_enabled').value === 'true',
@@ -1402,7 +1404,17 @@ async function saveAdminChatReward(){
     };
     const {data,error} = await supabaseClient.rpc('telepat_admin_update_chat_reward', payload);
     if(error){ status.className = 'error'; status.textContent = 'Ошибка: ' + error.message; return; }
-    if(data && data.ok){ status.className = 'success'; status.textContent = '✅ Сохранено'; await loadAdminChats(); setTimeout(()=>closeAdminChatEdit(), 900); }
+    if(data && data.ok){
+        // Сохраняем notify_every_n напрямую в таблицу
+        try {
+            await supabaseClient.from('chat_rewards')
+                .update({ notify_every_n: notifyN })
+                .eq('chat_id', String(ADMIN_CHAT_CURRENT.chat_telegram_id));
+        } catch(e){ console.error('notify_every_n save error', e); }
+        status.className = 'success'; status.textContent = '✅ Сохранено (ответ каждые ' + notifyN + ' сообщ.)';
+        await loadAdminChats();
+        setTimeout(()=>closeAdminChatEdit(), 1200);
+    }
     else{ status.className = 'error'; status.textContent = 'Ошибка: ' + ((data && data.reason) || 'unknown'); }
 }
 
