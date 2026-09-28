@@ -273,21 +273,18 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 <div id="dailyStatus" class="info" style="margin-top:9px"></div>
 </div>
 
-<!-- НОВЫЙ БЛОК: Реклама внутри заработка -->
 <div class="card gold">
 <div class="section-title">📺 ЗАРАБОТОК НА РЕКЛАМЕ</div>
 <div class="info">Смотрите короткие видео → получайте TG-токены на кошелёк.</div>
 <button onclick="showSection('ads')">🎬 СМОТРЕТЬ РЕКЛАМУ</button>
 </div>
 
-<!-- НОВЫЙ БЛОК: Задания для исполнителей -->
 <div class="card">
 <div class="section-title">📝 ЗАДАНИЯ</div>
 <div class="info">Подписывайтесь на каналы и чаты, выполняйте задания за вознаграждение.</div>
 <button onclick="showSection('tasks')">📋 ПЕРЕЙТИ К ЗАДАНИЯМ</button>
 </div>
 
-<!-- НОВЫЙ БЛОК: Для рекламодателей -->
 <div class="card">
 <div class="section-title">📢 ДЛЯ РЕКЛАМОДАТЕЛЕЙ</div>
 <div class="info">Создайте задание на подписку или добавьте свою рекламу.</div>
@@ -449,7 +446,6 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 </div>
 </div>
 
-<!-- НОВЫЙ БЛОК: Модерация заданий -->
 <div class="card admin">
 <div class="section-title">📋 МОДЕРАЦИЯ ЗАДАНИЙ</div>
 <div id="adminTasksList" class="info">Загрузка заданий...</div>
@@ -562,7 +558,6 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, 
     }},
 });
 
-/* Отдельный клиент для RPC рекламы (anon-ключ, работает без JWT) */
 const supabaseAds = window.supabase.createClient(SUPABASE_URL, AD_ANON_KEY, {
     auth: { persistSession: false, autoRefreshToken: false }
 });
@@ -874,8 +869,26 @@ async function createTask(){
 }
 
 async function completeTask(taskId){
-    showMessage('Проверка выполнения задания...', 'info');
-    setTimeout(() => { showMessage('✅ Задание выполнено! (Демо)', 'success'); }, 1500);
+    if(!USER_ID){ showMessage('Пользователь не определён','error'); return; }
+    if(!confirm('Вы уверены, что выполнили задание?')) return;
+    showMessage('Проверка выполнения...', 'info');
+    try {
+        const { data, error } = await supabaseClient.rpc('complete_task', {
+            p_task_id: taskId,
+            p_user_id: String(USER_ID)
+        });
+        if(error) throw error;
+        if(!data.ok){
+            showMessage(data.error || 'Ошибка', 'error');
+            return;
+        }
+        showMessage(`✅ Задание выполнено! Начислено ${fmt(data.reward)} TG`, 'success');
+        await loadUser();
+        await loadTasks();
+    } catch(err) {
+        console.error(err);
+        showMessage(err.message || 'Ошибка', 'error');
+    }
 }
 
 async function loadAdminTasks(){
