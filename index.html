@@ -259,6 +259,10 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 <div class="token-box"><div class="token-name">Заработано TG</div><div class="token-value" id="refTG">0</div></div>
 <div class="token-box"><div class="token-name">Заработано TUSD</div><div class="token-value" id="refTUSD">0</div></div>
 </div>
+<div class="token-box" style="margin-top:10px">
+<div class="token-name">Вас пригласил</div>
+<div class="token-value" id="referrerInfo" style="font-size:14px">—</div>
+</div>
 </div>
 </section>
 
@@ -618,12 +622,44 @@ function showMessage(text,type='info'){
 }
 
 /* =========================================================
-   LOAD USER
+   LOAD USER — с автосозданием и реферальной привязкой
 ========================================================= */
 async function loadUser(){
     if(!USER_ID){ showMessage('Открой приложение внутри Telegram','error'); return; }
-    const {data,error} = await supabaseClient.from('users').select('*').eq('Ttelegram_id', String(USER_ID)).maybeSingle();
+    
+    let {data, error} = await supabaseClient.from('users').select('*').eq('Ttelegram_id', String(USER_ID)).maybeSingle();
     if(error){ console.error(error); showMessage('Ошибка загрузки пользователя','error'); return; }
+    
+    // === АВТОСОЗДАНИЕ ПОЛЬЗОВАТЕЛЯ ПРИ ПЕРВОМ ВХОДЕ ===
+    if(!data){
+        console.log('Новый пользователь, создаём запись...');
+        
+        const startParam = telegram?.initDataUnsafe?.start_param || null;
+        const referrerId = (startParam && startParam !== String(USER_ID)) ? startParam : null;
+        console.log('Referrer ID:', referrerId);
+        
+        const {data: newUser, error: insertError} = await supabaseClient.from('users').insert({
+            Ttelegram_id: String(USER_ID),
+            tg_balance: 0,
+            ai_balance: 0,
+            tusd_balance: 0,
+            rank_level: 1,
+            rank_name: 'Крестьянин',
+            welcome_bonus_claimed: false,
+            referral_tg_earned: 0,
+            referral_tusd_earned: 0,
+            referrer_id: referrerId
+        }).select().single();
+        
+        if(insertError){
+            console.error('insert error', insertError);
+            showMessage('Ошибка создания пользователя: ' + insertError.message, 'error');
+            return;
+        }
+        data = newUser;
+        console.log('Новый пользователь создан:', newUser);
+    }
+    
     currentUser = data;
     renderUser();
     if(USER_ID === ADMIN_ID) document.getElementById('nav-admin').classList.remove('hidden');
@@ -661,6 +697,12 @@ function renderUser(){
     document.getElementById('bonusStatus').textContent = claimed ? 'Приветственный бонус уже получен.' : 'Приветственный бонус доступен.';
     document.getElementById('refTG').textContent = fmt(currentUser.referral_tg_earned);
     document.getElementById('refTUSD').textContent = fmt(currentUser.referral_tusd_earned);
+
+    // Отображение пригласившего
+    const refInfo = document.getElementById('referrerInfo');
+    if(refInfo){
+        refInfo.textContent = currentUser.referrer_id ? `ID ${currentUser.referrer_id}` : 'Нет (вы вошли самостоятельно)';
+    }
 }
 
 /* =========================================================
@@ -746,7 +788,6 @@ function setupAd(data){
     video.volume = 1.0;
     video.load();
 
-    // Сброс иконки звука
     const soundBtn = document.getElementById('adSoundBtn');
     if(soundBtn){ soundBtn.textContent = '🔇'; }
 
