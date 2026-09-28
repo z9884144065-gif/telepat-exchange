@@ -131,6 +131,8 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 .ad-reward-amount{font-size:28px;font-weight:bold;color:var(--gold);text-shadow:0 0 20px rgba(244,207,112,0.7);margin-top:8px;}
 .ad-reward-label{color:var(--muted);font-size:13px;margin-top:8px;}
 .ad-note{background:#0d1520;border:1px solid var(--line);border-radius:12px;padding:10px;color:var(--muted);font-size:11px;margin-top:10px;line-height:1.5;}
+.ad-sound-btn{position:absolute;top:10px;right:10px;z-index:5;background:rgba(0,0,0,0.85);color:#fff;border:2px solid #fff;border-radius:50%;width:48px;height:48px;padding:0;font-size:22px;cursor:pointer;margin:0;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.5);}
+.ad-sound-btn:hover{transform:scale(1.05);}
 @media(max-width:390px){.exchange-grid{grid-template-columns:1fr;}.swap{margin:auto;}.row{flex-direction:column;}}
 </style>
 </head>
@@ -176,8 +178,8 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 </div>
 
 <div class="card gold">
-<div class="section-title">🎬 ЗАРАБОТОК НА РЕКЛАМЕ</div>
-<div class="info">Смотрите короткие видео → получайте TG-токены на кошелёк. До 150 просмотров в день!</div>
+<div class="section-title">🎬 ОПЛАТА ЗА ПРОСМОТР РЕКЛАМЫ</div>
+<div class="info">Смотрите короткие видео → получайте TUSD-токены на кошелёк. До 150 просмотров в день!</div>
 <button class="ad-claim-btn ready" onclick="showSection('ads')">🎬 СМОТРЕТЬ РЕКЛАМУ</button>
 </div>
 </section>
@@ -274,8 +276,8 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 </div>
 
 <div class="card gold">
-<div class="section-title">📺 ЗАРАБОТОК НА РЕКЛАМЕ</div>
-<div class="info">Смотрите короткие видео → получайте TG-токены на кошелёк.</div>
+<div class="section-title">📺 ОПЛАТА ЗА ПРОСМОТР РЕКЛАМЫ</div>
+<div class="info">Смотрите короткие видео → получайте TUSD-токены на кошелёк.</div>
 <button onclick="showSection('ads')">🎬 СМОТРЕТЬ РЕКЛАМУ</button>
 </div>
 
@@ -312,8 +314,14 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 </select>
 <label style="margin-top:9px">Ссылка</label>
 <input id="taskLink" type="text" placeholder="https://t.me/ваш_канал">
-<label style="margin-top:9px">Награда за выполнение (TG)</label>
+<label style="margin-top:9px">Награда за выполнение</label>
 <input id="taskReward" type="number" inputmode="decimal" step="any" placeholder="Например: 0.5">
+<label style="margin-top:9px">Токен награды</label>
+<select id="taskRewardToken">
+<option value="TUSD" selected>TUSD</option>
+<option value="TG">TG</option>
+<option value="AI">AI</option>
+</select>
 <label style="margin-top:9px">Количество выполнений (лимит)</label>
 <input id="taskLimit" type="number" inputmode="numeric" placeholder="Например: 100">
 <button onclick="createTask()">🚀 СОЗДАТЬ ЗАДАНИЕ</button>
@@ -321,7 +329,7 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 </div>
 </section>
 
-<!-- ================= ADS (НОВАЯ СЕКЦИЯ) ================= -->
+<!-- ================= ADS ================= -->
 <section id="section-ads" class="hidden">
 <div class="card gold">
 <div class="section-title">🎬 ПРОСМОТР РЕКЛАМЫ</div>
@@ -337,9 +345,10 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 </div>
 
 <div id="adContent" class="hidden">
-<div class="ad-reward-line">💰 Награда за просмотр: <b id="adRewardValue">0.00015 TG</b></div>
+<div class="ad-reward-line">💰 Оплата за просмотр: <b id="adRewardValue">0.002 TUSD</b></div>
 <div class="ad-container">
 <video id="adVideo" class="ad-video" playsinline webkit-playsinline preload="auto" muted></video>
+<button id="adSoundBtn" class="ad-sound-btn" onclick="toggleAdSound()" title="Включить/выключить звук">🔇</button>
 <div class="ad-cta-overlay">
 <a id="adCtaLink" href="#" target="_blank" class="ad-cta-badge">🚀 Перейти</a>
 </div>
@@ -354,7 +363,7 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 </div>
 
 <div class="ad-note">
-ℹ️ За каждое просмотренное видео начисляется бонус в TG. Просмотры 1–10 без паузы, 11–30 → 2 сек, 31–40 → 3 сек, 41+ → 5 сек.
+ℹ️ За каждое просмотренное видео начисляется бонус. Нажмите 🔊 в правом верхнем углу, чтобы включить звук. Просмотры 1–10 без паузы, 11–30 → 2 сек, 31–40 → 3 сек, 41+ → 5 сек.
 </div>
 </div>
 </section>
@@ -378,7 +387,7 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 <label>Telegram ID получателя</label>
 <input id="adminTargetId" type="number" placeholder="Telegram ID">
 <label style="margin-top:9px">Токен</label>
-<select id="adminToken"><option value="TG">TG</option><option value="AI">AI</option><option value="TUSD">TUSD</option></select>
+<select id="adminToken"><option value="TUSD">TUSD</option><option value="TG">TG</option><option value="AI">AI</option></select>
 <label style="margin-top:9px">Количество</label>
 <input id="adminAmount" type="number" inputmode="decimal" step="any" placeholder="Количество">
 <button onclick="adminTransfer()">💰 ВЫПОЛНИТЬ ПЕРЕВОД</button>
@@ -490,7 +499,7 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 <div id="adRewardPopup" class="ad-reward-popup">
 <div class="ad-reward-inner">
 <div class="ad-reward-emoji">💰</div>
-<div class="ad-reward-amount" id="adRewardPopupAmount">+0.00015 TG</div>
+<div class="ad-reward-amount" id="adRewardPopupAmount">+0.002 TUSD</div>
 <div class="ad-reward-label">Зачислено на кошелёк!</div>
 </div>
 </div>
@@ -728,12 +737,18 @@ function setupAd(data){
     const c = data.campaign;
     document.getElementById('adViewsToday').textContent = data.views_today;
     document.getElementById('adDailyLimit').textContent = data.daily_limit;
-    document.getElementById('adRewardValue').textContent = Number(c.reward).toFixed(5) + ' TG';
+    const adToken = c.reward_token || 'TUSD';
+    document.getElementById('adRewardValue').textContent = Number(c.reward).toFixed(5) + ' ' + adToken;
 
     const video = document.getElementById('adVideo');
     video.src = c.video_url;
     video.muted = true;
+    video.volume = 1.0;
     video.load();
+
+    // Сброс иконки звука
+    const soundBtn = document.getElementById('adSoundBtn');
+    if(soundBtn){ soundBtn.textContent = '🔇'; }
 
     const ctaLink = document.getElementById('adCtaLink');
     ctaLink.href = c.cta_url;
@@ -766,6 +781,19 @@ function setupAd(data){
     video.play().catch(err => console.log('autoplay failed', err));
 }
 
+function toggleAdSound(){
+    const video = document.getElementById('adVideo');
+    const btn = document.getElementById('adSoundBtn');
+    if(!video || !btn) return;
+    video.muted = !video.muted;
+    btn.textContent = video.muted ? '🔇' : '🔊';
+    if(!video.muted){
+        video.volume = 1.0;
+        video.play().catch(e => console.log('play error', e));
+        if(telegram?.HapticFeedback){ try{ telegram.HapticFeedback.impactOccurred('light'); }catch(e){} }
+    }
+}
+
 async function claimAdReward(){
     if(adClaimed || !currentAd) return;
     adClaimed = true;
@@ -789,13 +817,14 @@ async function claimAdReward(){
             return;
         }
 
-        showAdRewardAnimation(data.reward);
+        const rewardToken = data.reward_token || 'TUSD';
+        showAdRewardAnimation(data.reward, rewardToken);
         document.getElementById('adViewsToday').textContent = data.views_today;
         await loadUser();
 
-        btn.textContent = '✅ Бонус получен';
+        btn.textContent = '✅ Оплата получена';
         const st = document.getElementById('adStatusMsg');
-        st.textContent = `+${Number(data.reward).toFixed(5)} TG зачислено!`;
+        st.textContent = `+${Number(data.reward).toFixed(5)} ${rewardToken} зачислено!`;
         st.className = 'success';
 
         setTimeout(() => loadAd(), 4000);
@@ -809,8 +838,9 @@ async function claimAdReward(){
     }
 }
 
-function showAdRewardAnimation(reward){
-    document.getElementById('adRewardPopupAmount').textContent = '+' + Number(reward).toFixed(5) + ' TG';
+function showAdRewardAnimation(reward, token){
+    const t = token || 'TUSD';
+    document.getElementById('adRewardPopupAmount').textContent = '+' + Number(reward).toFixed(5) + ' ' + t;
     document.getElementById('adRewardPopup').classList.add('show');
     if(telegram?.HapticFeedback){ try{ telegram.HapticFeedback.notificationOccurred('success'); }catch(e){} }
     try{
@@ -838,15 +868,19 @@ async function loadTasks(){
     const { data, error } = await supabaseClient.from('tasks').select('*').eq('status', 'approved').order('created_at', { ascending: false });
     if(error){ box.innerHTML = `<div class="error">${esc(error.message)}</div>`; return; }
     if(!data || data.length === 0){ box.innerHTML = '<div class="info">Пока нет доступных заданий.</div>'; return; }
-    box.innerHTML = data.map(task => `
+    box.innerHTML = data.map(task => {
+        const tk = task.reward_token || 'TUSD';
+        const remaining = task.limit_count > 0 ? task.limit_count - task.completed_count : '∞';
+        return `
         <div class="trade-item">
             <div class="order-main">${esc(task.type)}</div>
             <div class="info" style="margin-top:5px">Ссылка: <a href="${esc(task.link)}" target="_blank" style="color:var(--blue)">Перейти</a></div>
-            <div class="detail" style="border:0; padding:4px 0"><span>Награда:</span><span style="color:var(--gold)">${fmt(task.reward)} TG</span></div>
-            <div class="detail" style="border:0; padding:4px 0"><span>Осталось мест:</span><span>${task.limit_count > 0 ? task.limit_count - task.completed_count : '∞'}</span></div>
-            <button onclick="completeTask('${task.id}')" style="margin-top:8px">✅ ВЫПОЛНИТЬ ЗА ${fmt(task.reward)} TG</button>
+            <div class="detail" style="border:0; padding:4px 0"><span>Награда:</span><span style="color:var(--gold)">${fmt(task.reward)} ${esc(tk)}</span></div>
+            <div class="detail" style="border:0; padding:4px 0"><span>Осталось мест:</span><span>${remaining}</span></div>
+            <button onclick="completeTask('${task.id}')" style="margin-top:8px">✅ ВЫПОЛНИТЬ ЗА ${fmt(task.reward)} ${esc(tk)}</button>
         </div>
-    `).join('');
+    `;
+    }).join('');
 }
 
 async function createTask(){
@@ -854,14 +888,23 @@ async function createTask(){
     const type = document.getElementById('taskType').value;
     const link = document.getElementById('taskLink').value.trim();
     const reward = num(document.getElementById('taskReward').value);
+    const rewardToken = document.getElementById('taskRewardToken').value;
     const limit = parseInt(document.getElementById('taskLimit').value) || 0;
     if(!link){ showMessage('Введите ссылку','error'); return; }
     if(reward <= 0){ showMessage('Введите награду больше 0','error'); return; }
     const statusEl = document.getElementById('taskCreateStatus');
     statusEl.textContent = 'Отправка на модерацию...';
-    const { error } = await supabaseClient.from('tasks').insert({ creator_id: String(USER_ID), type: type, link: link, reward: reward, limit_count: limit, status: 'pending' });
+    const { error } = await supabaseClient.from('tasks').insert({
+        creator_id: String(USER_ID),
+        type: type,
+        link: link,
+        reward: reward,
+        reward_token: rewardToken,
+        limit_count: limit,
+        status: 'pending'
+    });
     if(error){ statusEl.innerHTML = `<span class="error">Ошибка: ${esc(error.message)}</span>`; return; }
-    statusEl.innerHTML = '<span class="success">✅ Задание отправлено на модерацию!</span>';
+    statusEl.innerHTML = `<span class="success">✅ Задание отправлено на модерацию! (награда в ${esc(rewardToken)})</span>`;
     showMessage('Задание на проверке', 'success');
     document.getElementById('taskLink').value = '';
     document.getElementById('taskReward').value = '';
@@ -882,7 +925,8 @@ async function completeTask(taskId){
             showMessage(data.error || 'Ошибка', 'error');
             return;
         }
-        showMessage(`✅ Задание выполнено! Начислено ${fmt(data.reward)} TG`, 'success');
+        const tk = data.token || 'TUSD';
+        showMessage(`✅ Задание выполнено! Начислено ${fmt(data.reward)} ${tk}`, 'success');
         await loadUser();
         await loadTasks();
     } catch(err) {
@@ -898,18 +942,21 @@ async function loadAdminTasks(){
     const { data, error } = await supabaseClient.from('tasks').select('*').eq('status', 'pending').order('created_at', { ascending: false });
     if(error){ box.innerHTML = `<div class="error">${esc(error.message)}</div>`; return; }
     if(!data || data.length === 0){ box.innerHTML = '<div class="info">Нет заданий на модерации.</div>'; return; }
-    box.innerHTML = data.map(task => `
+    box.innerHTML = data.map(task => {
+        const tk = task.reward_token || 'TUSD';
+        return `
         <div class="pool-card" style="border-color: #8a6b28;">
             <div class="pool-token">📌 ${esc(task.type)}</div>
             <div class="pool-line"><span>Ссылка:</span><span>${esc(task.link)}</span></div>
-            <div class="pool-line"><span>Награда:</span><span>${fmt(task.reward)} TG</span></div>
+            <div class="pool-line"><span>Награда:</span><span>${fmt(task.reward)} ${esc(tk)}</span></div>
             <div class="pool-line"><span>Лимит:</span><span>${task.limit_count} чел.</span></div>
             <div class="row" style="margin-top:10px">
                 <button onclick="approveTask('${task.id}')">✅ ОДОБРИТЬ</button>
                 <button class="danger" onclick="rejectTask('${task.id}')">❌ ОТКЛОНИТЬ</button>
             </div>
         </div>
-    `).join('');
+    `;
+    }).join('');
 }
 
 async function approveTask(taskId){
