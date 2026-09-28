@@ -272,6 +272,56 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 <button onclick="claimDailyReward()">🎁 ПОЛУЧИТЬ ЕЖЕДНЕВНУЮ НАГРАДУ</button>
 <div id="dailyStatus" class="info" style="margin-top:9px"></div>
 </div>
+
+<!-- НОВЫЙ БЛОК: Реклама внутри заработка -->
+<div class="card gold">
+<div class="section-title">📺 ЗАРАБОТОК НА РЕКЛАМЕ</div>
+<div class="info">Смотрите короткие видео → получайте TG-токены на кошелёк.</div>
+<button onclick="showSection('ads')">🎬 СМОТРЕТЬ РЕКЛАМУ</button>
+</div>
+
+<!-- НОВЫЙ БЛОК: Задания для исполнителей -->
+<div class="card">
+<div class="section-title">📝 ЗАДАНИЯ</div>
+<div class="info">Подписывайтесь на каналы и чаты, выполняйте задания за вознаграждение.</div>
+<button onclick="showSection('tasks')">📋 ПЕРЕЙТИ К ЗАДАНИЯМ</button>
+</div>
+
+<!-- НОВЫЙ БЛОК: Для рекламодателей -->
+<div class="card">
+<div class="section-title">📢 ДЛЯ РЕКЛАМОДАТЕЛЕЙ</div>
+<div class="info">Создайте задание на подписку или добавьте свою рекламу.</div>
+<button class="secondary" onclick="showSection('create-task')">➕ ДОБАВИТЬ ЗАДАНИЕ</button>
+</div>
+</section>
+
+<!-- ================= TASKS (СПИСОК ЗАДАНИЙ) ================= -->
+<section id="section-tasks" class="hidden">
+<div class="card gold">
+<div class="section-title">📋 ДОСТУПНЫЕ ЗАДАНИЯ</div>
+<div id="tasksList" class="info">Загрузка заданий...</div>
+</div>
+</section>
+
+<!-- ================= CREATE TASK (СОЗДАНИЕ ЗАДАНИЯ) ================= -->
+<section id="section-create-task" class="hidden">
+<div class="card gold">
+<div class="section-title">➕ СОЗДАТЬ ЗАДАНИЕ</div>
+<label>Тип задания</label>
+<select id="taskType">
+<option value="subscribe_channel">Подписка на канал</option>
+<option value="subscribe_chat">Подписка на чат</option>
+<option value="view_video">Просмотр видео</option>
+</select>
+<label style="margin-top:9px">Ссылка</label>
+<input id="taskLink" type="text" placeholder="https://t.me/ваш_канал">
+<label style="margin-top:9px">Награда за выполнение (TG)</label>
+<input id="taskReward" type="number" inputmode="decimal" step="any" placeholder="Например: 0.5">
+<label style="margin-top:9px">Количество выполнений (лимит)</label>
+<input id="taskLimit" type="number" inputmode="numeric" placeholder="Например: 100">
+<button onclick="createTask()">🚀 СОЗДАТЬ ЗАДАНИЕ</button>
+<div id="taskCreateStatus" class="info" style="margin-top:9px"></div>
+</div>
 </section>
 
 <!-- ================= ADS (НОВАЯ СЕКЦИЯ) ================= -->
@@ -397,6 +447,13 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 </div>
 <div id="adminChatEditStatus" class="info" style="margin-top:9px"></div>
 </div>
+</div>
+
+<!-- НОВЫЙ БЛОК: Модерация заданий -->
+<div class="card admin">
+<div class="section-title">📋 МОДЕРАЦИЯ ЗАДАНИЙ</div>
+<div id="adminTasksList" class="info">Загрузка заданий...</div>
+<button class="secondary" onclick="loadAdminTasks()">🔄 ОБНОВИТЬ СПИСОК</button>
 </div>
 </section>
 
@@ -606,7 +663,7 @@ function renderUser(){
    NAVIGATION
 ========================================================= */
 function showSection(name){
-    const sections = ['wallet','exchange','friends','earn','ads','admin'];
+    const sections = ['wallet','exchange','friends','earn','ads','tasks','create-task','admin'];
     sections.forEach(s=>{
         const sec = document.getElementById(`section-${s}`);
         if(sec) sec.classList.toggle('hidden', s !== name);
@@ -615,7 +672,8 @@ function showSection(name){
     });
     if(name === 'exchange'){ loadOrders(); loadMyOrders(); loadMyTrades(); loadTokenReserves(); }
     if(name === 'ads'){ loadAd(); }
-    if(name === 'admin' && USER_ID === ADMIN_ID){ loadAdminStats(); loadAdminChats(); }
+    if(name === 'tasks'){ loadTasks(); }
+    if(name === 'admin' && USER_ID === ADMIN_ID){ loadAdminStats(); loadAdminChats(); loadAdminTasks(); }
     window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -773,6 +831,86 @@ function showAdRewardAnimation(reward){
         osc.start(); osc.stop(ctx.currentTime + 0.4);
     }catch(e){}
     setTimeout(() => document.getElementById('adRewardPopup').classList.remove('show'), 3000);
+}
+
+/* =========================================================
+   TASKS & MODERATION
+========================================================= */
+async function loadTasks(){
+    const box = document.getElementById('tasksList');
+    if(!box) return;
+    box.innerHTML = 'Загрузка заданий...';
+    const { data, error } = await supabaseClient.from('tasks').select('*').eq('status', 'approved').order('created_at', { ascending: false });
+    if(error){ box.innerHTML = `<div class="error">${esc(error.message)}</div>`; return; }
+    if(!data || data.length === 0){ box.innerHTML = '<div class="info">Пока нет доступных заданий.</div>'; return; }
+    box.innerHTML = data.map(task => `
+        <div class="trade-item">
+            <div class="order-main">${esc(task.type)}</div>
+            <div class="info" style="margin-top:5px">Ссылка: <a href="${esc(task.link)}" target="_blank" style="color:var(--blue)">Перейти</a></div>
+            <div class="detail" style="border:0; padding:4px 0"><span>Награда:</span><span style="color:var(--gold)">${fmt(task.reward)} TG</span></div>
+            <div class="detail" style="border:0; padding:4px 0"><span>Осталось мест:</span><span>${task.limit_count > 0 ? task.limit_count - task.completed_count : '∞'}</span></div>
+            <button onclick="completeTask('${task.id}')" style="margin-top:8px">✅ ВЫПОЛНИТЬ ЗА ${fmt(task.reward)} TG</button>
+        </div>
+    `).join('');
+}
+
+async function createTask(){
+    if(!USER_ID){ showMessage('Пользователь не определён','error'); return; }
+    const type = document.getElementById('taskType').value;
+    const link = document.getElementById('taskLink').value.trim();
+    const reward = num(document.getElementById('taskReward').value);
+    const limit = parseInt(document.getElementById('taskLimit').value) || 0;
+    if(!link){ showMessage('Введите ссылку','error'); return; }
+    if(reward <= 0){ showMessage('Введите награду больше 0','error'); return; }
+    const statusEl = document.getElementById('taskCreateStatus');
+    statusEl.textContent = 'Отправка на модерацию...';
+    const { error } = await supabaseClient.from('tasks').insert({ creator_id: String(USER_ID), type: type, link: link, reward: reward, limit_count: limit, status: 'pending' });
+    if(error){ statusEl.innerHTML = `<span class="error">Ошибка: ${esc(error.message)}</span>`; return; }
+    statusEl.innerHTML = '<span class="success">✅ Задание отправлено на модерацию!</span>';
+    showMessage('Задание на проверке', 'success');
+    document.getElementById('taskLink').value = '';
+    document.getElementById('taskReward').value = '';
+    document.getElementById('taskLimit').value = '';
+}
+
+async function completeTask(taskId){
+    showMessage('Проверка выполнения задания...', 'info');
+    setTimeout(() => { showMessage('✅ Задание выполнено! (Демо)', 'success'); }, 1500);
+}
+
+async function loadAdminTasks(){
+    const box = document.getElementById('adminTasksList');
+    if(!box || USER_ID !== ADMIN_ID) return;
+    box.innerHTML = '<div class="info">Загрузка...</div>';
+    const { data, error } = await supabaseClient.from('tasks').select('*').eq('status', 'pending').order('created_at', { ascending: false });
+    if(error){ box.innerHTML = `<div class="error">${esc(error.message)}</div>`; return; }
+    if(!data || data.length === 0){ box.innerHTML = '<div class="info">Нет заданий на модерации.</div>'; return; }
+    box.innerHTML = data.map(task => `
+        <div class="pool-card" style="border-color: #8a6b28;">
+            <div class="pool-token">📌 ${esc(task.type)}</div>
+            <div class="pool-line"><span>Ссылка:</span><span>${esc(task.link)}</span></div>
+            <div class="pool-line"><span>Награда:</span><span>${fmt(task.reward)} TG</span></div>
+            <div class="pool-line"><span>Лимит:</span><span>${task.limit_count} чел.</span></div>
+            <div class="row" style="margin-top:10px">
+                <button onclick="approveTask('${task.id}')">✅ ОДОБРИТЬ</button>
+                <button class="danger" onclick="rejectTask('${task.id}')">❌ ОТКЛОНИТЬ</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+async function approveTask(taskId){
+    const { error } = await supabaseClient.from('tasks').update({ status: 'approved' }).eq('id', taskId);
+    if(error){ showMessage(error.message, 'error'); return; }
+    showMessage('✅ Задание одобрено', 'success');
+    loadAdminTasks();
+}
+
+async function rejectTask(taskId){
+    const { error } = await supabaseClient.from('tasks').update({ status: 'rejected' }).eq('id', taskId);
+    if(error){ showMessage(error.message, 'error'); return; }
+    showMessage('❌ Задание отклонено', 'error');
+    loadAdminTasks();
 }
 
 /* =========================================================
