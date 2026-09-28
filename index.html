@@ -106,7 +106,6 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 .modal-overlay{position:fixed;z-index:3000;inset:0;background:#0009;display:none;align-items:center;justify-content:center;padding:16px;}
 .modal-overlay.show{display:flex}
 .modal-box{width:min(420px,100%);background:linear-gradient(145deg,#1d2939,#101721);border:1px solid #68562a;border-radius:20px;padding:18px;}
-/* ===== РЕКЛАМА ===== */
 .ad-container{position:relative;width:100%;background:#000;border-radius:16px;overflow:hidden;margin:10px 0;}
 .ad-video{width:100%;display:block;background:#000;max-height:55vh;object-fit:contain;}
 .ad-cta-overlay{position:absolute;left:0;right:0;bottom:14px;text-align:center;pointer-events:none;}
@@ -147,7 +146,6 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 <h1>👑 ТЕЛЕПАТ</h1>
 <div class="subtitle">Виртуальный P2P-обменник</div>
 
-<!-- ================= WALLET ================= -->
 <section id="section-wallet">
 <div class="card gold">
 <div class="section-title">👤 МОЙ ПРОФИЛЬ</div>
@@ -184,7 +182,6 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 </div>
 </section>
 
-<!-- ================= EXCHANGE ================= -->
 <section id="section-exchange" class="hidden">
 <div class="card gold">
 <div class="section-title">🔄 СОЗДАТЬ P2P-ОРДЕР</div>
@@ -248,7 +245,6 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 </div>
 </section>
 
-<!-- ================= FRIENDS ================= -->
 <section id="section-friends" class="hidden">
 <div class="card">
 <div class="section-title">👥 ДРУЗЬЯ И РЕФЕРАЛЫ</div>
@@ -266,7 +262,6 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 </div>
 </section>
 
-<!-- ================= EARN ================= -->
 <section id="section-earn" class="hidden">
 <div class="card">
 <div class="section-title">💎 ЗАРАБОТОК</div>
@@ -298,7 +293,6 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 </div>
 </section>
 
-<!-- ================= TASKS (СПИСОК ЗАДАНИЙ) ================= -->
 <section id="section-tasks" class="hidden">
 <div class="card gold">
 <div class="section-title">📋 ДОСТУПНЫЕ ЗАДАНИЯ</div>
@@ -306,7 +300,6 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 </div>
 </section>
 
-<!-- ================= CREATE TASK (СОЗДАНИЕ ЗАДАНИЯ) ================= -->
 <section id="section-create-task" class="hidden">
 <div class="card gold">
 <div class="section-title">➕ СОЗДАТЬ ЗАДАНИЕ</div>
@@ -333,7 +326,6 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 </div>
 </section>
 
-<!-- ================= ADS ================= -->
 <section id="section-ads" class="hidden">
 <div class="card gold">
 <div class="section-title">🎬 ПРОСМОТР РЕКЛАМЫ</div>
@@ -367,12 +359,11 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 </div>
 
 <div class="ad-note">
-ℹ️ За каждое просмотренное видео начисляется бонус. Нажмите 🔊 в правом верхнем углу, чтобы включить звук. Просмотры 1–10 без паузы, 11–30 → 2 сек, 31–40 → 3 сек, 41+ → 5 сек.
+ℹ️ За каждое просмотренное видео начисляется бонус. Нажмите 🔊 в правом верхнем углу, чтобы включить звук.
 </div>
 </div>
 </section>
 
-<!-- ================= ADMIN ================= -->
 <section id="section-admin" class="hidden">
 <div class="card admin">
 <div class="section-title">👑 АДМИН-ПАНЕЛЬ</div>
@@ -435,23 +426,23 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 <select id="ce_token"><option value="TUSD">TUSD</option><option value="TG">TG</option><option value="AI">AI</option></select>
 <label style="margin-top:9px">Награда за сообщение</label>
 <input id="ce_reward" type="number" inputmode="decimal" step="0.000001" placeholder="Например: 0.0002">
-<label style="margin-top:9px">Отвечать в чате каждые N сообщений (1 = каждое)</label>
-<input id="ce_notify_n" type="number" inputmode="numeric" step="1" min="1" placeholder="Например: 1" value="1">
+<label style="margin-top:9px">Отвечать в чате каждые N сообщений</label>
+<input id="ce_notify_n" type="number" inputmode="numeric" step="1" min="1" placeholder="1" value="1">
 <label style="margin-top:9px">Бюджет (0 = без лимита)</label>
 <input id="ce_budget" type="number" inputmode="decimal" step="0.000001" placeholder="Например: 10">
 <label style="margin-top:9px">Кулдаун между сообщениями (сек)</label>
-<input id="ce_cooldown" type="number" inputmode="numeric" step="1" placeholder="Например: 3">
+<input id="ce_cooldown" type="number" inputmode="numeric" step="1" placeholder="3">
 <label style="margin-top:9px">Дневной лимит сообщений в чате (0 = без лимита)</label>
-<input id="ce_daily" type="number" inputmode="numeric" step="1" placeholder="Например: 5000">
-<label style="margin-top:9px">Макс. сообщений на юзера в день (0 = без лимита)</label>
-<input id="ce_maxmsg" type="number" inputmode="numeric" step="1" placeholder="Например: 350">
+<input id="ce_daily" type="number" inputmode="numeric" step="1" placeholder="5000">
+<label style="margin-top:9px">Макс. сообщений на юзера в день</label>
+<input id="ce_maxmsg" type="number" inputmode="numeric" step="1" placeholder="350">
 <label style="margin-top:9px">Мин. слов в сообщении</label>
-<input id="ce_minwords" type="number" inputmode="numeric" step="1" placeholder="Например: 1">
+<input id="ce_minwords" type="number" inputmode="numeric" step="1" placeholder="1">
 <label style="margin-top:9px">Мин. символов в сообщении</label>
-<input id="ce_minchars" type="number" inputmode="numeric" step="1" placeholder="Например: 5">
-<label style="margin-top:9px">Исключать команды (начинаются с /)</label>
+<input id="ce_minchars" type="number" inputmode="numeric" step="1" placeholder="5">
+<label style="margin-top:9px">Исключать команды</label>
 <select id="ce_exclcmd"><option value="true">Да</option><option value="false">Нет</option></select>
-<label style="margin-top:9px">Исключать сообщения только из эмодзи</label>
+<label style="margin-top:9px">Исключать эмодзи-только</label>
 <select id="ce_exclemoji"><option value="true">Да</option><option value="false">Нет</option></select>
 <div class="row" style="margin-top:12px">
 <button onclick="saveAdminChatReward()">💾 СОХРАНИТЬ</button>
@@ -470,7 +461,6 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 
 </div>
 
-<!-- ================= PROFILE MODAL ================= -->
 <div id="profileModal" class="profile-card" onclick="closeProfile(event)">
 <div class="profile-inner" onclick="event.stopPropagation()">
 <div class="section-title">👤 ПРОФИЛЬ УЧАСТНИКА</div>
@@ -487,7 +477,6 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 </div>
 </div>
 
-<!-- ================= ADD LIQUIDITY MODAL ================= -->
 <div id="addLiqModal" class="modal-overlay" onclick="closeAddLiq(event)">
 <div class="modal-box" onclick="event.stopPropagation()">
 <div class="section-title">💧 ДОБАВИТЬ В ПУЛ ЛИКВИДНОСТИ</div>
@@ -501,7 +490,6 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 </div>
 </div>
 
-<!-- ================= REWARD POPUP ================= -->
 <div id="adRewardPopup" class="ad-reward-popup">
 <div class="ad-reward-inner">
 <div class="ad-reward-emoji">💰</div>
@@ -510,7 +498,6 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 </div>
 </div>
 
-<!-- ================= NAV ================= -->
 <div class="nav">
 <button id="nav-wallet" class="active" onclick="showSection('wallet')">🏠 Кошелёк</button>
 <button id="nav-exchange" onclick="showSection('exchange')">🔄 Обмен</button>
@@ -521,9 +508,6 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 </div>
 
 <script>
-/* =========================================================
-   TELEPAT — AUTH LAYER
-========================================================= */
 const SUPABASE_URL = 'https://jutszxuzjzyfxarceydw.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_geRczpRc3faUHRGto2ue7A_eFFiJDwO';
 const AD_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp1dHN6eHV6anp5ZnhhcmNleWR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2NDI2NTEsImV4cCI6MjEwMDIxODY1MX0.ntKlbS4e4V5Q9GxSuWMFHm215_5gJnKsyUGRt3XHD_0';
@@ -583,9 +567,6 @@ const tgUser = telegram?.initDataUnsafe?.user || null;
 const USER_ID = Number(tgUser?.id || 0);
 let currentUser = null;
 
-/* =========================================================
-   RANKS
-========================================================= */
 const RANKS = [
     {level:1,name:'Крестьянин',req:0.20},{level:2,name:'Вольный',req:0.40},
     {level:3,name:'Гражданин',req:0.80},{level:4,name:'Оруженосец',req:1.60},
@@ -602,9 +583,6 @@ const RANKS = [
 const RANK_COLORS = ['#ffffff','#d8d8d8','#b9c5b9','#75c99a','#58b5e9','#4f8cff','#3974d9','#6673e8','#4169e1','#7389bd','#b87333','#bfc2c9','#e0bd45','#9b59b6','#8e44ad','#e0b72f','#e68a27','#24c8aa','#f5cf3d','#f7b83f','#ffd700'];
 function rankColor(level){ return RANK_COLORS[Math.max(0,Math.min(RANK_COLORS.length-1,Number(level||1)-1))]; }
 
-/* =========================================================
-   HELPERS
-========================================================= */
 function esc(value){ return String(value ?? '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'","&#039;"); }
 function num(value){ const n = Number(value); return Number.isFinite(n) ? n : 0; }
 function fmt(value, max=8){ return num(value).toLocaleString('ru-RU',{maximumFractionDigits:max}); }
@@ -623,9 +601,6 @@ function showMessage(text,type='info'){
     setTimeout(()=>el.classList.remove('show'), 3000);
 }
 
-/* =========================================================
-   LOAD USER — с автосозданием и реферальной привязкой
-========================================================= */
 async function loadUser(){
     if(!USER_ID){ showMessage('Открой приложение внутри Telegram','error'); return; }
     
@@ -633,32 +608,20 @@ async function loadUser(){
     if(error){ console.error(error); showMessage('Ошибка загрузки пользователя','error'); return; }
     
     if(!data){
-        console.log('Новый пользователь, создаём запись...');
-        
         const startParam = telegram?.initDataUnsafe?.start_param || null;
         const referrerId = (startParam && startParam !== String(USER_ID)) ? startParam : null;
-        console.log('Referrer ID:', referrerId);
         
         const {data: newUser, error: insertError} = await supabaseClient.from('users').insert({
             Ttelegram_id: String(USER_ID),
-            tg_balance: 0,
-            ai_balance: 0,
-            tusd_balance: 0,
-            rank_level: 1,
-            rank_name: 'Крестьянин',
+            tg_balance: 0, ai_balance: 0, tusd_balance: 0,
+            rank_level: 1, rank_name: 'Крестьянин',
             welcome_bonus_claimed: false,
-            referral_tg_earned: 0,
-            referral_tusd_earned: 0,
+            referral_tg_earned: 0, referral_tusd_earned: 0,
             referrer_id: referrerId
         }).select().single();
         
-        if(insertError){
-            console.error('insert error', insertError);
-            showMessage('Ошибка создания пользователя: ' + insertError.message, 'error');
-            return;
-        }
+        if(insertError){ console.error('insert error', insertError); showMessage('Ошибка создания пользователя: ' + insertError.message, 'error'); return; }
         data = newUser;
-        console.log('Новый пользователь создан:', newUser);
     }
     
     currentUser = data;
@@ -705,9 +668,6 @@ function renderUser(){
     }
 }
 
-/* =========================================================
-   NAVIGATION
-========================================================= */
 function showSection(name){
     const sections = ['wallet','exchange','friends','earn','ads','tasks','create-task','admin'];
     sections.forEach(s=>{
@@ -723,11 +683,6 @@ function showSection(name){
     window.scrollTo({top:0,behavior:'smooth'});
 }
 
-function openAdPage(){ showSection('ads'); }
-
-/* =========================================================
-   ADS — РЕКЛАМА
-========================================================= */
 let currentAd = null;
 let adClaimed = false;
 
@@ -745,16 +700,10 @@ async function loadAd(){
         if(error) throw error;
 
         if(!data || !data.ok){
-            if(data?.reason === 'daily_limit'){
-                showAdError('✅', `Дневной лимит исчерпан (${data.views_today}/${data.daily_limit}). Возвращайтесь завтра!`);
-            } else if(data?.reason === 'cooldown'){
-                showAdError('⏳', `Подождите ${data.wait_seconds} сек. перед следующим просмотром`);
-                setTimeout(() => loadAd(), (data.wait_seconds + 1) * 1000);
-            } else if(data?.reason === 'no_ads'){
-                showAdError('📭', 'Реклама временно недоступна. Заходите позже.');
-            } else {
-                showAdError('⚠️', 'Не удалось загрузить рекламу');
-            }
+            if(data?.reason === 'daily_limit') showAdError('✅', `Дневной лимит исчерпан (${data.views_today}/${data.daily_limit}).`);
+            else if(data?.reason === 'cooldown'){ showAdError('⏳', `Подождите ${data.wait_seconds} сек.`); setTimeout(() => loadAd(), (data.wait_seconds + 1) * 1000); }
+            else if(data?.reason === 'no_ads') showAdError('📭', 'Реклама временно недоступна.');
+            else showAdError('⚠️', 'Не удалось загрузить рекламу');
             return;
         }
 
@@ -762,10 +711,7 @@ async function loadAd(){
         setupAd(data);
         document.getElementById('adLoading').classList.add('hidden');
         document.getElementById('adContent').classList.remove('hidden');
-    }catch(err){
-        console.error('loadAd error', err);
-        showAdError('⚠️', err.message || 'Ошибка соединения');
-    }
+    }catch(err){ console.error('loadAd error', err); showAdError('⚠️', err.message || 'Ошибка соединения'); }
 }
 
 function showAdError(icon, text){
@@ -867,7 +813,6 @@ async function claimAdReward(){
         const st = document.getElementById('adStatusMsg');
         st.textContent = `+${Number(data.reward).toFixed(5)} ${rewardToken} зачислено!`;
         st.className = 'success';
-
         setTimeout(() => loadAd(), 4000);
     }catch(err){
         console.error('claimAdReward', err);
@@ -899,9 +844,7 @@ function showAdRewardAnimation(reward, token){
     setTimeout(() => document.getElementById('adRewardPopup').classList.remove('show'), 3000);
 }
 
-/* =========================================================
-   TASKS & MODERATION
-========================================================= */
+/* === ЗАДАНИЯ: две кнопки + проверка подписки === */
 async function loadTasks(){
     const box = document.getElementById('tasksList');
     if(!box) return;
@@ -915,13 +858,54 @@ async function loadTasks(){
         return `
         <div class="trade-item">
             <div class="order-main">${esc(task.type)}</div>
-            <div class="info" style="margin-top:5px">Ссылка: <a href="${esc(task.link)}" target="_blank" style="color:var(--blue)">Перейти</a></div>
             <div class="detail" style="border:0; padding:4px 0"><span>Награда:</span><span style="color:var(--gold)">${fmt(task.reward)} ${esc(tk)}</span></div>
             <div class="detail" style="border:0; padding:4px 0"><span>Осталось мест:</span><span>${remaining}</span></div>
-            <button onclick="completeTask('${task.id}')" style="margin-top:8px">✅ ВЫПОЛНИТЬ ЗА ${fmt(task.reward)} ${esc(tk)}</button>
+            <button onclick="openTaskLink('${esc(task.link)}')" style="margin-top:8px;background:linear-gradient(135deg,#4f8cff,#2b6fd4);color:#fff;">🔗 ПЕРЕЙТИ И ПОДПИСАТЬСЯ</button>
+            <button class="secondary" onclick="completeTask('${task.id}')" style="margin-top:6px;">✅ Я ПОДПИСАЛСЯ — ПРОВЕРИТЬ</button>
         </div>
-    `;
+        `;
     }).join('');
+}
+
+function openTaskLink(link){
+    if(!link){ showMessage('Некорректная ссылка','error'); return; }
+    try {
+        if(telegram?.openLink){
+            telegram.openLink(link);
+        } else if(telegram?.openTelegramLink && link.includes('t.me')){
+            telegram.openTelegramLink(link);
+        } else {
+            window.open(link, '_blank');
+        }
+        showMessage('Подпишитесь и вернитесь — нажмите «Я подписался»', 'info');
+    } catch(e) {
+        console.error('openTaskLink error', e);
+        window.open(link, '_blank');
+    }
+}
+
+async function completeTask(taskId){
+    if(!USER_ID){ showMessage('Пользователь не определён','error'); return; }
+    if(!confirm('Вы точно подписались? Если нет — награда не начислится.')) return;
+    showMessage('Проверка подписки...', 'info');
+    try {
+        const resp = await fetch('https://telepat-bot.onrender.com/check_task', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ task_id: taskId, user_id: String(USER_ID) })
+        });
+        const data = await resp.json();
+        if(!data.ok){
+            showMessage(data.error || 'Ошибка', 'error');
+            return;
+        }
+        showMessage(`✅ Задание выполнено! Начислено ${fmt(data.reward)} ${data.token}`, 'success');
+        await loadUser();
+        await loadTasks();
+    } catch(err) {
+        console.error(err);
+        showMessage('Ошибка соединения с ботом', 'error');
+    }
 }
 
 async function createTask(){
@@ -936,13 +920,8 @@ async function createTask(){
     const statusEl = document.getElementById('taskCreateStatus');
     statusEl.textContent = 'Отправка на модерацию...';
     const { error } = await supabaseClient.from('tasks').insert({
-        creator_id: String(USER_ID),
-        type: type,
-        link: link,
-        reward: reward,
-        reward_token: rewardToken,
-        limit_count: limit,
-        status: 'pending'
+        creator_id: String(USER_ID), type: type, link: link, reward: reward,
+        reward_token: rewardToken, limit_count: limit, status: 'pending'
     });
     if(error){ statusEl.innerHTML = `<span class="error">Ошибка: ${esc(error.message)}</span>`; return; }
     statusEl.innerHTML = `<span class="success">✅ Задание отправлено на модерацию! (награда в ${esc(rewardToken)})</span>`;
@@ -952,55 +931,13 @@ async function createTask(){
     document.getElementById('taskLimit').value = '';
 }
 
-async function completeTask(taskId){
-    if(!USER_ID){ showMessage('Пользователь не определён','error'); return; }
-    if(!confirm('Вы уверены, что выполнили задание?')) return;
-    showMessage('Проверка выполнения...', 'info');
-    try {
-        const { data, error } = await supabaseClient.rpc('complete_task', {
-            p_task_id: taskId,
-            p_user_id: String(USER_ID)
-        });
-        if(error) throw error;
-        if(!data.ok){
-            showMessage(data.error || 'Ошибка', 'error');
-            return;
-        }
-        const tk = data.token || 'TUSD';
-        showMessage(`✅ Задание выполнено! Начислено ${fmt(data.reward)} ${tk}`, 'success');
-        await loadUser();
-        await loadTasks();
-    } catch(err) {
-        console.error(err);
-        showMessage(err.message || 'Ошибка', 'error');
-    }
-}
-
 async function loadAdminTasks(){
     const box = document.getElementById('adminTasksList');
     if(!box || USER_ID !== ADMIN_ID) return;
     box.innerHTML = '<div class="info">Загрузка...</div>';
-    
-    console.log('loadAdminTasks: запрос к tasks со status=pending');
-    
-    const { data, error } = await supabaseClient
-        .from('tasks')
-        .select('*')
-        .eq('status', 'pending')
-        .order('created_at', { ascending: false });
-    
-    console.log('loadAdminTasks результат:', { data, error });
-    
-    if(error){ 
-        box.innerHTML = `<div class="error">Ошибка: ${esc(error.message)}</div>`; 
-        console.error('loadAdminTasks error:', error);
-        return; 
-    }
-    if(!data || data.length === 0){ 
-        box.innerHTML = '<div class="info">Нет заданий на модерации.</div>'; 
-        return; 
-    }
-    
+    const { data, error } = await supabaseClient.from('tasks').select('*').eq('status', 'pending').order('created_at', { ascending: false });
+    if(error){ box.innerHTML = `<div class="error">Ошибка: ${esc(error.message)}</div>`; return; }
+    if(!data || data.length === 0){ box.innerHTML = '<div class="info">Нет заданий на модерации.</div>'; return; }
     box.innerHTML = data.map(task => {
         const tk = task.reward_token || 'TUSD';
         return `
@@ -1032,16 +969,12 @@ async function rejectTask(taskId){
     loadAdminTasks();
 }
 
-/* =========================================================
-   BONUS / DAILY / REFERRAL
-========================================================= */
 async function claimWelcomeBonus(){
     if(!USER_ID) return;
     const {data,error} = await supabaseClient.rpc('grant_welcome_bonus_v2');
     if(error){ showMessage(error.message,'error'); return; }
     const ok = data?.success === true;
-    const msg = data?.message || (ok ? '🎁 Бонус начислен' : 'Не удалось начислить бонус');
-    showMessage(msg, ok ? 'success' : 'error');
+    showMessage(data?.message || (ok ? '🎁 Бонус начислен' : 'Не удалось начислить бонус'), ok ? 'success' : 'error');
     await loadUser();
 }
 
@@ -1067,9 +1000,6 @@ async function copyRefLink(){
     catch(e){ showMessage('Не удалось скопировать','error'); }
 }
 
-/* =========================================================
-   POOLS
-========================================================= */
 let currentPools = {};
 let addLiqToken = null;
 
@@ -1125,9 +1055,6 @@ async function confirmAddLiquidity(){
     await loadTokenReserves();
 }
 
-/* =========================================================
-   EXCHANGE FORM
-========================================================= */
 function updateOrderForm(){
     const from = document.getElementById('fromToken').value;
     const to = document.getElementById('toToken').value;
@@ -1157,9 +1084,6 @@ function swapTokens(){
     updateOrderForm();
 }
 
-/* =========================================================
-   P2P ORDERS
-========================================================= */
 async function createP2POrder(){
     if(!USER_ID || !currentUser){ showMessage('Пользователь не загружен','error'); return; }
     const from = document.getElementById('fromToken').value;
@@ -1252,9 +1176,6 @@ async function cancelP2POrder(orderId){
     await loadUser(); await loadOrders();
 }
 
-/* =========================================================
-   PROFILE
-========================================================= */
 async function openProfile(userId){
     const modal = document.getElementById('profileModal');
     modal.classList.add('show');
@@ -1282,9 +1203,6 @@ function closeProfile(event){
     document.getElementById('profileModal').classList.remove('show');
 }
 
-/* =========================================================
-   TRADES & RATINGS
-========================================================= */
 const reviewBusy = new Set();
 async function loadMyTrades(){
     const box = document.getElementById('myTrades');
@@ -1321,9 +1239,6 @@ async function rateTrade(tradeId,rating){
     }finally{ reviewBusy.delete(id); }
 }
 
-/* =========================================================
-   ADMIN
-========================================================= */
 async function loadAdminStats(){
     if(USER_ID !== ADMIN_ID) return;
     const {data:users,error:usersError} = await supabaseClient.from('users').select('tg_balance,ai_balance,tusd_balance',{count:'exact'});
@@ -1339,11 +1254,9 @@ async function loadAdminStats(){
     if(adminTUSD) adminTUSD.textContent = fmt(tusd);
 }
 
-let ADMIN_CHAT_TOKENS = [];
 let ADMIN_CHAT_CURRENT = null;
 let ADMIN_CHAT_ROWS = [];
 
-/* ЗАГРУЖАЕМ ЧАТЫ НАПРЯМУЮ ИЗ chat_rewards */
 async function loadAdminChats(){
     const box = document.getElementById('adminChatsList');
     if(!box) return;
@@ -1351,7 +1264,7 @@ async function loadAdminChats(){
     
     const {data,error} = await supabaseClient.from('chat_rewards').select('*').order('created_at', { ascending: false });
     if(error){ box.innerHTML = `<div class="error">Ошибка: ${esc(error.message)}</div>`; return; }
-    if(!data || data.length === 0){ box.innerHTML = '<div class="info">Пока нет подключённых чатов. Добавьте бота в чат — он появится здесь.</div>'; return; }
+    if(!data || data.length === 0){ box.innerHTML = '<div class="info">Пока нет подключённых чатов.</div>'; return; }
     
     ADMIN_CHAT_ROWS = data;
     box.innerHTML = '';
@@ -1368,7 +1281,6 @@ async function loadAdminChats(){
     });
 }
 
-/* РЕДАКТИРОВАНИЕ ЧАТА */
 async function openAdminChatEdit(chatTgId){
     const chat = ADMIN_CHAT_ROWS.find(c => String(c.chat_id) === String(chatTgId));
     if(!chat) return;
@@ -1391,7 +1303,6 @@ async function openAdminChatEdit(chatTgId){
 }
 function closeAdminChatEdit(){ document.getElementById('adminChatEdit').classList.add('hidden'); ADMIN_CHAT_CURRENT = null; }
 
-/* СОХРАНЕНИЕ НАПРЯМУЮ В chat_rewards */
 async function saveAdminChatReward(){
     if(!ADMIN_CHAT_CURRENT) return;
     const status = document.getElementById('adminChatEditStatus');
@@ -1422,9 +1333,6 @@ async function saveAdminChatReward(){
     setTimeout(()=>closeAdminChatEdit(), 900);
 }
 
-/* =========================================================
-   TOKEN LISTING
-========================================================= */
 let listingSupplyPercent = 10;
 let listingFeeTUSD = 100;
 
@@ -1485,16 +1393,13 @@ async function createTokenListing(){
         document.getElementById('listingTotalSupply').value = '';
         calculateListingPreview();
     }catch(error){
-        if(resultEl) resultEl.innerHTML = `<span class="error">${esc(error.message || 'Ошибка создания заявки')}</span>`;
-        showMessage(error.message || 'Ошибка создания заявки','error');
+        if(resultEl) resultEl.innerHTML = `<span class="error">${esc(error.message || 'Ошибка')}</span>`;
+        showMessage(error.message || 'Ошибка','error');
     }finally{
         if(button){ button.disabled = false; button.textContent = '➕ СОЗДАТЬ ЗАЯВКУ НА ЛИСТИНГ'; }
     }
 }
 
-/* =========================================================
-   ADMIN TRANSFER
-========================================================= */
 async function adminTransfer(){
     if(USER_ID !== ADMIN_ID){ showMessage('Нет доступа','error'); return; }
     const target = Number(document.getElementById('adminTargetId').value);
@@ -1503,15 +1408,12 @@ async function adminTransfer(){
     if(!target || amount <= 0){ showMessage('Заполните данные','error'); return; }
     const {data,error} = await supabaseClient.rpc('admin_transfer_token_v2',{p_target_id:target, p_token:token, p_amount:amount});
     if(error){ showMessage(error.message,'error'); return; }
-    if(data && data.success === false){ showMessage(data.message || 'Ошибка перевода','error'); return; }
+    if(data && data.success === false){ showMessage(data.message || 'Ошибка','error'); return; }
     showMessage('💰 Перевод выполнен','success');
     document.getElementById('adminAmount').value = '';
     await loadAdminStats();
 }
 
-/* =========================================================
-   INIT
-========================================================= */
 document.addEventListener('DOMContentLoaded', async ()=>{
     await refreshJwt();
     await loadUser();
