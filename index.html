@@ -980,9 +980,27 @@ async function loadAdminTasks(){
     const box = document.getElementById('adminTasksList');
     if(!box || USER_ID !== ADMIN_ID) return;
     box.innerHTML = '<div class="info">Загрузка...</div>';
-    const { data, error } = await supabaseClient.from('tasks').select('*').eq('status', 'pending').order('created_at', { ascending: false });
-    if(error){ box.innerHTML = `<div class="error">${esc(error.message)}</div>`; return; }
-    if(!data || data.length === 0){ box.innerHTML = '<div class="info">Нет заданий на модерации.</div>'; return; }
+    
+    console.log('loadAdminTasks: запрос к tasks со status=pending');
+    
+    const { data, error } = await supabaseClient
+        .from('tasks')
+        .select('*')
+        .eq('status', 'pending')
+        .order('created_at', { ascending: false });
+    
+    console.log('loadAdminTasks результат:', { data, error });
+    
+    if(error){ 
+        box.innerHTML = `<div class="error">Ошибка: ${esc(error.message)}</div>`; 
+        console.error('loadAdminTasks error:', error);
+        return; 
+    }
+    if(!data || data.length === 0){ 
+        box.innerHTML = '<div class="info">Нет заданий на модерации.</div>'; 
+        return; 
+    }
+    
     box.innerHTML = data.map(task => {
         const tk = task.reward_token || 'TUSD';
         return `
@@ -996,7 +1014,7 @@ async function loadAdminTasks(){
                 <button class="danger" onclick="rejectTask('${task.id}')">❌ ОТКЛОНИТЬ</button>
             </div>
         </div>
-    `;
+        `;
     }).join('');
 }
 
@@ -1325,11 +1343,6 @@ let ADMIN_CHAT_TOKENS = [];
 let ADMIN_CHAT_CURRENT = null;
 let ADMIN_CHAT_ROWS = [];
 
-/* УСТАРЕВШАЯ ФУНКЦИЯ — оставлена для совместимости */
-async function loadAdminChatTokens(){
-    return ['TUSD', 'TG', 'AI'];
-}
-
 /* ЗАГРУЖАЕМ ЧАТЫ НАПРЯМУЮ ИЗ chat_rewards */
 async function loadAdminChats(){
     const box = document.getElementById('adminChatsList');
@@ -1347,9 +1360,10 @@ async function loadAdminChats(){
         div.className = 'pool-card';
         const statusClass = row.enabled ? 'success' : 'error';
         const statusText = row.enabled ? 'ВКЛ' : 'ВЫКЛ';
+        const title = row.chat_title || '(без названия)';
         const reward = row.reward ? `${fmt(row.reward)} ${row.reward_token || 'TUSD'} за сообщение` : 'не настроено';
         const limitInfo = row.max_messages_per_user_day ? ` • лимит ${row.max_messages_per_user_day}/день` : '';
-        div.innerHTML = `<div class="order-line"><div><div class="pool-token">📢 ${esc(row.chat_id)}</div><div class="${statusClass}" style="font-size:12px;margin-top:5px">${statusText} • ${esc(reward)}${limitInfo}</div></div><button class="secondary small" onclick="openAdminChatEdit('${esc(row.chat_id)}')">⚙️</button></div>`;
+        div.innerHTML = `<div class="order-line"><div><div class="pool-token">📢 ${esc(title)}</div><div class="info" style="margin-top:4px">ID: ${esc(row.chat_id)}</div><div class="${statusClass}" style="font-size:12px;margin-top:5px">${statusText} • ${esc(reward)}${limitInfo}</div></div><button class="secondary small" onclick="openAdminChatEdit('${esc(row.chat_id)}')">⚙️</button></div>`;
         box.appendChild(div);
     });
 }
@@ -1359,7 +1373,7 @@ async function openAdminChatEdit(chatTgId){
     const chat = ADMIN_CHAT_ROWS.find(c => String(c.chat_id) === String(chatTgId));
     if(!chat) return;
     ADMIN_CHAT_CURRENT = chat;
-    document.getElementById('adminChatEditTitle').textContent = '⚙️ ' + chat.chat_id;
+    document.getElementById('adminChatEditTitle').textContent = '⚙️ ' + (chat.chat_title || chat.chat_id);
     document.getElementById('ce_enabled').value = chat.enabled ? 'true' : 'false';
     document.getElementById('ce_reward').value = chat.reward ?? 0.0002;
     document.getElementById('ce_notify_n').value = chat.notify_every_n ?? 1;
