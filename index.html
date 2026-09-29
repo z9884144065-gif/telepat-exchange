@@ -651,12 +651,18 @@ async function watchAd(){
   try{
     const {data, error} = await supabaseClient.rpc('get_active_ad', { p_telegram_id: USER_ID });
     if(error){ showMessage(error.message,'error'); return; }
-    const ad = Array.isArray(data) ? data[0] : data;
-    if(!ad){
-      showMessage('📺 Сейчас нет доступной рекламы. Заходи позже!','info');
+    console.log('get_active_ad response:', data);
+
+    // Разбор обёртки {ok, campaign, daily_limit, views_today}
+    if(!data || data.ok === false || !data.campaign){
+      const reason = data?.reason || '';
+      if(reason === 'daily_limit') showMessage('📺 Дневной лимит просмотров исчерпан','info');
+      else if(reason === 'cooldown') showMessage('⏳ Подождите немного между просмотрами','info');
+      else showMessage('📺 Сейчас нет доступной рекламы. Заходи позже!','info');
       return;
     }
 
+    const ad = data.campaign;
     AD_CURRENT = ad;
     AD_REWARDED = false;
 
@@ -673,7 +679,7 @@ async function watchAd(){
     video.muted = false;
 
     const duration = Number(ad.duration_seconds || 15);
-    const buffer = Number(ad.buffer_seconds || 10);
+    const buffer = 10;
     let remaining = duration + buffer;
     const timerEl = document.getElementById('adTimer');
 
@@ -732,12 +738,13 @@ async function claimAdReward(){
       p_telegram_id: USER_ID,
       p_campaign_id: AD_CURRENT.id,
     });
+    console.log('claim_ad_reward response:', data, error);
     if(error){
       res.innerHTML = `<span class="error">${esc(error.message)}</span>`;
       btn.disabled = false; btn.textContent = '🎁 ПОЛУЧИТЬ НАГРАДУ';
       return;
     }
-    const ok = data?.success === true || data === true;
+    const ok = data?.success === true || data === true || data?.ok === true;
     const msg = data?.message || (ok ? 'Награда начислена' : 'Не удалось начислить');
     res.innerHTML = ok ? `<span class="success">✅ ${esc(msg)}</span>` : `<span class="error">${esc(msg)}</span>`;
     if(ok){
