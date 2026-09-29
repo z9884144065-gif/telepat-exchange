@@ -87,8 +87,6 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 .modal-overlay{position:fixed;z-index:3000;inset:0;background:#0009;display:none;align-items:center;justify-content:center;padding:16px;}
 .modal-overlay.show{display:flex}
 .modal-box{width:min(420px,100%);background:linear-gradient(145deg,#1d2939,#101721);border:1px solid #68562a;border-radius:20px;padding:18px;}
-
-/* НОВЫЙ ГЛАВНЫЙ ЭКРАН */
 .topbar{display:flex;gap:6px;justify-content:space-between;margin-bottom:14px;}
 .topbar button{flex:1;padding:10px 6px;border:1px solid #45536a;border-radius:12px;background:linear-gradient(145deg,#1b2636,#111925);color:#fff;font-size:18px;margin:0;cursor:pointer;}
 .stats3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;}
@@ -101,54 +99,24 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 .qa-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px 8px;border-radius:14px;border:1px solid #45536a;background:linear-gradient(145deg,#1e2938,#141b26);color:#fff;font-size:12px;font-weight:bold;cursor:pointer;margin:0;min-height:80px;}
 .qa-btn .qico{font-size:22px;margin-bottom:6px;}
 .qa-btn.gold{background:linear-gradient(135deg,#f5d477,#c99629);color:#17120a;border-color:#a37a1e;}
-
-/* ===== ПОЛНОЭКРАННАЯ РЕКЛАМА ===== */
 #adModal{background:#000;padding:0;align-items:stretch;}
-#adModal .ad-full{
-  position:relative;width:100vw;height:100vh;
-  display:flex;flex-direction:column;background:#000;overflow:hidden;
-}
-#adModal video{
-  width:100%;flex:1;min-height:0;
-  object-fit:contain;background:#000;display:block;
-}
-#adModal .ad-top{
-  position:absolute;top:0;left:0;right:0;
-  padding:14px 16px calc(14px + env(safe-area-inset-top,0px));
-  display:flex;justify-content:space-between;align-items:center;
-  background:linear-gradient(180deg,rgba(0,0,0,.75),transparent);
-  color:#fff;font-size:14px;font-weight:bold;z-index:5;
-}
-#adModal .ad-close{
-  width:38px;height:38px;border-radius:50%;
-  background:rgba(0,0,0,.55);color:#fff;
-  border:1px solid rgba(255,255,255,.3);
-  font-size:18px;line-height:1;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-  padding:0;margin:0;
-}
-#adModal .ad-timer{
-  background:rgba(0,0,0,.6);padding:6px 14px;border-radius:20px;
-  font-size:14px;border:1px solid rgba(255,255,255,.2);
-  letter-spacing:1px;
-}
-#adModal .ad-bottom{
-  position:absolute;bottom:0;left:0;right:0;
-  padding:16px 16px calc(16px + env(safe-area-inset-bottom,0px));
-  background:linear-gradient(0deg,rgba(0,0,0,.9),rgba(0,0,0,.4) 60%,transparent);
-  display:flex;flex-direction:column;gap:10px;z-index:5;
-}
+#adModal .ad-full{position:relative;width:100vw;height:100vh;display:flex;flex-direction:column;background:#000;overflow:hidden;}
+#adModal video{width:100%;flex:1;min-height:0;object-fit:contain;background:#000;display:block;}
+#adModal .ad-top{position:absolute;top:0;left:0;right:0;padding:14px 16px calc(14px + env(safe-area-inset-top,0px));display:flex;justify-content:space-between;align-items:center;background:linear-gradient(180deg,rgba(0,0,0,.75),transparent);color:#fff;font-size:14px;font-weight:bold;z-index:5;}
+#adModal .ad-close{width:38px;height:38px;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;border:1px solid rgba(255,255,255,.3);font-size:18px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;margin:0;}
+#adModal .ad-timer{background:rgba(0,0,0,.6);padding:6px 14px;border-radius:20px;font-size:14px;border:1px solid rgba(255,255,255,.2);letter-spacing:1px;}
+#adModal .ad-bottom{position:absolute;bottom:0;left:0;right:0;padding:16px 16px calc(16px + env(safe-area-inset-bottom,0px));background:linear-gradient(0deg,rgba(0,0,0,.9),rgba(0,0,0,.4) 60%,transparent);display:flex;flex-direction:column;gap:10px;z-index:5;}
 #adModal .ad-bottom .info{color:#e8e8e8;text-align:center;font-size:13px;}
 #adModal .ad-bottom .success{color:#7ee26a;}
 #adModal .ad-bottom .error{color:#ff7c8a;}
-#adModal .ad-bottom button{
-  margin:0;padding:15px;font-size:15px;border-radius:14px;
-}
+#adModal .ad-bottom button{margin:0;padding:15px;font-size:15px;border-radius:14px;}
 #adModal .ad-bottom button:disabled{opacity:.5;cursor:not-allowed;}
-#adModal .ad-title{
-  color:#fff;font-size:16px;font-weight:bold;text-align:center;
-  text-shadow:0 2px 6px rgba(0,0,0,.8);
-}
+#adModal .ad-title{color:#fff;font-size:16px;font-weight:bold;text-align:center;text-shadow:0 2px 6px rgba(0,0,0,.8);}
+.task-item{background:#0d1520;border:1px solid #2d3a4c;border-radius:14px;padding:12px;margin-top:8px;cursor:pointer;}
+.task-item.done{opacity:.6;}
+.task-item .tt-title{font-weight:bold;color:#fff;font-size:14px}
+.task-item .tt-sub{color:#8f9bab;font-size:11px;margin-top:4px}
+.task-item .tt-reward{color:#39d98a;font-weight:bold;font-size:13px;margin-top:6px}
 </style>
 </head>
 <body>
@@ -158,7 +126,6 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 <h1>👑 ТЕЛЕПАТ</h1>
 <div class="subtitle">Виртуальный P2P-обменник</div>
 
-<!-- WALLET -->
 <section id="section-wallet">
 <div class="topbar">
 <button onclick="openTelegramProfile()" title="Профиль">👤</button>
@@ -204,6 +171,8 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 <button class="qa-btn" onclick="goToPools()"><span class="qico">💧</span><span>ПУЛЫ</span></button>
 <button class="qa-btn" onclick="goToTrades()"><span class="qico">🤝</span><span>СДЕЛКИ</span></button>
 <button class="qa-btn gold" onclick="watchAd()"><span class="qico">📺</span><span>РЕКЛАМА</span></button>
+<button class="qa-btn gold" onclick="openTasks()"><span class="qico">📋</span><span>ЗАДАНИЯ</span></button>
+<button class="qa-btn gold" onclick="claimWelcomeBonus()"><span class="qico">🎁</span><span>БОНУС</span></button>
 <button class="qa-btn gold" onclick="showSection('earn')"><span class="qico">💎</span><span>ЕЖЕДНЕВКА</span></button>
 </div>
 </div>
@@ -215,7 +184,6 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 </div>
 </section>
 
-<!-- EXCHANGE -->
 <section id="section-exchange" class="hidden">
 <div class="card gold">
 <div class="section-title">🔄 СОЗДАТЬ P2P-ОРДЕР</div>
@@ -270,7 +238,6 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 </div>
 </section>
 
-<!-- FRIENDS -->
 <section id="section-friends" class="hidden">
 <div class="card">
 <div class="section-title">👥 ДРУЗЬЯ И РЕФЕРАЛЫ</div>
@@ -284,7 +251,6 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 </div>
 </section>
 
-<!-- EARN -->
 <section id="section-earn" class="hidden">
 <div class="card">
 <div class="section-title">💎 ЗАРАБОТОК</div>
@@ -298,7 +264,6 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 </div>
 </section>
 
-<!-- ADMIN -->
 <section id="section-admin" class="hidden">
 <div class="card admin">
 <div class="section-title">👑 АДМИН-ПАНЕЛЬ</div>
@@ -362,11 +327,51 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 <div id="adminChatEditStatus" class="info" style="margin-top:9px"></div>
 </div>
 </div>
+
+<!-- ADMIN TASKS CARD -->
+<div class="card admin">
+<div class="section-title">📋 ЗАДАНИЯ</div>
+<button class="secondary" onclick="loadAdminTasks()">🔄 ЗАГРУЗИТЬ СПИСОК ЗАДАНИЙ</button>
+<button onclick="openAdminTaskForm(null)">➕ СОЗДАТЬ ЗАДАНИЕ</button>
+<div id="adminTasksList" style="margin-top:12px"><div class="info">Нажми «Загрузить список заданий».</div></div>
+
+<div id="adminTaskForm" class="hidden" style="margin-top:16px;padding:12px;border:1px solid #4a596d;border-radius:13px;background:#0d1520">
+<div class="section-title" id="adminTaskFormTitle">📝 НОВОЕ ЗАДАНИЕ</div>
+<label>Тип задания</label>
+<select id="at_type">
+<option value="subscribe_channel">Подписка на канал</option>
+<option value="subscribe_bot">Подписка на бота</option>
+<option value="video">Просмотр видео</option>
+<option value="click">Переход по ссылке</option>
+</select>
+<label style="margin-top:9px">Ссылка</label>
+<input id="at_link" type="text" placeholder="https://t.me/...">
+<label style="margin-top:9px">Награда</label>
+<input id="at_reward" type="number" inputmode="decimal" step="0.000001" placeholder="Например: 1">
+<label style="margin-top:9px">Токен награды</label>
+<select id="at_reward_token">
+<option value="TG">TG</option>
+<option value="AI">AI</option>
+<option value="TUSD">TUSD</option>
+</select>
+<label style="margin-top:9px">Лимит выполнений</label>
+<input id="at_limit" type="number" inputmode="numeric" step="1" placeholder="Например: 100">
+<label style="margin-top:9px">Статус</label>
+<select id="at_status">
+<option value="approved">Активно</option>
+<option value="paused">Пауза</option>
+</select>
+<div class="row" style="margin-top:12px">
+<button onclick="saveAdminTask()">💾 СОХРАНИТЬ</button>
+<button class="secondary" onclick="closeAdminTaskForm()">Отмена</button>
+</div>
+<div id="adminTaskFormStatus" class="info" style="margin-top:9px"></div>
+</div>
+</div>
 </section>
 
 </div>
 
-<!-- PROFILE MODAL -->
 <div id="profileModal" class="profile-card" onclick="closeProfile(event)">
 <div class="profile-inner" onclick="event.stopPropagation()">
 <div class="section-title">👤 ПРОФИЛЬ УЧАСТНИКА</div>
@@ -383,7 +388,6 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 </div>
 </div>
 
-<!-- ADD LIQUIDITY MODAL -->
 <div id="addLiqModal" class="modal-overlay" onclick="closeAddLiq(event)">
 <div class="modal-box" onclick="event.stopPropagation()">
 <div class="section-title">💧 ДОБАВИТЬ В ПУЛ ЛИКВИДНОСТИ</div>
@@ -397,16 +401,14 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 </div>
 </div>
 
-<!-- AD MODAL — ПОЛНОЭКРАННАЯ -->
+<!-- AD MODAL -->
 <div id="adModal" class="modal-overlay">
   <div class="ad-full">
     <video id="adVideo" playsinline preload="auto" webkit-playsinline></video>
-
     <div class="ad-top">
       <button class="ad-close" onclick="closeAdModal()">✕</button>
       <div class="ad-timer" id="adTimer">0:25</div>
     </div>
-
     <div class="ad-bottom">
       <div id="adTitle" class="ad-title"></div>
       <div id="adDesc" class="info"></div>
@@ -415,6 +417,16 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
       <div id="adResult" class="info" style="text-align:center"></div>
     </div>
   </div>
+</div>
+
+<!-- TASKS MODAL -->
+<div id="tasksModal" class="modal-overlay" onclick="closeTasks(event)">
+<div class="modal-box" style="width:min(500px,100%)" onclick="event.stopPropagation()">
+<div class="section-title">📋 ЗАДАНИЯ</div>
+<div class="info" style="margin-bottom:10px">Выполни задание и получи награду</div>
+<div id="tasksList" style="max-height:60vh;overflow-y:auto"><div class="info">Загрузка...</div></div>
+<button class="secondary" onclick="closeTasks()">Закрыть</button>
+</div>
 </div>
 
 <!-- NAV -->
@@ -427,9 +439,6 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 </div>
 
 <script>
-/* =========================================================
-   TELEPAT — AUTH LAYER
-========================================================= */
 const SUPABASE_URL = 'https://jutszxuzjzyfxarceydw.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_geRczpRc3faUHRGto2ue7A_eFFiJDwO';
 const EDGE_FUNCTION_URL = `${SUPABASE_URL}/functions/v1/telegram-auth`;
@@ -452,11 +461,7 @@ async function refreshJwt(){
   if(!initData){ setAuthStatus('error','⚠️ Telegram initData недоступен'); return null; }
   setAuthStatus('loading','⏳ Проверка подписи Telegram…');
   try{
-    const resp = await fetch(EDGE_FUNCTION_URL, {
-      method:'POST',
-      headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}`},
-      body: JSON.stringify({ initData }),
-    });
+    const resp = await fetch(EDGE_FUNCTION_URL, {method:'POST',headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}`},body: JSON.stringify({ initData })});
     if(!resp.ok){ setAuthStatus('error', `❌ Авторизация не прошла (${resp.status})`); return null; }
     const data = await resp.json();
     if(!data?.access_token){ setAuthStatus('error','❌ Сервер не выдал токен'); return null; }
@@ -480,9 +485,6 @@ const tgUser = telegram?.initDataUnsafe?.user || null;
 const USER_ID = Number(tgUser?.id || 0);
 let currentUser = null;
 
-/* =========================================================
-   RANKS
-========================================================= */
 const RANKS = [
   {level:1,name:'Крестьянин',req:0.20},{level:2,name:'Вольный',req:0.40},
   {level:3,name:'Гражданин',req:0.80},{level:4,name:'Оруженосец',req:1.60},
@@ -499,9 +501,6 @@ const RANKS = [
 const RANK_COLORS = ['#ffffff','#d8d8d8','#b9c5b9','#75c99a','#58b5e9','#4f8cff','#3974d9','#6673e8','#4169e1','#7389bd','#b87333','#bfc2c9','#e0bd45','#9b59b6','#8e44ad','#e0b72f','#e68a27','#24c8aa','#f5cf3d','#f7b83f','#ffd700'];
 function rankColor(level){ return RANK_COLORS[Math.max(0,Math.min(RANK_COLORS.length-1,Number(level||1)-1))]; }
 
-/* =========================================================
-   HELPERS
-========================================================= */
 function esc(v){return String(v ?? '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'","&#039;");}
 function num(v){const n=Number(v);return Number.isFinite(n)?n:0;}
 function fmt(v, max=8){return num(v).toLocaleString('ru-RU',{maximumFractionDigits:max});}
@@ -520,9 +519,6 @@ function showMessage(text,type='info'){
   setTimeout(()=>el.classList.remove('show'), 3000);
 }
 
-/* =========================================================
-   ГЛАВНЫЙ ЭКРАН
-========================================================= */
 function openTelegramProfile(){
   if(tgUser){ showMessage(`👤 ${tgUser.first_name || ''} ${tgUser.last_name || ''} (ID: ${USER_ID})`); }
   else { showMessage('Открой в Telegram'); }
@@ -535,9 +531,6 @@ function goToMyOrders(){ showSection('exchange'); setTimeout(()=>{ const el = do
 function goToPools(){ showSection('exchange'); setTimeout(()=>{ const el = document.getElementById('poolsCard'); if(el) el.scrollIntoView({behavior:'smooth', block:'start'}); }, 400); }
 function goToTrades(){ showSection('exchange'); setTimeout(()=>{ const el = document.getElementById('tradesCard'); if(el) el.scrollIntoView({behavior:'smooth', block:'start'}); }, 400); }
 
-/* =========================================================
-   LOAD USER
-========================================================= */
 async function loadUser(){
   if(!USER_ID){ showMessage('Открой приложение внутри Telegram','error'); return; }
   const {data,error} = await supabaseClient.from('users').select('*').eq('Ttelegram_id', String(USER_ID)).maybeSingle();
@@ -548,7 +541,6 @@ async function loadUser(){
   loadReferral();
   updateOrderForm();
 }
-
 function renderUser(){
   if(!currentUser) return;
   const name = [tgUser?.first_name || '', tgUser?.last_name || ''].join(' ').trim() || tgUser?.username || 'Пользователь Telegram';
@@ -557,16 +549,13 @@ function renderUser(){
   document.getElementById('tgBalance').textContent = `${fmt(currentUser.tg_balance)} TG`;
   document.getElementById('aiBalance').textContent = `${fmt(currentUser.ai_balance)} AI`;
   document.getElementById('tusdBalance').textContent = `${fmt(currentUser.tusd_balance)} TUSD`;
-
   document.getElementById('topTg').textContent = fmt(currentUser.tg_balance);
   document.getElementById('topTusd').textContent = fmt(currentUser.tusd_balance);
   const rankLevel = Number(currentUser.rank_level || 1);
   document.getElementById('topRank').textContent = rankLevel;
-
   const rankName = currentUser.rank_name || RANKS[rankLevel-1]?.name || 'Крестьянин';
   document.getElementById('rankName').textContent = `👑 ${rankName}`;
   document.getElementById('earnRank').textContent = rankName;
-
   const rank = RANKS[rankLevel-1] || RANKS[0];
   const tgUsd = num(currentUser.tg_balance) * TG_USD;
   const aiUsd = num(currentUser.ai_balance) * AI_USD;
@@ -576,21 +565,14 @@ function renderUser(){
   const aiPart = Math.min(100,(aiUsd/requiredEach)*100);
   const progress = Math.min(tgPart,aiPart);
   document.getElementById('rankProgress').style.width = `${progress}%`;
-  document.getElementById('rankRequirement').textContent =
-    `До следующего: ${progress.toFixed(0)}% • Осталось ${fmt(Math.max(0, required - Math.min(tgUsd, aiUsd) * 2), 2)} USD`;
-
-  document.getElementById('earnDetails').innerHTML =
-    `TG: <b>${fmt(tgUsd,2)} USD</b><br>AI: <b>${fmt(aiUsd,2)} USD</b><br>Требование текущего титула: <b>${fmt(required,2)} USD</b>`;
-
+  document.getElementById('rankRequirement').textContent = `До следующего: ${progress.toFixed(0)}% • Осталось ${fmt(Math.max(0, required - Math.min(tgUsd, aiUsd) * 2), 2)} USD`;
+  document.getElementById('earnDetails').innerHTML = `TG: <b>${fmt(tgUsd,2)} USD</b><br>AI: <b>${fmt(aiUsd,2)} USD</b><br>Требование текущего титула: <b>${fmt(required,2)} USD</b>`;
   const claimed = Boolean(currentUser.welcome_bonus_claimed);
   document.getElementById('bonusStatus').textContent = claimed ? 'Приветственный бонус уже получен.' : 'Приветственный бонус доступен.';
   document.getElementById('refTG').textContent = fmt(currentUser.referral_tg_earned);
   document.getElementById('refTUSD').textContent = fmt(currentUser.referral_tusd_earned);
 }
 
-/* =========================================================
-   NAV
-========================================================= */
 function showSection(name){
   const sections = ['wallet','exchange','friends','earn','admin'];
   sections.forEach(s=>{
@@ -599,13 +581,10 @@ function showSection(name){
     if(nav) nav.classList.toggle('active', s === name);
   });
   if(name === 'exchange'){ loadOrders(); loadMyOrders(); loadMyTrades(); loadTokenReserves(); }
-  if(name === 'admin' && USER_ID === ADMIN_ID){ loadAdminStats(); loadAdminChats(); }
+  if(name === 'admin' && USER_ID === ADMIN_ID){ loadAdminStats(); loadAdminChats(); loadAdminTasks(); }
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
-/* =========================================================
-   BONUS / DAILY
-========================================================= */
 async function claimWelcomeBonus(){
   if(!USER_ID) return;
   const {data,error} = await supabaseClient.rpc('grant_welcome_bonus_v2');
@@ -625,10 +604,6 @@ async function claimDailyReward(){
   showMessage(msg, ok ? 'success' : 'error');
   if(ok) await loadUser();
 }
-
-/* =========================================================
-   REFERRALS
-========================================================= */
 async function loadReferral(){
   if(!USER_ID) return;
   document.getElementById('refLink').value = `https://t.me/TELEPATp2p_bot?start=${USER_ID}`;
@@ -639,9 +614,7 @@ async function copyRefLink(){
   catch(e){ showMessage('Не удалось скопировать','error'); }
 }
 
-/* =========================================================
-   РЕКЛАМА (ПОЛНОЭКРАННАЯ)
-========================================================= */
+/* РЕКЛАМА */
 let AD_CURRENT = null;
 let AD_TIMER = null;
 let AD_REWARDED = false;
@@ -652,8 +625,6 @@ async function watchAd(){
     const {data, error} = await supabaseClient.rpc('get_active_ad', { p_telegram_id: USER_ID });
     if(error){ showMessage(error.message,'error'); return; }
     console.log('get_active_ad response:', data);
-
-    // Разбор обёртки {ok, campaign, daily_limit, views_today}
     if(!data || data.ok === false || !data.campaign){
       const reason = data?.reason || '';
       if(reason === 'daily_limit') showMessage('📺 Дневной лимит просмотров исчерпан','info');
@@ -661,28 +632,23 @@ async function watchAd(){
       else showMessage('📺 Сейчас нет доступной рекламы. Заходи позже!','info');
       return;
     }
-
     const ad = data.campaign;
     AD_CURRENT = ad;
     AD_REWARDED = false;
-
     document.getElementById('adTitle').textContent = ad.title || 'Реклама';
     document.getElementById('adDesc').textContent = ad.description || '';
     document.getElementById('adResult').textContent = '';
     document.getElementById('adStatus').innerHTML = '⏳ Смотрите видео до конца';
     document.getElementById('adClaimBtn').disabled = true;
     document.getElementById('adClaimBtn').textContent = '🎁 ПОЛУЧИТЬ НАГРАДУ';
-
     const video = document.getElementById('adVideo');
     video.src = ad.video_url;
     video.currentTime = 0;
     video.muted = false;
-
     const duration = Number(ad.duration_seconds || 15);
     const buffer = 10;
     let remaining = duration + buffer;
     const timerEl = document.getElementById('adTimer');
-
     function tick(){
       const m = Math.floor(remaining / 60);
       const s = remaining % 60;
@@ -703,20 +669,12 @@ async function watchAd(){
     clearInterval(AD_TIMER);
     AD_TIMER = setInterval(tick, 1000);
     tick();
-
     document.getElementById('adModal').classList.add('show');
     try{ await video.play(); }
-    catch(e){
-      console.log('autoplay blocked, waiting for tap', e);
-      video.controls = true;
-    }
+    catch(e){ console.log('autoplay blocked', e); video.controls = true; }
     video.addEventListener('play', ()=>{ video.controls = false; }, { once:true });
-  }catch(e){
-    console.error(e);
-    showMessage('Ошибка запуска рекламы','error');
-  }
+  }catch(e){ console.error(e); showMessage('Ошибка запуска рекламы','error'); }
 }
-
 function closeAdModal(){
   if(AD_TIMER){ clearInterval(AD_TIMER); AD_TIMER = null; }
   const v = document.getElementById('adVideo');
@@ -725,7 +683,6 @@ function closeAdModal(){
   AD_CURRENT = null;
   AD_REWARDED = false;
 }
-
 async function claimAdReward(){
   if(!AD_CURRENT){ return; }
   if(!AD_REWARDED){ showMessage('Досмотрите видео до конца','error'); return; }
@@ -734,16 +691,9 @@ async function claimAdReward(){
   btn.disabled = true;
   btn.textContent = '⏳ Начисляем...';
   try{
-    const {data, error} = await supabaseClient.rpc('claim_ad_reward', {
-      p_telegram_id: USER_ID,
-      p_campaign_id: AD_CURRENT.id,
-    });
+    const {data, error} = await supabaseClient.rpc('claim_ad_reward', {p_telegram_id: USER_ID, p_campaign_id: AD_CURRENT.id});
     console.log('claim_ad_reward response:', data, error);
-    if(error){
-      res.innerHTML = `<span class="error">${esc(error.message)}</span>`;
-      btn.disabled = false; btn.textContent = '🎁 ПОЛУЧИТЬ НАГРАДУ';
-      return;
-    }
+    if(error){ res.innerHTML = `<span class="error">${esc(error.message)}</span>`; btn.disabled = false; btn.textContent = '🎁 ПОЛУЧИТЬ НАГРАДУ'; return; }
     const ok = data?.success === true || data === true || data?.ok === true;
     const msg = data?.message || (ok ? 'Награда начислена' : 'Не удалось начислить');
     res.innerHTML = ok ? `<span class="success">✅ ${esc(msg)}</span>` : `<span class="error">${esc(msg)}</span>`;
@@ -755,15 +705,167 @@ async function claimAdReward(){
     } else {
       btn.disabled = false; btn.textContent = '🎁 ПОЛУЧИТЬ НАГРАДУ';
     }
-  }catch(e){
-    res.innerHTML = `<span class="error">${esc(e.message)}</span>`;
-    btn.disabled = false; btn.textContent = '🎁 ПОЛУЧИТЬ НАГРАДУ';
+  }catch(e){ res.innerHTML = `<span class="error">${esc(e.message)}</span>`; btn.disabled = false; btn.textContent = '🎁 ПОЛУЧИТЬ НАГРАДУ'; }
+}
+
+/* ЗАДАНИЯ ДЛЯ ЮЗЕРА */
+async function openTasks(){
+  if(!USER_ID){ showMessage('Открой в Telegram','error'); return; }
+  document.getElementById('tasksModal').classList.add('show');
+  const box = document.getElementById('tasksList');
+  box.innerHTML = '<div class="info">Загрузка...</div>';
+  const {data, error} = await supabaseClient.rpc('get_active_tasks', { p_user_id: String(USER_ID) });
+  if(error){ box.innerHTML = `<div class="error">Ошибка: ${esc(error.message)}</div>`; return; }
+  if(!data || !data.length){ box.innerHTML = '<div class="info">Пока нет доступных заданий.</div>'; return; }
+  box.innerHTML = data.map(t=>{
+    const typeLabel = {
+      subscribe_channel: '📢 Подписка на канал',
+      subscribe_bot: '🤖 Подписка на бота',
+      video: '📺 Просмотр видео',
+      click: '🔗 Переход по ссылке'
+    }[t.type] || t.type;
+    const done = t.is_completed ? 'done' : '';
+    const rewardLine = t.is_completed
+      ? '<span class="success">✅ Выполнено</span>'
+      : `<span class="tt-reward">+${fmt(t.reward)} ${esc(t.reward_token)}</span>`;
+    return `<div class="task-item ${done}" onclick="startTask('${esc(t.id)}','${esc(t.link)}','${esc(t.type)}')">
+      <div class="tt-title">${esc(typeLabel)}</div>
+      <div class="tt-sub">${esc(t.link)}</div>
+      <div class="tt-sub">Выполнено: ${t.completed_count} / ${t.limit_count}</div>
+      ${rewardLine}
+    </div>`;
+  }).join('');
+}
+function closeTasks(event){
+  if(event && event.target !== document.getElementById('tasksModal')) return;
+  document.getElementById('tasksModal').classList.remove('show');
+}
+function startTask(id, link, type){
+  if(!id){ return; }
+  // Открыть ссылку в новой вкладке
+  try{ window.Telegram?.WebApp?.openLink ? window.Telegram.WebApp.openLink(link) : window.open(link, '_blank'); }
+  catch(e){ window.open(link, '_blank'); }
+  // Спросить подтверждение
+  setTimeout(()=>{
+    if(!confirm('Вы подписались / выполнили? Нажмите OK чтобы получить награду.')) return;
+    claimTaskReward(id);
+  }, 1200);
+}
+async function claimTaskReward(taskId){
+  if(!USER_ID){ showMessage('Открой в Telegram','error'); return; }
+  const {data, error} = await supabaseClient.rpc('complete_task', {
+    p_task_id: taskId, p_user_id: String(USER_ID)
+  });
+  if(error){ showMessage(error.message,'error'); return; }
+  if(data?.ok === true){
+    showMessage(`🎁 Награда +${fmt(data.reward)} ${esc(data.token)} получена!`,'success');
+    await loadUser();
+    await openTasks();
+  } else {
+    showMessage(data?.error || 'Не удалось получить награду','error');
   }
 }
 
-/* =========================================================
-   POOLS
-========================================================= */
+/* АДМИН ЗАДАНИЯ */
+let ADMIN_TASK_CURRENT = null;
+async function loadAdminTasks(){
+  const box = document.getElementById('adminTasksList');
+  if(!box) return;
+  box.innerHTML = '<div class="info">Загрузка...</div>';
+  const {data, error} = await supabaseClient.rpc('telepat_admin_list_tasks');
+  if(error){ box.innerHTML = `<div class="error">Ошибка: ${esc(error.message)}</div>`; return; }
+  if(!data || !data.length){ box.innerHTML = '<div class="info">Пока нет заданий. Нажми «Создать задание».</div>'; return; }
+  box.innerHTML = '';
+  data.forEach(t=>{
+    const div = document.createElement('div');
+    div.className = 'pool-card';
+    const sc = t.status === 'approved' ? 'success' : 'error';
+    const stLabel = t.status === 'approved' ? 'АКТИВНО' : (t.status === 'paused' ? 'ПАУЗА' : t.status);
+    div.innerHTML = `<div class="order-line"><div>
+      <div class="pool-token">${esc(t.type)}</div>
+      <div class="info" style="margin-top:4px">${esc(t.link)}</div>
+      <div class="${sc}" style="font-size:12px;margin-top:5px">${stLabel} • +${fmt(t.reward)} ${esc(t.reward_token)} • ${t.completed_count}/${t.limit_count}</div>
+    </div><div style="display:flex;flex-direction:column;gap:4px">
+      <button class="secondary small" onclick="openAdminTaskForm('${esc(t.id)}')">✏️</button>
+      <button class="danger small" onclick="deleteAdminTask('${esc(t.id)}')">🗑</button>
+    </div></div>`;
+    box.appendChild(div);
+  });
+  window.__ADMIN_TASKS = data;
+}
+function openAdminTaskForm(id){
+  ADMIN_TASK_CURRENT = id ? (window.__ADMIN_TASKS || []).find(x=>String(x.id)===String(id)) : null;
+  const f = document.getElementById('adminTaskForm');
+  const title = document.getElementById('adminTaskFormTitle');
+  if(ADMIN_TASK_CURRENT){
+    title.textContent = '✏️ РЕДАКТИРОВАНИЕ';
+    document.getElementById('at_type').value = ADMIN_TASK_CURRENT.type || 'subscribe_channel';
+    document.getElementById('at_link').value = ADMIN_TASK_CURRENT.link || '';
+    document.getElementById('at_reward').value = ADMIN_TASK_CURRENT.reward ?? '';
+    document.getElementById('at_reward_token').value = ADMIN_TASK_CURRENT.reward_token || 'TG';
+    document.getElementById('at_limit').value = ADMIN_TASK_CURRENT.limit_count ?? 100;
+    document.getElementById('at_status').value = ADMIN_TASK_CURRENT.status || 'approved';
+  } else {
+    title.textContent = '📝 НОВОЕ ЗАДАНИЕ';
+    document.getElementById('at_type').value = 'subscribe_channel';
+    document.getElementById('at_link').value = '';
+    document.getElementById('at_reward').value = '';
+    document.getElementById('at_reward_token').value = 'TG';
+    document.getElementById('at_limit').value = '100';
+    document.getElementById('at_status').value = 'approved';
+  }
+  document.getElementById('adminTaskFormStatus').textContent = '';
+  f.classList.remove('hidden');
+  f.scrollIntoView({behavior:'smooth', block:'start'});
+}
+function closeAdminTaskForm(){
+  document.getElementById('adminTaskForm').classList.add('hidden');
+  ADMIN_TASK_CURRENT = null;
+}
+async function saveAdminTask(){
+  const status = document.getElementById('adminTaskFormStatus');
+  status.className = 'info';
+  status.textContent = 'Сохранение...';
+  const type = document.getElementById('at_type').value;
+  const link = document.getElementById('at_link').value.trim();
+  const reward = num(document.getElementById('at_reward').value);
+  const reward_token = document.getElementById('at_reward_token').value;
+  const limit_count = Math.floor(num(document.getElementById('at_limit').value) || 100);
+  const st = document.getElementById('at_status').value;
+  if(!link){ status.className = 'error'; status.textContent = 'Заполните ссылку'; return; }
+  if(reward <= 0){ status.className = 'error'; status.textContent = 'Награда должна быть > 0'; return; }
+  let res;
+  if(ADMIN_TASK_CURRENT){
+    res = await supabaseClient.rpc('telepat_admin_update_task', {
+      p_id: ADMIN_TASK_CURRENT.id,
+      p_type: type, p_link: link, p_reward: reward,
+      p_reward_token: reward_token, p_limit_count: limit_count, p_status: st
+    });
+  } else {
+    res = await supabaseClient.rpc('telepat_admin_create_task', {
+      p_type: type, p_link: link, p_reward: reward,
+      p_reward_token: reward_token, p_limit_count: limit_count, p_status: st
+    });
+  }
+  if(res.error){ status.className = 'error'; status.textContent = 'Ошибка: ' + res.error.message; return; }
+  if(res.data && res.data.ok){
+    status.className = 'success'; status.textContent = '✅ Сохранено';
+    await loadAdminTasks();
+    setTimeout(closeAdminTaskForm, 900);
+  } else {
+    status.className = 'error'; status.textContent = 'Ошибка: ' + ((res.data && res.data.reason) || 'unknown');
+  }
+}
+async function deleteAdminTask(id){
+  if(!confirm('Удалить задание?')) return;
+  const {data, error} = await supabaseClient.rpc('telepat_admin_delete_task', { p_id: id });
+  if(error){ showMessage(error.message,'error'); return; }
+  if(data?.ok === false){ showMessage(data.reason || 'Ошибка','error'); return; }
+  showMessage('🗑 Задание удалено','success');
+  await loadAdminTasks();
+}
+
+/* POOLS */
 let currentPools = {};
 let addLiqToken = null;
 async function loadTokenReserves(){
@@ -820,9 +922,6 @@ async function confirmAddLiquidity(){
   await loadTokenReserves();
 }
 
-/* =========================================================
-   EXCHANGE FORM
-========================================================= */
 function updateOrderForm(){
   const fromEl = document.getElementById('fromToken');
   const toEl = document.getElementById('toToken');
@@ -858,9 +957,6 @@ function swapTokens(){
   updateOrderForm();
 }
 
-/* =========================================================
-   CREATE ORDER
-========================================================= */
 async function createP2POrder(){
   if(!USER_ID || !currentUser){ showMessage('Пользователь не загружен','error'); return; }
   const from = document.getElementById('fromToken').value;
@@ -879,10 +975,6 @@ async function createP2POrder(){
   showMessage('🚀 Ордер создан','success');
   await loadUser(); await loadOrders(); await loadMyOrders(); await loadTokenReserves();
 }
-
-/* =========================================================
-   LOAD ORDERS
-========================================================= */
 async function loadOrders(){
   const list = document.getElementById('ordersList');
   if(!list) return;
@@ -976,10 +1068,6 @@ async function cancelP2POrder(orderId){
   showMessage('Ордер отменён','success');
   await loadUser(); await loadOrders();
 }
-
-/* =========================================================
-   PROFILE
-========================================================= */
 async function openProfile(userId){
   const modal = document.getElementById('profileModal');
   modal.classList.add('show');
@@ -1006,10 +1094,6 @@ function closeProfile(event){
   if(event && event.target !== document.getElementById('profileModal')) return;
   document.getElementById('profileModal').classList.remove('show');
 }
-
-/* =========================================================
-   MY TRADES
-========================================================= */
 const reviewBusy = new Set();
 async function loadMyTrades(){
   const box = document.getElementById('myTrades');
@@ -1052,10 +1136,6 @@ async function rateTrade(tradeId, rating){
     await loadMyTrades();
   }finally{ reviewBusy.delete(id); }
 }
-
-/* =========================================================
-   ADMIN STATS
-========================================================= */
 async function loadAdminStats(){
   if(USER_ID !== ADMIN_ID) return;
   const {data:users,error} = await supabaseClient.from('users').select('tg_balance,ai_balance,tusd_balance',{count:'exact'});
@@ -1069,10 +1149,6 @@ async function loadAdminStats(){
   document.getElementById('adminAI').textContent = fmt(ai);
   document.getElementById('adminTUSD').textContent = fmt(tusd);
 }
-
-/* =========================================================
-   ADMIN CHATS
-========================================================= */
 let ADMIN_CHAT_TOKENS = [];
 let ADMIN_CHAT_CURRENT = null;
 let ADMIN_CHAT_ROWS = [];
@@ -1168,10 +1244,6 @@ async function saveAdminChatReward(){
     status.className = 'error'; status.textContent = 'Ошибка: ' + ((data && data.reason) || 'unknown');
   }
 }
-
-/* =========================================================
-   TOKEN LISTING
-========================================================= */
 let listingSupplyPercent = 10;
 let listingFeeTUSD = 100;
 function calculateListingPreview(){
@@ -1234,10 +1306,6 @@ async function createTokenListing(){
     if(btn){ btn.disabled = false; btn.textContent = '➕ СОЗДАТЬ ЗАЯВКУ НА ЛИСТИНГ'; }
   }
 }
-
-/* =========================================================
-   ADMIN TRANSFER
-========================================================= */
 async function adminTransfer(){
   if(USER_ID !== ADMIN_ID){ showMessage('Нет доступа','error'); return; }
   const target = Number(document.getElementById('adminTargetId').value);
@@ -1252,9 +1320,6 @@ async function adminTransfer(){
   await loadAdminStats();
 }
 
-/* =========================================================
-   INIT
-========================================================= */
 document.addEventListener('DOMContentLoaded', async ()=>{
   await refreshJwt();
   await loadUser();
