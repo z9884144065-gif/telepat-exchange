@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Telepat — Титулы империи</title>
+<style>
+:root{
+  --bg:#0a0606;
+  --gold:#e8c870;
+  --gold-dark:#6a4f18;
+  --gold-light:#f5e0a0;
+  --panel:#1a140e;
+  --panel-2:#2a1e12;
+  --text:#f0e2c0;
+  --muted:#a08c68;
+  --border:#5a4520;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;background:var(--bg)}
+body{
+  font-family: Georgia, 'Times New Roman', serif;
+  background:
+    radial-gradient(ellipse at top, #2a1a0e 0%, #0f0806 60%),
+    radial-gradient(ellipse at bottom, #1a0e06 0%, #060404 80%);
+  color:var(--text);
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+}
+.app{max-width:560px;margin:auto;padding:10px 8px 100px}
+
+/* ===== ЗАГОЛОВОК ===== */
+.page-title{
+  text-align:center;
+  color:var(--gold);
+  font-size:18px;
+  letter-spacing:4px;
+  margin:12px 0 4px;
+  text-shadow:0 0 14px rgba(232,200,112,.6);
+}
+.page-sub{
+  text-align:center;
+  color:var(--gold-light);
+  font-size:10px;
+  letter-spacing:2px;
+  opacity:.7;
+  margin-bottom:14px;
+}
+
+/* ===== БОЛЬШАЯ КАРТОЧКА ТЕКУЩЕГО ТИТУЛА ===== */
+.hero-card{
+  position:relative;
+  border:3px solid var(--gold-dark);
+  border-radius:14px;
+  background:
+    linear-gradient(180deg, rgba(60,40,20,.7), rgba(20,12,6,.95)),
+    radial-gradient(circle at 50% 20%, #3a2410, #12080500 70%);
+  box-shadow:
+    inset 0 0 40px rgba(232,200,112,.15),
+    0 0 30px rgba(0,0,0,.7);
+  overflow:hidden;
+  margin-bottom:14px;
+}
+.hero-card::before{
+  content:"";
+  position:absolute;inset:5px;
+  border:1px solid rgba(232,200,112,.35);
+  border-radius:10px;pointer-events:none;
+}
+.hero-top{
+  padding:12px 12px 6px;
+  text-align:center;
+}
+.hero-lvl{
+  color:var(--gold-light);
+  font-size:11px;
+  letter-spacing:3px;
+  font-weight:bold;
+}
+.hero-name{
+  font-size:28px;
+  font-weight:bold;
+  color:var(--gold);
+  margin:4px 0 2px;
+  letter-spacing:2px;
+  text-shadow:
+    0 0 14px rgba(232,200,112,.7),
+    0 2px 0 #4a3a10,
+    0 3px 6px #000;
+}
+.hero-motto{
+  color:var(--gold-light);
+  font-size:10px;
+  letter-spacing:2px;
+  opacity:.75;
+  padding-bottom:8px;
+}
+.hero-art{
+  height:150px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:86px;
+  position:relative;
+  text-shadow:0 0 30px rgba(232,200,112,.5);
+  background:
+    radial-gradient(circle at 50% 60%, rgba(232,200,112,.12), transparent 60%);
+}
+.hero-shield{
+  position:absolute;
+  top:8px;left:8px;
+  width:52px;height:60px;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(180deg,#3a2410,#1a0e06);
+  border:2px solid var(--gold-dark);
+  border-radius:6px 6px 26px 26px;
+  box-shadow:inset 0 0 12px rgba(232,200,112,.4);
+  font-size:26px;
+}
+.hero-bottom{
+  padding:8px 12px 14px;
+}
+.hero-progress-label{
+  display:flex;justify-content:space-between;
+  font-size:10px;color:var(--muted);
+  letter-spacing:1px;margin-bottom:4px;
+}
+.hero-progress{
+  height:18px;
+  background:#0a0606;
+  border:2px solid var(--gold-dark);
+  border-radius:99px;
+  overflow:hidden;
+  box-shadow:inset 0 2px 6px rgba(0,0,0,.9);
+}
+.hero-progress>div{
+  height:100%;
+  background:linear-gradient(180deg,#7ee26a,#3a9a2a);
+  box-shadow:0 0 12px #7ee26a;
+}
+.hero-note{
+  text-align:center;
+  font-size:10px;
+  color:var(--muted);
+  margin-top:6px;
+  letter-spacing:.5px;
+}
+
+/* ===== СТАТЫ ===== */
+.stats{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-bottom:14px;
+}
+.stat-card{
+  background:
+    linear-gradient(180deg, rgba(60,40,20,.5), rgba(20,12,6,.95)),
+    var(--panel-2);
+  border:2px solid var(--border);
+  border-radius:12px;
+  padding:8px 10px;
+  position:relative;
+}
+.stat-card::before{
+  content:"";position:absolute;inset:3px;
+  border:1px solid rgba(232,200,112,.15);
+  border-radius:8px;pointer-events:none;
+}
+.stat-row-head{display:flex;align-items:center;gap:6px;margin-bottom:4px}
+.stat-num{
+  width:20px;height:20px;border-radius:50%;
+  background:radial-gradient(circle,#3a2410,#1a0e06);
+  border:1.5px solid var(--gold-dark);
+  color:var(--gold);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:bold;flex-shrink:0;
+}
+.stat-t{font-size:10px;color:var(--gold);font-weight:bold;letter-spacing:.5px;text-transform:uppercase}
+.stat-val{text-align:center;font-size:16px;font-weight:bold;margin:4px 0;text-shadow:0 0 8px currentColor}
+.stat-bar{height:10px;background:#0a0606;border:1px solid rgba(232,200,112,.25);border-radius:99px;overflow:hidden}
+.stat-bar>div{height:100%;border-radius:99px}
+.c-green{color:#7ee26a}.c-green .stat-bar>div{background:linear-gradient(180deg,#7ee26a,#3a9a2a);box-shadow:0 0 8px #7ee26a}
+.c-blue{color:#7ab8f0}.c-blue .stat-bar>div{background:linear-gradient(180deg,#7ab8f0,#3a7ac0);box-shadow:0 0 8px #7ab8f0}
+.c-red{color:#f07070}.c-red .stat-bar>div{background:linear-gradient(180deg,#f07070,#a02020);box-shadow:0 0 8px #f07070}
+.c-purple{color:#c090f0}.c-purple .stat-bar>div{background:linear-gradient(180deg,#c090f0,#6a3ac0);box-shadow:0 0 8px #c090f0}
+
+/* ===== СЕТКА ВСЕХ ТИТУЛОВ ===== */
+.grid-title{
+  text-align:center;
+  color:var(--gold);
+  font-size:12px;
+  letter-spacing:3px;
+  margin:16px 0 10px;
+  text-shadow:0 0 8px rgba(232,200,112,.4);
+}
+.ranks-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+.rank-card{
+  position:relative;
+  border:2px solid var(--gold-dark);
+  border-radius:10px;
+  background:
+    linear-gradient(180deg, rgba(50,30,15,.6), rgba(15,10,5,.95)),
+    radial-gradient(circle at 50% 20%, var(--rc,#3a2410), #0a0606 70%);
+  padding:8px 6px 10px;
+  text-align:center;
+  overflow:hidden;
+  box-shadow:
+    inset 0 0 20px rgba(232,200,112,.08),
+    0 4px 12px rgba(0,0,0,.6);
+}
+.rank-card::before{
+  content:"";position:absolute;inset:3px;
+  border:1px solid rgba(232,200,112,.15);
+  border-radius:7px;pointer-events:none;
+}
+.rank-card.own{
+  border-color:var(--gold);
+  box-shadow:
+    inset 0 0 30px rgba(232,200,112,.3),
+    0 0 20px rgba(232,200,112,.5);
+}
+.rank-card.locked{opacity:.55;filter:grayscale(.4)}
+.rc-num{
+  position:absolute;top:5px;left:5px;
+  width:20px;height:20px;border-radius:50%;
+  background:radial-gradient(circle,#3a2410,#1a0e06);
+  border:1.5px solid var(--gold-dark);
+  color:var(--gold);
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:bold;
+  z-index:2;
+}
+.rc-shield{
+  position:absolute;top:5px;right:5px;
+  width:22px;height:26px;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(180deg,#3a2410,#1a0e06);
+  border:1.5px solid var(--gold-dark);
+  border-radius:3px 3px 12px 12px;
+  font-size:12px;
+  box-shadow:inset 0 0 6px rgba(232,200,112,.3);
+  z-index:2;
+}
+.rc-char{
+  font-size:44px;
+  line-height:1;
+  margin:8px 0 4px;
+  text-shadow:0 0 16px rgba(232,200,112,.4);
+}
+.rc-name{
+  font-size:11px;
+  font-weight:bold;
+  color:var(--gold);
+  letter-spacing:1px;
+  text-transform:uppercase;
+  text-shadow:0 0 6px rgba(232,200,112,.4);
+  margin-bottom:3px;
+  line-height:1.15;
+}
+.rc-price{
+  display:inline-block;
+  background:linear-gradient(180deg,#3a2410,#1a0e06);
+  border:1px solid var(--gold-dark);
+  border-radius:5px;
+  padding:2px 8px;
+  font-size:10px;
+  color:var(--gold-light);
+  font-weight:bold;
+  letter-spacing:.5px;
+  margin:3px 0;
+}
+.rc-desc{
+  font-size:9px;
+  color:var(--muted);
+  line-height:1.3;
+  font-style:italic;
+  padding:0 4px;
+  margin-top:2px;
+}
+
+/* ===== НАВИГАЦИЯ ===== */
+.nav{
+  position:fixed;bottom:0;left:0;right:0;
+  background:linear-gradient(180deg, rgba(30,20,10,.96), rgba(10,8,6,.99));
+  border-top:2px solid var(--gold-dark);
+  padding:8px 6px calc(8px + env(safe-area-inset-bottom));
+  display:flex;gap:4px;
+  max-width:560px;margin:auto;z-index:100;
+}
+.nav button{
+  flex:1;padding:8px 3px;
+  background:linear-gradient(180deg,#2a1e0e,#120a06);
+  border:1.5px solid var(--gold-dark);
+  border-radius:8px;
+  color:var(--muted);
+  font-family:inherit;font-size:9px;font-weight:bold;
+  letter-spacing:.5px;text-transform:uppercase;cursor:pointer;
+}
+.nav button.active{
+  background:linear-gradient(180deg,var(--gold),var(--gold-dark));
+  color:#1a1008;box-shadow:0 0 10px rgba(232,200,112,.5);
+}
+.nav button .n{display:block;font-size:14px;margin-bottom:2px}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ===== БОЛЬШАЯ КАРТОЧКА ТЕКУЩЕГО ТИТУЛА ===== -->
+  <div class="hero-card">
+    <div class="hero-top">
+      <div class="hero-lvl">УРОВЕНЬ 12</div>
+      <div class="hero-name">СЕРЕБРЯНЫЙ РЫЦАРЬ</div>
+      <div class="hero-motto">БЛАГОРОДСТВО И ЧЕСТЬ</div>
+    </div>
+    <div class="hero-art">
+      <div class="hero-shield">🛡️</div>
+      🤺
+    </div>
+    <div class="hero-bottom">
+      <div class="hero-progress-label">
+        <span>ДО СЛЕДУЮЩЕГО УРОВНЯ</span>
+        <span>35%</span>
+      </div>
+      <div class="hero-progress"><div style="width:35%"></div></div>
+      <div class="hero-note">Осталось 25.6 USD • до титула «Золотой рыцарь»</div>
+    </div>
+  </div>
+
+  <!-- ===== СТАТЫ ===== -->
+  <div class="stats">
+    <div class="stat-card c-green">
+      <div class="stat-row-head"><div class="stat-num">1</div><div class="stat-t">Оборот в сутки</div></div>
+      <div class="stat-val">1 – 33 $</div>
+      <div class="stat-bar"><div style="width:35%"></div></div>
+    </div>
+    <div class="stat-card c-blue">
+      <div class="stat-row-head"><div class="stat-num">2</div><div class="stat-t">Сделки в сутки</div></div>
+      <div class="stat-val">1 – 3</div>
+      <div class="stat-bar"><div style="width:50%"></div></div>
+    </div>
+    <div class="stat-card c-red">
+      <div class="stat-row-head"><div class="stat-num">3</div><div class="stat-t">Доверие</div></div>
+      <div class="stat-val">42 / 100</div>
+      <div class="stat-bar"><div style="width:42%"></div></div>
+    </div>
+    <div class="stat-card c-purple">
+      <div class="stat-row-head"><div class="stat-num">4</div><div class="stat-t">Магия (MP)</div></div>
+      <div class="stat-val">55 / 100</div>
+      <div class="stat-bar"><div style="width:55%"></div></div>
+    </div>
+  </div>
+
+  <!-- ===== СЕТКА ВСЕХ ТИТУЛОВ ===== -->
+  <div class="grid-title">⚜ ТИТУЛЫ ИМПЕРИИ TELEPAT ⚜</div>
+  <div class="ranks-grid" id="ranksGrid"></div>
+
+</div>
+
+<div class="nav">
+  <button class="active"><span class="n">🏠</span>Кошелёк</button>
+  <button><span class="n">🔄</span>Обмен</button>
+  <button><span class="n">👥</span>Друзья</button>
+  <button><span class="n">💎</span>Заработок</button>
+  <button><span class="n">👑</span>Админ</button>
+</div>
+
+<script>
+// Все 21 титул: номер, имя, цена, персонаж, эмблема, цвет, девиз
+const RANKS = [
+  {n:1,  name:'Крестьянин',        price:0.20,     char:'👨‍🌾', emblem:'🌾', color:'#7a5a2a', motto:'Начало пути к величию'},
+  {n:2,  name:'Вольный',           price:0.40,     char:'🧑‍🏭', emblem:'🔨', color:'#8a6a3a', motto:'Свобода от оков'},
+  {n:3,  name:'Гражданин',         price:0.80,     char:'🧑‍💼', emblem:'🏰', color:'#5a6a8a', motto:'Честь и уважение'},
+  {n:4,  name:'Оруженосец',        price:1.60,     char:'🧑‍🎓', emblem:'⚔️', color:'#8a3a3a', motto:'Верность и сила'},
+  {n:5,  name:'Мечник',            price:3.20,     char:'🤺',   emblem:'🗡️', color:'#5a5a7a', motto:'Умение побеждать'},
+  {n:6,  name:'Десятник',          price:6.40,     char:'💂',   emblem:'🛡️', color:'#7a5a3a', motto:'Дисциплина и порядок'},
+  {n:7,  name:'Сотник',            price:12.80,    char:'💂‍♂️', emblem:'✋', color:'#8a3a5a', motto:'Сила в единстве'},
+  {n:8,  name:'Тысячник',          price:25.60,    char:'🧙‍♂️', emblem:'🦁', color:'#a06a2a', motto:'Тысячи за тобой'},
+  {n:9,  name:'Рыцарь',            price:51.20,    char:'⚔️',   emblem:'⚔️', color:'#4a6aaa', motto:'Честь и доблесть'},
+  {n:10, name:'Железный рыцарь',   price:102.40,   char:'🛡️',   emblem:'⚙️', color:'#6a6a7a', motto:'Непоколебимая воля'},
+  {n:11, name:'Бронзовый рыцарь',  price:204.80,   char:'🥉',   emblem:'🔰', color:'#b87333', motto:'Сила и стойкость'},
+  {n:12, name:'Серебряный рыцарь', price:409.60,   char:'🥈',   emblem:'🛡️', color:'#bfc2c9', motto:'Благородство и честь'},
+  {n:13, name:'Золотой рыцарь',    price:819.20,   char:'🥇',   emblem:'👑', color:'#e0bd45', motto:'Величие и слава'},
+  {n:14, name:'Барон',             price:1638.40,  char:'🤴',   emblem:'⚜️', color:'#9b59b6', motto:'Власть и влияние'},
+  {n:15, name:'Виконт',            price:3276.80,  char:'🎩',   emblem:'⚜️', color:'#8e44ad', motto:'Знание и мудрость'},
+  {n:16, name:'Граф',              price:6553.60,  char:'👑',   emblem:'👑', color:'#e0b72f', motto:'Сила и ответственность'},
+  {n:17, name:'Маркиз',            price:13107.20, char:'👑',   emblem:'⚜️', color:'#e68a27', motto:'Влияние и уважение'},
+  {n:18, name:'Герцог',            price:26214.40, char:'👑',   emblem:'👑', color:'#24c8aa', motto:'Стратегия и процветание'},
+  {n:19, name:'Князь',             price:52428.80, char:'👑',   emblem:'👑', color:'#f5cf3d', motto:'Дело и наследие'},
+  {n:20, name:'Король',            price:104857.60,char:'🤴',   emblem:'👑', color:'#f7b83f', motto:'Великая империя'},
+  {n:21, name:'Император',         price:209715.20,char:'👑',   emblem:'👑', color:'#ffd700', motto:'Ты — во главе империи!'},
+];
+
+const CURRENT_LEVEL = 12; // текущий титул юзера
+
+const grid = document.getElementById('ranksGrid');
+RANKS.forEach(r=>{
+  const cls = r.n === CURRENT_LEVEL ? 'own' : (r.n > CURRENT_LEVEL ? 'locked' : '');
+  const div = document.createElement('div');
+  div.className = 'rank-card ' + cls;
+  div.style.setProperty('--rc', r.color + '60');
+  div.innerHTML =
+    `<div class="rc-num">${r.n}</div>` +
+    `<div class="rc-shield">${r.emblem}</div>` +
+    `<div class="rc-char">${r.char}</div>` +
+    `<div class="rc-name">${r.name}</div>` +
+    `<div class="rc-price">$${r.price.toFixed(2)}</div>` +
+    `<div class="rc-desc">${r.motto}</div>`;
+  grid.appendChild(div);
+});
+</script>
+</body>
+</html>
