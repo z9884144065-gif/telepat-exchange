@@ -4,24 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Телепат — Обменник</title>
-
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <style>
-:root{
-    --bg:#0b1018;
-    --card:#141c28;
-    --card2:#1a2432;
-    --line:#344154;
-    --gold:#f4cf70;
-    --gold2:#d9ad3e;
-    --text:#fff;
-    --muted:#9da9b9;
-    --green:#39d98a;
-    --red:#ff647c;
-    --blue:#55a7ff;
-}
+:root{--bg:#0b1018;--card:#141c28;--card2:#1a2432;--line:#344154;--gold:#f4cf70;--gold2:#d9ad3e;--text:#fff;--muted:#9da9b9;--green:#39d98a;--red:#ff647c;--blue:#55a7ff;}
 *{box-sizing:border-box}
 html{background:var(--bg)}
 body{margin:0;background:radial-gradient(circle at 50% -10%,#26334a 0,#0b1018 42%),var(--bg);color:var(--text);font-family:Arial,sans-serif;min-height:100vh;}
@@ -31,10 +17,9 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:28px;letter-sp
 .card{background:linear-gradient(145deg,#1b2636,#111925);border:1px solid #39475b;border-radius:20px;padding:17px;margin-bottom:13px;box-shadow:0 12px 30px #0007;}
 .card.gold{border-color:#80652b;}
 .section-title{color:var(--gold);font-size:14px;font-weight:bold;letter-spacing:.7px;margin-bottom:13px;}
-.row{display:flex;gap:10px}
-.row>*{flex:1}
+.row{display:flex;gap:10px}.row>*{flex:1}
 button,select,input{width:100%;border-radius:13px;border:1px solid #45536a;font-size:15px;}
-button{padding:13px;margin-top:9px;border:0;background:linear-gradient(135deg,#f5d477,#c99629);color:#17120a;font-weight:bold;}
+button{padding:13px;margin-top:9px;border:0;background:linear-gradient(135deg,#f5d477,#c99629);color:#17120a;font-weight:bold;cursor:pointer;}
 button.secondary{background:#263345;color:#fff;border:1px solid #4a596d;}
 button.danger{background:#542330;color:#fff;border:1px solid #884050;}
 button.small{width:auto;padding:8px 11px;margin:0;font-size:12px;}
@@ -45,8 +30,7 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 .token-name{color:var(--muted);font-size:12px;}
 .token-value{color:#fff;font-size:20px;font-weight:bold;margin-top:4px;}
 .info{color:var(--muted);font-size:12px;line-height:1.45;}
-.success{color:var(--green)}
-.error{color:var(--red)}
+.success{color:var(--green)}.error{color:var(--red)}
 .rank-box{border:1px solid #66572e;background:linear-gradient(145deg,#272313,#17150e);border-radius:16px;padding:14px;}
 .rank-name{font-size:22px;font-weight:bold;color:var(--gold);}
 .progress{height:8px;background:#080b10;border-radius:99px;overflow:hidden;margin-top:10px;}
@@ -70,8 +54,7 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 .order-expanded{display:none;border-top:1px solid #303b4b;padding:12px;}
 .order.opened .order-expanded{display:block;}
 .detail{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #263141;font-size:12px;}
-.detail span:first-child{color:#8996a7}
-.detail span:last-child{text-align:right}
+.detail span:first-child{color:#8996a7}.detail span:last-child{text-align:right}
 .profile-link{color:var(--gold);cursor:pointer;}
 .order-actions{display:flex;gap:8px;margin-top:10px;}
 .order-actions button{margin:0}
@@ -81,13 +64,11 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 .profile-title{color:var(--gold);font-size:21px;font-weight:bold;}
 .stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:12px;}
 .stat{background:#0d1520;border:1px solid #2d3a4c;border-radius:13px;padding:11px;}
-.stat b{display:block;font-size:18px}
-.stat span{color:#8f9bab;font-size:11px}
-.rating{display:flex;gap:8px;}
-.rating button{margin:0}
+.stat b{display:block;font-size:18px}.stat span{color:#8f9bab;font-size:11px}
+.rating{display:flex;gap:8px}.rating button{margin:0}
 .trade-item{background:#0d1520;border:1px solid #2e3a4c;border-radius:14px;padding:11px;margin-top:8px;}
 .nav{position:fixed;z-index:900;bottom:0;left:0;right:0;background:#0e151fef;backdrop-filter:blur(12px);border-top:1px solid #303d4f;padding:8px 6px calc(8px + env(safe-area-inset-bottom));display:flex;justify-content:center;gap:5px;}
-.nav button{width:auto;flex:1;max-width:120px;padding:10px 4px;margin:0;background:#1b2635;color:#d9e0e8;font-size:10px;}
+.nav button{width:auto;flex:1;max-width:120px;padding:10px 6px;margin:0;background:#1b2635;color:#d9e0e8;font-size:11px;}
 .nav button.active{background:#80652d;color:#fff;}
 .hidden{display:none!important}
 .message{position:fixed;z-index:2000;left:12px;right:12px;top:12px;padding:13px;border-radius:14px;background:#1b2737;border:1px solid #4c5b70;display:none;text-align:center;font-size:13px;}
@@ -106,100 +87,109 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 .modal-overlay{position:fixed;z-index:3000;inset:0;background:#0009;display:none;align-items:center;justify-content:center;padding:16px;}
 .modal-overlay.show{display:flex}
 .modal-box{width:min(420px,100%);background:linear-gradient(145deg,#1d2939,#101721);border:1px solid #68562a;border-radius:20px;padding:18px;}
-.ad-container{position:relative;width:100%;background:#000;border-radius:16px;overflow:hidden;margin:10px 0;}
-.ad-video{width:100%;display:block;background:#000;max-height:55vh;object-fit:contain;}
-.ad-cta-overlay{position:absolute;left:0;right:0;bottom:14px;text-align:center;pointer-events:none;}
-.ad-cta-badge{display:inline-block;background:rgba(0,0,0,0.85);color:#fff;padding:11px 20px;border-radius:30px;font-size:14px;font-weight:bold;border:2px solid var(--blue);box-shadow:0 0 20px rgba(85,167,255,0.5);animation:adPulse 1.6s infinite;text-decoration:none;pointer-events:auto;}
-@keyframes adPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
-.ad-progress{height:4px;background:#1a2432;width:100%;border-radius:99px;overflow:hidden;margin:8px 0;}
-.ad-progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--blue),var(--gold));transition:width .25s;}
-.ad-status-bar{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:10px;}
-.ad-status-bar b{color:var(--gold);}
-.ad-reward-line{background:#0d1520;border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center;font-size:14px;margin-bottom:10px;}
-.ad-reward-line b{color:var(--gold);font-size:16px;}
-.ad-claim-btn{background:linear-gradient(135deg,var(--blue),#2b7de0);color:#fff;opacity:.35;pointer-events:none;}
-.ad-claim-btn.ready{opacity:1;pointer-events:auto;box-shadow:0 6px 20px rgba(85,167,255,0.5);animation:adPulse 1.4s infinite;}
-.ad-loading{text-align:center;padding:30px 0;}
-.ad-spinner{display:inline-block;width:32px;height:32px;border:3px solid #222;border-top-color:var(--blue);border-radius:50%;animation:spin 0.8s linear infinite;}
-@keyframes spin{to{transform:rotate(360deg)}}
-.ad-reward-popup{position:fixed;z-index:4000;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.75);}
-.ad-reward-popup.show{display:flex;}
-.ad-reward-inner{background:linear-gradient(145deg,#1d2939,#101721);border:3px solid var(--gold);border-radius:24px;padding:30px 36px;text-align:center;animation:adPopIn .5s cubic-bezier(0.34,1.56,0.64,1);}
-@keyframes adPopIn{0%{transform:scale(.3);opacity:0}100%{transform:scale(1);opacity:1}}
-.ad-reward-emoji{font-size:56px;}
-.ad-reward-amount{font-size:28px;font-weight:bold;color:var(--gold);text-shadow:0 0 20px rgba(244,207,112,0.7);margin-top:8px;}
-.ad-reward-label{color:var(--muted);font-size:13px;margin-top:8px;}
-.ad-note{background:#0d1520;border:1px solid var(--line);border-radius:12px;padding:10px;color:var(--muted);font-size:11px;margin-top:10px;line-height:1.5;}
-.ad-sound-btn{position:absolute;top:10px;right:10px;z-index:5;background:rgba(0,0,0,0.85);color:#fff;border:2px solid #fff;border-radius:50%;width:48px;height:48px;padding:0;font-size:22px;cursor:pointer;margin:0;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.5);}
-.ad-sound-btn:hover{transform:scale(1.05);}
-@media(max-width:390px){.exchange-grid{grid-template-columns:1fr;}.swap{margin:auto;}.row{flex-direction:column;}}
+
+/* ===== НОВЫЕ СТИЛИ ГЛАВНОГО ЭКРАНА ===== */
+.topbar{display:flex;gap:6px;justify-content:space-between;margin-bottom:14px;}
+.topbar button{flex:1;padding:10px 6px;border:1px solid #45536a;border-radius:12px;background:linear-gradient(145deg,#1b2636,#111925);color:#fff;font-size:18px;margin:0;cursor:pointer;}
+.stats3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;}
+.stats3 .stat{text-align:center;padding:12px 6px;}
+.stats3 .stat b{font-size:18px;color:#fff;display:block}
+.stats3 .stat span{color:#8f9bab;font-size:10px;display:block;margin-top:3px}
+.rank-box-new{border:1px solid #66572e;background:linear-gradient(145deg,#272313,#17150e);border-radius:16px;padding:14px;position:relative;}
+.rank-name-new{font-size:22px;font-weight:bold;color:var(--gold);margin-top:6px;}
+.quick-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.qa-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px 8px;border-radius:14px;border:1px solid #45536a;background:linear-gradient(145deg,#1e2938,#141b26);color:#fff;font-size:12px;font-weight:bold;cursor:pointer;margin:0;min-height:80px;}
+.qa-btn .qico{font-size:22px;margin-bottom:6px;}
+.qa-btn.gold{background:linear-gradient(135deg,#f5d477,#c99629);color:#17120a;border-color:#a37a1e;}
 </style>
 </head>
-
 <body>
-
 <div id="authStatus" class="auth-status"></div>
 <div id="message" class="message"></div>
-
 <div class="app">
-
 <h1>👑 ТЕЛЕПАТ</h1>
 <div class="subtitle">Виртуальный P2P-обменник</div>
 
+<!-- ================= WALLET (НОВЫЙ ГЛАВНЫЙ ЭКРАН) ================= -->
 <section id="section-wallet">
+
+<!-- Верхняя панель иконок -->
+<div class="topbar">
+<button onclick="openTelegramProfile()" title="Профиль">👤</button>
+<button onclick="showNotifications()" title="Уведомления">🔔</button>
+<button onclick="scrollToWallet()" title="Кошелёк">💼</button>
+<button onclick="showFAQ()" title="Помощь">❓</button>
+<button onclick="openSettings()" title="Настройки">⚙️</button>
+</div>
+
+<!-- 3 блока статистики -->
+<div class="stats3">
+<div class="stat"><b id="topTg">0</b><span>TG</span></div>
+<div class="stat"><b id="topTusd">0</b><span>TUSD</span></div>
+<div class="stat"><b id="topRank">1</b><span>Титул</span></div>
+</div>
+
+<!-- Профиль с титулом -->
 <div class="card gold">
 <div class="section-title">👤 МОЙ ПРОФИЛЬ</div>
 <div id="userName">Загрузка...</div>
 <div class="info" id="telegramId"></div>
-<div class="rank-box" style="margin-top:12px">
+<div class="rank-box-new" style="margin-top:12px">
 <div class="info">ТЕКУЩИЙ ТИТУЛ</div>
-<div class="rank-name" id="rankName">Крестьянин</div>
-<div class="info" id="rankRequirement">Загрузка...</div>
+<div class="rank-name-new" id="rankName">Крестьянин</div>
 <div class="progress"><div id="rankProgress" style="width:0%"></div></div>
+<div class="info" id="rankRequirement" style="margin-top:6px">Загрузка...</div>
 </div>
 </div>
 
-<div class="card">
+<!-- Кошелёк -->
+<div class="card" id="walletCard">
 <div class="section-title">💰 МОЙ КОШЕЛЁК</div>
 <div class="row">
-<div class="token-box"><div class="token-name">Телепат Голд</div><div class="token-value" id="tgBalance">0 TG</div></div>
+<div class="token-box"><div class="token-name">Telepat Gold</div><div class="token-value" id="tgBalance">0 TG</div></div>
 <div class="token-box"><div class="token-name">AI</div><div class="token-value" id="aiBalance">0 AI</div></div>
 </div>
-<div class="token-box" style="margin-top:10px"><div class="token-name">Телепат Доллар</div><div class="token-value" id="tusdBalance">0 TUSD</div></div>
+<div class="token-box" style="margin-top:10px"><div class="token-name">Telepat Dollar</div><div class="token-value" id="tusdBalance">0 TUSD</div></div>
 <div class="info" style="margin-top:10px">TG учитывается для титула по цене 100 USD.<br>AI учитывается по цене 0.01 USD.</div>
 </div>
 
+<!-- Быстрые действия -->
 <div class="card">
-<div class="section-title">🎁 БОНУС</div>
+<div class="section-title">⚡ БЫСТРЫЕ ДЕЙСТВИЯ</div>
+<div class="quick-actions">
+<button class="qa-btn" onclick="showSection('exchange')"><span class="qico">🔄</span><span>ОБМЕН</span></button>
+<button class="qa-btn" onclick="goToMyOrders()"><span class="qico">📋</span><span>МОИ ОРДЕРА</span></button>
+<button class="qa-btn" onclick="goToPools()"><span class="qico">💧</span><span>ПУЛЫ</span></button>
+<button class="qa-btn" onclick="goToTrades()"><span class="qico">🤝</span><span>СДЕЛКИ</span></button>
+<button class="qa-btn gold" onclick="claimWelcomeBonus()"><span class="qico">🎁</span><span>БОНУС</span></button>
+<button class="qa-btn gold" onclick="showSection('earn')"><span class="qico">💎</span><span>ЕЖЕДНЕВКА</span></button>
+</div>
+</div>
+
+<!-- Бонус -->
+<div class="card">
+<div class="section-title">🎁 ПРИВЕТСТВЕННЫЙ БОНУС</div>
 <div id="bonusStatus" class="info">Проверка...</div>
 <button onclick="claimWelcomeBonus()">🎁 Получить приветственный бонус</button>
 </div>
 
-<div class="card gold">
-<div class="section-title">🎬 ОПЛАТА ЗА ПРОСМОТР РЕКЛАМЫ</div>
-<div class="info">Смотрите короткие видео → получайте TUSD-токены на кошелёк. До 150 просмотров в день!</div>
-<button class="ad-claim-btn ready" onclick="showSection('ads')">🎬 СМОТРЕТЬ РЕКЛАМУ</button>
-</div>
 </section>
 
+<!-- ================= EXCHANGE ================= -->
 <section id="section-exchange" class="hidden">
 <div class="card gold">
 <div class="section-title">🔄 СОЗДАТЬ P2P-ОРДЕР</div>
 <div class="exchange-grid">
 <div>
 <label>Отдаю</label>
-<select id="fromToken" onchange="updateOrderForm()">
-<option value="TG">TG</option><option value="AI">AI</option><option value="TUSD">TUSD</option>
-</select>
+<select id="fromToken" onchange="updateOrderForm()"><option value="TG">TG</option><option value="AI">AI</option><option value="TUSD">TUSD</option></select>
 <div class="amount-wrap"><input id="fromAmount" type="number" inputmode="decimal" min="0" step="any" placeholder="Количество" oninput="updateOrderForm()"></div>
 <div class="available" id="availableBalance">Доступно: 0</div>
 </div>
 <button class="swap" onclick="swapTokens()">⇄</button>
 <div>
 <label>Получаю</label>
-<select id="toToken" onchange="updateOrderForm()">
-<option value="TUSD">TUSD</option><option value="TG">TG</option><option value="AI">AI</option>
-</select>
+<select id="toToken" onchange="updateOrderForm()"><option value="TUSD">TUSD</option><option value="TG">TG</option><option value="AI">AI</option></select>
 <div class="amount-wrap"><input id="toAmount" type="number" inputmode="decimal" min="0" step="any" placeholder="Количество" oninput="updateOrderForm()"></div>
 <div class="available">Цена устанавливается вами</div>
 </div>
@@ -213,7 +203,7 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 <div class="info" style="margin-top:9px">При создании ордера количество в поле «Отдаю» блокируется. При отмене оно автоматически возвращается. Комиссия 0.1% идёт в пул ликвидности.</div>
 </div>
 
-<div class="card">
+<div class="card" id="poolsCard">
 <div class="section-title">💧 ПУЛЫ ЛИКВИДНОСТИ</div>
 <div class="info" style="margin-bottom:10px">Внесите TUSD в пул любого токена — поддержите его ликвидность.</div>
 <div id="poolsList">Загрузка...</div>
@@ -224,27 +214,23 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 <div class="section-title">📋 ДОСТУПНЫЕ ОРДЕРА</div>
 <div class="sort-row">
 <label>Сортировка:</label>
-<select id="orderSort" onchange="loadOrders()">
-<option value="rank">По титулу</option>
-<option value="price">По выгодной цене</option>
-<option value="new">Сначала новые</option>
-<option value="amount">По количеству</option>
-</select>
+<select id="orderSort" onchange="loadOrders()"><option value="rank">По титулу</option><option value="price">По выгодной цене</option><option value="new">Сначала новые</option><option value="amount">По количеству</option></select>
 </div>
 <div class="info" id="orderBookTitle" style="margin-top:10px">Выберите направление обмена</div>
 <div id="ordersList">Загрузка...</div>
-<div class="card">
+<div class="card" id="myOrdersCard">
 <div class="section-title">📌 МОИ ОРДЕРА</div>
 <div id="myOrdersList">Загрузка...</div>
 </div>
 </div>
 
-<div class="card">
+<div class="card" id="tradesCard">
 <div class="section-title">🤝 МОИ СДЕЛКИ</div>
 <div id="myTrades">Загрузка...</div>
 </div>
 </section>
 
+<!-- ================= FRIENDS ================= -->
 <section id="section-friends" class="hidden">
 <div class="card">
 <div class="section-title">👥 ДРУЗЬЯ И РЕФЕРАЛЫ</div>
@@ -255,13 +241,10 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 <div class="token-box"><div class="token-name">Заработано TG</div><div class="token-value" id="refTG">0</div></div>
 <div class="token-box"><div class="token-name">Заработано TUSD</div><div class="token-value" id="refTUSD">0</div></div>
 </div>
-<div class="token-box" style="margin-top:10px">
-<div class="token-name">Вас пригласил</div>
-<div class="token-value" id="referrerInfo" style="font-size:14px">—</div>
-</div>
 </div>
 </section>
 
+<!-- ================= EARN ================= -->
 <section id="section-earn" class="hidden">
 <div class="card">
 <div class="section-title">💎 ЗАРАБОТОК</div>
@@ -273,97 +256,9 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 <button onclick="claimDailyReward()">🎁 ПОЛУЧИТЬ ЕЖЕДНЕВНУЮ НАГРАДУ</button>
 <div id="dailyStatus" class="info" style="margin-top:9px"></div>
 </div>
-
-<div class="card gold">
-<div class="section-title">📺 ОПЛАТА ЗА ПРОСМОТР РЕКЛАМЫ</div>
-<div class="info">Смотрите короткие видео → получайте TUSD-токены на кошелёк.</div>
-<button onclick="showSection('ads')">🎬 СМОТРЕТЬ РЕКЛАМУ</button>
-</div>
-
-<div class="card">
-<div class="section-title">📝 ЗАДАНИЯ</div>
-<div class="info">Подписывайтесь на каналы и чаты, выполняйте задания за вознаграждение.</div>
-<button onclick="showSection('tasks')">📋 ПЕРЕЙТИ К ЗАДАНИЯМ</button>
-</div>
-
-<div class="card">
-<div class="section-title">📢 ДЛЯ РЕКЛАМОДАТЕЛЕЙ</div>
-<div class="info">Создайте задание на подписку или добавьте свою рекламу.</div>
-<button class="secondary" onclick="showSection('create-task')">➕ ДОБАВИТЬ ЗАДАНИЕ</button>
-</div>
 </section>
 
-<section id="section-tasks" class="hidden">
-<div class="card gold">
-<div class="section-title">📋 ДОСТУПНЫЕ ЗАДАНИЯ</div>
-<div id="tasksList" class="info">Загрузка заданий...</div>
-</div>
-</section>
-
-<section id="section-create-task" class="hidden">
-<div class="card gold">
-<div class="section-title">➕ СОЗДАТЬ ЗАДАНИЕ</div>
-<label>Тип задания</label>
-<select id="taskType">
-<option value="subscribe_channel">Подписка на канал</option>
-<option value="subscribe_chat">Подписка на чат</option>
-<option value="view_video">Просмотр видео</option>
-</select>
-<label style="margin-top:9px">Ссылка</label>
-<input id="taskLink" type="text" placeholder="https://t.me/ваш_канал">
-<label style="margin-top:9px">Награда за выполнение</label>
-<input id="taskReward" type="number" inputmode="decimal" step="any" placeholder="Например: 0.5">
-<label style="margin-top:9px">Токен награды</label>
-<select id="taskRewardToken">
-<option value="TUSD" selected>TUSD</option>
-<option value="TG">TG</option>
-<option value="AI">AI</option>
-</select>
-<label style="margin-top:9px">Количество выполнений (лимит)</label>
-<input id="taskLimit" type="number" inputmode="numeric" placeholder="Например: 100">
-<button onclick="createTask()">🚀 СОЗДАТЬ ЗАДАНИЕ</button>
-<div id="taskCreateStatus" class="info" style="margin-top:9px"></div>
-</div>
-</section>
-
-<section id="section-ads" class="hidden">
-<div class="card gold">
-<div class="section-title">🎬 ПРОСМОТР РЕКЛАМЫ</div>
-<div class="ad-status-bar">
-<span>Просмотров сегодня: <b id="adViewsToday">0</b></span>
-<span>Лимит: <b id="adDailyLimit">150</b></span>
-</div>
-<div class="ad-progress"><div class="ad-progress-fill" id="adProgressFill"></div></div>
-
-<div id="adLoading" class="ad-loading">
-<div class="ad-spinner"></div>
-<div class="info" style="margin-top:10px">Загружаем рекламу...</div>
-</div>
-
-<div id="adContent" class="hidden">
-<div class="ad-reward-line">💰 Оплата за просмотр: <b id="adRewardValue">0.002 TUSD</b></div>
-<div class="ad-container">
-<video id="adVideo" class="ad-video" playsinline webkit-playsinline preload="auto" muted></video>
-<button id="adSoundBtn" class="ad-sound-btn" onclick="toggleAdSound()" title="Включить/выключить звук">🔇</button>
-<div class="ad-cta-overlay">
-<a id="adCtaLink" href="#" target="_blank" class="ad-cta-badge">🚀 Перейти</a>
-</div>
-</div>
-<button id="adClaimBtn" class="ad-claim-btn" onclick="claimAdReward()" disabled>Досмотрите видео до конца</button>
-<div id="adStatusMsg" class="info" style="margin-top:10px;text-align:center"></div>
-</div>
-
-<div id="adError" class="hidden">
-<div id="adErrorText" class="info" style="text-align:center;padding:20px 0"></div>
-<button class="secondary" onclick="loadAd()">🔄 Обновить</button>
-</div>
-
-<div class="ad-note">
-ℹ️ За каждое просмотренное видео начисляется бонус. Нажмите 🔊 в правом верхнем углу, чтобы включить звук.
-</div>
-</div>
-</section>
-
+<!-- ================= ADMIN ================= -->
 <section id="section-admin" class="hidden">
 <div class="card admin">
 <div class="section-title">👑 АДМИН-ПАНЕЛЬ</div>
@@ -379,29 +274,20 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 
 <div class="card admin">
 <div class="section-title">💸 ПЕРЕВОД ТОКЕНОВ</div>
-<label>Telegram ID получателя</label>
-<input id="adminTargetId" type="number" placeholder="Telegram ID">
-<label style="margin-top:9px">Токен</label>
-<select id="adminToken"><option value="TUSD">TUSD</option><option value="TG">TG</option><option value="AI">AI</option></select>
-<label style="margin-top:9px">Количество</label>
-<input id="adminAmount" type="number" inputmode="decimal" step="any" placeholder="Количество">
+<label>Telegram ID получателя</label><input id="adminTargetId" type="number" placeholder="Telegram ID">
+<label style="margin-top:9px">Токен</label><select id="adminToken"><option value="TG">TG</option><option value="AI">AI</option><option value="TUSD">TUSD</option></select>
+<label style="margin-top:9px">Количество</label><input id="adminAmount" type="number" inputmode="decimal" step="any" placeholder="Количество">
 <button onclick="adminTransfer()">💰 ВЫПОЛНИТЬ ПЕРЕВОД</button>
 </div>
 
 <div class="card admin">
 <div class="section-title">🪙 ДОБАВИТЬ ТОКЕН</div>
-<label>Название токена</label>
-<input id="listingTokenName" type="text" placeholder="Например: Telepat Gold">
-<label style="margin-top:9px">Символ токена</label>
-<input id="listingTokenSymbol" type="text" maxlength="20" placeholder="Например: TG">
-<label style="margin-top:9px">Jetton Master</label>
-<input id="listingJettonMaster" type="text" placeholder="Адрес Jetton Master">
-<label style="margin-top:9px">Сеть</label>
-<select id="listingNetwork"><option value="TON">TON</option></select>
-<label style="margin-top:9px">Decimals</label>
-<input id="listingDecimals" type="number" value="9" min="0" max="18">
-<label style="margin-top:9px">Общий supply</label>
-<input id="listingTotalSupply" type="number" inputmode="decimal" min="0" step="any" placeholder="Например: 10000000" oninput="calculateListingPreview()">
+<label>Название токена</label><input id="listingTokenName" type="text" placeholder="Например: Telepat Gold">
+<label style="margin-top:9px">Символ токена</label><input id="listingTokenSymbol" type="text" maxlength="20" placeholder="Например: TG">
+<label style="margin-top:9px">Jetton Master</label><input id="listingJettonMaster" type="text" placeholder="Адрес Jetton Master">
+<label style="margin-top:9px">Сеть</label><select id="listingNetwork"><option value="TON">TON</option></select>
+<label style="margin-top:9px">Decimals</label><input id="listingDecimals" type="number" value="9" min="0" max="18">
+<label style="margin-top:9px">Общий supply</label><input id="listingTotalSupply" type="number" inputmode="decimal" min="0" step="any" placeholder="Например: 10000000" oninput="calculateListingPreview()">
 <div class="receive-preview" style="margin-top:12px">
 <div class="info">УСЛОВИЯ ЛИСТИНГА</div>
 <div class="detail"><span>Supply проекта</span><span id="listingSupplyPercentPreview">10%</span></div>
@@ -415,35 +301,20 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 <div class="card admin">
 <div class="section-title">🎁 РАЗДАЧА В ЧАТАХ</div>
 <button class="secondary" onclick="loadAdminChats()">🔄 ЗАГРУЗИТЬ СПИСОК ЧАТОВ</button>
-<div id="adminChatsList" style="margin-top:12px">
-<div class="info">Нажми «Загрузить список чатов».</div>
-</div>
+<div id="adminChatsList" style="margin-top:12px"><div class="info">Нажми «Загрузить список чатов».</div></div>
 <div id="adminChatEdit" class="hidden" style="margin-top:16px;padding:12px;border:1px solid #4a596d;border-radius:13px;background:#0d1520">
 <div class="section-title" id="adminChatEditTitle">⚙️ НАСТРОЙКА ЧАТА</div>
-<label>Включено</label>
-<select id="ce_enabled"><option value="true">Да</option><option value="false">Нет</option></select>
-<label style="margin-top:9px">Токен награды</label>
-<select id="ce_token"><option value="TUSD">TUSD</option><option value="TG">TG</option><option value="AI">AI</option></select>
-<label style="margin-top:9px">Награда за сообщение</label>
-<input id="ce_reward" type="number" inputmode="decimal" step="0.000001" placeholder="Например: 0.0002">
-<label style="margin-top:9px">Отвечать в чате каждые N сообщений</label>
-<input id="ce_notify_n" type="number" inputmode="numeric" step="1" min="1" placeholder="1" value="1">
-<label style="margin-top:9px">Бюджет (0 = без лимита)</label>
-<input id="ce_budget" type="number" inputmode="decimal" step="0.000001" placeholder="Например: 10">
-<label style="margin-top:9px">Кулдаун между сообщениями (сек)</label>
-<input id="ce_cooldown" type="number" inputmode="numeric" step="1" placeholder="3">
-<label style="margin-top:9px">Дневной лимит сообщений в чате (0 = без лимита)</label>
-<input id="ce_daily" type="number" inputmode="numeric" step="1" placeholder="5000">
-<label style="margin-top:9px">Макс. сообщений на юзера в день</label>
-<input id="ce_maxmsg" type="number" inputmode="numeric" step="1" placeholder="350">
-<label style="margin-top:9px">Мин. слов в сообщении</label>
-<input id="ce_minwords" type="number" inputmode="numeric" step="1" placeholder="1">
-<label style="margin-top:9px">Мин. символов в сообщении</label>
-<input id="ce_minchars" type="number" inputmode="numeric" step="1" placeholder="5">
-<label style="margin-top:9px">Исключать команды</label>
-<select id="ce_exclcmd"><option value="true">Да</option><option value="false">Нет</option></select>
-<label style="margin-top:9px">Исключать эмодзи-только</label>
-<select id="ce_exclemoji"><option value="true">Да</option><option value="false">Нет</option></select>
+<label>Включено</label><select id="ce_enabled"><option value="true">Да</option><option value="false">Нет</option></select>
+<label style="margin-top:9px">Токен награды</label><select id="ce_token"><option value="">TUSD (по умолчанию)</option></select>
+<label style="margin-top:9px">Награда за сообщение</label><input id="ce_reward" type="number" inputmode="decimal" step="0.000001" placeholder="Например: 0.0002">
+<label style="margin-top:9px">Бюджет (0 = без лимита)</label><input id="ce_budget" type="number" inputmode="decimal" step="0.000001" placeholder="Например: 1000">
+<label style="margin-top:9px">Кулдаун между сообщениями (сек)</label><input id="ce_cooldown" type="number" inputmode="numeric" step="1" placeholder="Например: 5">
+<label style="margin-top:9px">Дневной лимит сообщений в чате</label><input id="ce_daily" type="number" inputmode="numeric" step="1" placeholder="0 = без лимита">
+<label style="margin-top:9px">Макс. сообщений на юзера в день</label><input id="ce_maxmsg" type="number" inputmode="numeric" step="1" placeholder="Например: 500">
+<label style="margin-top:9px">Мин. слов в сообщении</label><input id="ce_minwords" type="number" inputmode="numeric" step="1" placeholder="Например: 2">
+<label style="margin-top:9px">Мин. символов в сообщении</label><input id="ce_minchars" type="number" inputmode="numeric" step="1" placeholder="Например: 10">
+<label style="margin-top:9px">Исключать команды</label><select id="ce_exclcmd"><option value="true">Да</option><option value="false">Нет</option></select>
+<label style="margin-top:9px">Исключать эмодзи-онли</label><select id="ce_exclemoji"><option value="true">Да</option><option value="false">Нет</option></select>
 <div class="row" style="margin-top:12px">
 <button onclick="saveAdminChatReward()">💾 СОХРАНИТЬ</button>
 <button class="secondary" onclick="closeAdminChatEdit()">Отмена</button>
@@ -451,16 +322,11 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 <div id="adminChatEditStatus" class="info" style="margin-top:9px"></div>
 </div>
 </div>
-
-<div class="card admin">
-<div class="section-title">📋 МОДЕРАЦИЯ ЗАДАНИЙ</div>
-<div id="adminTasksList" class="info">Загрузка заданий...</div>
-<button class="secondary" onclick="loadAdminTasks()">🔄 ОБНОВИТЬ СПИСОК</button>
-</div>
 </section>
 
 </div>
 
+<!-- PROFILE MODAL -->
 <div id="profileModal" class="profile-card" onclick="closeProfile(event)">
 <div class="profile-inner" onclick="event.stopPropagation()">
 <div class="section-title">👤 ПРОФИЛЬ УЧАСТНИКА</div>
@@ -477,6 +343,7 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 </div>
 </div>
 
+<!-- ADD LIQUIDITY MODAL -->
 <div id="addLiqModal" class="modal-overlay" onclick="closeAddLiq(event)">
 <div class="modal-box" onclick="event.stopPropagation()">
 <div class="section-title">💧 ДОБАВИТЬ В ПУЛ ЛИКВИДНОСТИ</div>
@@ -490,75 +357,64 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px;}
 </div>
 </div>
 
-<div id="adRewardPopup" class="ad-reward-popup">
-<div class="ad-reward-inner">
-<div class="ad-reward-emoji">💰</div>
-<div class="ad-reward-amount" id="adRewardPopupAmount">+0.002 TUSD</div>
-<div class="ad-reward-label">Зачислено на кошелёк!</div>
-</div>
-</div>
-
+<!-- NAV -->
 <div class="nav">
 <button id="nav-wallet" class="active" onclick="showSection('wallet')">🏠 Кошелёк</button>
 <button id="nav-exchange" onclick="showSection('exchange')">🔄 Обмен</button>
 <button id="nav-friends" onclick="showSection('friends')">👥 Друзья</button>
-<button id="nav-earn" onclick="showSection('earn')">💎 Доход</button>
-<button id="nav-ads" onclick="showSection('ads')">🎬 Реклама</button>
-<button id="nav-admin" class="hidden" onclick="showSection('admin')">👑</button>
+<button id="nav-earn" onclick="showSection('earn')">💎 Заработок</button>
+<button id="nav-admin" class="hidden" onclick="showSection('admin')">👑 Админ</button>
 </div>
 
 <script>
+/* =========================================================
+   TELEPAT — AUTH LAYER
+========================================================= */
 const SUPABASE_URL = 'https://jutszxuzjzyfxarceydw.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_geRczpRc3faUHRGto2ue7A_eFFiJDwO';
-const AD_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp1dHN6eHV6anp5ZnhhcmNleWR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2NDI2NTEsImV4cCI6MjEwMDIxODY1MX0.ntKlbS4e4V5Q9GxSuWMFHm215_5gJnKsyUGRt3XHD_0';
 const EDGE_FUNCTION_URL = `${SUPABASE_URL}/functions/v1/telegram-auth`;
 const ADMIN_ID = 949707357;
 const TG_USD = 100;
 const AI_USD = 0.01;
-
 let __jwt = sessionStorage.getItem('__jwt') || null;
 
 function setAuthStatus(state, text){
-    const el = document.getElementById('authStatus');
-    if(!el) return;
-    el.classList.remove('loading','success','error');
-    if(state === 'hide'){ el.classList.remove('show'); return; }
-    el.classList.add(state, 'show');
-    el.textContent = text;
-    if(state === 'success') setTimeout(()=>el.classList.remove('show'), 2500);
+  const el = document.getElementById('authStatus');
+  if(!el) return;
+  el.classList.remove('loading','success','error');
+  if(state === 'hide'){ el.classList.remove('show'); return; }
+  el.classList.add(state, 'show');
+  el.textContent = text;
+  if(state === 'success'){ setTimeout(()=>el.classList.remove('show'), 2500); }
 }
 
 async function refreshJwt(){
-    const initData = window.Telegram?.WebApp?.initData;
-    if(!initData){ setAuthStatus('error','⚠️ Telegram initData недоступен'); return null; }
-    setAuthStatus('loading','⏳ Проверка подписи Telegram…');
-    try{
-        const resp = await fetch(EDGE_FUNCTION_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` },
-            body: JSON.stringify({ initData }),
-        });
-        if(!resp.ok){ setAuthStatus('error', `❌ Авторизация не прошла (${resp.status})`); return null; }
-        const data = await resp.json();
-        if(!data?.access_token){ setAuthStatus('error','❌ Сервер не выдал токен'); return null; }
-        __jwt = data.access_token;
-        sessionStorage.setItem('__jwt', __jwt);
-        setAuthStatus('success','✅ Авторизован');
-        return __jwt;
-    }catch(err){ console.error('refreshJwt error', err); setAuthStatus('error','❌ Ошибка соединения'); return null; }
+  const initData = window.Telegram?.WebApp?.initData;
+  if(!initData){ setAuthStatus('error','⚠️ Telegram initData недоступен'); return null; }
+  setAuthStatus('loading','⏳ Проверка подписи Telegram…');
+  try{
+    const resp = await fetch(EDGE_FUNCTION_URL, {
+      method:'POST',
+      headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}`},
+      body: JSON.stringify({ initData }),
+    });
+    if(!resp.ok){ setAuthStatus('error', `❌ Авторизация не прошла (${resp.status})`); return null; }
+    const data = await resp.json();
+    if(!data?.access_token){ setAuthStatus('error','❌ Сервер не выдал токен'); return null; }
+    __jwt = data.access_token;
+    sessionStorage.setItem('__jwt', __jwt);
+    setAuthStatus('success','✅ Авторизован');
+    return __jwt;
+  }catch(err){ console.error('refreshJwt', err); setAuthStatus('error','❌ Ошибка соединения'); return null; }
 }
 
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-    auth: { persistSession: false, autoRefreshToken: false },
-    global: { fetch: async (url, options = {}) => {
-        const headers = new Headers(options.headers || {});
-        if(__jwt) headers.set('Authorization', `Bearer ${__jwt}`);
-        return fetch(url, { ...options, headers });
-    }},
-});
-
-const supabaseAds = window.supabase.createClient(SUPABASE_URL, AD_ANON_KEY, {
-    auth: { persistSession: false, autoRefreshToken: false }
+  auth: { persistSession:false, autoRefreshToken:false },
+  global: { fetch: async (url, options = {}) => {
+    const headers = new Headers(options.headers || {});
+    if(__jwt) headers.set('Authorization', `Bearer ${__jwt}`);
+    return fetch(url, { ...options, headers });
+  } },
 });
 
 const telegram = window.Telegram?.WebApp;
@@ -567,864 +423,693 @@ const tgUser = telegram?.initDataUnsafe?.user || null;
 const USER_ID = Number(tgUser?.id || 0);
 let currentUser = null;
 
+/* =========================================================
+   RANKS
+========================================================= */
 const RANKS = [
-    {level:1,name:'Крестьянин',req:0.20},{level:2,name:'Вольный',req:0.40},
-    {level:3,name:'Гражданин',req:0.80},{level:4,name:'Оруженосец',req:1.60},
-    {level:5,name:'Мечник',req:3.20},{level:6,name:'Десятник',req:6.40},
-    {level:7,name:'Сотник',req:12.80},{level:8,name:'Тысячник',req:25.60},
-    {level:9,name:'Рыцарь',req:51.20},{level:10,name:'Железный рыцарь',req:102.40},
-    {level:11,name:'Бронзовый рыцарь',req:204.80},{level:12,name:'Серебряный рыцарь',req:409.60},
-    {level:13,name:'Золотой рыцарь',req:819.20},{level:14,name:'Барон',req:1638.40},
-    {level:15,name:'Виконт',req:3276.80},{level:16,name:'Граф',req:6553.60},
-    {level:17,name:'Маркиз',req:13107.20},{level:18,name:'Герцог',req:26214.40},
-    {level:19,name:'Князь',req:52428.80},{level:20,name:'Король',req:104857.60},
-    {level:21,name:'Император',req:209715.20}
+  {level:1,name:'Крестьянин',req:0.20},{level:2,name:'Вольный',req:0.40},
+  {level:3,name:'Гражданин',req:0.80},{level:4,name:'Оруженосец',req:1.60},
+  {level:5,name:'Мечник',req:3.20},{level:6,name:'Десятник',req:6.40},
+  {level:7,name:'Сотник',req:12.80},{level:8,name:'Тысячник',req:25.60},
+  {level:9,name:'Рыцарь',req:51.20},{level:10,name:'Железный рыцарь',req:102.40},
+  {level:11,name:'Бронзовый рыцарь',req:204.80},{level:12,name:'Серебряный рыцарь',req:409.60},
+  {level:13,name:'Золотой рыцарь',req:819.20},{level:14,name:'Барон',req:1638.40},
+  {level:15,name:'Виконт',req:3276.80},{level:16,name:'Граф',req:6553.60},
+  {level:17,name:'Маркиз',req:13107.20},{level:18,name:'Герцог',req:26214.40},
+  {level:19,name:'Князь',req:52428.80},{level:20,name:'Король',req:104857.60},
+  {level:21,name:'Император',req:209715.20}
 ];
 const RANK_COLORS = ['#ffffff','#d8d8d8','#b9c5b9','#75c99a','#58b5e9','#4f8cff','#3974d9','#6673e8','#4169e1','#7389bd','#b87333','#bfc2c9','#e0bd45','#9b59b6','#8e44ad','#e0b72f','#e68a27','#24c8aa','#f5cf3d','#f7b83f','#ffd700'];
 function rankColor(level){ return RANK_COLORS[Math.max(0,Math.min(RANK_COLORS.length-1,Number(level||1)-1))]; }
 
-function esc(value){ return String(value ?? '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'","&#039;"); }
-function num(value){ const n = Number(value); return Number.isFinite(n) ? n : 0; }
-function fmt(value, max=8){ return num(value).toLocaleString('ru-RU',{maximumFractionDigits:max}); }
+/* =========================================================
+   HELPERS
+========================================================= */
+function esc(v){return String(v ?? '').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'","&#039;");}
+function num(v){const n=Number(v);return Number.isFinite(n)?n:0;}
+function fmt(v, max=8){return num(v).toLocaleString('ru-RU',{maximumFractionDigits:max});}
 function tokenBalance(token){
-    if(!currentUser) return 0;
-    if(token === 'TG') return num(currentUser.tg_balance);
-    if(token === 'AI') return num(currentUser.ai_balance);
-    if(token === 'TUSD') return num(currentUser.tusd_balance);
-    return 0;
+  if(!currentUser) return 0;
+  if(token === 'TG') return num(currentUser.tg_balance);
+  if(token === 'AI') return num(currentUser.ai_balance);
+  if(token === 'TUSD') return num(currentUser.tusd_balance);
+  return 0;
 }
 function showMessage(text,type='info'){
-    const el = document.getElementById('message');
-    el.textContent = text;
-    el.style.borderColor = type === 'error' ? '#8b3f4c' : type === 'success' ? '#397b5b' : '#4c5b70';
-    el.classList.add('show');
-    setTimeout(()=>el.classList.remove('show'), 3000);
+  const el = document.getElementById('message');
+  el.textContent = text;
+  el.style.borderColor = type === 'error' ? '#8b3f4c' : type === 'success' ? '#397b5b' : '#4c5b70';
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'), 3000);
 }
 
+/* =========================================================
+   НОВЫЕ ФУНКЦИИ ГЛАВНОГО ЭКРАНА
+========================================================= */
+function openTelegramProfile(){
+  if(tgUser){ showMessage(`👤 ${tgUser.first_name || ''} ${tgUser.last_name || ''} (ID: ${USER_ID})`); }
+  else { showMessage('Открой в Telegram'); }
+}
+function showNotifications(){
+  showMessage('🔔 У вас пока нет новых уведомлений');
+}
+function scrollToWallet(){
+  const el = document.getElementById('walletCard');
+  if(el) el.scrollIntoView({behavior:'smooth', block:'center'});
+}
+function showFAQ(){
+  showMessage('❓ Напишите в поддержку: @TELEPATp2p_bot');
+}
+function openSettings(){
+  if(USER_ID === ADMIN_ID){ showSection('admin'); }
+  else { showMessage('⚙️ Настройки в разработке'); }
+}
+function goToMyOrders(){
+  showSection('exchange');
+  setTimeout(()=>{ const el = document.getElementById('myOrdersCard'); if(el) el.scrollIntoView({behavior:'smooth', block:'start'}); }, 400);
+}
+function goToPools(){
+  showSection('exchange');
+  setTimeout(()=>{ const el = document.getElementById('poolsCard'); if(el) el.scrollIntoView({behavior:'smooth', block:'start'}); }, 400);
+}
+function goToTrades(){
+  showSection('exchange');
+  setTimeout(()=>{ const el = document.getElementById('tradesCard'); if(el) el.scrollIntoView({behavior:'smooth', block:'start'}); }, 400);
+}
+
+/* =========================================================
+   LOAD USER
+========================================================= */
 async function loadUser(){
-    if(!USER_ID){ showMessage('Открой приложение внутри Telegram','error'); return; }
-    
-    let {data, error} = await supabaseClient.from('users').select('*').eq('Ttelegram_id', String(USER_ID)).maybeSingle();
-    if(error){ console.error(error); showMessage('Ошибка загрузки пользователя','error'); return; }
-    
-    if(!data){
-        const startParam = telegram?.initDataUnsafe?.start_param || null;
-        const referrerId = (startParam && startParam !== String(USER_ID)) ? startParam : null;
-        
-        const {data: newUser, error: insertError} = await supabaseClient.from('users').insert({
-            Ttelegram_id: String(USER_ID),
-            tg_balance: 0, ai_balance: 0, tusd_balance: 0,
-            rank_level: 1, rank_name: 'Крестьянин',
-            welcome_bonus_claimed: false,
-            referral_tg_earned: 0, referral_tusd_earned: 0,
-            referrer_id: referrerId
-        }).select().single();
-        
-        if(insertError){ console.error('insert error', insertError); showMessage('Ошибка создания пользователя: ' + insertError.message, 'error'); return; }
-        data = newUser;
-    }
-    
-    currentUser = data;
-    renderUser();
-    if(USER_ID === ADMIN_ID) document.getElementById('nav-admin').classList.remove('hidden');
-    loadReferral();
-    updateOrderForm();
+  if(!USER_ID){ showMessage('Открой приложение внутри Telegram','error'); return; }
+  const {data,error} = await supabaseClient.from('users').select('*').eq('Ttelegram_id', String(USER_ID)).maybeSingle();
+  if(error){ console.error(error); showMessage('Ошибка загрузки пользователя','error'); return; }
+  currentUser = data;
+  renderUser();
+  if(USER_ID === ADMIN_ID){ document.getElementById('nav-admin').classList.remove('hidden'); }
+  loadReferral();
+  updateOrderForm();
 }
 
+/* =========================================================
+   RENDER USER
+========================================================= */
 function renderUser(){
-    if(!currentUser) return;
-    const name = [tgUser?.first_name || '', tgUser?.last_name || ''].join(' ').trim() || tgUser?.username || 'Пользователь Telegram';
-    document.getElementById('userName').textContent = name;
-    document.getElementById('telegramId').textContent = `Telegram ID: ${USER_ID}`;
-    document.getElementById('tgBalance').textContent = `${fmt(currentUser.tg_balance)} TG`;
-    document.getElementById('aiBalance').textContent = `${fmt(currentUser.ai_balance)} AI`;
-    document.getElementById('tusdBalance').textContent = `${fmt(currentUser.tusd_balance)} TUSD`;
+  if(!currentUser) return;
+  const name = [tgUser?.first_name || '', tgUser?.last_name || ''].join(' ').trim() || tgUser?.username || 'Пользователь Telegram';
+  document.getElementById('userName').textContent = name;
+  document.getElementById('telegramId').textContent = `Telegram ID: ${USER_ID}`;
+  document.getElementById('tgBalance').textContent = `${fmt(currentUser.tg_balance)} TG`;
+  document.getElementById('aiBalance').textContent = `${fmt(currentUser.ai_balance)} AI`;
+  document.getElementById('tusdBalance').textContent = `${fmt(currentUser.tusd_balance)} TUSD`;
 
-    const rankLevel = Number(currentUser.rank_level || 1);
-    const rankName = currentUser.rank_name || RANKS[rankLevel-1]?.name || 'Крестьянин';
-    document.getElementById('rankName').textContent = `👑 ${rankName}`;
-    document.getElementById('earnRank').textContent = rankName;
+  // Верхние 3 блока
+  document.getElementById('topTg').textContent = fmt(currentUser.tg_balance);
+  document.getElementById('topTusd').textContent = fmt(currentUser.tusd_balance);
+  const rankLevel = Number(currentUser.rank_level || 1);
+  document.getElementById('topRank').textContent = rankLevel;
 
-    const rank = RANKS[rankLevel-1] || RANKS[0];
-    const tgUsd = num(currentUser.tg_balance) * TG_USD;
-    const aiUsd = num(currentUser.ai_balance) * AI_USD;
-    const required = rank.req;
-    const requiredEach = required / 2;
-    const tgPart = Math.min(100,(tgUsd/requiredEach)*100);
-    const aiPart = Math.min(100,(aiUsd/requiredEach)*100);
-    const progress = Math.min(tgPart,aiPart);
-    document.getElementById('rankProgress').style.width = `${progress}%`;
-    document.getElementById('rankRequirement').textContent = `Для титула: ${fmt(required,2)} USD. Нужно TG: ${fmt(requiredEach,2)} USD + AI: ${fmt(requiredEach,2)} USD.`;
-    document.getElementById('earnDetails').innerHTML = `TG: <b>${fmt(tgUsd,2)} USD</b><br>AI: <b>${fmt(aiUsd,2)} USD</b><br>Требование текущего титула: <b>${fmt(required,2)} USD</b>`;
+  const rankName = currentUser.rank_name || RANKS[rankLevel-1]?.name || 'Крестьянин';
+  document.getElementById('rankName').textContent = `👑 ${rankName}`;
+  document.getElementById('earnRank').textContent = rankName;
 
-    const claimed = Boolean(currentUser.welcome_bonus_claimed);
-    document.getElementById('bonusStatus').textContent = claimed ? 'Приветственный бонус уже получен.' : 'Приветственный бонус доступен.';
-    document.getElementById('refTG').textContent = fmt(currentUser.referral_tg_earned);
-    document.getElementById('refTUSD').textContent = fmt(currentUser.referral_tusd_earned);
+  const rank = RANKS[rankLevel-1] || RANKS[0];
+  const tgUsd = num(currentUser.tg_balance) * TG_USD;
+  const aiUsd = num(currentUser.ai_balance) * AI_USD;
+  const required = rank.req;
+  const requiredEach = required / 2;
+  const tgPart = Math.min(100,(tgUsd/requiredEach)*100);
+  const aiPart = Math.min(100,(aiUsd/requiredEach)*100);
+  const progress = Math.min(tgPart,aiPart);
+  document.getElementById('rankProgress').style.width = `${progress}%`;
+  document.getElementById('rankRequirement').textContent =
+    `До следующего: ${progress.toFixed(0)}% • Осталось ${fmt(Math.max(0, required - Math.min(tgUsd, aiUsd) * 2), 2)} USD`;
 
-    const refInfo = document.getElementById('referrerInfo');
-    if(refInfo){
-        refInfo.textContent = currentUser.referrer_id ? `ID ${currentUser.referrer_id}` : 'Нет (вы вошли самостоятельно)';
-    }
+  document.getElementById('earnDetails').innerHTML =
+    `TG: <b>${fmt(tgUsd,2)} USD</b><br>AI: <b>${fmt(aiUsd,2)} USD</b><br>Требование текущего титула: <b>${fmt(required,2)} USD</b>`;
+
+  const claimed = Boolean(currentUser.welcome_bonus_claimed);
+  document.getElementById('bonusStatus').textContent = claimed ? 'Приветственный бонус уже получен.' : 'Приветственный бонус доступен.';
+  document.getElementById('refTG').textContent = fmt(currentUser.referral_tg_earned);
+  document.getElementById('refTUSD').textContent = fmt(currentUser.referral_tusd_earned);
 }
 
+/* =========================================================
+   NAVIGATION
+========================================================= */
 function showSection(name){
-    const sections = ['wallet','exchange','friends','earn','ads','tasks','create-task','admin'];
-    sections.forEach(s=>{
-        const sec = document.getElementById(`section-${s}`);
-        if(sec) sec.classList.toggle('hidden', s !== name);
-        const nav = document.getElementById(`nav-${s}`);
-        if(nav) nav.classList.toggle('active', s === name);
-    });
-    if(name === 'exchange'){ loadOrders(); loadMyOrders(); loadMyTrades(); loadTokenReserves(); }
-    if(name === 'ads'){ loadAd(); }
-    if(name === 'tasks'){ loadTasks(); }
-    if(name === 'admin' && USER_ID === ADMIN_ID){ loadAdminStats(); loadAdminChats(); loadAdminTasks(); }
-    window.scrollTo({top:0,behavior:'smooth'});
+  const sections = ['wallet','exchange','friends','earn','admin'];
+  sections.forEach(s=>{
+    document.getElementById(`section-${s}`).classList.toggle('hidden', s !== name);
+    const nav = document.getElementById(`nav-${s}`);
+    if(nav) nav.classList.toggle('active', s === name);
+  });
+  if(name === 'exchange'){ loadOrders(); loadMyOrders(); loadMyTrades(); loadTokenReserves(); }
+  if(name === 'admin' && USER_ID === ADMIN_ID){ loadAdminStats(); loadAdminChats(); }
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 
-let currentAd = null;
-let adClaimed = false;
-
-async function loadAd(){
-    document.getElementById('adLoading').classList.remove('hidden');
-    document.getElementById('adContent').classList.add('hidden');
-    document.getElementById('adError').classList.add('hidden');
-    document.getElementById('adProgressFill').style.width = '0%';
-    adClaimed = false;
-
-    if(!USER_ID){ showAdError('⚠️','Откройте приложение через Telegram'); return; }
-
-    try{
-        const {data, error} = await supabaseAds.rpc('get_active_ad', { p_telegram_id: USER_ID });
-        if(error) throw error;
-
-        if(!data || !data.ok){
-            if(data?.reason === 'daily_limit') showAdError('✅', `Дневной лимит исчерпан (${data.views_today}/${data.daily_limit}).`);
-            else if(data?.reason === 'cooldown'){ showAdError('⏳', `Подождите ${data.wait_seconds} сек.`); setTimeout(() => loadAd(), (data.wait_seconds + 1) * 1000); }
-            else if(data?.reason === 'no_ads') showAdError('📭', 'Реклама временно недоступна.');
-            else showAdError('⚠️', 'Не удалось загрузить рекламу');
-            return;
-        }
-
-        currentAd = data.campaign;
-        setupAd(data);
-        document.getElementById('adLoading').classList.add('hidden');
-        document.getElementById('adContent').classList.remove('hidden');
-    }catch(err){ console.error('loadAd error', err); showAdError('⚠️', err.message || 'Ошибка соединения'); }
-}
-
-function showAdError(icon, text){
-    document.getElementById('adLoading').classList.add('hidden');
-    document.getElementById('adContent').classList.add('hidden');
-    document.getElementById('adError').classList.remove('hidden');
-    document.getElementById('adErrorText').textContent = `${icon} ${text}`;
-}
-
-function setupAd(data){
-    const c = data.campaign;
-    document.getElementById('adViewsToday').textContent = data.views_today;
-    document.getElementById('adDailyLimit').textContent = data.daily_limit;
-    const adToken = c.reward_token || 'TUSD';
-    document.getElementById('adRewardValue').textContent = Number(c.reward).toFixed(5) + ' ' + adToken;
-
-    const video = document.getElementById('adVideo');
-    video.src = c.video_url;
-    video.muted = true;
-    video.volume = 1.0;
-    video.load();
-
-    const soundBtn = document.getElementById('adSoundBtn');
-    if(soundBtn){ soundBtn.textContent = '🔇'; }
-
-    const ctaLink = document.getElementById('adCtaLink');
-    ctaLink.href = c.cta_url;
-    ctaLink.textContent = c.cta_button_text || '🚀 Перейти';
-
-    const claimBtn = document.getElementById('adClaimBtn');
-    claimBtn.classList.remove('ready');
-    claimBtn.disabled = true;
-    claimBtn.textContent = 'Досмотрите видео до конца';
-
-    document.getElementById('adStatusMsg').textContent = '';
-    document.getElementById('adStatusMsg').className = 'info';
-
-    video.ontimeupdate = () => {
-        if(video.duration){
-            const pct = (video.currentTime / video.duration) * 100;
-            document.getElementById('adProgressFill').style.width = pct + '%';
-        }
-    };
-
-    video.onended = () => {
-        claimBtn.classList.add('ready');
-        claimBtn.disabled = false;
-        claimBtn.textContent = '🎁 ПОДТВЕРДИТЬ ПРОСМОТР';
-        const st = document.getElementById('adStatusMsg');
-        st.textContent = '✅ Видео просмотрено! Нажмите кнопку выше.';
-        st.className = 'success';
-    };
-
-    video.play().catch(err => console.log('autoplay failed', err));
-}
-
-function toggleAdSound(){
-    const video = document.getElementById('adVideo');
-    const btn = document.getElementById('adSoundBtn');
-    if(!video || !btn) return;
-    video.muted = !video.muted;
-    btn.textContent = video.muted ? '🔇' : '🔊';
-    if(!video.muted){
-        video.volume = 1.0;
-        video.play().catch(e => console.log('play error', e));
-        if(telegram?.HapticFeedback){ try{ telegram.HapticFeedback.impactOccurred('light'); }catch(e){} }
-    }
-}
-
-async function claimAdReward(){
-    if(adClaimed || !currentAd) return;
-    adClaimed = true;
-    const btn = document.getElementById('adClaimBtn');
-    btn.disabled = true;
-    btn.textContent = 'Начисляем...';
-
-    try{
-        const {data, error} = await supabaseAds.rpc('claim_ad_reward', {
-            p_telegram_id: USER_ID,
-            p_campaign_id: currentAd.id
-        });
-        if(error) throw error;
-
-        if(!data || !data.ok){
-            btn.textContent = '❌ ' + (data?.error || 'Ошибка');
-            const st = document.getElementById('adStatusMsg');
-            st.textContent = data?.error || 'Ошибка';
-            st.className = 'error';
-            adClaimed = false;
-            return;
-        }
-
-        const rewardToken = data.reward_token || 'TUSD';
-        showAdRewardAnimation(data.reward, rewardToken);
-        document.getElementById('adViewsToday').textContent = data.views_today;
-        await loadUser();
-
-        btn.textContent = '✅ Оплата получена';
-        const st = document.getElementById('adStatusMsg');
-        st.textContent = `+${Number(data.reward).toFixed(5)} ${rewardToken} зачислено!`;
-        st.className = 'success';
-        setTimeout(() => loadAd(), 4000);
-    }catch(err){
-        console.error('claimAdReward', err);
-        btn.textContent = '❌ Ошибка';
-        const st = document.getElementById('adStatusMsg');
-        st.textContent = err.message || 'Ошибка';
-        st.className = 'error';
-        adClaimed = false;
-    }
-}
-
-function showAdRewardAnimation(reward, token){
-    const t = token || 'TUSD';
-    document.getElementById('adRewardPopupAmount').textContent = '+' + Number(reward).toFixed(5) + ' ' + t;
-    document.getElementById('adRewardPopup').classList.add('show');
-    if(telegram?.HapticFeedback){ try{ telegram.HapticFeedback.notificationOccurred('success'); }catch(e){} }
-    try{
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.connect(gain); gain.connect(ctx.destination);
-        osc.frequency.setValueAtTime(880, ctx.currentTime);
-        osc.frequency.setValueAtTime(1320, ctx.currentTime + 0.1);
-        osc.frequency.setValueAtTime(1760, ctx.currentTime + 0.2);
-        gain.gain.setValueAtTime(0.15, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
-        osc.start(); osc.stop(ctx.currentTime + 0.4);
-    }catch(e){}
-    setTimeout(() => document.getElementById('adRewardPopup').classList.remove('show'), 3000);
-}
-
-/* === ЗАДАНИЯ: две кнопки + проверка подписки === */
-async function loadTasks(){
-    const box = document.getElementById('tasksList');
-    if(!box) return;
-    box.innerHTML = 'Загрузка заданий...';
-    const { data, error } = await supabaseClient.from('tasks').select('*').eq('status', 'approved').order('created_at', { ascending: false });
-    if(error){ box.innerHTML = `<div class="error">${esc(error.message)}</div>`; return; }
-    if(!data || data.length === 0){ box.innerHTML = '<div class="info">Пока нет доступных заданий.</div>'; return; }
-    box.innerHTML = data.map(task => {
-        const tk = task.reward_token || 'TUSD';
-        const remaining = task.limit_count > 0 ? task.limit_count - task.completed_count : '∞';
-        return `
-        <div class="trade-item">
-            <div class="order-main">${esc(task.type)}</div>
-            <div class="detail" style="border:0; padding:4px 0"><span>Награда:</span><span style="color:var(--gold)">${fmt(task.reward)} ${esc(tk)}</span></div>
-            <div class="detail" style="border:0; padding:4px 0"><span>Осталось мест:</span><span>${remaining}</span></div>
-            <button onclick="openTaskLink('${esc(task.link)}')" style="margin-top:8px;background:linear-gradient(135deg,#4f8cff,#2b6fd4);color:#fff;">🔗 ПЕРЕЙТИ И ПОДПИСАТЬСЯ</button>
-            <button class="secondary" onclick="completeTask('${task.id}')" style="margin-top:6px;">✅ Я ПОДПИСАЛСЯ — ПРОВЕРИТЬ</button>
-        </div>
-        `;
-    }).join('');
-}
-
-function openTaskLink(link){
-    if(!link){ showMessage('Некорректная ссылка','error'); return; }
-    try {
-        if(telegram?.openLink){
-            telegram.openLink(link);
-        } else if(telegram?.openTelegramLink && link.includes('t.me')){
-            telegram.openTelegramLink(link);
-        } else {
-            window.open(link, '_blank');
-        }
-        showMessage('Подпишитесь и вернитесь — нажмите «Я подписался»', 'info');
-    } catch(e) {
-        console.error('openTaskLink error', e);
-        window.open(link, '_blank');
-    }
-}
-
-async function completeTask(taskId){
-    if(!USER_ID){ showMessage('Пользователь не определён','error'); return; }
-    if(!confirm('Вы точно подписались? Если нет — награда не начислится.')) return;
-    showMessage('Проверка подписки...', 'info');
-    try {
-        const resp = await fetch('https://telepat-bot.onrender.com/check_task', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ task_id: taskId, user_id: String(USER_ID) })
-        });
-        const data = await resp.json();
-        if(!data.ok){
-            showMessage(data.error || 'Ошибка', 'error');
-            return;
-        }
-        showMessage(`✅ Задание выполнено! Начислено ${fmt(data.reward)} ${data.token}`, 'success');
-        await loadUser();
-        await loadTasks();
-    } catch(err) {
-        console.error(err);
-        showMessage('Ошибка соединения с ботом', 'error');
-    }
-}
-
-async function createTask(){
-    if(!USER_ID){ showMessage('Пользователь не определён','error'); return; }
-    const type = document.getElementById('taskType').value;
-    const link = document.getElementById('taskLink').value.trim();
-    const reward = num(document.getElementById('taskReward').value);
-    const rewardToken = document.getElementById('taskRewardToken').value;
-    const limit = parseInt(document.getElementById('taskLimit').value) || 0;
-    if(!link){ showMessage('Введите ссылку','error'); return; }
-    if(reward <= 0){ showMessage('Введите награду больше 0','error'); return; }
-    const statusEl = document.getElementById('taskCreateStatus');
-    statusEl.textContent = 'Отправка на модерацию...';
-    const { error } = await supabaseClient.from('tasks').insert({
-        creator_id: String(USER_ID), type: type, link: link, reward: reward,
-        reward_token: rewardToken, limit_count: limit, status: 'pending'
-    });
-    if(error){ statusEl.innerHTML = `<span class="error">Ошибка: ${esc(error.message)}</span>`; return; }
-    statusEl.innerHTML = `<span class="success">✅ Задание отправлено на модерацию! (награда в ${esc(rewardToken)})</span>`;
-    showMessage('Задание на проверке', 'success');
-    document.getElementById('taskLink').value = '';
-    document.getElementById('taskReward').value = '';
-    document.getElementById('taskLimit').value = '';
-}
-
-async function loadAdminTasks(){
-    const box = document.getElementById('adminTasksList');
-    if(!box || USER_ID !== ADMIN_ID) return;
-    box.innerHTML = '<div class="info">Загрузка...</div>';
-    const { data, error } = await supabaseClient.from('tasks').select('*').eq('status', 'pending').order('created_at', { ascending: false });
-    if(error){ box.innerHTML = `<div class="error">Ошибка: ${esc(error.message)}</div>`; return; }
-    if(!data || data.length === 0){ box.innerHTML = '<div class="info">Нет заданий на модерации.</div>'; return; }
-    box.innerHTML = data.map(task => {
-        const tk = task.reward_token || 'TUSD';
-        return `
-        <div class="pool-card" style="border-color: #8a6b28;">
-            <div class="pool-token">📌 ${esc(task.type)}</div>
-            <div class="pool-line"><span>Ссылка:</span><span>${esc(task.link)}</span></div>
-            <div class="pool-line"><span>Награда:</span><span>${fmt(task.reward)} ${esc(tk)}</span></div>
-            <div class="pool-line"><span>Лимит:</span><span>${task.limit_count} чел.</span></div>
-            <div class="row" style="margin-top:10px">
-                <button onclick="approveTask('${task.id}')">✅ ОДОБРИТЬ</button>
-                <button class="danger" onclick="rejectTask('${task.id}')">❌ ОТКЛОНИТЬ</button>
-            </div>
-        </div>
-        `;
-    }).join('');
-}
-
-async function approveTask(taskId){
-    const { error } = await supabaseClient.from('tasks').update({ status: 'approved' }).eq('id', taskId);
-    if(error){ showMessage(error.message, 'error'); return; }
-    showMessage('✅ Задание одобрено', 'success');
-    loadAdminTasks();
-}
-
-async function rejectTask(taskId){
-    const { error } = await supabaseClient.from('tasks').update({ status: 'rejected' }).eq('id', taskId);
-    if(error){ showMessage(error.message, 'error'); return; }
-    showMessage('❌ Задание отклонено', 'error');
-    loadAdminTasks();
-}
-
+/* =========================================================
+   BONUS / DAILY
+========================================================= */
 async function claimWelcomeBonus(){
-    if(!USER_ID) return;
-    const {data,error} = await supabaseClient.rpc('grant_welcome_bonus_v2');
-    if(error){ showMessage(error.message,'error'); return; }
-    const ok = data?.success === true;
-    showMessage(data?.message || (ok ? '🎁 Бонус начислен' : 'Не удалось начислить бонус'), ok ? 'success' : 'error');
-    await loadUser();
+  if(!USER_ID) return;
+  const {data,error} = await supabaseClient.rpc('grant_welcome_bonus_v2');
+  if(error){ showMessage(error.message,'error'); return; }
+  const ok = data?.success === true;
+  const msg = data?.message || (ok ? '🎁 Бонус начислен' : 'Не удалось начислить бонус');
+  showMessage(msg, ok ? 'success' : 'error');
+  await loadUser();
 }
-
 async function claimDailyReward(){
-    if(!USER_ID) return;
-    const {data,error} = await supabaseClient.rpc('claim_daily_reward_v2');
-    if(error){ document.getElementById('dailyStatus').textContent = error.message; showMessage(error.message,'error'); return; }
-    const ok = data?.success === true;
-    const msg = data?.message || (typeof data === 'string' ? data : '🎁 Награда обработана');
-    document.getElementById('dailyStatus').textContent = msg;
-    showMessage(msg, ok ? 'success' : 'error');
-    if(ok) await loadUser();
+  if(!USER_ID) return;
+  const {data,error} = await supabaseClient.rpc('claim_daily_reward_v2');
+  if(error){ document.getElementById('dailyStatus').textContent = error.message; showMessage(error.message,'error'); return; }
+  const ok = data?.success === true;
+  const msg = data?.message || (typeof data === 'string' ? data : '🎁 Награда обработана');
+  document.getElementById('dailyStatus').textContent = msg;
+  showMessage(msg, ok ? 'success' : 'error');
+  if(ok) await loadUser();
 }
 
+/* =========================================================
+   REFERRALS
+========================================================= */
 async function loadReferral(){
-    if(!USER_ID) return;
-    document.getElementById('refLink').value = `https://t.me/TELEPATp2p_bot?start=${USER_ID}`;
+  if(!USER_ID) return;
+  document.getElementById('refLink').value = `https://t.me/TELEPATp2p_bot?start=${USER_ID}`;
 }
-
 async function copyRefLink(){
-    const value = document.getElementById('refLink').value;
-    try{ await navigator.clipboard.writeText(value); showMessage('Ссылка скопирована','success'); }
-    catch(e){ showMessage('Не удалось скопировать','error'); }
+  const value = document.getElementById('refLink').value;
+  try{ await navigator.clipboard.writeText(value); showMessage('Ссылка скопирована','success'); }
+  catch(e){ showMessage('Не удалось скопировать','error'); }
 }
 
+/* =========================================================
+   POOLS
+========================================================= */
 let currentPools = {};
 let addLiqToken = null;
-
 async function loadTokenReserves(){
-    const box = document.getElementById('poolsList');
-    if(!box) return;
-    box.innerHTML = '<div class="info">Загрузка пулов...</div>';
-    const tokens = ['TG', 'AI', 'TUSD'];
-    const results = await Promise.all(tokens.map(async t => {
-        const {data,error} = await supabaseClient.rpc('get_token_reserve',{p_token_symbol:t});
-        if(error){ console.error('get_token_reserve', t, error); return null; }
-        return data;
-    }));
-    currentPools = {};
-    const valid = results.filter(Boolean);
-    if(valid.length === 0){ box.innerHTML = '<div class="info">Не удалось загрузить пулы.</div>'; return; }
-    valid.forEach(r=>{ currentPools[r.token_symbol] = r; });
-    box.innerHTML = valid.map(r=>{
-        const amount = num(r.reserve_amount);
-        const tusd = num(r.reserve_tusd);
-        const tokenUsd = r.token_tusd_value;
-        const total = num(r.total_tusd_value);
-        let tokenLine = `${fmt(amount,6)} ${r.token_symbol}`;
-        if(tokenUsd !== null && tokenUsd !== undefined && tokenUsd > 0) tokenLine += ` ≈ ${fmt(tokenUsd,2)} TUSD`;
-        return `<div class="pool-card"><div class="pool-token">🪙 ${esc(r.token_symbol)}</div><div class="pool-line"><span>Токенов в пуле:</span><span>${tokenLine}</span></div><div class="pool-line"><span>TUSD внесено:</span><span>${fmt(tusd,2)} TUSD</span></div><div class="pool-line"><span class="pool-total">Итого: ${fmt(total,2)} TUSD</span></div><button class="small" style="margin-top:10px" onclick="openAddLiq('${esc(r.token_symbol)}')">➕ Добавить TUSD</button></div>`;
-    }).join('');
+  const box = document.getElementById('poolsList');
+  if(!box) return;
+  box.innerHTML = '<div class="info">Загрузка пулов...</div>';
+  const tokens = ['TG','AI','TUSD'];
+  const results = await Promise.all(tokens.map(async t => {
+    const {data,error} = await supabaseClient.rpc('get_token_reserve',{p_token_symbol:t});
+    if(error){ console.error(error); return null; }
+    return data;
+  }));
+  currentPools = {};
+  const valid = results.filter(Boolean);
+  if(!valid.length){ box.innerHTML = '<div class="info">Не удалось загрузить пулы.</div>'; return; }
+  valid.forEach(r=>{ currentPools[r.token_symbol] = r; });
+  box.innerHTML = valid.map(r=>{
+    const amount = num(r.reserve_amount), tusd = num(r.reserve_tusd), total = num(r.total_tusd_value);
+    let line = `${fmt(amount,6)} ${r.token_symbol}`;
+    if(r.token_tusd_value > 0) line += ` ≈ ${fmt(r.token_tusd_value,2)} TUSD`;
+    return `<div class="pool-card">
+      <div class="pool-token">🪙 ${esc(r.token_symbol)}</div>
+      <div class="pool-line"><span>Токенов в пуле:</span><span>${line}</span></div>
+      <div class="pool-line"><span>TUSD внесено:</span><span>${fmt(tusd,2)} TUSD</span></div>
+      <div class="pool-line"><span class="pool-total">Итого: ${fmt(total,2)} TUSD</span></div>
+      <button class="small" style="margin-top:10px" onclick="openAddLiq('${esc(r.token_symbol)}')">➕ Добавить TUSD</button>
+    </div>`;
+  }).join('');
 }
-
 function openAddLiq(token){
-    if(!token) return;
-    addLiqToken = token;
-    document.getElementById('addLiqToken').textContent = token;
-    document.getElementById('addLiqAmount').value = '';
-    document.getElementById('addLiqAvailable').textContent = `Доступно TUSD: ${fmt(tokenBalance('TUSD'))}`;
-    document.getElementById('addLiqModal').classList.add('show');
+  if(!token) return;
+  addLiqToken = token;
+  document.getElementById('addLiqToken').textContent = token;
+  document.getElementById('addLiqAmount').value = '';
+  document.getElementById('addLiqAvailable').textContent = `Доступно TUSD: ${fmt(tokenBalance('TUSD'))}`;
+  document.getElementById('addLiqModal').classList.add('show');
 }
 function closeAddLiq(event){
-    if(event && event.target !== document.getElementById('addLiqModal')) return;
-    document.getElementById('addLiqModal').classList.remove('show');
-    addLiqToken = null;
+  if(event && event.target !== document.getElementById('addLiqModal')) return;
+  document.getElementById('addLiqModal').classList.remove('show');
+  addLiqToken = null;
 }
 async function confirmAddLiquidity(){
-    if(!addLiqToken) return;
-    const amount = num(document.getElementById('addLiqAmount').value);
-    if(amount <= 0){ showMessage('Введите сумму больше 0','error'); return; }
-    const {data,error} = await supabaseClient.rpc('add_pool_liquidity',{p_token_symbol: addLiqToken, p_tusd_amount: amount});
-    if(error){ showMessage(error.message,'error'); return; }
-    if(data && data.success === false){ showMessage(data.message || 'Ошибка','error'); return; }
-    showMessage(`💧 Добавлено ${fmt(amount,2)} TUSD в пул ${addLiqToken}`,'success');
-    document.getElementById('addLiqModal').classList.remove('show');
-    addLiqToken = null;
-    await loadUser();
-    await loadTokenReserves();
+  if(!addLiqToken) return;
+  const amount = num(document.getElementById('addLiqAmount').value);
+  if(amount <= 0){ showMessage('Введите сумму больше 0','error'); return; }
+  const {data,error} = await supabaseClient.rpc('add_pool_liquidity',{p_token_symbol:addLiqToken, p_tusd_amount:amount});
+  if(error){ showMessage(error.message,'error'); return; }
+  if(data && data.success === false){ showMessage(data.message || 'Ошибка','error'); return; }
+  showMessage(`💧 Добавлено ${fmt(amount,2)} TUSD в пул ${addLiqToken}`,'success');
+  document.getElementById('addLiqModal').classList.remove('show');
+  addLiqToken = null;
+  await loadUser();
+  await loadTokenReserves();
 }
 
+/* =========================================================
+   EXCHANGE FORM
+========================================================= */
 function updateOrderForm(){
-    const from = document.getElementById('fromToken').value;
-    const to = document.getElementById('toToken').value;
-    if(from === to){ const options = ['TG','AI','TUSD'].filter(x=>x!==from); document.getElementById('toToken').value = options[0]; }
-    const finalFrom = document.getElementById('fromToken').value;
-    document.getElementById('availableBalance').textContent = `Доступно: ${fmt(tokenBalance(finalFrom))} ${finalFrom}`;
-    const a = num(document.getElementById('fromAmount').value);
-    const b = num(document.getElementById('toAmount').value);
-    const rate = a > 0 && b > 0 ? b/a : 0;
-    const reverse = rate > 0 ? 1/rate : 0;
-    if(rate > 0){
-        document.getElementById('ratePreview').textContent = `1 ${finalFrom} = ${fmt(rate,12)} ${document.getElementById('toToken').value}`;
-        document.getElementById('reverseRate').textContent = `Обратный курс: 1 ${document.getElementById('toToken').value} = ${fmt(reverse,12)} ${finalFrom}`;
-    }else{
-        document.getElementById('ratePreview').textContent = 'Укажите количество';
-        document.getElementById('reverseRate').textContent = 'Обратный курс: —';
-    }
-    document.getElementById('orderBookTitle').textContent = `Показываются ордера: ${document.getElementById('toToken').value} → ${finalFrom}`;
+  const fromEl = document.getElementById('fromToken');
+  const toEl = document.getElementById('toToken');
+  if(!fromEl || !toEl) return;
+  const from = fromEl.value, to = toEl.value;
+  if(from === to){
+    const opts = ['TG','AI','TUSD'].filter(x=>x!==from);
+    toEl.value = opts[0];
+  }
+  const finalFrom = fromEl.value;
+  document.getElementById('availableBalance').textContent = `Доступно: ${fmt(tokenBalance(finalFrom))} ${finalFrom}`;
+  const a = num(document.getElementById('fromAmount').value);
+  const b = num(document.getElementById('toAmount').value);
+  const rate = a > 0 && b > 0 ? b/a : 0;
+  const reverse = rate > 0 ? 1/rate : 0;
+  if(rate > 0){
+    document.getElementById('ratePreview').textContent = `1 ${finalFrom} = ${fmt(rate,12)} ${toEl.value}`;
+    document.getElementById('reverseRate').textContent = `Обратный курс: 1 ${toEl.value} = ${fmt(reverse,12)} ${finalFrom}`;
+  }else{
+    document.getElementById('ratePreview').textContent = 'Укажите количество';
+    document.getElementById('reverseRate').textContent = 'Обратный курс: —';
+  }
+  document.getElementById('orderBookTitle').textContent = `Показываются ордера: ${toEl.value} → ${finalFrom}`;
 }
 function swapTokens(){
-    const from = document.getElementById('fromToken');
-    const to = document.getElementById('toToken');
-    const oldFrom = from.value; from.value = to.value; to.value = oldFrom;
-    const a = document.getElementById('fromAmount').value;
-    const b = document.getElementById('toAmount').value;
-    document.getElementById('fromAmount').value = b; document.getElementById('toAmount').value = a;
-    updateOrderForm();
+  const from = document.getElementById('fromToken');
+  const to = document.getElementById('toToken');
+  const o = from.value; from.value = to.value; to.value = o;
+  const a = document.getElementById('fromAmount').value;
+  const b = document.getElementById('toAmount').value;
+  document.getElementById('fromAmount').value = b;
+  document.getElementById('toAmount').value = a;
+  updateOrderForm();
 }
 
+/* =========================================================
+   CREATE P2P ORDER
+========================================================= */
 async function createP2POrder(){
-    if(!USER_ID || !currentUser){ showMessage('Пользователь не загружен','error'); return; }
-    const from = document.getElementById('fromToken').value;
-    const to = document.getElementById('toToken').value;
-    const amountFrom = num(document.getElementById('fromAmount').value);
-    const amountTo = num(document.getElementById('toAmount').value);
-    if(from === to){ showMessage('Выберите разные токены','error'); return; }
-    if(amountFrom <= 0 || amountTo <= 0){ showMessage('Укажите оба количества','error'); return; }
-    const balance = tokenBalance(from);
-    const fee = amountFrom * 0.001;
-    if(amountFrom + fee > balance){ showMessage(`Недостаточно ${from} (нужно ${fmt(amountFrom+fee, 6)} с комиссией)`,'error'); return; }
-    const {data,error} = await supabaseClient.rpc('create_p2p_order_v2',{p_from_token:from, p_to_token:to, p_from_amount:amountFrom, p_to_amount:amountTo});
-    if(error){ console.error(error); showMessage(error.message,'error'); return; }
-    document.getElementById('fromAmount').value = '';
-    document.getElementById('toAmount').value = '';
-    showMessage('🚀 Ордер создан','success');
-    await loadUser(); await loadOrders(); await loadMyOrders(); await loadTokenReserves();
+  if(!USER_ID || !currentUser){ showMessage('Пользователь не загружен','error'); return; }
+  const from = document.getElementById('fromToken').value;
+  const to = document.getElementById('toToken').value;
+  const amountFrom = num(document.getElementById('fromAmount').value);
+  const amountTo = num(document.getElementById('toAmount').value);
+  if(from === to){ showMessage('Выберите разные токены','error'); return; }
+  if(amountFrom <= 0 || amountTo <= 0){ showMessage('Укажите оба количества','error'); return; }
+  const balance = tokenBalance(from);
+  const fee = amountFrom * 0.001;
+  if(amountFrom + fee > balance){ showMessage(`Недостаточно ${from}`,'error'); return; }
+  const {data,error} = await supabaseClient.rpc('create_p2p_order_v2',{p_from_token:from, p_to_token:to, p_from_amount:amountFrom, p_to_amount:amountTo});
+  if(error){ console.error(error); showMessage(error.message,'error'); return; }
+  document.getElementById('fromAmount').value = '';
+  document.getElementById('toAmount').value = '';
+  showMessage('🚀 Ордер создан','success');
+  await loadUser(); await loadOrders(); await loadMyOrders(); await loadTokenReserves();
 }
 
+/* =========================================================
+   LOAD ORDERS
+========================================================= */
 async function loadOrders(){
-    const list = document.getElementById('ordersList');
-    if(!list) return;
-    const counterFrom = document.getElementById('toToken').value;
-    const counterTo = document.getElementById('fromToken').value;
-    const sort = document.getElementById('orderSort').value;
-    document.getElementById('orderBookTitle').textContent = `Совместимые ордера: ${counterFrom} → ${counterTo}`;
-    list.innerHTML = '<div class="info">Загрузка ордеров...</div>';
-    const {data,error} = await supabaseClient.rpc('get_p2p_orders',{p_from_token:counterFrom, p_to_token:counterTo, p_sort:sort});
-    if(error){ console.error(error); list.innerHTML = `<div class="error">${esc(error.message)}</div>`; return; }
-    if(!data || data.length === 0){ list.innerHTML = '<div class="info" style="padding:12px 0">Пока нет подходящих ордеров.</div>'; return; }
-    list.innerHTML = data.map(orderCard).join('');
+  const list = document.getElementById('ordersList');
+  if(!list) return;
+  const uf = document.getElementById('fromToken').value;
+  const ut = document.getElementById('toToken').value;
+  const cf = ut, ct = uf;
+  const sort = document.getElementById('orderSort').value;
+  document.getElementById('orderBookTitle').textContent = `Совместимые ордера: ${cf} → ${ct}`;
+  list.innerHTML = '<div class="info">Загрузка ордеров...</div>';
+  const {data,error} = await supabaseClient.rpc('get_p2p_orders',{p_from_token:cf, p_to_token:ct, p_sort:sort});
+  if(error){ console.error(error); list.innerHTML = `<div class="error">${esc(error.message)}</div>`; return; }
+  if(!data || !data.length){ list.innerHTML = '<div class="info" style="padding:12px 0">Пока нет подходящих ордеров.</div>'; return; }
+  list.innerHTML = data.map(orderCard).join('');
 }
-
 async function loadMyOrders(){
-    const list = document.getElementById('myOrdersList');
-    if(!list || !USER_ID) return;
-    list.innerHTML = '<div class="info">Загрузка моих ордеров...</div>';
-    const directions = [['TG','TUSD'],['TUSD','TG'],['TG','AI'],['AI','TG'],['TUSD','AI'],['AI','TUSD']];
-    const results = await Promise.all(directions.map(async ([ft,tt]) => {
-        const {data,error} = await supabaseClient.rpc('get_p2p_orders',{p_from_token:ft, p_to_token:tt, p_sort:'new'});
-        if(error){ console.error(error); return []; }
-        return Array.isArray(data) ? data : [];
-    }));
-    const seen = new Set(); const mine = [];
-    results.flat().forEach(order=>{
-        const id = String(order?.id || '');
-        if(!id || seen.has(id)) return;
-        if(String(order?.creator_id) !== String(USER_ID)) return;
-        seen.add(id); mine.push(order);
-    });
-    mine.sort((a,b)=> new Date(b.created_at||0) - new Date(a.created_at||0));
-    list.innerHTML = mine.length ? mine.map(orderCard).join('') : '<div class="info">У вас пока нет открытых ордеров.</div>';
+  const list = document.getElementById('myOrdersList');
+  if(!list || !USER_ID) return;
+  list.innerHTML = '<div class="info">Загрузка моих ордеров...</div>';
+  const dirs = [['TG','TUSD'],['TUSD','TG'],['TG','AI'],['AI','TG'],['TUSD','AI'],['AI','TUSD']];
+  const results = await Promise.all(dirs.map(async ([f,t])=>{
+    const {data,error} = await supabaseClient.rpc('get_p2p_orders',{p_from_token:f, p_to_token:t, p_sort:'new'});
+    if(error) return [];
+    return Array.isArray(data) ? data : [];
+  }));
+  const seen = new Set(); const mine = [];
+  results.flat().forEach(o=>{
+    const id = String(o?.id || '');
+    if(!id || seen.has(id)) return;
+    if(String(o?.creator_id) !== String(USER_ID)) return;
+    seen.add(id); mine.push(o);
+  });
+  mine.sort((a,b)=> new Date(b.created_at||0) - new Date(a.created_at||0));
+  list.innerHTML = mine.length ? mine.map(orderCard).join('') : '<div class="info">У вас пока нет открытых ордеров.</div>';
 }
-
 function orderCard(order){
-    const isMine = String(order.creator_id) === String(USER_ID);
-    const color = rankColor(order.creator_rank_level);
-    const glow = `${color}55`;
-    const rate = num(order.rate);
-    const reverse = rate > 0 ? 1/rate : 0;
-    const date = new Date(order.created_at).toLocaleString('ru-RU');
-    const pool = currentPools[String(order.from_token).toUpperCase()];
-    let poolLine = '';
-    if(pool){
-        const amount = num(pool.reserve_amount);
-        const tusd = num(pool.reserve_tusd);
-        const total = num(pool.total_tusd_value);
-        let tokensText = `${fmt(amount,6)} ${esc(order.from_token)}`;
-        if(tusd > 0) tokensText += ` + ${fmt(tusd,2)} TUSD`;
-        poolLine = `<div class="detail"><span>💧 Резерв ${esc(order.from_token)}</span><span>${tokensText}<br>≈ ${fmt(total,2)} TUSD</span></div>`;
-    }
-    return `<div class="order" id="order-${esc(order.id)}" style="--rank-color:${color};--rank-glow:${glow}"><div class="order-head" onclick="toggleOrder('${esc(order.id)}')"><div class="order-line"><div class="order-main">${fmt(order.from_amount)} ${esc(order.from_token)} → ${fmt(order.to_amount)} ${esc(order.to_token)}</div><div class="rank-badge">👑 ${esc(order.creator_rank_name)}</div></div><div class="order-price">1 ${esc(order.from_token)} = ${fmt(rate,12)} ${esc(order.to_token)}</div><div class="order-stats"><span>👍 ${num(order.likes)}</span><span>👎 ${num(order.dislikes)}</span><span>🤝 ${num(order.completed_trades)}</span></div></div><div class="order-expanded"><div class="detail"><span>Владелец</span><span class="profile-link" onclick="openProfile(${Number(order.creator_id)});event.stopPropagation()">👤 ${Number(order.creator_id)}</span></div><div class="detail"><span>Отдаёт</span><span>${fmt(order.from_amount)} ${esc(order.from_token)}</span></div><div class="detail"><span>Получает</span><span>${fmt(order.to_amount)} ${esc(order.to_token)}</span></div><div class="detail"><span>Курс сделки</span><span>1 ${esc(order.from_token)} = ${fmt(rate,12)} ${esc(order.to_token)}</span></div><div class="detail"><span>Обратный курс</span><span>1 ${esc(order.to_token)} = ${fmt(reverse,12)} ${esc(order.from_token)}</span></div><div class="detail"><span>Титул</span><span style="color:${color};text-shadow:0 0 9px ${glow};font-weight:bold">👑 ${esc(order.creator_rank_name)}</span></div><div class="detail"><span>Репутация</span><span>👍 ${num(order.likes)} 👎 ${num(order.dislikes)}</span></div><div class="detail"><span>Сделки</span><span>${num(order.completed_trades)}</span></div>${poolLine}<div class="detail"><span>Создан</span><span>${esc(date)}</span></div><div class="order-actions"><button class="secondary" onclick="openProfile(${Number(order.creator_id)});event.stopPropagation()">👤 ПРОФИЛЬ</button>${isMine ? `<button class="danger" onclick="cancelP2POrder('${esc(order.id)}');event.stopPropagation()">❌ ОТМЕНИТЬ</button>` : `<button onclick="acceptP2POrder('${esc(order.id)}');event.stopPropagation()">🤝 ПРИНЯТЬ ОРДЕР</button>`}</div></div></div>`;
+  const isMine = String(order.creator_id) === String(USER_ID);
+  const color = rankColor(order.creator_rank_level);
+  const glow = `${color}55`;
+  const rate = num(order.rate);
+  const reverse = rate > 0 ? 1/rate : 0;
+  const date = new Date(order.created_at).toLocaleString('ru-RU');
+  const pool = currentPools[String(order.from_token).toUpperCase()];
+  let poolLine = '';
+  if(pool){
+    const amount = num(pool.reserve_amount), tusd = num(pool.reserve_tusd), total = num(pool.total_tusd_value);
+    let txt = `${fmt(amount,6)} ${esc(order.from_token)}`;
+    if(tusd > 0) txt += ` + ${fmt(tusd,2)} TUSD`;
+    poolLine = `<div class="detail"><span>💧 Резерв ${esc(order.from_token)}</span><span>${txt}<br>≈ ${fmt(total,2)} TUSD</span></div>`;
+  }
+  return `<div class="order" id="order-${esc(order.id)}" style="--rank-color:${color};--rank-glow:${glow}">
+    <div class="order-head" onclick="toggleOrder('${esc(order.id)}')">
+      <div class="order-line">
+        <div class="order-main">${fmt(order.from_amount)} ${esc(order.from_token)} → ${fmt(order.to_amount)} ${esc(order.to_token)}</div>
+        <div class="rank-badge">👑 ${esc(order.creator_rank_name)}</div>
+      </div>
+      <div class="order-price">1 ${esc(order.from_token)} = ${fmt(rate,12)} ${esc(order.to_token)}</div>
+      <div class="order-stats"><span>👍 ${num(order.likes)}</span><span>👎 ${num(order.dislikes)}</span><span>🤝 ${num(order.completed_trades)}</span></div>
+    </div>
+    <div class="order-expanded">
+      <div class="detail"><span>Владелец</span><span class="profile-link" onclick="openProfile(${Number(order.creator_id)});event.stopPropagation()">👤 ${Number(order.creator_id)}</span></div>
+      <div class="detail"><span>Отдаёт</span><span>${fmt(order.from_amount)} ${esc(order.from_token)}</span></div>
+      <div class="detail"><span>Получает</span><span>${fmt(order.to_amount)} ${esc(order.to_token)}</span></div>
+      <div class="detail"><span>Курс</span><span>1 ${esc(order.from_token)} = ${fmt(rate,12)} ${esc(order.to_token)}</span></div>
+      <div class="detail"><span>Титул</span><span style="color:${color};font-weight:bold">👑 ${esc(order.creator_rank_name)}</span></div>
+      <div class="detail"><span>Сделки</span><span>${num(order.completed_trades)}</span></div>
+      ${poolLine}
+      <div class="detail"><span>Создан</span><span>${esc(date)}</span></div>
+      <div class="order-actions">
+        <button class="secondary" onclick="openProfile(${Number(order.creator_id)});event.stopPropagation()">👤 ПРОФИЛЬ</button>
+        ${isMine
+          ? `<button class="danger" onclick="cancelP2POrder('${esc(order.id)}');event.stopPropagation()">❌ ОТМЕНИТЬ</button>`
+          : `<button onclick="acceptP2POrder('${esc(order.id)}');event.stopPropagation()">🤝 ПРИНЯТЬ</button>`}
+      </div>
+    </div>
+  </div>`;
 }
 function toggleOrder(id){ const el = document.getElementById(`order-${id}`); if(el) el.classList.toggle('opened'); }
 
 async function acceptP2POrder(orderId){
-    if(!USER_ID) return;
-    if(!confirm('Принять этот ордер и провести сделку?')) return;
-    const {data,error} = await supabaseClient.rpc('accept_p2p_order_v2',{p_order_id:orderId});
-    if(error){ showMessage(error.message,'error'); return; }
-    showMessage('🤝 Сделка успешно завершена','success');
-    await loadUser(); await loadOrders(); await loadMyTrades(); await loadTokenReserves();
+  if(!USER_ID) return;
+  if(!confirm('Принять этот ордер?')) return;
+  const {data,error} = await supabaseClient.rpc('accept_p2p_order_v2',{p_order_id:orderId});
+  if(error){ showMessage(error.message,'error'); return; }
+  showMessage('🤝 Сделка завершена','success');
+  await loadUser(); await loadOrders(); await loadMyTrades(); await loadTokenReserves();
 }
 async function cancelP2POrder(orderId){
-    if(!USER_ID) return;
-    if(!confirm('Отменить ордер и вернуть заблокированные средства?')) return;
-    const {data,error} = await supabaseClient.rpc('cancel_p2p_order_v2',{p_order_id:orderId});
-    if(error){ showMessage(error.message,'error'); return; }
-    showMessage('Ордер отменён. Средства возвращены.','success');
-    await loadUser(); await loadOrders();
+  if(!USER_ID) return;
+  if(!confirm('Отменить ордер?')) return;
+  const {data,error} = await supabaseClient.rpc('cancel_p2p_order_v2',{p_order_id:orderId});
+  if(error){ showMessage(error.message,'error'); return; }
+  showMessage('Ордер отменён','success');
+  await loadUser(); await loadOrders();
 }
 
+/* =========================================================
+   PROFILE MODAL
+========================================================= */
 async function openProfile(userId){
-    const modal = document.getElementById('profileModal');
-    modal.classList.add('show');
-    document.getElementById('profileRank').textContent = 'Загрузка...';
-    const {data,error} = await supabaseClient.rpc('get_p2p_profile',{p_user_id:String(userId)});
-    if(error){ document.getElementById('profileRank').textContent = 'Ошибка'; showMessage(error.message,'error'); return; }
-    const profile = Array.isArray(data) ? data[0] : data;
-    if(!profile){ document.getElementById('profileRank').textContent = 'Пользователь не найден'; return; }
-    const completed = num(profile.completed_trades);
-    const cancelled = num(profile.cancelled_trades);
-    const total = completed + cancelled;
-    const success = total > 0 ? (completed/total)*100 : 100;
-    const color = rankColor(profile.rank_level);
-    document.getElementById('profileRank').innerHTML = `<span style="color:${color};text-shadow:0 0 12px ${color}66">👑 ${esc(profile.rank_name)}</span>`;
-    const profileTgId = profile.Ttelegram_id ?? profile.telegram_id ?? profile.user_id ?? '—';
-    document.getElementById('profileId').textContent = `Telegram ID: ${profileTgId}`;
-    document.getElementById('profileTrades').textContent = completed;
-    document.getElementById('profileSuccess').textContent = `${success.toFixed(1)}%`;
-    document.getElementById('profileLikes').textContent = num(profile.likes);
-    document.getElementById('profileDislikes').textContent = num(profile.dislikes);
-    document.getElementById('profileCancelled').textContent = `Отменённых ордеров: ${cancelled}`;
+  const modal = document.getElementById('profileModal');
+  modal.classList.add('show');
+  document.getElementById('profileRank').textContent = 'Загрузка...';
+  const {data,error} = await supabaseClient.rpc('get_p2p_profile',{p_user_id:String(userId)});
+  if(error){ document.getElementById('profileRank').textContent = 'Ошибка'; showMessage(error.message,'error'); return; }
+  const profile = Array.isArray(data) ? data[0] : data;
+  if(!profile){ document.getElementById('profileRank').textContent = 'Пользователь не найден'; return; }
+  const completed = num(profile.completed_trades);
+  const cancelled = num(profile.cancelled_trades);
+  const total = completed + cancelled;
+  const success = total > 0 ? (completed/total)*100 : 100;
+  const color = rankColor(profile.rank_level);
+  document.getElementById('profileRank').innerHTML = `<span style="color:${color}">👑 ${esc(profile.rank_name)}</span>`;
+  const pid = profile.Ttelegram_id ?? profile.telegram_id ?? profile.user_id ?? '—';
+  document.getElementById('profileId').textContent = `Telegram ID: ${pid}`;
+  document.getElementById('profileTrades').textContent = completed;
+  document.getElementById('profileSuccess').textContent = `${success.toFixed(1)}%`;
+  document.getElementById('profileLikes').textContent = num(profile.likes);
+  document.getElementById('profileDislikes').textContent = num(profile.dislikes);
+  document.getElementById('profileCancelled').textContent = `Отменённых ордеров: ${cancelled}`;
 }
 function closeProfile(event){
-    if(event && event.target !== document.getElementById('profileModal')) return;
-    document.getElementById('profileModal').classList.remove('show');
+  if(event && event.target !== document.getElementById('profileModal')) return;
+  document.getElementById('profileModal').classList.remove('show');
 }
 
+/* =========================================================
+   MY TRADES
+========================================================= */
 const reviewBusy = new Set();
 async function loadMyTrades(){
-    const box = document.getElementById('myTrades');
-    if(!box || !USER_ID) return;
-    const {data,error} = await supabaseClient.rpc('get_p2p_my_trades',{p_user_id:String(USER_ID)});
-    if(error){ console.error(error); box.innerHTML = '<div class="error">Не удалось загрузить историю сделок.</div>'; return; }
-    if(!data || data.length === 0){ box.innerHTML = '<div class="info">Пока нет завершённых сделок.</div>'; return; }
-    box.innerHTML = data.map(trade=>{
-        const tradeId = String(trade?.id || '');
-        const rated = trade.my_rating !== null && trade.my_rating !== undefined;
-        if(!tradeId) return '';
-        return `<div class="trade-item" id="trade-${esc(tradeId)}"><div class="order-main">${fmt(trade.my_give_amount)} ${esc(trade.my_give_token)} → ${fmt(trade.my_get_amount)} ${esc(trade.my_get_token)}</div><div class="info" style="margin-top:5px">Сделка с пользователем: ${Number(trade.other_user_id)}</div>${rated ? `<div class="success" style="margin-top:8px">Оценка поставлена: ${Number(trade.my_rating) > 0 ? '👍' : '👎'}</div>` : `<div class="rating" style="margin-top:8px"><button id="review-like-${esc(tradeId)}" onclick="rateTrade('${esc(tradeId)}',1)">👍 ЛАЙК</button><button id="review-dislike-${esc(tradeId)}" class="danger" onclick="rateTrade('${esc(tradeId)}',-1)">👎 ДИЗЛАЙК</button></div>`}</div>`;
-    }).join('');
+  const box = document.getElementById('myTrades');
+  if(!box || !USER_ID) return;
+  const {data,error} = await supabaseClient.rpc('get_p2p_my_trades',{p_user_id:String(USER_ID)});
+  if(error){ console.error(error); box.innerHTML = '<div class="error">Не удалось загрузить историю.</div>'; return; }
+  if(!data || !data.length){ box.innerHTML = '<div class="info">Пока нет завершённых сделок.</div>'; return; }
+  box.innerHTML = data.map(trade=>{
+    const tid = String(trade?.id || '');
+    const rated = trade.my_rating !== null && trade.my_rating !== undefined;
+    if(!tid) return '';
+    return `<div class="trade-item" id="trade-${esc(tid)}">
+      <div class="order-main">${fmt(trade.my_give_amount)} ${esc(trade.my_give_token)} → ${fmt(trade.my_get_amount)} ${esc(trade.my_get_token)}</div>
+      <div class="info" style="margin-top:5px">Сделка с: ${Number(trade.other_user_id)}</div>
+      ${rated
+        ? `<div class="success" style="margin-top:8px">Оценка: ${Number(trade.my_rating) > 0 ? '👍' : '👎'}</div>`
+        : `<div class="rating" style="margin-top:8px">
+            <button id="review-like-${esc(tid)}" onclick="rateTrade('${esc(tid)}',1)">👍 ЛАЙК</button>
+            <button id="review-dislike-${esc(tid)}" class="danger" onclick="rateTrade('${esc(tid)}',-1)">👎 ДИЗЛАЙК</button>
+          </div>`}
+    </div>`;
+  }).join('');
+}
+async function rateTrade(tradeId, rating){
+  const id = String(tradeId || '').trim();
+  const value = Number(rating);
+  if(!USER_ID){ showMessage('Пользователь не определён.','error'); return; }
+  if(!id){ showMessage('Не определить сделку','error'); return; }
+  if(value !== 1 && value !== -1){ showMessage('Недопустимая оценка','error'); return; }
+  if(reviewBusy.has(id)) return;
+  reviewBusy.add(id);
+  const lb = document.getElementById(`review-like-${id}`);
+  const db = document.getElementById(`review-dislike-${id}`);
+  if(lb) lb.disabled = true; if(db) db.disabled = true;
+  try{
+    const {data,error} = await supabaseClient.rpc('add_p2p_review_v2',{p_trade_id:id, p_rating:value});
+    if(error){ showMessage(error.message,'error'); if(lb) lb.disabled=false; if(db) db.disabled=false; return; }
+    if(data !== true){ showMessage('Сервер не подтвердил','error'); if(lb) lb.disabled=false; if(db) db.disabled=false; return; }
+    showMessage(value > 0 ? '👍 Лайк' : '👎 Дизлайк','success');
+    await loadMyTrades();
+  }finally{ reviewBusy.delete(id); }
 }
 
-async function rateTrade(tradeId,rating){
-    const id = String(tradeId || '').trim();
-    const value = Number(rating);
-    if(!USER_ID){ showMessage('Пользователь не определён.','error'); return; }
-    if(!id){ showMessage('Не удалось определить сделку.','error'); return; }
-    if(value !== 1 && value !== -1){ showMessage('Недопустимая оценка.','error'); return; }
-    if(reviewBusy.has(id)) return;
-    reviewBusy.add(id);
-    const lk = document.getElementById(`review-like-${id}`);
-    const dk = document.getElementById(`review-dislike-${id}`);
-    if(lk) lk.disabled = true;
-    if(dk) dk.disabled = true;
-    try{
-        const {data,error} = await supabaseClient.rpc('add_p2p_review_v2',{p_trade_id:id, p_rating:value});
-        if(error){ showMessage(error.message || 'Не удалось сохранить отзыв.','error'); if(lk) lk.disabled = false; if(dk) dk.disabled = false; return; }
-        if(data !== true){ showMessage('Сервер не подтвердил сохранение отзыва.','error'); if(lk) lk.disabled = false; if(dk) dk.disabled = false; return; }
-        showMessage(value > 0 ? '👍 Лайк поставлен' : '👎 Дизлайк поставлен','success');
-        await loadMyTrades();
-    }finally{ reviewBusy.delete(id); }
-}
-
+/* =========================================================
+   ADMIN STATS
+========================================================= */
 async function loadAdminStats(){
-    if(USER_ID !== ADMIN_ID) return;
-    const {data:users,error:usersError} = await supabaseClient.from('users').select('tg_balance,ai_balance,tusd_balance',{count:'exact'});
-    if(usersError){ showMessage(usersError.message,'error'); return; }
-    const {count:ordersCount} = await supabaseClient.from('p2p_orders').select('*',{count:'exact',head:true}).eq('status','open');
-    let tg = 0, ai = 0, tusd = 0;
-    (users || []).forEach(u=>{ tg += num(u.tg_balance); ai += num(u.ai_balance); tusd += num(u.tusd_balance); });
-    document.getElementById('adminUsers').textContent = (users || []).length;
-    document.getElementById('adminOrders').textContent = ordersCount || 0;
-    document.getElementById('adminTG').textContent = fmt(tg);
-    document.getElementById('adminAI').textContent = fmt(ai);
-    const adminTUSD = document.getElementById('adminTUSD');
-    if(adminTUSD) adminTUSD.textContent = fmt(tusd);
+  if(USER_ID !== ADMIN_ID) return;
+  const {data:users,error} = await supabaseClient.from('users').select('tg_balance,ai_balance,tusd_balance',{count:'exact'});
+  if(error){ showMessage(error.message,'error'); return; }
+  const {count:ordersCount} = await supabaseClient.from('p2p_orders').select('*',{count:'exact',head:true}).eq('status','open');
+  let tg=0, ai=0, tusd=0;
+  (users || []).forEach(u=>{ tg += num(u.tg_balance); ai += num(u.ai_balance); tusd += num(u.tusd_balance); });
+  document.getElementById('adminUsers').textContent = (users || []).length;
+  document.getElementById('adminOrders').textContent = ordersCount || 0;
+  document.getElementById('adminTG').textContent = fmt(tg);
+  document.getElementById('adminAI').textContent = fmt(ai);
+  document.getElementById('adminTUSD').textContent = fmt(tusd);
 }
 
+/* =========================================================
+   ADMIN CHATS (РАЗДАЧА)
+========================================================= */
+let ADMIN_CHAT_TOKENS = [];
 let ADMIN_CHAT_CURRENT = null;
 let ADMIN_CHAT_ROWS = [];
-
+async function loadAdminChatTokens(){
+  if(ADMIN_CHAT_TOKENS.length) return ADMIN_CHAT_TOKENS;
+  const {data,error} = await supabaseClient.rpc('telepat_admin_list_tokens');
+  if(error){ console.warn(error); return []; }
+  ADMIN_CHAT_TOKENS = Array.isArray(data) ? data : [];
+  return ADMIN_CHAT_TOKENS;
+}
 async function loadAdminChats(){
-    const box = document.getElementById('adminChatsList');
-    if(!box) return;
-    box.innerHTML = '<div class="info">Загрузка...</div>';
-    
-    const {data,error} = await supabaseClient.from('chat_rewards').select('*').order('created_at', { ascending: false });
-    if(error){ box.innerHTML = `<div class="error">Ошибка: ${esc(error.message)}</div>`; return; }
-    if(!data || data.length === 0){ box.innerHTML = '<div class="info">Пока нет подключённых чатов.</div>'; return; }
-    
-    ADMIN_CHAT_ROWS = data;
-    box.innerHTML = '';
-    data.forEach(row=>{
-        const div = document.createElement('div');
-        div.className = 'pool-card';
-        const statusClass = row.enabled ? 'success' : 'error';
-        const statusText = row.enabled ? 'ВКЛ' : 'ВЫКЛ';
-        const title = row.chat_title || '(без названия)';
-        const reward = row.reward ? `${fmt(row.reward)} ${row.reward_token || 'TUSD'} за сообщение` : 'не настроено';
-        const limitInfo = row.max_messages_per_user_day ? ` • лимит ${row.max_messages_per_user_day}/день` : '';
-        div.innerHTML = `<div class="order-line"><div><div class="pool-token">📢 ${esc(title)}</div><div class="info" style="margin-top:4px">ID: ${esc(row.chat_id)}</div><div class="${statusClass}" style="font-size:12px;margin-top:5px">${statusText} • ${esc(reward)}${limitInfo}</div></div><button class="secondary small" onclick="openAdminChatEdit('${esc(row.chat_id)}')">⚙️</button></div>`;
-        box.appendChild(div);
-    });
+  const box = document.getElementById('adminChatsList');
+  if(!box) return;
+  box.innerHTML = '<div class="info">Загрузка...</div>';
+  await loadAdminChatTokens();
+  const {data,error} = await supabaseClient.rpc('telepat_admin_list_chats');
+  if(error){ box.innerHTML = `<div class="error">Ошибка: ${esc(error.message)}</div>`; return; }
+  if(!data || !data.length){ box.innerHTML = '<div class="info">Пока нет подключённых чатов.</div>'; return; }
+  ADMIN_CHAT_ROWS = data;
+  box.innerHTML = '';
+  data.forEach(row=>{
+    const div = document.createElement('div');
+    div.className = 'pool-card';
+    const sc = row.enabled ? 'success' : 'error';
+    const st = row.enabled ? 'ВКЛ' : 'ВЫКЛ';
+    const title = esc(row.chat_title || '(без названия)');
+    const reward = row.reward_per_message ? `${fmt(row.reward_per_message)} за сообщение` : 'не настроено';
+    div.innerHTML = `<div class="order-line"><div>
+      <div class="pool-token">📢 ${title}</div>
+      <div class="info" style="margin-top:4px">${esc(row.chat_telegram_id)}</div>
+      <div class="${sc}" style="font-size:12px;margin-top:5px">${st} • ${esc(reward)}</div>
+    </div><button class="secondary small" onclick="openAdminChatEdit('${esc(row.chat_telegram_id)}')">⚙️</button></div>`;
+    box.appendChild(div);
+  });
 }
-
 async function openAdminChatEdit(chatTgId){
-    const chat = ADMIN_CHAT_ROWS.find(c => String(c.chat_id) === String(chatTgId));
-    if(!chat) return;
-    ADMIN_CHAT_CURRENT = chat;
-    document.getElementById('adminChatEditTitle').textContent = '⚙️ ' + (chat.chat_title || chat.chat_id);
-    document.getElementById('ce_enabled').value = chat.enabled ? 'true' : 'false';
-    document.getElementById('ce_reward').value = chat.reward ?? 0.0002;
-    document.getElementById('ce_notify_n').value = chat.notify_every_n ?? 1;
-    document.getElementById('ce_budget').value = chat.budget ?? 0;
-    document.getElementById('ce_cooldown').value = chat.cooldown_seconds ?? 3;
-    document.getElementById('ce_daily').value = chat.daily_message_limit ?? 0;
-    document.getElementById('ce_maxmsg').value = chat.max_messages_per_user_day ?? 350;
-    document.getElementById('ce_minwords').value = chat.min_words ?? 1;
-    document.getElementById('ce_minchars').value = chat.min_chars ?? 5;
-    document.getElementById('ce_exclcmd').value = chat.exclude_commands === false ? 'false' : 'true';
-    document.getElementById('ce_exclemoji').value = chat.exclude_emoji_only === false ? 'false' : 'true';
-    document.getElementById('ce_token').value = chat.reward_token || 'TUSD';
-    document.getElementById('adminChatEditStatus').textContent = '';
-    document.getElementById('adminChatEdit').classList.remove('hidden');
+  const chat = ADMIN_CHAT_ROWS.find(c => String(c.chat_telegram_id) === String(chatTgId));
+  if(!chat) return;
+  ADMIN_CHAT_CURRENT = chat;
+  document.getElementById('adminChatEditTitle').textContent = '⚙️ ' + (chat.chat_title || chat.chat_telegram_id);
+  document.getElementById('ce_enabled').value = chat.enabled ? 'true' : 'false';
+  document.getElementById('ce_reward').value = chat.reward_per_message ?? '';
+  document.getElementById('ce_budget').value = chat.budget ?? 0;
+  document.getElementById('ce_cooldown').value = chat.cooldown_seconds ?? 0;
+  document.getElementById('ce_daily').value = chat.daily_message_limit ?? 0;
+  document.getElementById('ce_maxmsg').value = chat.max_messages_per_user_day ?? 0;
+  document.getElementById('ce_minwords').value = chat.min_words ?? 1;
+  document.getElementById('ce_minchars').value = chat.min_chars ?? 1;
+  document.getElementById('ce_exclcmd').value = chat.exclude_commands === false ? 'false' : 'true';
+  document.getElementById('ce_exclemoji').value = chat.exclude_emoji_only === false ? 'false' : 'true';
+  const sel = document.getElementById('ce_token');
+  sel.innerHTML = '<option value="">TUSD (по умолчанию)</option>';
+  ADMIN_CHAT_TOKENS.forEach(t=>{
+    const opt = document.createElement('option');
+    opt.value = t.id; opt.textContent = `${t.symbol} — ${t.name || ''}`;
+    sel.appendChild(opt);
+  });
+  sel.value = chat.reward_token_id || '';
+  document.getElementById('adminChatEditStatus').textContent = '';
+  document.getElementById('adminChatEdit').classList.remove('hidden');
 }
-function closeAdminChatEdit(){ document.getElementById('adminChatEdit').classList.add('hidden'); ADMIN_CHAT_CURRENT = null; }
-
+function closeAdminChatEdit(){
+  document.getElementById('adminChatEdit').classList.add('hidden');
+  ADMIN_CHAT_CURRENT = null;
+}
 async function saveAdminChatReward(){
-    if(!ADMIN_CHAT_CURRENT) return;
-    const status = document.getElementById('adminChatEditStatus');
-    status.className = 'info'; status.textContent = 'Сохранение...';
-    
-    const payload = {
-        enabled: document.getElementById('ce_enabled').value === 'true',
-        reward_token: document.getElementById('ce_token').value || 'TUSD',
-        reward: num(document.getElementById('ce_reward').value),
-        notify_every_n: parseInt(document.getElementById('ce_notify_n').value) || 1,
-        budget: num(document.getElementById('ce_budget').value),
-        cooldown_seconds: Math.floor(num(document.getElementById('ce_cooldown').value)),
-        daily_message_limit: Math.floor(num(document.getElementById('ce_daily').value)),
-        max_messages_per_user_day: Math.floor(num(document.getElementById('ce_maxmsg').value)),
-        min_words: Math.floor(num(document.getElementById('ce_minwords').value) || 1),
-        min_chars: Math.floor(num(document.getElementById('ce_minchars').value) || 1),
-        exclude_commands: document.getElementById('ce_exclcmd').value === 'true',
-        exclude_emoji_only: document.getElementById('ce_exclemoji').value === 'true',
-    };
-    
-    const {error} = await supabaseClient.from('chat_rewards')
-        .update(payload)
-        .eq('chat_id', String(ADMIN_CHAT_CURRENT.chat_id));
-    
-    if(error){ status.className = 'error'; status.textContent = 'Ошибка: ' + error.message; return; }
+  if(!ADMIN_CHAT_CURRENT) return;
+  const status = document.getElementById('adminChatEditStatus');
+  status.className = 'info';
+  status.textContent = 'Сохранение...';
+  const tokenVal = document.getElementById('ce_token').value;
+  const payload = {
+    p_chat_telegram_id: Number(ADMIN_CHAT_CURRENT.chat_telegram_id),
+    p_enabled: document.getElementById('ce_enabled').value === 'true',
+    p_token_id: tokenVal ? tokenVal : null,
+    p_reward_per_message: num(document.getElementById('ce_reward').value),
+    p_budget: num(document.getElementById('ce_budget').value),
+    p_cooldown_seconds: Math.floor(num(document.getElementById('ce_cooldown').value)),
+    p_daily_message_limit: Math.floor(num(document.getElementById('ce_daily').value)),
+    p_max_messages_per_user_day: Math.floor(num(document.getElementById('ce_maxmsg').value)),
+    p_min_words: Math.floor(num(document.getElementById('ce_minwords').value) || 1),
+    p_min_chars: Math.floor(num(document.getElementById('ce_minchars').value) || 1),
+    p_exclude_commands: document.getElementById('ce_exclcmd').value === 'true',
+    p_exclude_emoji_only: document.getElementById('ce_exclemoji').value === 'true',
+  };
+  const {data,error} = await supabaseClient.rpc('telepat_admin_update_chat_reward', payload);
+  if(error){ status.className = 'error'; status.textContent = 'Ошибка: ' + error.message; return; }
+  if(data && data.ok){
     status.className = 'success'; status.textContent = '✅ Сохранено';
     await loadAdminChats();
     setTimeout(()=>closeAdminChatEdit(), 900);
+  }else{
+    status.className = 'error'; status.textContent = 'Ошибка: ' + ((data && data.reason) || 'unknown');
+  }
 }
 
+/* =========================================================
+   TOKEN LISTING
+========================================================= */
 let listingSupplyPercent = 10;
 let listingFeeTUSD = 100;
-
 function calculateListingPreview(){
-    const supply = num(document.getElementById('listingTotalSupply')?.value);
-    const amount = supply * listingSupplyPercent / 100;
-    if(document.getElementById('listingSupplyAmountPreview')) document.getElementById('listingSupplyAmountPreview').textContent = fmt(amount,12);
-    if(document.getElementById('listingSupplyPercentPreview')) document.getElementById('listingSupplyPercentPreview').textContent = `${fmt(listingSupplyPercent,2)}%`;
-    if(document.getElementById('listingFeePreview')) document.getElementById('listingFeePreview').textContent = `${fmt(listingFeeTUSD,2)} TUSD`;
+  const supply = num(document.getElementById('listingTotalSupply')?.value);
+  const amount = supply * listingSupplyPercent / 100;
+  const a = document.getElementById('listingSupplyAmountPreview');
+  const p = document.getElementById('listingSupplyPercentPreview');
+  const f = document.getElementById('listingFeePreview');
+  if(a) a.textContent = fmt(amount,12);
+  if(p) p.textContent = `${fmt(listingSupplyPercent,2)}%`;
+  if(f) f.textContent = `${fmt(listingFeeTUSD,2)} TUSD`;
 }
 async function loadListingSettings(){
-    if(USER_ID !== ADMIN_ID) return;
-    try{
-        const {data,error} = await supabaseClient.from('telepat_settings').select('setting_key,setting_value').in('setting_key',['listing_fee_tusd','listing_supply_percent']);
-        if(error){ console.warn(error); return; }
-        (data || []).forEach(row=>{
-            const value = Number(row.setting_value);
-            if(!Number.isFinite(value)) return;
-            if(row.setting_key === 'listing_fee_tusd') listingFeeTUSD = value;
-            if(row.setting_key === 'listing_supply_percent') listingSupplyPercent = value;
-        });
-        calculateListingPreview();
-    }catch(error){ console.warn(error); }
+  if(USER_ID !== ADMIN_ID) return;
+  try{
+    const {data,error} = await supabaseClient.from('telepat_settings').select('setting_key,setting_value').in('setting_key',['listing_fee_tusd','listing_supply_percent']);
+    if(error){ console.warn(error); return; }
+    (data||[]).forEach(row=>{
+      const value = Number(row.setting_value);
+      if(!Number.isFinite(value)) return;
+      if(row.setting_key === 'listing_fee_tusd') listingFeeTUSD = value;
+      if(row.setting_key === 'listing_supply_percent') listingSupplyPercent = value;
+    });
+    calculateListingPreview();
+  }catch(e){ console.warn(e); }
 }
 async function createTokenListing(){
-    if(USER_ID !== ADMIN_ID){ showMessage('Нет доступа','error'); return; }
-    const name = document.getElementById('listingTokenName').value.trim();
-    const symbol = document.getElementById('listingTokenSymbol').value.trim();
-    const jettonMaster = document.getElementById('listingJettonMaster').value.trim();
-    const network = document.getElementById('listingNetwork').value;
-    const decimals = Number(document.getElementById('listingDecimals').value);
-    const totalSupply = num(document.getElementById('listingTotalSupply').value);
-    const resultEl = document.getElementById('listingCreateResult');
-    const button = document.getElementById('createListingButton');
-    if(!name){ showMessage('Введите название токена','error'); return; }
-    if(!symbol){ showMessage('Введите символ токена','error'); return; }
-    if(!jettonMaster){ showMessage('Введите Jetton Master','error'); return; }
-    if(!Number.isInteger(decimals) || decimals < 0 || decimals > 18){ showMessage('Decimals должен быть от 0 до 18','error'); return; }
-    if(totalSupply <= 0){ showMessage('Введите общий supply больше 0','error'); return; }
-    if(button){ button.disabled = true; button.textContent = '⏳ СОЗДАНИЕ ЗАЯВКИ...'; }
-    if(resultEl) resultEl.textContent = 'Создаём заявку...';
-    try{
-        const {data,error} = await supabaseClient.rpc('telepat_create_listing',{
-            p_token_name:name, p_token_symbol:symbol, p_jetton_master:jettonMaster,
-            p_network:network, p_decimals:decimals, p_total_supply:totalSupply,
-            p_description:null, p_logo_url:null
-        });
-        if(error){ if(resultEl) resultEl.innerHTML = `<span class="error">${esc(error.message)}</span>`; showMessage(error.message,'error'); return; }
-        const listing = Array.isArray(data) ? data[0] : data;
-        const supplyAmount = listing?.supply_amount ?? (totalSupply * listingSupplyPercent / 100);
-        const fee = listing?.listing_fee_tusd ?? listingFeeTUSD;
-        if(resultEl){ resultEl.innerHTML = `<span class="success">✅ Заявка создана. ID: ${esc(listing?.id || '')}<br>Токенов к передаче: <b>${fmt(supplyAmount,12)}</b><br>Оплата листинга: <b>${fmt(fee,2)} TUSD</b></span>`; }
-        showMessage('🪙 Заявка на листинг создана','success');
-        document.getElementById('listingTokenName').value = '';
-        document.getElementById('listingTokenSymbol').value = '';
-        document.getElementById('listingJettonMaster').value = '';
-        document.getElementById('listingDecimals').value = '9';
-        document.getElementById('listingTotalSupply').value = '';
-        calculateListingPreview();
-    }catch(error){
-        if(resultEl) resultEl.innerHTML = `<span class="error">${esc(error.message || 'Ошибка')}</span>`;
-        showMessage(error.message || 'Ошибка','error');
-    }finally{
-        if(button){ button.disabled = false; button.textContent = '➕ СОЗДАТЬ ЗАЯВКУ НА ЛИСТИНГ'; }
-    }
+  if(USER_ID !== ADMIN_ID){ showMessage('Нет доступа','error'); return; }
+  const name = document.getElementById('listingTokenName').value.trim();
+  const symbol = document.getElementById('listingTokenSymbol').value.trim();
+  const jm = document.getElementById('listingJettonMaster').value.trim();
+  const net = document.getElementById('listingNetwork').value;
+  const dec = Number(document.getElementById('listingDecimals').value);
+  const supply = num(document.getElementById('listingTotalSupply').value);
+  const res = document.getElementById('listingCreateResult');
+  const btn = document.getElementById('createListingButton');
+  if(!name || !symbol || !jm){ showMessage('Заполните поля','error'); return; }
+  if(!Number.isInteger(dec) || dec < 0 || dec > 18){ showMessage('Decimals 0-18','error'); return; }
+  if(supply <= 0){ showMessage('Supply > 0','error'); return; }
+  if(btn){ btn.disabled = true; btn.textContent = '⏳ СОЗДАНИЕ...'; }
+  if(res) res.textContent = 'Создаём заявку...';
+  try{
+    const {data,error} = await supabaseClient.rpc('telepat_create_listing',{p_token_name:name, p_token_symbol:symbol, p_jetton_master:jm, p_network:net, p_decimals:dec, p_total_supply:supply, p_description:null, p_logo_url:null});
+    if(error){ if(res) res.innerHTML = `<span class="error">${esc(error.message)}</span>`; showMessage(error.message,'error'); return; }
+    const l = Array.isArray(data) ? data[0] : data;
+    const sA = l?.supply_amount ?? (supply * listingSupplyPercent / 100);
+    const fee = l?.listing_fee_tusd ?? listingFeeTUSD;
+    if(res) res.innerHTML = `<span class="success">✅ Заявка создана. ID: ${esc(l?.id || '')}<br>Токенов к передаче: <b>${fmt(sA,12)}</b><br>Оплата листинга: <b>${fmt(fee,2)} TUSD</b></span>`;
+    showMessage('🪙 Заявка создана','success');
+    document.getElementById('listingTokenName').value = '';
+    document.getElementById('listingTokenSymbol').value = '';
+    document.getElementById('listingJettonMaster').value = '';
+    document.getElementById('listingDecimals').value = '9';
+    document.getElementById('listingTotalSupply').value = '';
+    calculateListingPreview();
+  }catch(e){
+    if(res) res.innerHTML = `<span class="error">${esc(e.message)}</span>`;
+    showMessage(e.message,'error');
+  }finally{
+    if(btn){ btn.disabled = false; btn.textContent = '➕ СОЗДАТЬ ЗАЯВКУ НА ЛИСТИНГ'; }
+  }
 }
 
+/* =========================================================
+   ADMIN TRANSFER
+========================================================= */
 async function adminTransfer(){
-    if(USER_ID !== ADMIN_ID){ showMessage('Нет доступа','error'); return; }
-    const target = Number(document.getElementById('adminTargetId').value);
-    const token = document.getElementById('adminToken').value;
-    const amount = num(document.getElementById('adminAmount').value);
-    if(!target || amount <= 0){ showMessage('Заполните данные','error'); return; }
-    const {data,error} = await supabaseClient.rpc('admin_transfer_token_v2',{p_target_id:target, p_token:token, p_amount:amount});
-    if(error){ showMessage(error.message,'error'); return; }
-    if(data && data.success === false){ showMessage(data.message || 'Ошибка','error'); return; }
-    showMessage('💰 Перевод выполнен','success');
-    document.getElementById('adminAmount').value = '';
-    await loadAdminStats();
+  if(USER_ID !== ADMIN_ID){ showMessage('Нет доступа','error'); return; }
+  const target = Number(document.getElementById('adminTargetId').value);
+  const token = document.getElementById('adminToken').value;
+  const amount = num(document.getElementById('adminAmount').value);
+  if(!target || amount <= 0){ showMessage('Заполните данные','error'); return; }
+  const {data,error} = await supabaseClient.rpc('admin_transfer_token_v2',{p_target_id:target, p_token:token, p_amount:amount});
+  if(error){ showMessage(error.message,'error'); return; }
+  if(data && data.success === false){ showMessage(data.message || 'Ошибка','error'); return; }
+  showMessage('💰 Перевод выполнен','success');
+  document.getElementById('adminAmount').value = '';
+  await loadAdminStats();
 }
 
+/* =========================================================
+   INIT
+========================================================= */
 document.addEventListener('DOMContentLoaded', async ()=>{
-    await refreshJwt();
-    await loadUser();
-    updateOrderForm();
-    if(USER_ID === ADMIN_ID){
-        document.getElementById('nav-admin').classList.remove('hidden');
-        await loadListingSettings();
-        calculateListingPreview();
-    }
+  await refreshJwt();
+  await loadUser();
+  updateOrderForm();
+  if(USER_ID === ADMIN_ID){
+    document.getElementById('nav-admin').classList.remove('hidden');
+    await loadListingSettings();
+    calculateListingPreview();
+  }
 });
 </script>
-
 </body>
 </html>
