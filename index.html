@@ -188,15 +188,25 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 </div></div></section>
 
 <section id="s-earn" class="hide">
-<div class="card">
+<div class="card gold">
 <div class="title">💎 ЗАРАБОТОК</div>
 <div class="rbox">
 <div class="rname" id="earnRank">Крестьянин</div>
 <div id="earnDetails" class="info" style="margin-top:10px">Загрузка...</div>
 </div>
-<button onclick="claimDailyReward()">🎁 ЕЖЕДНЕВНАЯ НАГРАДА</button>
+</div>
+
+<div class="card">
+<div class="title">💰 ИСТОЧНИКИ ДОХОДА</div>
+<div class="qa">
+<button class="qb gold" onclick="watchAd()"><span class="qi">📺</span>РЕКЛАМА</button>
+<button class="qb gold" onclick="openTasks()"><span class="qi">📋</span>ЗАДАНИЯ</button>
+<button class="qb gold" onclick="claimWelcomeBonus()"><span class="qi">🎁</span>БОНУС</button>
+<button class="qb gold" onclick="claimDailyReward()"><span class="qi">💎</span>ЕЖЕДНЕВКА</button>
+</div>
 <div id="dailyStatus" class="info" style="margin-top:9px"></div>
-</div></section>
+</div>
+</section>
 
 <section id="s-admin" class="hide">
 <div class="card admin">
@@ -208,6 +218,7 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 <div class="st"><b id="adminAI">0</b><span>Общий AI</span></div>
 <div class="st"><b id="adminTUSD">0</b><span>Общий TUSD</span></div>
 </div>
+<div class="sgrid" id="adminCustomTokens" style="margin-top:8px"></div>
 <button class="sec" onclick="loadAdminStats()">🔄 Обновить</button>
 </div>
 <div class="card admin">
@@ -261,6 +272,14 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 </div>
 <div id="adminChatEditStatus" class="info" style="margin-top:9px"></div>
 </div></div>
+
+<div class="card admin">
+<div class="title">🛡️ ВЕРИФИКАЦИЯ ТОКЕНОВ</div>
+<div class="info" style="margin-bottom:10px">Условия: пул ≥ $1000, возраст ≥ 30 дней, владелец ≥ Барон, ≥ 10 держателей, макс. 3 токена на владельца.</div>
+<button class="sec" onclick="loadAdminVerification()">🔄 ЗАГРУЗИТЬ</button>
+<div id="adminVerifyList" style="margin-top:12px"><div class="info">Нажми «Загрузить».</div></div>
+</div>
+
 <div class="card admin">
 <div class="title">📋 ЗАДАНИЯ</div>
 <button class="sec" onclick="loadAdminTasks()">🔄 ЗАГРУЗИТЬ ЗАДАНИЯ</button>
@@ -344,6 +363,7 @@ const AID=949707357,TGU=100,AIU=0.01;
 const TASK_CHECK_DELAY=5000;
 let __jwt=sessionStorage.getItem('__jwt')||null;
 let ALL_TOKENS=[],CU=null,CP={},CB={},AL=null;
+let VERIFIED_SYMBOLS=new Set();
 let __PENDING_TASK=null,__RETURN_TIMER=null;
 
 async function refreshJwt(){
@@ -379,12 +399,23 @@ async function loadAllTokens(){
     else ALL_TOKENS=[{symbol:'TG',name:'Telepat Gold'},{symbol:'AI',name:'AI Token'},{symbol:'TUSD',name:'Telepat Dollar'}];
   }catch{ALL_TOKENS=[{symbol:'TG',name:'Telepat Gold'},{symbol:'AI',name:'AI Token'},{symbol:'TUSD',name:'Telepat Dollar'}]}
   fillAll();
+  try{
+    const{data:v}=await sb.from('telepat_tokens').select('symbol,verified').eq('verified',true);
+    VERIFIED_SYMBOLS=new Set((v||[]).map(x=>x.symbol));
+    fillAll();
+    renderCustom();
+  }catch(e){console.warn(e)}
 }
 function fillAll(){
   ['fromToken','toToken','adminToken','at_reward_token'].forEach(id=>{
     const el=document.getElementById(id);if(!el)return;
     const prev=el.value;el.innerHTML='';
-    ALL_TOKENS.forEach(t=>{const o=document.createElement('option');o.value=t.symbol;o.textContent=t.symbol+(t.name?' — '+t.name:'');el.appendChild(o)});
+    ALL_TOKENS.forEach(t=>{
+      const o=document.createElement('option');o.value=t.symbol;
+      const chk=VERIFIED_SYMBOLS.has(t.symbol)?' ✅':'';
+      o.textContent=t.symbol+(t.name?' — '+t.name:'')+chk;
+      el.appendChild(o);
+    });
     if(prev&&ALL_TOKENS.find(t=>t.symbol===prev))el.value=prev;
   });
   const f2=document.getElementById('fromToken'),t2=document.getElementById('toToken');
@@ -409,7 +440,10 @@ function renderCustom(){
   const b=document.getElementById('customBalances');if(!b)return;
   const c=Object.keys(CB).filter(s=>!['TG','AI','TUSD'].includes(s));
   if(!c.length){b.innerHTML='';return}
-  b.innerHTML=`<div class="title" style="margin-top:14px;margin-bottom:6px;font-size:12px;color:#9da9b9">ДОПОЛНИТЕЛЬНЫЕ ТОКЕНЫ</div>`+c.map(s=>`<div class="tbox" style="margin-top:8px"><div class="tname">${esc(s)}</div><div class="tval">${f(CB[s])} ${esc(s)}</div></div>`).join('');
+  b.innerHTML=`<div class="title" style="margin-top:14px;margin-bottom:6px;font-size:12px;color:#9da9b9">ДОПОЛНИТЕЛЬНЫЕ ТОКЕНЫ</div>`+c.map(s=>{
+    const vchk=VERIFIED_SYMBOLS.has(s)?' <span style="color:#39d98a" title="Верифицирован">✅</span>':'';
+    return `<div class="tbox" style="margin-top:8px"><div class="tname">${esc(s)}${vchk}</div><div class="tval">${f(CB[s])} ${esc(s)}</div></div>`;
+  }).join('');
 }
 
 function openTelegramProfile(){msg(tgu?`👤 ${tgu.first_name||''} (${UID})`:'Открой в Telegram')}
@@ -462,7 +496,7 @@ function showSection(name){
     document.getElementById('n-'+s)?.classList.toggle('active',s===name);
   });
   if(name==='exchange'){loadOrders();loadMyOrders();loadMyTrades();loadTokenReserves()}
-  if(name==='admin'&&UID===AID){loadAdminStats();loadAdminChats();loadAdminListings();loadAdminTasks()}
+  if(name==='admin'&&UID===AID){loadAdminStats();loadAdminChats();loadAdminListings();loadAdminTasks();loadAdminVerification()}
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -538,7 +572,6 @@ async function claimAdReward(){
   }catch(e){r.innerHTML=`<span class="er">${esc(e.message)}</span>`;b.disabled=false;b.textContent='🎁 ПОЛУЧИТЬ'}
 }
 
-/* ЗАДАНИЯ — новая логика с "Я выполнил" */
 async function openTasks(){
   if(!UID){msg('Открой в Telegram','error');return}
   document.getElementById('tasksModal').classList.add('show');
@@ -547,7 +580,6 @@ async function openTasks(){
   if(error){box.innerHTML=`<div class="er">Ошибка: ${esc(error.message)}</div>`;return}
   if(!data||!data.length){box.innerHTML='<div class="info">Нет заданий.</div>';return}
   const TL={subscribe_channel:'📢 Канал',subscribe_bot:'🤖 Бот',video:'📺 Видео',click:'🔗 Ссылка'};
-
   let pendingBlock='';
   if(__PENDING_TASK){
     const pt=data.find(x=>String(x.id)===String(__PENDING_TASK));
@@ -555,13 +587,12 @@ async function openTasks(){
       pendingBlock=`
         <div class="task-pending">
           <div class="tp-title">📌 Задание открыто</div>
-          <div class="info" style="margin-bottom:10px">Подпишитесь/выполните и нажмите кнопку ниже:</div>
+          <div class="info" style="margin-bottom:10px">Подпишитесь/выполните и нажмите кнопку:</div>
           <button onclick="claimTaskReward('${esc(pt.id)}')">✅ Я выполнил — получить награду</button>
           <button class="sec" onclick="cancelPendingTask()">Отмена</button>
         </div>`;
     }
   }
-
   box.innerHTML = pendingBlock + data.map(t=>{
     const lbl=TL[t.type]||t.type;
     const done=t.is_completed?'done':'';
@@ -588,7 +619,7 @@ async function claimTaskReward(tid){
   if(data?.ok===true){
     __PENDING_TASK=null;
     if(__RETURN_TIMER){clearTimeout(__RETURN_TIMER);__RETURN_TIMER=null}
-    msg(`🎁 +${f(data.reward)} ${esc(data.token)}`,'success');
+    msg(`🎁 +${f(data.payout||data.reward)} ${esc(data.token)}`,'success');
     await loadUser();
     await loadCustomBalances();
     await openTasks();
@@ -596,21 +627,15 @@ async function claimTaskReward(tid){
     msg(data?.error||'Ошибка','error');
   }
 }
-
-/* Возврат из браузера → 5 сек ожидания → показать кнопку "Я выполнил" */
-document.addEventListener('visibilitychange', () => {
-  if(document.visibilityState === 'visible' && __PENDING_TASK){
-    if(__RETURN_TIMER) clearTimeout(__RETURN_TIMER);
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='visible'&&__PENDING_TASK){
+    if(__RETURN_TIMER)clearTimeout(__RETURN_TIMER);
     document.getElementById('tasksModal').classList.add('show');
     document.getElementById('tasksList').innerHTML=`<div style="text-align:center;padding:20px"><div class="info" style="font-size:14px">⏳ Проверяем выполнение…</div><div class="info" style="margin-top:10px">Подождите <b>${TASK_CHECK_DELAY/1000} секунд</b></div></div>`;
-    __RETURN_TIMER = setTimeout(() => {
-      openTasks();
-      __RETURN_TIMER=null;
-    }, TASK_CHECK_DELAY);
+    __RETURN_TIMER=setTimeout(()=>{openTasks();__RETURN_TIMER=null},TASK_CHECK_DELAY);
   }
 });
 
-/* АДМИН ЗАДАНИЯ */
 let ATC=null;
 async function loadAdminTasks(){
   const b=document.getElementById('adminTasksList');if(!b)return;
@@ -665,6 +690,42 @@ async function deleteAdminTask(id){
   const{data,error}=await sb.rpc('telepat_admin_delete_task',{p_id:id});
   if(error){msg(error.message,'error');return}
   msg('🗑 Удалено','success');await loadAdminTasks();
+}
+
+async function loadAdminVerification(){
+  const b=document.getElementById('adminVerifyList');if(!b)return;
+  b.innerHTML='<div class="info">Загрузка...</div>';
+  const{data,error}=await sb.rpc('telepat_admin_list_tokens_full');
+  if(error){b.innerHTML=`<div class="er">Ошибка: ${esc(error.message)}</div>`;return}
+  if(!data||!data.length){b.innerHTML='<div class="info">Нет токенов.</div>';return}
+  b.innerHTML='';
+  data.forEach(t=>{
+    const d=document.createElement('div');d.className='pc';
+    const sc=t.verified?'ok':'er';
+    const status=t.verified?'✅ ВЕРИФИЦИРОВАН':'❌ НЕ ВЕРИФИЦИРОВАН';
+    const manualTag=t.manual_verified?' <span style="color:#f4cf70;font-size:11px">[вручную]</span>':'';
+    const reason=t.verify_reason?`<div class="info" style="font-size:11px;color:#ff8a8a">Причина: ${esc(t.verify_reason)}</div>`:'';
+    d.innerHTML=`<div>
+      <div class="pt">🪙 ${esc(t.symbol)} — ${esc(t.name||'')}${manualTag}</div>
+      <div class="info">Владелец: ${t.owner_telegram_id||'—'} (титул ${t.owner_rank||'?'})</div>
+      <div class="info">Пул: $${f(t.pool_usd,2)} • Держателей: ${t.holders} • Возраст: ${t.days_old} дн.</div>
+      <div class="${sc}" style="font-size:12px;margin-top:5px">${status}</div>
+      ${reason}
+      <div class="row" style="margin-top:10px">
+        <button onclick="setTokenVerified('${esc(t.id)}',${t.manual_verified?'false':'true'})">${t.manual_verified?'❌ Снять вручную':'✅ Верифицировать вручную'}</button>
+      </div>
+    </div>`;
+    b.appendChild(d);
+  });
+}
+async function setTokenVerified(id,v){
+  if(!confirm(v?'Поставить галочку вручную?':'Снять ручную верификацию?'))return;
+  const{data,error}=await sb.rpc('telepat_admin_set_token_verified',{p_token_id:id,p_manual:v});
+  if(error){msg(error.message,'error');return}
+  msg(v?'✅ Верифицирован':'🔄 Ручная снята','success');
+  VERIFIED_SYMBOLS=new Set();
+  await loadAllTokens();
+  await loadAdminVerification();
 }
 
 async function loadAdminListings(){
@@ -852,18 +913,29 @@ async function rateTrade(id,r){
     msg(r>0?'👍':'👎','success');await loadMyTrades();
   }finally{RB.delete(id)}
 }
+
 async function loadAdminStats(){
   if(UID!==AID)return;
-  const{data:us,error}=await sb.from('users').select('tg_balance,ai_balance,tusd_balance',{count:'exact'});
+  const{data,error}=await sb.rpc('telepat_admin_all_balances');
   if(error){msg(error.message,'error');return}
   const{count:oc}=await sb.from('p2p_orders').select('*',{count:'exact',head:true}).eq('status','open');
-  let t=0,a=0,td=0;(us||[]).forEach(u=>{t+=n(u.tg_balance);a+=n(u.ai_balance);td+=n(u.tusd_balance)});
-  document.getElementById('adminUsers').textContent=(us||[]).length;
+  const{count:uc}=await sb.from('users').select('*',{count:'exact',head:true});
+  document.getElementById('adminUsers').textContent=uc||0;
   document.getElementById('adminOrders').textContent=oc||0;
-  document.getElementById('adminTG').textContent=f(t);
-  document.getElementById('adminAI').textContent=f(a);
-  document.getElementById('adminTUSD').textContent=f(td);
+  const get=sym=>(data||[]).find(x=>x.symbol===sym);
+  const tg=get('TG'),ai=get('AI'),tusd=get('TUSD');
+  document.getElementById('adminTG').textContent=f(tg?tg.total_balance:0);
+  document.getElementById('adminAI').textContent=f(ai?ai.total_balance:0);
+  document.getElementById('adminTUSD').textContent=f(tusd?tusd.total_balance:0);
+  const custom=(data||[]).filter(x=>!['TG','AI','TUSD'].includes(x.symbol));
+  const box=document.getElementById('adminCustomTokens');
+  if(box){
+    box.innerHTML = custom.length
+      ? custom.map(x=>`<div class="st"><b>${f(x.total_balance,2)}</b><span>${esc(x.symbol)} • ${x.holders}👤</span></div>`).join('')
+      : '';
+  }
 }
+
 let ACT=[],ACC=null,ACR=[];
 async function loadAdminChatTokens(){if(ACT.length)return ACT;const{data,error}=await sb.rpc('telepat_admin_list_tokens');if(error)return[];ACT=Array.isArray(data)?data:[];return ACT}
 async function loadAdminChats(){
