@@ -89,6 +89,11 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 .task .tr{color:#39d98a;font-weight:bold;font-size:13px;margin-top:6px}
 .task-pending{margin-bottom:12px;padding:14px;border:1px solid #66572e;border-radius:12px;background:#17150e;text-align:center}
 .task-pending .tp-title{color:#f4cf70;font-weight:bold;font-size:14px;margin-bottom:10px}
+.ci-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin-top:8px}
+.ci-day{background:#0d1520;border:1px solid #2d3a4c;border-radius:8px;padding:6px 2px;text-align:center;font-size:10px;color:#9da9b9}
+.ci-day.done{background:#1a2a1a;border-color:#39d98a;color:#39d98a}
+.ci-day.next{background:#2a2418;border-color:#f4cf70;color:#f4cf70}
+.ci-day.bonus{border-color:#f4cf70}
 </style></head><body>
 <div id="message" class="msg"></div>
 <div class="app">
@@ -116,10 +121,10 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 <div class="card" id="walletCard">
 <div class="title">💰 МОЙ КОШЕЛЁК</div>
 <div class="row">
-<div class="tbox"><div class="tname">Telepat Gold <span style="color:#39d98a" title="Верифицирован">✅</span></div><div class="tval" id="tgBalance">0 TG</div></div>
-<div class="tbox"><div class="tname">AI <span style="color:#39d98a" title="Верифицирован">✅</span></div><div class="tval" id="aiBalance">0 AI</div></div>
+<div class="tbox"><div class="tname">Telepat Gold <span style="color:#39d98a">✅</span></div><div class="tval" id="tgBalance">0 TG</div></div>
+<div class="tbox"><div class="tname">AI <span style="color:#39d98a">✅</span></div><div class="tval" id="aiBalance">0 AI</div></div>
 </div>
-<div class="tbox" style="margin-top:10px"><div class="tname">Telepat Dollar <span style="color:#39d98a" title="Верифицирован">✅</span></div><div class="tval" id="tusdBalance">0 TUSD</div></div>
+<div class="tbox" style="margin-top:10px"><div class="tname">Telepat Dollar <span style="color:#39d98a">✅</span></div><div class="tval" id="tusdBalance">0 TUSD</div></div>
 <div id="customBalances" style="margin-top:10px"></div>
 </div>
 <div class="card">
@@ -132,7 +137,7 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 <button class="qb gold" onclick="watchAd()"><span class="qi">📺</span>РЕКЛАМА</button>
 <button class="qb gold" onclick="openTasks()"><span class="qi">📋</span>ЗАДАНИЯ</button>
 <button class="qb gold" onclick="claimWelcomeBonus()"><span class="qi">🎁</span>БОНУС</button>
-<button class="qb gold" onclick="showSection('earn')"><span class="qi">💎</span>ЕЖЕДНЕВКА</button>
+<button class="qb gold" onclick="showSection('earn')"><span class="qi">🔥</span>ЧЕКИН</button>
 </div></div>
 <div class="card">
 <div class="title">🎁 ПРИВЕТСТВЕННЫЙ БОНУС</div>
@@ -186,7 +191,6 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 <div class="tbox"><div class="tname">Заработано TUSD</div><div class="tval" id="refTUSD">0</div></div>
 </div>
 </div>
-
 <div class="card">
 <div class="title">📋 МОИ РЕФЕРАЛЫ</div>
 <div id="refSummary" class="info" style="margin-bottom:10px">Загрузка...</div>
@@ -204,15 +208,30 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 </div>
 </div>
 
+<div class="card gold">
+<div class="title">🔥 ЧЕКИН — СЕРИЯ 30 ДНЕЙ</div>
+<div style="text-align:center;padding:8px 0">
+<div id="checkinStreak" style="font-size:44px;font-weight:bold;color:#f4cf70;line-height:1">0</div>
+<div class="info">дней подряд</div>
+</div>
+<div id="checkinBonus" class="hide" style="text-align:center;padding:8px;background:#3a2818;border:1px solid #f4cf70;border-radius:10px;margin-bottom:10px;color:#f4cf70;font-weight:bold;font-size:13px">
+⭐ БОНУСНЫЙ ДЕНЬ ×2
+</div>
+<div class="info" style="text-align:center;margin-bottom:8px">Сегодня получишь:</div>
+<div id="checkinRewardPreview" style="background:#0d1520;border:1px solid #303d50;border-radius:12px;padding:12px;margin-bottom:10px;font-size:13px"></div>
+<button id="checkinBtn" onclick="claimCheckin()">🔥 ПОЛУЧИТЬ НАГРАДУ</button>
+<div class="info" id="checkinStatusMsg" style="text-align:center;margin-top:8px"></div>
+<div class="title" style="margin-top:16px;font-size:12px">КАЛЕНДАРЬ 30 ДНЕЙ</div>
+<div id="checkinCalendar" class="ci-grid"></div>
+</div>
+
 <div class="card">
 <div class="title">💰 ИСТОЧНИКИ ДОХОДА</div>
 <div class="qa">
 <button class="qb gold" onclick="watchAd()"><span class="qi">📺</span>РЕКЛАМА</button>
 <button class="qb gold" onclick="openTasks()"><span class="qi">📋</span>ЗАДАНИЯ</button>
 <button class="qb gold" onclick="claimWelcomeBonus()"><span class="qi">🎁</span>БОНУС</button>
-<button class="qb gold" onclick="claimDailyReward()"><span class="qi">💎</span>ЕЖЕДНЕВКА</button>
 </div>
-<div id="dailyStatus" class="info" style="margin-top:9px"></div>
 </div>
 </section>
 
@@ -229,6 +248,12 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 <div class="title" style="margin-top:16px;font-size:12px;color:#9da9b9">ПОЛНЫЙ РАСКЛАД ПО ВСЕМ ТОКЕНАМ</div>
 <div class="sgrid" id="adminCustomTokens" style="margin-top:8px"></div>
 <button class="sec" onclick="loadAdminStats()">🔄 Обновить</button>
+</div>
+
+<div class="card admin">
+<div class="title">🔥 ЧЕКИН — НАСТРОЙКИ</div>
+<button class="sec" onclick="loadAdminCheckin()">🔄 Загрузить настройки</button>
+<div id="adminCheckinBox" style="margin-top:12px"><div class="info">Нажми «Загрузить настройки».</div></div>
 </div>
 
 <div class="card admin">
@@ -518,7 +543,8 @@ function showSection(name){
   });
   if(name==='exchange'){loadOrders();loadMyOrders();loadMyTrades();loadTokenReserves()}
   if(name==='friends'){loadMyReferrals()}
-  if(name==='admin'&&UID===AID){loadAdminStats();loadAdminChats();loadAdminListings();loadAdminTasks();loadAdminVerification()}
+  if(name==='earn'){loadCheckin()}
+  if(name==='admin'&&UID===AID){loadAdminStats();loadAdminChats();loadAdminListings();loadAdminTasks();loadAdminVerification();loadAdminCheckin()}
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -528,15 +554,6 @@ async function claimWelcomeBonus(){
   if(error){msg(error.message,'error');return}
   msg(data?.message||(data?.success?'🎁 Начислен':'Не удалось'),data?.success?'success':'error');
   await loadUser();await loadCustomBalances();
-}
-async function claimDailyReward(){
-  if(!UID)return;
-  const{data,error}=await sb.rpc('claim_daily_reward_v2');
-  if(error){document.getElementById('dailyStatus').textContent=error.message;msg(error.message,'error');return}
-  const ok=data?.success===true;
-  document.getElementById('dailyStatus').textContent=data?.message||'';
-  msg(data?.message||'',ok?'success':'error');
-  if(ok){await loadUser();await loadCustomBalances()}
 }
 async function loadReferral(){if(UID)document.getElementById('refLink').value=`https://t.me/TELEPATp2p_bot?start=${UID}`}
 async function copyRefLink(){try{await navigator.clipboard.writeText(document.getElementById('refLink').value);msg('Скопировано','success')}catch{msg('Ошибка','error')}}
@@ -578,6 +595,90 @@ async function loadMyReferrals(){
   });
   box.innerHTML=html;
 }
+
+/* ЧЕКИН */
+async function loadCheckin(){
+  const btn=document.getElementById('checkinBtn');
+  const status=document.getElementById('checkinStatusMsg');
+  if(!btn)return;
+  btn.disabled=true;
+  status.textContent='Загрузка...';
+  const{data,error}=await sb.rpc('get_checkin_status');
+  if(error||!data||data.ok===false){
+    status.textContent=error?.message||data?.error||'Ошибка';
+    return;
+  }
+  document.getElementById('checkinStreak').textContent=data.current_day||0;
+  const preview=document.getElementById('checkinRewardPreview');
+  const r=data.next_rewards||{};
+  let lines='';
+  Object.keys(r).forEach(k=>{
+    if(n(r[k])>0)lines+=`<div style="display:flex;justify-content:space-between;padding:3px 0"><span>${esc(k)}</span><span style="color:#f4cf70;font-weight:bold">+${f(r[k],8)}</span></div>`;
+  });
+  preview.innerHTML=lines||'<div class="info">Нет активных токенов в чекине</div>';
+  const bonus=document.getElementById('checkinBonus');
+  if(data.is_bonus_day)bonus.classList.remove('hide');else bonus.classList.add('hide');
+  if(data.can_claim){
+    btn.disabled=false;
+    btn.textContent='🔥 ПОЛУЧИТЬ НАГРАДУ (ДЕНЬ '+(data.next_day||1)+')';
+    status.textContent='';
+  } else {
+    btn.disabled=true;
+    btn.textContent='✅ УЖЕ ПОЛУЧЕНО';
+    status.textContent='Возвращайся завтра!';
+  }
+  renderCheckinCalendar(data.current_day||0, data.can_claim?data.next_day:data.current_day, data.max_days||30);
+}
+function renderCheckinCalendar(currentDay,nextDay,maxDays){
+  const box=document.getElementById('checkinCalendar');if(!box)return;
+  let html='';
+  for(let d=1;d<=maxDays;d++){
+    const isBonus=d%7===0;
+    const isDone=d<=currentDay && d!==nextDay;
+    const isNext=d===nextDay;
+    let cls='ci-day';
+    if(isDone)cls+=' done';
+    if(isNext)cls+=' next';
+    if(isBonus)cls+=' bonus';
+    html+=`<div class="${cls}">
+      <div style="font-weight:bold;font-size:12px">${d}</div>
+      <div style="font-size:9px">${isBonus?'⭐':'•'}</div>
+    </div>`;
+  }
+  box.innerHTML=html;
+}
+async function claimCheckin(){
+  const btn=document.getElementById('checkinBtn');
+  btn.disabled=true;
+  const{data,error}=await sb.rpc('claim_daily_checkin');
+  if(error||!data||data.ok===false){
+    msg(error?.message||data?.error||'Ошибка','error');
+    await loadCheckin();
+    return;
+  }
+  const r=data.rewards||{};
+  let lines='';
+  Object.keys(r).forEach(t=>{
+    if(n(r[t])>0)lines+=`<div style="display:flex;justify-content:space-between;padding:3px 0"><span>${esc(t)}</span><span style="color:#39d98a;font-weight:bold">+${f(r[t],8)}</span></div>`;
+  });
+  showCheckinReward(data.day, lines, data.is_bonus_day);
+  await loadUser();
+  await loadCustomBalances();
+  await loadCheckin();
+}
+function showCheckinReward(day,lines,isBonus){
+  const overlay=document.createElement('div');
+  overlay.style.cssText='position:fixed;z-index:5000;inset:0;background:#000c;display:flex;align-items:center;justify-content:center;padding:20px';
+  overlay.innerHTML=`<div style="width:min(340px,100%);background:linear-gradient(145deg,#1a3a1a,#0d200d);border:2px solid #39d98a;border-radius:20px;padding:22px;text-align:center;box-shadow:0 0 40px #39d98a66">
+    <div style="font-size:52px;margin-bottom:6px">🎉</div>
+    <div style="color:#39d98a;font-size:20px;font-weight:bold;margin-bottom:4px">ДЕНЬ ${day} ПРОЙДЕН!</div>
+    ${isBonus?'<div style="color:#f4cf70;font-size:12px;margin-bottom:10px">⭐ БОНУСНЫЙ ДЕНЬ ×2</div>':'<div style="margin-bottom:10px"></div>'}
+    <div style="background:#0006;border-radius:12px;padding:12px;margin-bottom:14px;font-size:14px">${lines}</div>
+    <button onclick="this.parentElement.parentElement.remove()" style="width:100%">👍 ОТЛИЧНО!</button>
+  </div>`;
+  document.body.appendChild(overlay);
+}
+async function claimDailyReward(){ return claimCheckin(); }
 
 let AD=null,ADT=null,ADR=false;
 async function watchAd(){
@@ -794,6 +895,106 @@ async function adminToggleFlag(flag,value){
   await adminLoadUser();
 }
 
+/* АДМИН — ЧЕКИН */
+async function loadAdminCheckin(){
+  const box=document.getElementById('adminCheckinBox');
+  if(!box)return;
+  box.innerHTML='<div class="info">Загрузка...</div>';
+  const{data,error}=await sb.rpc('admin_get_checkin_config');
+  if(error||!data||data.ok===false){
+    box.innerHTML=`<div class="er">${esc(error?.message||data?.error||'Ошибка')}</div>`;return;
+  }
+  const s=data.settings||{};
+  const tokens=data.tokens||[];
+  let html=`<div class="title" style="font-size:12px">ОБЩИЕ НАСТРОЙКИ</div>
+    <label>Максимум дней серии</label>
+    <input id="ci_max_days" type="number" value="${s.max_days||30}">
+    <label style="margin-top:8px">Прирост в день (%)</label>
+    <input id="ci_growth" type="number" step="0.1" value="${s.growth_percent||5}">
+    <label style="margin-top:8px">Бонусный множитель</label>
+    <input id="ci_bonus_mult" type="number" step="0.1" value="${s.bonus_multiplier||2}">
+    <label style="margin-top:8px">Бонус каждые N дней</label>
+    <input id="ci_bonus_every" type="number" value="${s.bonus_every_days||7}">
+    <button class="sm" style="margin-top:8px" onclick="saveAdminCheckinSettings()">💾 Сохранить настройки</button>
+
+    <div class="title" style="margin-top:16px;font-size:12px">ТОКЕНЫ В ЧЕКИНЕ</div>`;
+
+  tokens.forEach(t=>{
+    html+=`<div class="pc" style="margin-top:6px">
+      <div class="ol">
+        <div style="flex:1">
+          <div class="pt">${esc(t.token_symbol)}</div>
+          <input id="ci_tok_${esc(t.token_symbol)}" type="number" step="0.00000001" value="${t.base_amount}" style="margin-top:4px">
+        </div>
+        <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end">
+          <label style="margin:0;font-size:11px"><input type="checkbox" id="ci_act_${esc(t.token_symbol)}" ${t.active?'checked':''} style="width:auto"> Активен</label>
+          <button class="sm" onclick="saveAdminCheckinToken('${esc(t.token_symbol)}')">💾</button>
+          <button class="sm dng" onclick="removeAdminCheckinToken('${esc(t.token_symbol)}')">🗑</button>
+        </div>
+      </div>
+    </div>`;
+  });
+
+  html+=`<div class="title" style="margin-top:16px;font-size:12px">ДОБАВИТЬ ТОКЕН</div>
+    <label>Токен</label>
+    <select id="ci_new_symbol"></select>
+    <label style="margin-top:8px">Базовая награда</label>
+    <input id="ci_new_amount" type="number" step="0.00000001" placeholder="Например: 1">
+    <button class="sm" style="margin-top:8px" onclick="addAdminCheckinToken()">➕ Добавить токен</button>`;
+
+  box.innerHTML=html;
+
+  const sel=document.getElementById('ci_new_symbol');
+  if(sel){
+    ALL_TOKENS.forEach(t=>{
+      const o=document.createElement('option');
+      o.value=t.symbol;
+      o.textContent=t.symbol+(t.name?' — '+t.name:'');
+      sel.appendChild(o);
+    });
+  }
+}
+async function saveAdminCheckinSettings(){
+  const fields=[
+    ['checkin_max_days', document.getElementById('ci_max_days').value],
+    ['checkin_growth_percent', document.getElementById('ci_growth').value],
+    ['checkin_bonus_day_multiplier', document.getElementById('ci_bonus_mult').value],
+    ['checkin_bonus_every_days', document.getElementById('ci_bonus_every').value],
+  ];
+  for(const [k,v] of fields){
+    const{data,error}=await sb.rpc('admin_update_checkin_setting',{p_key:k,p_value:String(v)});
+    if(error||!data||data.ok===false){msg(error?.message||data?.error||'Ошибка','error');return;}
+  }
+  msg('✅ Настройки сохранены','success');
+  await loadAdminCheckin();
+}
+async function saveAdminCheckinToken(sym){
+  const amt=Number(document.getElementById('ci_tok_'+sym).value);
+  const act=document.getElementById('ci_act_'+sym).checked;
+  if(!Number.isFinite(amt)||amt<0){msg('Некорректная сумма','error');return;}
+  const{data,error}=await sb.rpc('admin_upsert_checkin_token',{p_symbol:sym,p_amount:amt,p_active:act});
+  if(error||!data||data.ok===false){msg(error?.message||data?.error||'Ошибка','error');return;}
+  msg('✅ '+sym+' обновлён','success');
+  await loadAdminCheckin();
+}
+async function removeAdminCheckinToken(sym){
+  if(!confirm('Убрать '+sym+' из чекина?'))return;
+  const{data,error}=await sb.rpc('admin_remove_checkin_token',{p_symbol:sym});
+  if(error||!data||data.ok===false){msg(error?.message||data?.error||'Ошибка','error');return;}
+  msg('🗑 Удалено','success');
+  await loadAdminCheckin();
+}
+async function addAdminCheckinToken(){
+  const sym=document.getElementById('ci_new_symbol').value;
+  const amt=Number(document.getElementById('ci_new_amount').value);
+  if(!sym||!Number.isFinite(amt)||amt<=0){msg('Заполните сумму','error');return;}
+  const{data,error}=await sb.rpc('admin_upsert_checkin_token',{p_symbol:sym,p_amount:amt,p_active:true});
+  if(error||!data||data.ok===false){msg(error?.message||data?.error||'Ошибка','error');return;}
+  msg('✅ '+sym+' добавлен','success');
+  await loadAdminCheckin();
+}
+
+/* АДМИН — ЗАДАНИЯ */
 let ATC=null;
 async function loadAdminTasks(){
   const b=document.getElementById('adminTasksList');if(!b)return;
