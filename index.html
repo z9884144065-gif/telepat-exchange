@@ -90,10 +90,20 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 .task-pending{margin-bottom:12px;padding:14px;border:1px solid #66572e;border-radius:12px;background:#17150e;text-align:center}
 .task-pending .tp-title{color:#f4cf70;font-weight:bold;font-size:14px;margin-bottom:10px}
 .ci-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin-top:8px}
-.ci-day{background:#0d1520;border:1px solid #2d3a4c;border-radius:8px;padding:6px 2px;text-align:center;font-size:10px;color:#9da9b9}
-.ci-day.done{background:#1a2a1a;border-color:#39d98a;color:#39d98a}
-.ci-day.next{background:#2a2418;border-color:#f4cf70;color:#f4cf70}
-.ci-day.bonus{border-color:#f4cf70}
+.ci-day{background:#0d1520;border:1px solid #2d3a4c;border-radius:8px;padding:6px 2px;text-align:center;font-size:10px;color:#9da9b9;transition:all .3s}
+.ci-day.done{background:linear-gradient(145deg,#1f4a1f,#0d280d);border:2px solid #39d98a;color:#39d98a;font-weight:bold;box-shadow:0 0 12px #39d98a88, inset 0 0 8px #39d98a44;transform:scale(1.03)}
+.ci-day.done .ci-check{display:block;font-size:14px;line-height:1}
+.ci-day.next{background:linear-gradient(145deg,#4a3a10,#2a2208);border:2px solid #f4cf70;color:#f4cf70;font-weight:bold;box-shadow:0 0 14px #f4cf7066;animation:ciPulse 1.5s infinite}
+.ci-day.next .ci-check{display:block;font-size:14px;line-height:1;animation:ciBounce 1s infinite}
+.ci-day.bonus{border-color:#f4cf70;position:relative}
+.ci-day.bonus::after{content:'⭐';position:absolute;top:-6px;right:-4px;font-size:12px}
+.ci-check{display:none}
+@keyframes ciPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+@keyframes ciBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+@keyframes ciGlow{0%,100%{box-shadow:0 0 24px #39d98a55, inset 0 0 16px #39d98a22}50%{box-shadow:0 0 36px #39d98a88, inset 0 0 24px #39d98a33}}
+@keyframes adFadeIn{from{opacity:0}to{opacity:1}}
+@keyframes adPopIn{0%{transform:scale(.3);opacity:0}100%{transform:scale(1);opacity:1}}
+@keyframes adBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 </style></head><body>
 <div id="message" class="msg"></div>
 <div class="app">
@@ -210,6 +220,11 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 
 <div class="card gold">
 <div class="title">🔥 ЧЕКИН — СЕРИЯ 30 ДНЕЙ</div>
+<div id="checkinProgressBanner" class="hide" style="background:linear-gradient(145deg,#1f4a1f,#0d280d);border:2px solid #39d98a;border-radius:16px;padding:14px;margin-bottom:14px;text-align:center;animation:ciGlow 2.5s infinite">
+<div style="font-size:36px;line-height:1">🎉</div>
+<div id="checkinProgressText" style="color:#39d98a;font-size:20px;font-weight:bold;margin-top:6px;text-shadow:0 0 12px #39d98a88">ДЕНЬ 1 ПРОЙДЕН!</div>
+<div id="checkinProgressSub" style="color:#a8e6a8;font-size:12px;margin-top:4px">Серия: 1 день 🔥</div>
+</div>
 <div style="text-align:center;padding:8px 0">
 <div id="checkinStreak" style="font-size:44px;font-weight:bold;color:#f4cf70;line-height:1">0</div>
 <div class="info">дней подряд</div>
@@ -640,12 +655,28 @@ function renderCheckinCalendar(currentDay,nextDay,maxDays){
     if(isDone)cls+=' done';
     if(isNext)cls+=' next';
     if(isBonus)cls+=' bonus';
+    const marker=isDone?'<span class="ci-check">✅</span>':(isNext?'<span class="ci-check">🔥</span>':'');
     html+=`<div class="${cls}">
       <div style="font-weight:bold;font-size:12px">${d}</div>
-      <div style="font-size:9px">${isBonus?'⭐':'•'}</div>
+      ${marker||`<div style="font-size:9px">${isBonus?'⭐':'•'}</div>`}
     </div>`;
   }
   box.innerHTML=html;
+
+  const banner=document.getElementById('checkinProgressBanner');
+  const bannerText=document.getElementById('checkinProgressText');
+  const bannerSub=document.getElementById('checkinProgressSub');
+  if(!banner||!bannerText||!bannerSub)return;
+  if(currentDay>0){
+    banner.classList.remove('hide');
+    let word='дней';
+    if(currentDay%10===1&&currentDay%100!==11)word='день';
+    else if([2,3,4].includes(currentDay%10)&&![12,13,14].includes(currentDay%100))word='дня';
+    bannerText.textContent=`🔥 ДЕНЬ ${currentDay} ПРОЙДЕН!`;
+    bannerSub.textContent=`Серия: ${currentDay} ${word} подряд 🔥`;
+  } else {
+    banner.classList.add('hide');
+  }
 }
 async function claimCheckin(){
   const btn=document.getElementById('checkinBtn');
@@ -680,6 +711,7 @@ function showCheckinReward(day,lines,isBonus){
 }
 async function claimDailyReward(){ return claimCheckin(); }
 
+/* РЕКЛАМА */
 let AD=null,ADT=null,ADR=false;
 async function watchAd(){
   if(!UID){msg('Открой в Telegram','error');return}
@@ -718,6 +750,45 @@ function closeAdModal(){
   const v=document.getElementById('adVideo');try{v.pause();v.removeAttribute('src');v.load()}catch{}
   document.getElementById('adModal').classList.remove('show');AD=null;ADR=false;
 }
+function showAdRewardPopup(reward, token, extra){
+  const old = document.getElementById('adRewardPopupGreen');
+  if(old) old.remove();
+
+  const overlay = document.createElement('div');
+  overlay.id = 'adRewardPopupGreen';
+  overlay.style.cssText = 'position:fixed;z-index:6000;inset:0;background:#000c;display:flex;align-items:center;justify-content:center;padding:20px;animation:adFadeIn .3s';
+  overlay.onclick = (e) => { if(e.target === overlay) overlay.remove(); };
+
+  const bonusLine = extra ? `<div style="color:#f4cf70;font-size:13px;margin-bottom:10px;font-weight:bold">${extra}</div>` : '';
+
+  overlay.innerHTML = `
+    <div style="width:min(360px,100%);background:linear-gradient(145deg,#1f4a1f,#0d280d);border:3px solid #39d98a;border-radius:22px;padding:26px 22px;text-align:center;box-shadow:0 0 50px #39d98a88, inset 0 0 20px #39d98a22;animation:adPopIn .5s cubic-bezier(0.34,1.56,0.64,1)">
+      <div style="font-size:64px;line-height:1;animation:adBounce 1s infinite">🎉</div>
+      <div style="color:#39d98a;font-size:22px;font-weight:bold;margin-top:12px;text-shadow:0 0 16px #39d98a99">НАГРАДА ПОЛУЧЕНА!</div>
+      ${bonusLine}
+      <div style="background:#0006;border:2px solid #39d98a55;border-radius:14px;padding:14px;margin:16px 0;font-size:26px;font-weight:bold;color:#39d98a;text-shadow:0 0 12px #39d98a88">
+        +${f(reward,5)} ${esc(token)}
+      </div>
+      <div style="color:#a8e6a8;font-size:12px;margin-bottom:16px">Зачислено на кошелёк</div>
+      <button onclick="document.getElementById('adRewardPopupGreen').remove()" style="width:100%;background:linear-gradient(135deg,#39d98a,#2ba86a);color:#0d280d;font-weight:bold;padding:14px;border-radius:14px;border:0;font-size:16px;cursor:pointer">👍 ОТЛИЧНО!</button>
+      <div style="color:#7fc97f;font-size:11px;margin-top:10px">Закроется через <span id="adAutoCloseTimer">5</span> сек</div>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+
+  let sec = 5;
+  const timerEl = overlay.querySelector('#adAutoCloseTimer');
+  const tick = setInterval(() => {
+    sec--;
+    if(timerEl) timerEl.textContent = sec;
+    if(sec <= 0){
+      clearInterval(tick);
+      const el = document.getElementById('adRewardPopupGreen');
+      if(el) el.remove();
+    }
+  }, 1000);
+}
 async function claimAdReward(){
   if(!AD||!ADR){msg('Досмотрите','error');return}
   const b=document.getElementById('adClaimBtn'),r=document.getElementById('adResult');
@@ -728,8 +799,24 @@ async function claimAdReward(){
     const ok=data?.success===true||data===true||data?.ok===true;
     const m=data?.message||(ok?'Начислено':'Не удалось');
     r.innerHTML=ok?`<span class="ok">✅ ${esc(m)}</span>`:`<span class="er">${esc(m)}</span>`;
-    if(ok){b.textContent='✅';msg('💰 Зачислено','success');await loadUser();await loadCustomBalances();setTimeout(closeAdModal,1800)}
-    else{b.disabled=false;b.textContent='🎁 ПОЛУЧИТЬ'}
+
+    if(ok){
+      b.textContent='✅';
+      const rw = Number(data?.reward ?? data?.amount ?? data?.payout ?? 0);
+      const tk = data?.reward_token ?? data?.token ?? 'TUSD';
+
+      await loadUser();
+      await loadCustomBalances();
+
+      setTimeout(() => {
+        closeAdModal();
+        if(rw > 0) showAdRewardPopup(rw, tk, data?.is_bonus_day ? '⭐ БОНУС ×2' : '');
+        else msg('💰 Зачислено на кошелёк', 'success');
+      }, 600);
+    } else {
+      b.disabled=false;
+      b.textContent='🎁 ПОЛУЧИТЬ';
+    }
   }catch(e){r.innerHTML=`<span class="er">${esc(e.message)}</span>`;b.disabled=false;b.textContent='🎁 ПОЛУЧИТЬ'}
 }
 
@@ -797,7 +884,6 @@ document.addEventListener('visibilitychange',()=>{
   }
 });
 
-/* УПРАВЛЕНИЕ ЮЗЕРОМ */
 async function adminLoadUser(){
   const id=document.getElementById('userSearchId').value.trim();
   if(!id){msg('Введите ID','error');return}
@@ -895,7 +981,6 @@ async function adminToggleFlag(flag,value){
   await adminLoadUser();
 }
 
-/* АДМИН — ЧЕКИН */
 async function loadAdminCheckin(){
   const box=document.getElementById('adminCheckinBox');
   if(!box)return;
@@ -994,7 +1079,6 @@ async function addAdminCheckinToken(){
   await loadAdminCheckin();
 }
 
-/* АДМИН — ЗАДАНИЯ */
 let ATC=null;
 async function loadAdminTasks(){
   const b=document.getElementById('adminTasksList');if(!b)return;
