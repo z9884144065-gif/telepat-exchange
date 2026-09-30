@@ -102,11 +102,6 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 <button onclick="showFAQ()">❓</button>
 <button onclick="openSettings()">⚙️</button>
 </div>
-<div class="s3">
-<div class="st"><b id="topTg">0</b><span>TG</span></div>
-<div class="st"><b id="topTusd">0</b><span>TUSD</span></div>
-<div class="st"><b id="topRank">1</b><span>Титул</span></div>
-</div>
 <div class="card gold">
 <div class="title">👤 МОЙ ПРОФИЛЬ</div>
 <div id="userName">Загрузка...</div>
@@ -114,6 +109,7 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 <div class="rbn" style="margin-top:12px">
 <div class="info">ТЕКУЩИЙ ТИТУЛ</div>
 <div class="rnn" id="rankName">Крестьянин</div>
+<div class="info" id="rankLevel" style="margin-top:4px;font-size:12px;color:#9da9b9">Уровень 1 из 21</div>
 <div class="prg"><div id="rankProgress" style="width:0%"></div></div>
 <div class="info" id="rankRequirement" style="margin-top:6px"></div>
 </div></div>
@@ -484,12 +480,11 @@ function renderUser(){
   document.getElementById('tgBalance').textContent=f(CU.tg_balance)+' TG';
   document.getElementById('aiBalance').textContent=f(CU.ai_balance)+' AI';
   document.getElementById('tusdBalance').textContent=f(CU.tusd_balance)+' TUSD';
-  document.getElementById('topTg').textContent=f(CU.tg_balance);
-  document.getElementById('topTusd').textContent=f(CU.tusd_balance);
   const rl=Number(CU.rank_level||1);
-  document.getElementById('topRank').textContent=rl;
   const rn=CU.rank_name||RANKS[rl-1]?.[1]||'Крестьянин';
   document.getElementById('rankName').textContent='👑 '+rn;
+  const levelEl=document.getElementById('rankLevel');
+  if(levelEl)levelEl.textContent=`Уровень ${rl} из 21`;
   document.getElementById('earnRank').textContent=rn;
   const r=RANKS[rl-1]||RANKS[0];
   const tgu2=n(CU.tg_balance)*TGU,aie=n(CU.ai_balance)*AIU;
@@ -530,7 +525,7 @@ async function claimDailyReward(){
   msg(data?.message||'',ok?'success':'error');
   if(ok){await loadUser();await loadCustomBalances()}
 }
-async function loadReferral(){if(UID)document.getElementById('refLink').value=`https://t.me/TELEPATp2b_bot?start=${UID}`}
+async function loadReferral(){if(UID)document.getElementById('refLink').value=`https://t.me/TELEPATp2p_bot?start=${UID}`}
 async function copyRefLink(){try{await navigator.clipboard.writeText(document.getElementById('refLink').value);msg('Скопировано','success')}catch{msg('Ошибка','error')}}
 
 async function loadMyReferrals(){
