@@ -230,6 +230,15 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 <div class="sgrid" id="adminCustomTokens" style="margin-top:8px"></div>
 <button class="sec" onclick="loadAdminStats()">🔄 Обновить</button>
 </div>
+
+<div class="card admin">
+<div class="title">👥 УПРАВЛЕНИЕ ЮЗЕРОМ</div>
+<label>Telegram ID</label>
+<input id="userSearchId" type="number" placeholder="Например: 949707357">
+<button onclick="adminLoadUser()">🔍 Найти юзера</button>
+<div id="adminUserCard" class="hide" style="margin-top:16px"></div>
+</div>
+
 <div class="card admin">
 <div class="title">💸 ПЕРЕВОД</div>
 <label>Telegram ID</label><input id="adminTargetId" type="number">
@@ -237,6 +246,7 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 <label style="margin-top:9px">Кол-во</label><input id="adminAmount" type="number" step="any">
 <button onclick="adminTransfer()">💰 ПЕРЕВЕСТИ</button>
 </div>
+
 <div class="card admin">
 <div class="title">🪙 ДОБАВИТЬ ТОКЕН</div>
 <label>Название</label><input id="listingTokenName" type="text">
@@ -253,11 +263,13 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 <button id="createListingButton" onclick="createTokenListing()">➕ СОЗДАТЬ ЗАЯВКУ</button>
 <div id="listingCreateResult" class="info" style="margin-top:9px"></div>
 </div>
+
 <div class="card admin">
 <div class="title">📋 ЗАЯВКИ НА ЛИСТИНГ</div>
 <button class="sec" onclick="loadAdminListings()">🔄 ЗАГРУЗИТЬ</button>
 <div id="adminListingsList" style="margin-top:12px"><div class="info">Нажми «Загрузить».</div></div>
 </div>
+
 <div class="card admin">
 <div class="title">🎁 РАЗДАЧА В ЧАТАХ</div>
 <button class="sec" onclick="loadAdminChats()">🔄 ЗАГРУЗИТЬ</button>
@@ -375,6 +387,7 @@ let __jwt=sessionStorage.getItem('__jwt')||null;
 let ALL_TOKENS=[],CU=null,CP={},CB={},AL=null;
 let VERIFIED_SYMBOLS=new Set(BASE_VERIFIED);
 let __PENDING_TASK=null,__RETURN_TIMER=null;
+let ADMIN_USER=null;
 
 async function refreshJwt(){
   const id=window.Telegram?.WebApp?.initData;
@@ -682,6 +695,104 @@ document.addEventListener('visibilitychange',()=>{
     __RETURN_TIMER=setTimeout(()=>{openTasks();__RETURN_TIMER=null},TASK_CHECK_DELAY);
   }
 });
+
+/* УПРАВЛЕНИЕ ЮЗЕРОМ */
+async function adminLoadUser(){
+  const id=document.getElementById('userSearchId').value.trim();
+  if(!id){msg('Введите ID','error');return}
+  const box=document.getElementById('adminUserCard');
+  box.classList.remove('hide');
+  box.innerHTML='<div class="info">Загрузка...</div>';
+  const{data,error}=await sb.rpc('admin_get_user',{p_telegram_id:id});
+  if(error||!data||data.ok===false){
+    box.innerHTML=`<div class="er">${esc(error?.message||data?.error||'Ошибка')}</div>`;
+    return;
+  }
+  ADMIN_USER=data;
+  renderAdminUser();
+}
+function renderAdminUser(){
+  const box=document.getElementById('adminUserCard');if(!box||!ADMIN_USER)return;
+  const u=ADMIN_USER.user;
+  const badges=[];
+  if(u.is_banned)badges.push('<span class="er">🚫 ЗАБАНЕН</span>');
+  if(u.is_frozen)badges.push('<span class="er">🔒 ЗАМОРОЖЕН</span>');
+  if(!u.is_banned&&!u.is_frozen)badges.push('<span class="ok">✅ АКТИВЕН</span>');
+
+  let html=`<div class="pc">
+    <div class="pt">👤 ${esc(u.first_name||u.username||u.telegram_id)}</div>
+    <div class="info">ID: ${esc(u.telegram_id)}</div>
+    <div class="info">Титул: ${esc(u.rank_name||'—')} (уровень ${u.rank_level||1})</div>
+    <div class="info">Регистрация: ${new Date(u.created_at).toLocaleDateString('ru-RU')}</div>
+    <div style="margin-top:6px">${badges.join(' ')}</div>
+  </div>
+  <div class="title" style="margin-top:14px;font-size:12px">💰 БАЛАНСЫ</div>`;
+
+  (ADMIN_USER.balances||[]).forEach(b=>{
+    html+=`<div class="pc">
+      <div class="pt">${esc(b.symbol)} — ${esc(b.name||'')}</div>
+      <div class="tval">${f(b.balance)} ${esc(b.symbol)}</div>
+      <div class="row" style="margin-top:8px">
+        <button class="sm" onclick="adminBalanceAction('${esc(b.symbol)}','add')">➕</button>
+        <button class="sm dng" onclick="adminBalanceAction('${esc(b.symbol)}','sub')">➖</button>
+        <button class="sm sec" onclick="adminBalanceAction('${esc(b.symbol)}','set')">✏️</button>
+      </div>
+    </div>`;
+  });
+
+  html+=`<div class="title" style="margin-top:14px;font-size:12px">⚙️ ДЕЙСТВИЯ</div>
+  <div class="row">
+    <button class="sm ${u.is_frozen?'':'dng'}" onclick="adminToggleFlag('frozen',${!u.is_frozen})">${u.is_frozen?'🔓 Разморозить':'🔒 Заморозить'}</button>
+    <button class="sm ${u.is_banned?'':'dng'}" onclick="adminToggleFlag('banned',${!u.is_banned})">${u.is_banned?'✅ Разбанить':'🚫 Забанить'}</button>
+  </div>`;
+
+  box.innerHTML=html;
+}
+async function adminBalanceAction(token,mode){
+  if(!ADMIN_USER)return;
+  const u=ADMIN_USER.user;
+  const label=mode==='add'?'начисления':(mode==='sub'?'списания':'установки');
+  const amountStr=prompt(`Сумма для ${label} (${token}):`);
+  if(amountStr===null)return;
+  const amount=Number(amountStr);
+  if(!Number.isFinite(amount)||amount<0){msg('Некорректная сумма','error');return}
+  const reason=prompt('Причина (необязательно):');
+
+  const{data,error}=await sb.rpc('admin_set_balance',{
+    p_target_id:Number(u.telegram_id),
+    p_token:token,
+    p_amount:amount,
+    p_mode:mode,
+    p_reason:reason||null
+  });
+  if(error||!data||data.ok===false){
+    msg(error?.message||data?.error||'Ошибка','error');
+    return;
+  }
+  msg(`✅ ${token}: ${f(data.new_balance)}`,'success');
+  await adminLoadUser();
+}
+async function adminToggleFlag(flag,value){
+  if(!ADMIN_USER)return;
+  const u=ADMIN_USER.user;
+  let reason=null;
+  if(value){
+    reason=prompt('Причина:');
+    if(!reason){msg('Причина обязательна','error');return}
+  }
+  const{data,error}=await sb.rpc('admin_toggle_user_flag',{
+    p_target_id:Number(u.telegram_id),
+    p_flag:flag,
+    p_value:value,
+    p_reason:reason
+  });
+  if(error||!data||data.ok===false){
+    msg(error?.message||data?.error||'Ошибка','error');
+    return;
+  }
+  msg('✅ Готово','success');
+  await adminLoadUser();
+}
 
 let ATC=null;
 async function loadAdminTasks(){
