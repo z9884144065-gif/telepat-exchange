@@ -87,6 +87,8 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 .task .tt{font-weight:bold;color:#fff;font-size:14px}
 .task .ts{color:#8f9bab;font-size:11px;margin-top:4px}
 .task .tr{color:#39d98a;font-weight:bold;font-size:13px;margin-top:6px}
+.task-pending{margin-bottom:12px;padding:14px;border:1px solid #66572e;border-radius:12px;background:#17150e;text-align:center}
+.task-pending .tp-title{color:#f4cf70;font-weight:bold;font-size:14px;margin-bottom:10px}
 </style></head><body>
 <div id="message" class="msg"></div>
 <div class="app">
@@ -322,7 +324,7 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 <div id="tasksModal" class="mo" onclick="closeTasks(event)">
 <div class="mb" style="width:min(500px,100%)" onclick="event.stopPropagation()">
 <div class="title">📋 ЗАДАНИЯ</div>
-<div id="tasksList" style="max-height:60vh;overflow-y:auto;margin-top:10px"><div class="info">Загрузка...</div></div>
+<div id="tasksList" style="max-height:65vh;overflow-y:auto;margin-top:10px"><div class="info">Загрузка...</div></div>
 <button class="sec" onclick="closeTasks()">Закрыть</button>
 </div></div>
 
@@ -339,8 +341,10 @@ const SU='https://jutszxuzjzyfxarceydw.supabase.co';
 const SK='sb_publishable_geRczpRc3faUHRGto2ue7A_eFFiJDwO';
 const EF=SU+'/functions/v1/telegram-auth';
 const AID=949707357,TGU=100,AIU=0.01;
+const TASK_CHECK_DELAY=5000;
 let __jwt=sessionStorage.getItem('__jwt')||null;
 let ALL_TOKENS=[],CU=null,CP={},CB={},AL=null;
+let __PENDING_TASK=null,__RETURN_TIMER=null;
 
 async function refreshJwt(){
   const id=window.Telegram?.WebApp?.initData;
@@ -534,6 +538,7 @@ async function claimAdReward(){
   }catch(e){r.innerHTML=`<span class="er">${esc(e.message)}</span>`;b.disabled=false;b.textContent='🎁 ПОЛУЧИТЬ'}
 }
 
+/* ЗАДАНИЯ — новая логика с "Я выполнил" */
 async function openTasks(){
   if(!UID){msg('Открой в Telegram','error');return}
   document.getElementById('tasksModal').classList.add('show');
@@ -542,7 +547,22 @@ async function openTasks(){
   if(error){box.innerHTML=`<div class="er">Ошибка: ${esc(error.message)}</div>`;return}
   if(!data||!data.length){box.innerHTML='<div class="info">Нет заданий.</div>';return}
   const TL={subscribe_channel:'📢 Канал',subscribe_bot:'🤖 Бот',video:'📺 Видео',click:'🔗 Ссылка'};
-  box.innerHTML=data.map(t=>{
+
+  let pendingBlock='';
+  if(__PENDING_TASK){
+    const pt=data.find(x=>String(x.id)===String(__PENDING_TASK));
+    if(pt && !pt.is_completed){
+      pendingBlock=`
+        <div class="task-pending">
+          <div class="tp-title">📌 Задание открыто</div>
+          <div class="info" style="margin-bottom:10px">Подпишитесь/выполните и нажмите кнопку ниже:</div>
+          <button onclick="claimTaskReward('${esc(pt.id)}')">✅ Я выполнил — получить награду</button>
+          <button class="sec" onclick="cancelPendingTask()">Отмена</button>
+        </div>`;
+    }
+  }
+
+  box.innerHTML = pendingBlock + data.map(t=>{
     const lbl=TL[t.type]||t.type;
     const done=t.is_completed?'done':'';
     const rw=t.is_completed?'<span class="ok">✅</span>':`<span class="tr">+${f(t.reward)} ${esc(t.reward_token)}</span>`;
@@ -550,25 +570,54 @@ async function openTasks(){
   }).join('');
 }
 function closeTasks(e){if(e&&e.target!==document.getElementById('tasksModal'))return;document.getElementById('tasksModal').classList.remove('show')}
+function cancelPendingTask(){
+  __PENDING_TASK=null;
+  if(__RETURN_TIMER){clearTimeout(__RETURN_TIMER);__RETURN_TIMER=null}
+  openTasks();
+}
 function startTask(id,link){
   if(!id)return;
   try{window.Telegram?.WebApp?.openLink?window.Telegram.WebApp.openLink(link):window.open(link,'_blank')}catch{window.open(link,'_blank')}
-  setTimeout(()=>{if(!confirm('Выполнили? OK — получить награду'))return;claimTaskReward(id)},1200);
+  __PENDING_TASK=id;
+  document.getElementById('tasksModal').classList.add('show');
+  document.getElementById('tasksList').innerHTML='<div style="text-align:center;padding:20px"><div class="info" style="font-size:14px">⏳ Выполняем задание…</div><div class="info" style="margin-top:10px">Подпишитесь и вернитесь в бота</div></div>';
 }
 async function claimTaskReward(tid){
   const{data,error}=await sb.rpc('complete_task',{p_task_id:tid,p_user_id:String(UID)});
   if(error){msg(error.message,'error');return}
-  if(data?.ok===true){msg(`🎁 +${f(data.reward)} ${esc(data.token)}`,'success');await loadUser();await loadCustomBalances();await openTasks()}
-  else msg(data?.error||'Ошибка','error');
+  if(data?.ok===true){
+    __PENDING_TASK=null;
+    if(__RETURN_TIMER){clearTimeout(__RETURN_TIMER);__RETURN_TIMER=null}
+    msg(`🎁 +${f(data.reward)} ${esc(data.token)}`,'success');
+    await loadUser();
+    await loadCustomBalances();
+    await openTasks();
+  } else {
+    msg(data?.error||'Ошибка','error');
+  }
 }
 
+/* Возврат из браузера → 5 сек ожидания → показать кнопку "Я выполнил" */
+document.addEventListener('visibilitychange', () => {
+  if(document.visibilityState === 'visible' && __PENDING_TASK){
+    if(__RETURN_TIMER) clearTimeout(__RETURN_TIMER);
+    document.getElementById('tasksModal').classList.add('show');
+    document.getElementById('tasksList').innerHTML=`<div style="text-align:center;padding:20px"><div class="info" style="font-size:14px">⏳ Проверяем выполнение…</div><div class="info" style="margin-top:10px">Подождите <b>${TASK_CHECK_DELAY/1000} секунд</b></div></div>`;
+    __RETURN_TIMER = setTimeout(() => {
+      openTasks();
+      __RETURN_TIMER=null;
+    }, TASK_CHECK_DELAY);
+  }
+});
+
+/* АДМИН ЗАДАНИЯ */
 let ATC=null;
 async function loadAdminTasks(){
   const b=document.getElementById('adminTasksList');if(!b)return;
   b.innerHTML='<div class="info">Загрузка...</div>';
   const{data,error}=await sb.rpc('telepat_admin_list_tasks');
   if(error){b.innerHTML=`<div class="er">Ошибка: ${esc(error.message)}</div>`;return}
-  if(!data||!data.length){b.innerHTML='<div class="info">Нет заданий. Нажми «Создать задание».</div>';return}
+  if(!data||!data.length){b.innerHTML='<div class="info">Нет заданий.</div>';return}
   b.innerHTML='';
   data.forEach(t=>{
     const d=document.createElement('div');d.className='pc';
