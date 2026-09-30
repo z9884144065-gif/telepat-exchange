@@ -120,10 +120,10 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 <div class="card" id="walletCard">
 <div class="title">💰 МОЙ КОШЕЛЁК</div>
 <div class="row">
-<div class="tbox"><div class="tname">Telepat Gold</div><div class="tval" id="tgBalance">0 TG</div></div>
-<div class="tbox"><div class="tname">AI</div><div class="tval" id="aiBalance">0 AI</div></div>
+<div class="tbox"><div class="tname">Telepat Gold <span style="color:#39d98a" title="Верифицирован">✅</span></div><div class="tval" id="tgBalance">0 TG</div></div>
+<div class="tbox"><div class="tname">AI <span style="color:#39d98a" title="Верифицирован">✅</span></div><div class="tval" id="aiBalance">0 AI</div></div>
 </div>
-<div class="tbox" style="margin-top:10px"><div class="tname">Telepat Dollar</div><div class="tval" id="tusdBalance">0 TUSD</div></div>
+<div class="tbox" style="margin-top:10px"><div class="tname">Telepat Dollar <span style="color:#39d98a" title="Верифицирован">✅</span></div><div class="tval" id="tusdBalance">0 TUSD</div></div>
 <div id="customBalances" style="margin-top:10px"></div>
 </div>
 <div class="card">
@@ -218,6 +218,7 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 <div class="st"><b id="adminAI">0</b><span>Общий AI</span></div>
 <div class="st"><b id="adminTUSD">0</b><span>Общий TUSD</span></div>
 </div>
+<div class="title" style="margin-top:16px;font-size:12px;color:#9da9b9">ПОЛНЫЙ РАСКЛАД ПО ВСЕМ ТОКЕНАМ</div>
 <div class="sgrid" id="adminCustomTokens" style="margin-top:8px"></div>
 <button class="sec" onclick="loadAdminStats()">🔄 Обновить</button>
 </div>
@@ -275,7 +276,7 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 
 <div class="card admin">
 <div class="title">🛡️ ВЕРИФИКАЦИЯ ТОКЕНОВ</div>
-<div class="info" style="margin-bottom:10px">Условия: пул ≥ $1000, возраст ≥ 30 дней, владелец ≥ Барон, ≥ 10 держателей, макс. 3 токена на владельца.</div>
+<div class="info" style="margin-bottom:10px">Условия: пул ≥ $1000, возраст ≥ 30 дней, владелец ≥ Барон, ≥ 10 держателей, макс. 3 токена на владельца. TG, AI, TUSD — всегда верифицированы.</div>
 <button class="sec" onclick="loadAdminVerification()">🔄 ЗАГРУЗИТЬ</button>
 <div id="adminVerifyList" style="margin-top:12px"><div class="info">Нажми «Загрузить».</div></div>
 </div>
@@ -361,9 +362,10 @@ const SK='sb_publishable_geRczpRc3faUHRGto2ue7A_eFFiJDwO';
 const EF=SU+'/functions/v1/telegram-auth';
 const AID=949707357,TGU=100,AIU=0.01;
 const TASK_CHECK_DELAY=5000;
+const BASE_VERIFIED=['TG','AI','TUSD'];
 let __jwt=sessionStorage.getItem('__jwt')||null;
 let ALL_TOKENS=[],CU=null,CP={},CB={},AL=null;
-let VERIFIED_SYMBOLS=new Set();
+let VERIFIED_SYMBOLS=new Set(BASE_VERIFIED);
 let __PENDING_TASK=null,__RETURN_TIMER=null;
 
 async function refreshJwt(){
@@ -393,6 +395,7 @@ const tb=t=>{if(!CU)return 0;if(t==='TG')return n(CU.tg_balance);if(t==='AI')ret
 function msg(t,ty='info'){const e=document.getElementById('message');e.textContent=t;e.style.borderColor=ty==='error'?'#8b3f4c':ty==='success'?'#397b5b':'#4c5b70';e.classList.add('show');setTimeout(()=>e.classList.remove('show'),3000)}
 
 async function loadAllTokens(){
+  VERIFIED_SYMBOLS=new Set(BASE_VERIFIED);
   try{
     const{data,error}=await sb.rpc('telepat_admin_list_tokens');
     if(!error&&data&&data.length)ALL_TOKENS=data.map(t=>({id:t.id,symbol:t.symbol,name:t.name}));
@@ -401,7 +404,7 @@ async function loadAllTokens(){
   fillAll();
   try{
     const{data:v}=await sb.from('telepat_tokens').select('symbol,verified').eq('verified',true);
-    VERIFIED_SYMBOLS=new Set((v||[]).map(x=>x.symbol));
+    (v||[]).forEach(x=>VERIFIED_SYMBOLS.add(x.symbol));
     fillAll();
     renderCustom();
   }catch(e){console.warn(e)}
@@ -701,19 +704,21 @@ async function loadAdminVerification(){
   b.innerHTML='';
   data.forEach(t=>{
     const d=document.createElement('div');d.className='pc';
-    const sc=t.verified?'ok':'er';
-    const status=t.verified?'✅ ВЕРИФИЦИРОВАН':'❌ НЕ ВЕРИФИЦИРОВАН';
+    const isBase=['TG','AI','TUSD'].includes(t.symbol);
+    const isVerified=isBase || t.verified;
+    const sc=isVerified?'ok':'er';
+    const status=isVerified?(isBase?'✅ БАЗОВЫЙ (всегда вериф.)':'✅ ВЕРИФИЦИРОВАН'):'❌ НЕ ВЕРИФИЦИРОВАН';
     const manualTag=t.manual_verified?' <span style="color:#f4cf70;font-size:11px">[вручную]</span>':'';
-    const reason=t.verify_reason?`<div class="info" style="font-size:11px;color:#ff8a8a">Причина: ${esc(t.verify_reason)}</div>`:'';
+    const reason=!isBase && t.verify_reason?`<div class="info" style="font-size:11px;color:#ff8a8a">Причина: ${esc(t.verify_reason)}</div>`:'';
     d.innerHTML=`<div>
       <div class="pt">🪙 ${esc(t.symbol)} — ${esc(t.name||'')}${manualTag}</div>
       <div class="info">Владелец: ${t.owner_telegram_id||'—'} (титул ${t.owner_rank||'?'})</div>
       <div class="info">Пул: $${f(t.pool_usd,2)} • Держателей: ${t.holders} • Возраст: ${t.days_old} дн.</div>
       <div class="${sc}" style="font-size:12px;margin-top:5px">${status}</div>
       ${reason}
-      <div class="row" style="margin-top:10px">
+      ${isBase?'':`<div class="row" style="margin-top:10px">
         <button onclick="setTokenVerified('${esc(t.id)}',${t.manual_verified?'false':'true'})">${t.manual_verified?'❌ Снять вручную':'✅ Верифицировать вручную'}</button>
-      </div>
+      </div>`}
     </div>`;
     b.appendChild(d);
   });
@@ -723,7 +728,6 @@ async function setTokenVerified(id,v){
   const{data,error}=await sb.rpc('telepat_admin_set_token_verified',{p_token_id:id,p_manual:v});
   if(error){msg(error.message,'error');return}
   msg(v?'✅ Верифицирован':'🔄 Ручная снята','success');
-  VERIFIED_SYMBOLS=new Set();
   await loadAllTokens();
   await loadAdminVerification();
 }
@@ -927,12 +931,17 @@ async function loadAdminStats(){
   document.getElementById('adminTG').textContent=f(tg?tg.total_balance:0);
   document.getElementById('adminAI').textContent=f(ai?ai.total_balance:0);
   document.getElementById('adminTUSD').textContent=f(tusd?tusd.total_balance:0);
-  const custom=(data||[]).filter(x=>!['TG','AI','TUSD'].includes(x.symbol));
+  // Полный расклад по ВСЕМ токенам (включая TG/AI/TUSD)
+  const all=data||[];
   const box=document.getElementById('adminCustomTokens');
   if(box){
-    box.innerHTML = custom.length
-      ? custom.map(x=>`<div class="st"><b>${f(x.total_balance,2)}</b><span>${esc(x.symbol)} • ${x.holders}👤</span></div>`).join('')
-      : '';
+    box.innerHTML = all.length
+      ? all.map(x=>{
+          const isBase=['TG','AI','TUSD'].includes(x.symbol);
+          const vchk=isBase?' ✅':'';
+          return `<div class="st"><b>${f(x.total_balance,2)}</b><span>${esc(x.symbol)}${vchk} • ${x.holders}👤</span></div>`;
+        }).join('')
+      : '<div class="info">Нет данных.</div>';
   }
 }
 
