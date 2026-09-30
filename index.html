@@ -179,13 +179,25 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 <section id="s-friends" class="hide">
 <div class="card">
 <div class="title">👥 ДРУЗЬЯ</div>
-<div class="info">Приглашайте по ссылке.</div>
+<div class="info">Приглашайте по ссылке и получайте % от заработка рефералов:</div>
+<div class="info" style="margin-top:6px">🥇 1 уровень — <b>10%</b></div>
+<div class="info">🥈 2 уровень — <b>5%</b></div>
+<div class="info">🥉 3 уровень — <b>3%</b></div>
 <input id="refLink" readonly style="margin-top:10px">
-<button onclick="copyRefLink()">📋 СКОПИРОВАТЬ</button>
+<button onclick="copyRefLink()">📋 СКОПИРОВАТЬ ССЫЛКУ</button>
 <div class="row" style="margin-top:12px">
 <div class="tbox"><div class="tname">Заработано TG</div><div class="tval" id="refTG">0</div></div>
 <div class="tbox"><div class="tname">Заработано TUSD</div><div class="tval" id="refTUSD">0</div></div>
-</div></div></section>
+</div>
+</div>
+
+<div class="card">
+<div class="title">📋 МОИ РЕФЕРАЛЫ</div>
+<div id="refSummary" class="info" style="margin-bottom:10px">Загрузка...</div>
+<div id="refList" class="info">Загрузка...</div>
+<button class="sec" onclick="loadMyReferrals()">🔄 Обновить</button>
+</div>
+</section>
 
 <section id="s-earn" class="hide">
 <div class="card gold">
@@ -276,7 +288,7 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 
 <div class="card admin">
 <div class="title">🛡️ ВЕРИФИКАЦИЯ ТОКЕНОВ</div>
-<div class="info" style="margin-bottom:10px">Условия: пул ≥ $1000, возраст ≥ 30 дней, владелец ≥ Барон, ≥ 10 держателей, макс. 3 токена на владельца. TG, AI, TUSD — всегда верифицированы.</div>
+<div class="info" style="margin-bottom:10px">Пул ≥ $1000, возраст ≥ 30 дней, владелец ≥ Барон, ≥ 10 держателей, макс. 3 токена на владельца. TG, AI, TUSD — всегда верифицированы.</div>
 <button class="sec" onclick="loadAdminVerification()">🔄 ЗАГРУЗИТЬ</button>
 <div id="adminVerifyList" style="margin-top:12px"><div class="info">Нажми «Загрузить».</div></div>
 </div>
@@ -405,8 +417,7 @@ async function loadAllTokens(){
   try{
     const{data:v}=await sb.from('telepat_tokens').select('symbol,verified').eq('verified',true);
     (v||[]).forEach(x=>VERIFIED_SYMBOLS.add(x.symbol));
-    fillAll();
-    renderCustom();
+    fillAll();renderCustom();
   }catch(e){console.warn(e)}
 }
 function fillAll(){
@@ -415,8 +426,7 @@ function fillAll(){
     const prev=el.value;el.innerHTML='';
     ALL_TOKENS.forEach(t=>{
       const o=document.createElement('option');o.value=t.symbol;
-      const chk=VERIFIED_SYMBOLS.has(t.symbol)?' ✅':'';
-      o.textContent=t.symbol+(t.name?' — '+t.name:'')+chk;
+      o.textContent=t.symbol+(t.name?' — '+t.name:'')+(VERIFIED_SYMBOLS.has(t.symbol)?' ✅':'');
       el.appendChild(o);
     });
     if(prev&&ALL_TOKENS.find(t=>t.symbol===prev))el.value=prev;
@@ -444,7 +454,7 @@ function renderCustom(){
   const c=Object.keys(CB).filter(s=>!['TG','AI','TUSD'].includes(s));
   if(!c.length){b.innerHTML='';return}
   b.innerHTML=`<div class="title" style="margin-top:14px;margin-bottom:6px;font-size:12px;color:#9da9b9">ДОПОЛНИТЕЛЬНЫЕ ТОКЕНЫ</div>`+c.map(s=>{
-    const vchk=VERIFIED_SYMBOLS.has(s)?' <span style="color:#39d98a" title="Верифицирован">✅</span>':'';
+    const vchk=VERIFIED_SYMBOLS.has(s)?' <span style="color:#39d98a">✅</span>':'';
     return `<div class="tbox" style="margin-top:8px"><div class="tname">${esc(s)}${vchk}</div><div class="tval">${f(CB[s])} ${esc(s)}</div></div>`;
   }).join('');
 }
@@ -499,6 +509,7 @@ function showSection(name){
     document.getElementById('n-'+s)?.classList.toggle('active',s===name);
   });
   if(name==='exchange'){loadOrders();loadMyOrders();loadMyTrades();loadTokenReserves()}
+  if(name==='friends'){loadMyReferrals()}
   if(name==='admin'&&UID===AID){loadAdminStats();loadAdminChats();loadAdminListings();loadAdminTasks();loadAdminVerification()}
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -519,8 +530,46 @@ async function claimDailyReward(){
   msg(data?.message||'',ok?'success':'error');
   if(ok){await loadUser();await loadCustomBalances()}
 }
-async function loadReferral(){if(UID)document.getElementById('refLink').value=`https://t.me/TELEPATp2p_bot?start=${UID}`}
+async function loadReferral(){if(UID)document.getElementById('refLink').value=`https://t.me/TELEPATp2b_bot?start=${UID}`}
 async function copyRefLink(){try{await navigator.clipboard.writeText(document.getElementById('refLink').value);msg('Скопировано','success')}catch{msg('Ошибка','error')}}
+
+async function loadMyReferrals(){
+  const box=document.getElementById('refList');if(!box)return;
+  const sumBox=document.getElementById('refSummary');
+  box.innerHTML='<div class="info">Загрузка...</div>';
+  const{data,error}=await sb.rpc('get_my_referrals');
+  if(error){box.innerHTML=`<div class="er">Ошибка: ${esc(error.message)}</div>`;return}
+  if(!data||!data.length){box.innerHTML='<div class="info">Пока нет рефералов. Поделись ссылкой!</div>';if(sumBox)sumBox.innerHTML='';return}
+  const t1=data.filter(r=>r.level===1).length;
+  const t2=data.filter(r=>r.level===2).length;
+  const t3=data.filter(r=>r.level===3).length;
+  if(sumBox)sumBox.innerHTML=`📊 1 ур.: <b>${t1}</b> • 2 ур.: <b>${t2}</b> • 3 ур.: <b>${t3}</b>`;
+  let html='';
+  [1,2,3].forEach(lvl=>{
+    const refs=data.filter(r=>r.level===lvl);
+    if(!refs.length)return;
+    const medals=['🥇','🥈','🥉'];
+    html+=`<div class="title" style="margin-top:12px;font-size:12px">${medals[lvl-1]} УРОВЕНЬ (${refs.length})</div>`;
+    html+=refs.map(r=>{
+      const name=r.first_name||r.username||r.referral_id;
+      const date=new Date(r.joined_at).toLocaleDateString('ru-RU');
+      const earned=[];
+      if(n(r.earned_tg)>0)earned.push(`+${f(r.earned_tg,6)} TG`);
+      if(n(r.earned_tusd)>0)earned.push(`+${f(r.earned_tusd,6)} TUSD`);
+      if(n(r.earned_other)>0)earned.push(`+${f(r.earned_other,6)} ${esc(r.other_symbol||'')}`);
+      return `<div class="ti" style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="color:#fff;font-weight:bold">👤 ${esc(name)}</div>
+          <div class="info" style="font-size:11px">ID: ${esc(r.referral_id)} • ${date}</div>
+        </div>
+        <div style="text-align:right">
+          <div class="ok" style="font-size:12px;font-weight:bold">${earned.length?earned.join('<br>'):'<span style="color:#9da9b9">0</span>'}</div>
+        </div>
+      </div>`;
+    }).join('');
+  });
+  box.innerHTML=html;
+}
 
 let AD=null,ADT=null,ADR=false;
 async function watchAd(){
@@ -716,9 +765,7 @@ async function loadAdminVerification(){
       <div class="info">Пул: $${f(t.pool_usd,2)} • Держателей: ${t.holders} • Возраст: ${t.days_old} дн.</div>
       <div class="${sc}" style="font-size:12px;margin-top:5px">${status}</div>
       ${reason}
-      ${isBase?'':`<div class="row" style="margin-top:10px">
-        <button onclick="setTokenVerified('${esc(t.id)}',${t.manual_verified?'false':'true'})">${t.manual_verified?'❌ Снять вручную':'✅ Верифицировать вручную'}</button>
-      </div>`}
+      ${isBase?'':`<div class="row" style="margin-top:10px"><button onclick="setTokenVerified('${esc(t.id)}',${t.manual_verified?'false':'true'})">${t.manual_verified?'❌ Снять вручную':'✅ Верифицировать вручную'}</button></div>`}
     </div>`;
     b.appendChild(d);
   });
@@ -931,7 +978,6 @@ async function loadAdminStats(){
   document.getElementById('adminTG').textContent=f(tg?tg.total_balance:0);
   document.getElementById('adminAI').textContent=f(ai?ai.total_balance:0);
   document.getElementById('adminTUSD').textContent=f(tusd?tusd.total_balance:0);
-  // Полный расклад по ВСЕМ токенам (включая TG/AI/TUSD)
   const all=data||[];
   const box=document.getElementById('adminCustomTokens');
   if(box){
