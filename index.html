@@ -27,7 +27,7 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 .rbox{border:1px solid #66572e;background:linear-gradient(145deg,#272313,#17150e);border-radius:16px;padding:14px}
 .rname{font-size:22px;font-weight:bold;color:var(--gold)}
 .prg{height:8px;background:#080b10;border-radius:99px;overflow:hidden;margin-top:10px}
-.prg>div{height:100%;background:linear-gradient(90deg,#b98b27,#ffe38a)}
+.prg>div{height:100%;background:linear-gradient(90deg,#b98b27,#ffe38a);transition:width .5s}
 .egrid{display:grid;grid-template-columns:1fr 34px 1fr;gap:8px;align-items:end}
 .swap{width:34px;height:34px;padding:0;border-radius:50%;margin:0 0 5px;font-size:17px}
 .aw{margin-top:9px}.av{color:#7f8c9f;font-size:11px;margin-top:5px}
@@ -464,12 +464,11 @@ const f=(v,m=8)=>n(v).toLocaleString('ru-RU',{maximumFractionDigits:m});
 const tb=t=>{if(!CU)return 0;if(t==='TG')return n(CU.tg_balance);if(t==='AI')return n(CU.ai_balance);if(t==='TUSD')return n(CU.tusd_balance);return n(CB[t])};
 function msg(t,ty='info'){const e=document.getElementById('message');e.textContent=t;e.style.borderColor=ty==='error'?'#8b3f4c':ty==='success'?'#397b5b':'#4c5b70';e.classList.add('show');setTimeout(()=>e.classList.remove('show'),3000)}
 
-// Конвертация любого токена в TUSD
 function tokenToTusd(sym, amount){
   if(sym==='TUSD') return amount;
-  if(sym==='TG') return amount * 100;   // 1 TG = 100 TUSD
-  if(sym==='AI') return amount * 0.01;  // 1 AI = 0.01 TUSD
-  return amount; // остальные — по номиналу 1:1 (можно расширить)
+  if(sym==='TG') return amount * 100;
+  if(sym==='AI') return amount * 0.01;
+  return amount;
 }
 
 async function loadAllTokens(){
@@ -515,9 +514,7 @@ async function loadCustomBalances(){
     renderCustom();
   }catch(e){console.warn(e)}
 }
-function renderCustom(){
-  renderTotalTusd();
-}
+function renderCustom(){ renderTotalTusd(); }
 
 /* === СТЕЙКИНГ === */
 async function loadStakeState(){
@@ -533,16 +530,13 @@ async function loadStakeState(){
     STAKE_ACCUM = Number(data.accumulated) || 0;
     STAKE_BALANCE_USD = Number(data.base_usd) || 0;
     STAKE_LAST_TS = performance.now();
-
     const rateMonth = (Number(data.rate_month) * 100).toFixed(2);
     const level = data.level || 1;
     const rateEl = document.getElementById('stakeRate');
     if(rateEl) rateEl.textContent = `Уровень ${level} • ${rateMonth}% в месяц • База ${f(STAKE_BALANCE_USD,2)} TUSD`;
-
     const ratePerSec = STAKE_BALANCE_USD * STAKE_RATE_SEC;
     const tickEl = document.getElementById('stakeTick');
     if(tickEl) tickEl.innerHTML = `<span style="color:#39d98a;font-weight:bold">+${ratePerSec.toFixed(10)}</span> TUSD/сек`;
-
     startStakeTimer();
   } catch(e){ console.warn('loadStakeState', e); }
 }
@@ -563,9 +557,7 @@ function renderStake(){
     el.innerHTML = `<span style="color:#39d98a;font-weight:bold">+${ratePerSec.toFixed(10)}</span> TUSD/сек<br>
       <span style="color:#7fc97f;font-size:12px;margin-top:2px;display:block">Накоплено: <b>${STAKE_ACCUM.toFixed(8)} TUSD</b></span>`;
   }
-  if(STAKE_SOUND_ON && Math.floor(Date.now()/1000) % 5 === 0){
-    playCoinSound();
-  }
+  if(STAKE_SOUND_ON && Math.floor(Date.now()/1000) % 5 === 0) playCoinSound();
 }
 function playCoinSound(){
   try{
@@ -605,7 +597,6 @@ async function claimStaking(){
   } catch(e){ msg('Ошибка', 'error'); }
 }
 
-/* === Профиль, действия === */
 function openTelegramProfile(){msg(tgu?`👤 ${tgu.first_name||''} (${UID})`:'Открой в Telegram')}
 function showNotifications(){msg('🔔 Пока нет')}
 function scrollToWallet(){document.getElementById('walletCard')?.scrollIntoView({behavior:'smooth',block:'center'})}
@@ -623,24 +614,35 @@ async function loadUser(){
   if(UID===AID)document.getElementById('n-admin').classList.remove('hide');
   loadReferral();updateOrderForm();
 }
+
 function renderUser(){
   if(!CU)return;
   const name=[tgu?.first_name||'',tgu?.last_name||''].join(' ').trim()||tgu?.username||'User';
   document.getElementById('userName').textContent=name;
   document.getElementById('telegramId').textContent='ID: '+UID;
+
   const rl=Number(CU.rank_level||1);
   const rn=CU.rank_name||RANKS[rl-1]?.[1]||'Крестьянин';
   document.getElementById('rankName').textContent='👑 '+rn;
   const levelEl=document.getElementById('rankLevel');
   if(levelEl)levelEl.textContent=`Уровень ${rl} из 21`;
   document.getElementById('earnRank').textContent=rn;
-  const r=RANKS[rl-1]||RANKS[0];
+
+  // === ПРОГРЕСС ОТ СЛЕДУЮЩЕГО УРОВНЯ ===
   const tgu2=n(CU.tg_balance)*TGU,aie=n(CU.ai_balance)*AIU;
-  const req=r[2],each=req/2;
-  const p=Math.min(100,Math.min(tgu2/each*100,aie/each*100));
+  const total=tgu2+aie;
+  const currentRank=RANKS[rl-1]||RANKS[0];
+  const nextRank=RANKS[rl]||null;
+  const nextReq=nextRank?nextRank[2]:currentRank[2];
+  const p=nextRank?Math.min(100,(total/nextReq)*100):100;
   document.getElementById('rankProgress').style.width=p+'%';
-  document.getElementById('rankRequirement').textContent=`${p.toFixed(0)}% • осталось ${f(Math.max(0,req-Math.min(tgu2,aie)*2),2)} TUSD`;
-  document.getElementById('earnDetails').innerHTML=`TG: <b>${f(tgu2,2)} TUSD</b><br>AI: <b>${f(aie,2)} TUSD</b><br>Нужно: <b>${f(req,2)} TUSD</b>`;
+  if(nextRank){
+    document.getElementById('rankRequirement').textContent=`${p.toFixed(1)}% • до «${nextRank[1]}» осталось ${f(Math.max(0,nextReq-total),2)} TUSD`;
+  }else{
+    document.getElementById('rankRequirement').textContent=`Максимальный уровень! Всего ${f(total,2)} TUSD`;
+  }
+  document.getElementById('earnDetails').innerHTML=`Всего: <b>${f(total,2)} TUSD</b><br>TG: <b>${f(tgu2,2)}</b> • AI: <b>${f(aie,2)}</b><br>До следующего: <b>${f(Math.max(0,nextReq-total),2)} TUSD</b>`;
+
   document.getElementById('bonusStatus').textContent=CU.welcome_bonus_claimed?'Уже получен.':'Доступен.';
   document.getElementById('refTG').textContent=f(CU.referral_tg_earned);
   document.getElementById('refTUSD').textContent=f(CU.referral_tusd_earned);
@@ -666,7 +668,7 @@ function renderTotalTusd(){
     tokens.push({sym, amt, tusd:tusdVal});
   });
   const intPart = Math.floor(total);
-  const cents = (total - intPart).toFixed(2).substring(1); // ",50"
+  const cents = (total - intPart).toFixed(2).substring(1);
   const el = document.getElementById('totalUsdBalance');
   if(el){
     el.innerHTML = `${intPart.toLocaleString('ru-RU')}<span style="color:#8f9bab;font-size:20px">${cents} TUSD</span>`;
