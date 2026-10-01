@@ -135,9 +135,11 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 <div class="title" style="text-align:center;margin-bottom:6px">💰 МОЙ КОШЕЛЁК</div>
 <div style="text-align:center;color:#8f9bab;font-size:12px;margin-bottom:6px">Общий баланс</div>
 <div id="totalUsdBalance" style="text-align:center;font-size:42px;font-weight:bold;color:#fff;line-height:1;letter-spacing:-1.5px">0<span style="color:#8f9bab;font-size:22px">,00 TUSD</span></div>
-<div style="text-align:center;margin-top:10px">
-<div id="stakeTick" style="color:#39d98a;font-size:28px;font-weight:bold;font-family:'Courier New',monospace;line-height:1.15"><span style="color:#39d98a;font-weight:bold">+0.0000</span> <span style="font-size:14px;color:#7fc97f;font-weight:normal">TUSD/день</span></div>
-<div id="stakeMonth" style="color:#7fc97f;font-size:16px;font-weight:bold;font-family:'Courier New',monospace;margin-top:2px">≈ 0.0000 <span style="font-size:12px;color:#7fc97f;font-weight:normal">TUSD/месяц</span></div>
+<div style="text-align:center;margin-top:14px">
+<div style="color:#7fc97f;font-size:11px;letter-spacing:1px;margin-bottom:2px">⛏️ НАКОПЛЕНО</div>
+<div id="stakeAccum" style="color:#39d98a;font-size:34px;font-weight:bold;font-family:'Courier New',monospace;line-height:1.1;text-shadow:0 0 18px #39d98a88">0.00000000 <span style="font-size:16px;color:#7fc97f;font-weight:normal">TUSD</span></div>
+<div id="stakeTick" style="color:#39d98a;font-size:16px;font-weight:bold;font-family:'Courier New',monospace;margin-top:8px">+0.0000 <span style="font-size:12px;color:#7fc97f;font-weight:normal">TUSD/день</span></div>
+<div id="stakeMonth" style="color:#7fc97f;font-size:13px;font-weight:bold;font-family:'Courier New',monospace;margin-top:2px">≈ 0.0000 <span style="font-size:11px;color:#7fc97f;font-weight:normal">TUSD/месяц</span></div>
 <div id="stakeRate" style="color:#8f9bab;font-size:11px;margin-top:6px">Загрузка...</div>
 </div>
 <div style="display:flex;gap:8px;margin-top:12px;align-items:center">
@@ -589,13 +591,20 @@ function startStakeTimer(){
 function renderStake(){
   const perDay = STAKE_BALANCE_USD * STAKE_RATE_SEC * 86400;
   const perMonth = perDay * 30;
+
+  const elA = document.getElementById('stakeAccum');
+  if(elA){
+    const intPart = Math.floor(STAKE_ACCUM);
+    const frac = (STAKE_ACCUM - intPart).toFixed(8).substring(1);
+    elA.innerHTML = `${intPart.toLocaleString('ru-RU')}<span style="color:#7fc97f;font-size:20px">${frac}</span> <span style="font-size:16px;color:#7fc97f;font-weight:normal">TUSD</span>`;
+  }
   const el = document.getElementById('stakeTick');
   if(el){
-    el.innerHTML = `<span style="color:#39d98a;font-weight:bold;font-size:28px">+${perDay.toFixed(4)}</span> <span style="font-size:14px;color:#7fc97f;font-weight:normal">TUSD/день</span>`;
+    el.innerHTML = `<span style="color:#39d98a;font-weight:bold">+${perDay.toFixed(4)}</span> <span style="font-size:12px;color:#7fc97f;font-weight:normal">TUSD/день</span>`;
   }
   const elM = document.getElementById('stakeMonth');
   if(elM){
-    elM.innerHTML = `≈ <b>${perMonth.toFixed(2)}</b> <span style="font-size:12px;color:#7fc97f;font-weight:normal">TUSD/месяц</span>`;
+    elM.innerHTML = `≈ <b>${perMonth.toFixed(2)}</b> <span style="font-size:11px;color:#7fc97f;font-weight:normal">TUSD/месяц</span>`;
   }
   if(STAKE_SOUND_ON && Math.floor(Date.now()/1000) % 5 === 0) playCoinSound();
 }
@@ -709,13 +718,7 @@ function renderTotalTusd(){
     list.innerHTML = tokens.map(t=>{
       const isBase = ['TG','AI','TUSD'].includes(t.sym);
       const chk = isBase ? ' <span style="color:#39d98a">✅</span>' : '';
-      return `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #1e2a3a">
-        <div style="color:#aeb8c6;font-size:13px">${esc(t.sym)}${chk}</div>
-        <div style="text-align:right">
-          <div style="color:#fff;font-size:13px;font-weight:bold">${f(t.amt,6)}</div>
-          <div style="color:#8f9bab;font-size:11px">≈ ${f(t.tusd,2)} TUSD</div>
-        </div>
-      </div>`;
+      return `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #1e2a3a"><div style="color:#aeb8c6;font-size:13px">${esc(t.sym)}${chk}</div><div style="text-align:right"><div style="color:#fff;font-size:13px;font-weight:bold">${f(t.amt,6)}</div><div style="color:#8f9bab;font-size:11px">≈ ${f(t.tusd,2)} TUSD</div></div></div>`;
     }).join('');
   }
 }
