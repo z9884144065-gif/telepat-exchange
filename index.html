@@ -135,9 +135,10 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 <div class="title" style="text-align:center;margin-bottom:6px">💰 МОЙ КОШЕЛЁК</div>
 <div style="text-align:center;color:#8f9bab;font-size:12px;margin-bottom:6px">Общий баланс</div>
 <div id="totalUsdBalance" style="text-align:center;font-size:42px;font-weight:bold;color:#fff;line-height:1;letter-spacing:-1.5px">0<span style="color:#8f9bab;font-size:22px">,00 TUSD</span></div>
-<div style="text-align:center;margin-top:8px">
-<div id="stakeTick" style="color:#39d98a;font-size:13px;font-family:'Courier New',monospace"><span style="color:#39d98a;font-weight:bold">+0.0000000000</span> TUSD/сек</div>
-<div id="stakeRate" style="color:#8f9bab;font-size:11px;margin-top:4px">Загрузка...</div>
+<div style="text-align:center;margin-top:10px">
+<div id="stakeTick" style="color:#39d98a;font-size:28px;font-weight:bold;font-family:'Courier New',monospace;line-height:1.15"><span style="color:#39d98a;font-weight:bold">+0.0000</span> <span style="font-size:14px;color:#7fc97f;font-weight:normal">TUSD/день</span></div>
+<div id="stakeMonth" style="color:#7fc97f;font-size:16px;font-weight:bold;font-family:'Courier New',monospace;margin-top:2px">≈ 0.0000 <span style="font-size:12px;color:#7fc97f;font-weight:normal">TUSD/месяц</span></div>
+<div id="stakeRate" style="color:#8f9bab;font-size:11px;margin-top:6px">Загрузка...</div>
 </div>
 <div style="display:flex;gap:8px;margin-top:12px;align-items:center">
 <button class="stake-collect" style="flex:1;margin:0;padding:11px;font-size:14px" onclick="claimStaking()">💵 СОБРАТЬ В TUSD</button>
@@ -350,6 +351,32 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 </div>
 
 <div class="card admin">
+<div class="title">📺 ДОБАВИТЬ РЕКЛАМУ</div>
+<label>Название</label>
+<input id="ad_new_title" type="text" placeholder="Например: Игра XYZ">
+<label style="margin-top:9px">Описание</label>
+<input id="ad_new_desc" type="text">
+<label style="margin-top:9px">Видео (MP4, макс. 50 МБ)</label>
+<input id="ad_new_video" type="file" accept="video/mp4">
+<label style="margin-top:9px">Ссылка (куда ведёт кнопка)</label>
+<input id="ad_new_url" type="text" placeholder="https://t.me/канал">
+<label style="margin-top:9px">Текст кнопки</label>
+<input id="ad_new_cta" type="text" value="🚀 ПЕРЕЙТИ">
+<label style="margin-top:9px">Длительность видео (сек)</label>
+<input id="ad_new_duration" type="number" value="15">
+<label style="margin-top:9px">Буфер после видео (сек)</label>
+<input id="ad_new_buffer" type="number" value="10">
+<label style="margin-top:9px">Награда за просмотр</label>
+<input id="ad_new_reward" type="number" step="0.000001" value="0.0005">
+<label style="margin-top:9px">Токен награды</label>
+<select id="ad_new_token"><option value="">TUSD (по умолчанию)</option></select>
+<label style="margin-top:9px">Сколько просмотров купить</label>
+<input id="ad_new_target" type="number" value="10000">
+<button id="ad_new_submit" onclick="adminCreateAd()">📤 ЗАГРУЗИТЬ И СОЗДАТЬ РЕКЛАМУ</button>
+<div id="ad_new_status" class="info" style="margin-top:9px"></div>
+</div>
+
+<div class="card admin">
 <div class="title">📋 ЗАДАНИЯ</div>
 <button class="sec" onclick="loadAdminTasks()">🔄 ЗАГРУЗИТЬ ЗАДАНИЯ</button>
 <button onclick="openAdminTaskForm(null)">➕ СОЗДАТЬ ЗАДАНИЕ</button>
@@ -370,60 +397,6 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 </div></div>
 </section>
 </div>
-
-<div id="profileModal" class="pcard" onclick="closeProfile(event)">
-<div class="pin" onclick="event.stopPropagation()">
-<div class="title">👤 ПРОФИЛЬ</div>
-<div class="ptitle" id="profileRank">Загрузка...</div>
-<div class="info" id="profileId"></div>
-<div class="sgrid">
-<div class="st"><b id="profileTrades">0</b><span>Сделок</span></div>
-<div class="st"><b id="profileSuccess">0%</b><span>Успех</span></div>
-<div class="st"><b id="profileLikes">0</b><span>👍</span></div>
-<div class="st"><b id="profileDislikes">0</b><span>👎</span></div>
-</div>
-<div class="info" id="profileCancelled" style="margin-top:10px"></div>
-<button class="sec" onclick="closeProfile()">Закрыть</button>
-</div></div>
-
-<div id="addLiqModal" class="mo" onclick="closeAddLiq(event)">
-<div class="mb" onclick="event.stopPropagation()">
-<div class="title">💧 ПУЛ</div>
-<div class="info">Токен</div>
-<div id="addLiqToken" style="font-size:22px;font-weight:bold;color:var(--gold);margin:8px 0 14px">—</div>
-<label>Сумма TUSD</label><input id="addLiqAmount" type="number" min="0" step="any">
-<div class="info" style="margin-top:8px" id="addLiqAvailable">Доступно: 0</div>
-<button onclick="confirmAddLiquidity()">✅ ВНЕСТИ</button>
-<button class="sec" onclick="closeAddLiq()">Отмена</button>
-</div></div>
-
-<div id="adModal" class="mo">
-<div class="af">
-<video id="adVideo" playsinline preload="auto" webkit-playsinline></video>
-<div class="at"><button class="ac" onclick="closeAdModal()">✕</button><div class="atm" id="adTimer">0:25</div></div>
-<div class="ab">
-<div id="adTitle" class="adt"></div>
-<div id="adDesc" class="info"></div>
-<div id="adStatus" class="info">⏳ Смотрите до конца</div>
-<button id="adClaimBtn" onclick="claimAdReward()" disabled>🎁 ПОЛУЧИТЬ</button>
-<div id="adResult" class="info" style="text-align:center"></div>
-</div></div></div>
-
-<div id="tasksModal" class="mo" onclick="closeTasks(event)">
-<div class="mb" style="width:min(500px,100%)" onclick="event.stopPropagation()">
-<div class="title">📋 ЗАДАНИЯ</div>
-<div id="tasksList" style="max-height:65vh;overflow-y:auto;margin-top:10px"><div class="info">Загрузка...</div></div>
-<button class="sec" onclick="closeTasks()">Закрыть</button>
-</div></div>
-
-<div class="nav">
-<button id="n-wallet" class="active" onclick="showSection('wallet')">🏠 Кошелёк</button>
-<button id="n-exchange" onclick="showSection('exchange')">🔄 Обмен</button>
-<button id="n-friends" onclick="showSection('friends')">👥 Друзья</button>
-<button id="n-earn" onclick="showSection('earn')">💎 Заработок</button>
-<button id="n-admin" class="hide" onclick="showSection('admin')">👑 Админ</button>
-</div>
-
 <script>
 const SU='https://jutszxuzjzyfxarceydw.supabase.co';
 const SK='sb_publishable_geRczpRc3faUHRGto2ue7A_eFFiJDwO';
@@ -479,6 +452,16 @@ async function loadAllTokens(){
     else ALL_TOKENS=[{symbol:'TG',name:'Telepat Gold'},{symbol:'AI',name:'AI Token'},{symbol:'TUSD',name:'Telepat Dollar'}];
   }catch{ALL_TOKENS=[{symbol:'TG',name:'Telepat Gold'},{symbol:'AI',name:'AI Token'},{symbol:'TUSD',name:'Telepat Dollar'}]}
   fillAll();
+  const adTokSel = document.getElementById('ad_new_token');
+  if(adTokSel && ALL_TOKENS.length){
+    adTokSel.innerHTML = '<option value="">TUSD (по умолчанию)</option>';
+    ALL_TOKENS.forEach(t=>{
+      const o = document.createElement('option');
+      o.value = t.id;
+      o.textContent = t.symbol + (t.name ? ' — '+t.name : '');
+      adTokSel.appendChild(o);
+    });
+  }
   try{
     const{data:v}=await sb.from('telepat_tokens').select('symbol,verified').eq('verified',true);
     (v||[]).forEach(x=>VERIFIED_SYMBOLS.add(x.symbol));
@@ -516,15 +499,11 @@ async function loadCustomBalances(){
 }
 function renderCustom(){ renderTotalTusd(); }
 
-/* === СТЕЙКИНГ === */
 async function loadStakeState(){
   if(!UID) return;
   try {
     const {data, error} = await sb.rpc('get_staking_state', {p_user_id: String(UID)});
-    if(error || !data || data.ok === false){
-      console.warn('stake error', error, data);
-      return;
-    }
+    if(error || !data || data.ok === false){ console.warn('stake error', error, data); return; }
     STAKE_STATE = data;
     STAKE_RATE_SEC = Number(data.rate_sec) || 0;
     STAKE_ACCUM = Number(data.accumulated) || 0;
@@ -534,9 +513,7 @@ async function loadStakeState(){
     const level = data.level || 1;
     const rateEl = document.getElementById('stakeRate');
     if(rateEl) rateEl.textContent = `Уровень ${level} • ${rateMonth}% в месяц • База ${f(STAKE_BALANCE_USD,2)} TUSD`;
-    const ratePerSec = STAKE_BALANCE_USD * STAKE_RATE_SEC;
-    const tickEl = document.getElementById('stakeTick');
-    if(tickEl) tickEl.innerHTML = `<span style="color:#39d98a;font-weight:bold">+${ratePerSec.toFixed(10)}</span> TUSD/сек`;
+    renderStake();
     startStakeTimer();
   } catch(e){ console.warn('loadStakeState', e); }
 }
@@ -551,11 +528,15 @@ function startStakeTimer(){
   }, 1000);
 }
 function renderStake(){
+  const perDay = STAKE_BALANCE_USD * STAKE_RATE_SEC * 86400;
+  const perMonth = perDay * 30;
   const el = document.getElementById('stakeTick');
   if(el){
-    const ratePerSec = STAKE_BALANCE_USD * STAKE_RATE_SEC;
-    el.innerHTML = `<span style="color:#39d98a;font-weight:bold">+${ratePerSec.toFixed(10)}</span> TUSD/сек<br>
-      <span style="color:#7fc97f;font-size:12px;margin-top:2px;display:block">Накоплено: <b>${STAKE_ACCUM.toFixed(8)} TUSD</b></span>`;
+    el.innerHTML = `<span style="color:#39d98a;font-weight:bold;font-size:28px">+${perDay.toFixed(4)}</span> <span style="font-size:14px;color:#7fc97f;font-weight:normal">TUSD/день</span>`;
+  }
+  const elM = document.getElementById('stakeMonth');
+  if(elM){
+    elM.innerHTML = `≈ <b>${perMonth.toFixed(2)}</b> <span style="font-size:12px;color:#7fc97f;font-weight:normal">TUSD/месяц</span>`;
   }
   if(STAKE_SOUND_ON && Math.floor(Date.now()/1000) % 5 === 0) playCoinSound();
 }
@@ -584,10 +565,7 @@ async function claimStaking(){
   if(!UID) return;
   try {
     const {data, error} = await sb.rpc('claim_staking', {p_user_id: String(UID)});
-    if(error || !data || data.ok === false){
-      msg(data?.error || error?.message || 'Нечего собирать', 'error');
-      return;
-    }
+    if(error || !data || data.ok === false){ msg(data?.error || error?.message || 'Нечего собирать', 'error'); return; }
     const claimed = Number(data.claimed) || 0;
     showAdRewardPopup(claimed, 'TUSD', '💵 СТЕЙКИНГ СОБРАН');
     STAKE_ACCUM = 0;
@@ -596,8 +574,7 @@ async function claimStaking(){
     await loadStakeState();
   } catch(e){ msg('Ошибка', 'error'); }
 }
-
-function openTelegramProfile(){msg(tgu?`👤 ${tgu.first_name||''} (${UID})`:'Открой в Telegram')}
+  function openTelegramProfile(){msg(tgu?`👤 ${tgu.first_name||''} (${UID})`:'Открой в Telegram')}
 function showNotifications(){msg('🔔 Пока нет')}
 function scrollToWallet(){document.getElementById('walletCard')?.scrollIntoView({behavior:'smooth',block:'center'})}
 function showFAQ(){msg('❓ @TELEPATp2p_bot')}
@@ -620,15 +597,12 @@ function renderUser(){
   const name=[tgu?.first_name||'',tgu?.last_name||''].join(' ').trim()||tgu?.username||'User';
   document.getElementById('userName').textContent=name;
   document.getElementById('telegramId').textContent='ID: '+UID;
-
   const rl=Number(CU.rank_level||1);
   const rn=CU.rank_name||RANKS[rl-1]?.[1]||'Крестьянин';
   document.getElementById('rankName').textContent='👑 '+rn;
   const levelEl=document.getElementById('rankLevel');
   if(levelEl)levelEl.textContent=`Уровень ${rl} из 21`;
   document.getElementById('earnRank').textContent=rn;
-
-  // === ПРОГРЕСС ОТ СЛЕДУЮЩЕГО УРОВНЯ ===
   const tgu2=n(CU.tg_balance)*TGU,aie=n(CU.ai_balance)*AIU;
   const total=tgu2+aie;
   const currentRank=RANKS[rl-1]||RANKS[0];
@@ -642,7 +616,6 @@ function renderUser(){
     document.getElementById('rankRequirement').textContent=`Максимальный уровень! Всего ${f(total,2)} TUSD`;
   }
   document.getElementById('earnDetails').innerHTML=`Всего: <b>${f(total,2)} TUSD</b><br>TG: <b>${f(tgu2,2)}</b> • AI: <b>${f(aie,2)}</b><br>До следующего: <b>${f(Math.max(0,nextReq-total),2)} TUSD</b>`;
-
   document.getElementById('bonusStatus').textContent=CU.welcome_bonus_claimed?'Уже получен.':'Доступен.';
   document.getElementById('refTG').textContent=f(CU.referral_tg_earned);
   document.getElementById('refTUSD').textContent=f(CU.referral_tusd_earned);
@@ -670,9 +643,7 @@ function renderTotalTusd(){
   const intPart = Math.floor(total);
   const cents = (total - intPart).toFixed(2).substring(1);
   const el = document.getElementById('totalUsdBalance');
-  if(el){
-    el.innerHTML = `${intPart.toLocaleString('ru-RU')}<span style="color:#8f9bab;font-size:20px">${cents} TUSD</span>`;
-  }
+  if(el){ el.innerHTML = `${intPart.toLocaleString('ru-RU')}<span style="color:#8f9bab;font-size:20px">${cents} TUSD</span>`; }
   const list = document.getElementById('tokensList');
   if(list){
     list.innerHTML = tokens.map(t=>{
@@ -749,7 +720,6 @@ async function loadMyReferrals(){
   box.innerHTML=html;
 }
 
-/* ЧЕКИН */
 async function loadCheckin(){
   const btn=document.getElementById('checkinBtn');
   const status=document.getElementById('checkinStatusMsg');
@@ -757,10 +727,7 @@ async function loadCheckin(){
   btn.disabled=true;
   status.textContent='Загрузка...';
   const{data,error}=await sb.rpc('get_checkin_status');
-  if(error||!data||data.ok===false){
-    status.textContent=error?.message||data?.error||'Ошибка';
-    return;
-  }
+  if(error||!data||data.ok===false){ status.textContent=error?.message||data?.error||'Ошибка'; return; }
   document.getElementById('checkinStreak').textContent=data.current_day||0;
   const preview=document.getElementById('checkinRewardPreview');
   const r=data.next_rewards||{};
@@ -794,10 +761,7 @@ function renderCheckinCalendar(currentDay,nextDay,maxDays){
     if(isNext)cls+=' next';
     if(isBonus)cls+=' bonus';
     const marker=isDone?'<span class="ci-check">✅</span>':(isNext?'<span class="ci-check">🔥</span>':'');
-    html+=`<div class="${cls}">
-      <div style="font-weight:bold;font-size:12px">${d}</div>
-      ${marker||`<div style="font-size:9px">${isBonus?'⭐':'•'}</div>`}
-    </div>`;
+    html+=`<div class="${cls}"><div style="font-weight:bold;font-size:12px">${d}</div>${marker||`<div style="font-size:9px">${isBonus?'⭐':'•'}</div>`}</div>`;
   }
   box.innerHTML=html;
   const banner=document.getElementById('checkinProgressBanner');
@@ -811,44 +775,27 @@ function renderCheckinCalendar(currentDay,nextDay,maxDays){
     else if([2,3,4].includes(currentDay%10)&&![12,13,14].includes(currentDay%100))word='дня';
     bannerText.textContent=`🔥 ДЕНЬ ${currentDay} ПРОЙДЕН!`;
     bannerSub.textContent=`Серия: ${currentDay} ${word} подряд 🔥`;
-  } else {
-    banner.classList.add('hide');
-  }
+  } else { banner.classList.add('hide'); }
 }
 async function claimCheckin(){
   const btn=document.getElementById('checkinBtn');
   btn.disabled=true;
   const{data,error}=await sb.rpc('claim_daily_checkin');
-  if(error||!data||data.ok===false){
-    msg(error?.message||data?.error||'Ошибка','error');
-    await loadCheckin();
-    return;
-  }
+  if(error||!data||data.ok===false){ msg(error?.message||data?.error||'Ошибка','error'); await loadCheckin(); return; }
   const r=data.rewards||{};
   let lines='';
-  Object.keys(r).forEach(t=>{
-    if(n(r[t])>0)lines+=`<div style="display:flex;justify-content:space-between;padding:3px 0"><span>${esc(t)}</span><span style="color:#39d98a;font-weight:bold">+${f(r[t],8)}</span></div>`;
-  });
+  Object.keys(r).forEach(t=>{ if(n(r[t])>0)lines+=`<div style="display:flex;justify-content:space-between;padding:3px 0"><span>${esc(t)}</span><span style="color:#39d98a;font-weight:bold">+${f(r[t],8)}</span></div>`; });
   showCheckinReward(data.day, lines, data.is_bonus_day);
-  await loadUser();
-  await loadCustomBalances();
-  await loadCheckin();
+  await loadUser(); await loadCustomBalances(); await loadCheckin();
 }
 function showCheckinReward(day,lines,isBonus){
   const overlay=document.createElement('div');
   overlay.style.cssText='position:fixed;z-index:5000;inset:0;background:#000c;display:flex;align-items:center;justify-content:center;padding:20px';
-  overlay.innerHTML=`<div style="width:min(340px,100%);background:linear-gradient(145deg,#1a3a1a,#0d200d);border:2px solid #39d98a;border-radius:20px;padding:22px;text-align:center;box-shadow:0 0 40px #39d98a66">
-    <div style="font-size:52px;margin-bottom:6px">🎉</div>
-    <div style="color:#39d98a;font-size:20px;font-weight:bold;margin-bottom:4px">ДЕНЬ ${day} ПРОЙДЕН!</div>
-    ${isBonus?'<div style="color:#f4cf70;font-size:12px;margin-bottom:10px">⭐ БОНУСНЫЙ ДЕНЬ ×2</div>':'<div style="margin-bottom:10px"></div>'}
-    <div style="background:#0006;border-radius:12px;padding:12px;margin-bottom:14px;font-size:14px">${lines}</div>
-    <button onclick="this.parentElement.parentElement.remove()" style="width:100%">👍 ОТЛИЧНО!</button>
-  </div>`;
+  overlay.innerHTML=`<div style="width:min(340px,100%);background:linear-gradient(145deg,#1a3a1a,#0d200d);border:2px solid #39d98a;border-radius:20px;padding:22px;text-align:center;box-shadow:0 0 40px #39d98a66"><div style="font-size:52px;margin-bottom:6px">🎉</div><div style="color:#39d98a;font-size:20px;font-weight:bold;margin-bottom:4px">ДЕНЬ ${day} ПРОЙДЕН!</div>${isBonus?'<div style="color:#f4cf70;font-size:12px;margin-bottom:10px">⭐ БОНУСНЫЙ ДЕНЬ ×2</div>':'<div style="margin-bottom:10px"></div>'}<div style="background:#0006;border-radius:12px;padding:12px;margin-bottom:14px;font-size:14px">${lines}</div><button onclick="this.parentElement.parentElement.remove()" style="width:100%">👍 ОТЛИЧНО!</button></div>`;
   document.body.appendChild(overlay);
 }
 async function claimDailyReward(){ return claimCheckin(); }
 
-/* РЕКЛАМА */
 let AD=null,ADT=null,ADR=false;
 async function watchAd(){
   if(!UID){msg('Открой в Telegram','error');return}
@@ -870,9 +817,7 @@ async function watchAd(){
     const tick=()=>{
       const m=Math.floor(rem/60),s=rem%60;
       tel.textContent=`${m}:${String(s).padStart(2,'0')}`;
-      if(rem<=0){clearInterval(ADT);ADT=null;tel.textContent='✓';
-        document.getElementById('adStatus').innerHTML='✅ <b>Зачтено!</b>';
-        document.getElementById('adClaimBtn').disabled=false;ADR=true;return}
+      if(rem<=0){clearInterval(ADT);ADT=null;tel.textContent='✓';document.getElementById('adStatus').innerHTML='✅ <b>Зачтено!</b>';document.getElementById('adClaimBtn').disabled=false;ADR=true;return}
       if(rem===buf)document.getElementById('adStatus').innerHTML='🔄 Проверка…';
       rem--;
     };
@@ -895,30 +840,14 @@ function showAdRewardPopup(reward, token, extra){
   overlay.style.cssText = 'position:fixed;z-index:6000;inset:0;background:#000c;display:flex;align-items:center;justify-content:center;padding:20px;animation:adFadeIn .3s';
   overlay.onclick = (e) => { if(e.target === overlay) overlay.remove(); };
   const bonusLine = extra ? `<div style="color:#f4cf70;font-size:13px;margin-bottom:10px;font-weight:bold">${extra}</div>` : '';
-  overlay.innerHTML = `
-    <div style="width:min(360px,100%);background:linear-gradient(145deg,#1f4a1f,#0d280d);border:3px solid #39d98a;border-radius:22px;padding:26px 22px;text-align:center;box-shadow:0 0 50px #39d98a88, inset 0 0 20px #39d98a22;animation:adPopIn .5s cubic-bezier(0.34,1.56,0.64,1)">
-      <div style="font-size:64px;line-height:1;animation:adBounce 1s infinite">🎉</div>
-      <div style="color:#39d98a;font-size:22px;font-weight:bold;margin-top:12px;text-shadow:0 0 16px #39d98a99">НАГРАДА ПОЛУЧЕНА!</div>
-      ${bonusLine}
-      <div style="background:#0006;border:2px solid #39d98a55;border-radius:14px;padding:14px;margin:16px 0;font-size:24px;font-weight:bold;color:#39d98a;text-shadow:0 0 12px #39d98a88">
-        +${f(reward,5)} ${esc(token)}
-      </div>
-      <div style="color:#a8e6a8;font-size:12px;margin-bottom:16px">Зачислено на кошелёк</div>
-      <button onclick="document.getElementById('adRewardPopupGreen').remove()" style="width:100%;background:linear-gradient(135deg,#39d98a,#2ba86a);color:#0d280d;font-weight:bold;padding:14px;border-radius:14px;border:0;font-size:16px;cursor:pointer">👍 ОТЛИЧНО!</button>
-      <div style="color:#7fc97f;font-size:11px;margin-top:10px">Закроется через <span id="adAutoCloseTimer">5</span> сек</div>
-    </div>
-  `;
+  overlay.innerHTML = `<div style="width:min(360px,100%);background:linear-gradient(145deg,#1f4a1f,#0d280d);border:3px solid #39d98a;border-radius:22px;padding:26px 22px;text-align:center;box-shadow:0 0 50px #39d98a88, inset 0 0 20px #39d98a22;animation:adPopIn .5s cubic-bezier(0.34,1.56,0.64,1)"><div style="font-size:64px;line-height:1;animation:adBounce 1s infinite">🎉</div><div style="color:#39d98a;font-size:22px;font-weight:bold;margin-top:12px;text-shadow:0 0 16px #39d98a99">НАГРАДА ПОЛУЧЕНА!</div>${bonusLine}<div style="background:#0006;border:2px solid #39d98a55;border-radius:14px;padding:14px;margin:16px 0;font-size:24px;font-weight:bold;color:#39d98a;text-shadow:0 0 12px #39d98a88">+${f(reward,5)} ${esc(token)}</div><div style="color:#a8e6a8;font-size:12px;margin-bottom:16px">Зачислено на кошелёк</div><button onclick="document.getElementById('adRewardPopupGreen').remove()" style="width:100%;background:linear-gradient(135deg,#39d98a,#2ba86a);color:#0d280d;font-weight:bold;padding:14px;border-radius:14px;border:0;font-size:16px;cursor:pointer">👍 ОТЛИЧНО!</button><div style="color:#7fc97f;font-size:11px;margin-top:10px">Закроется через <span id="adAutoCloseTimer">5</span> сек</div></div>`;
   document.body.appendChild(overlay);
   let sec = 5;
   const timerEl = overlay.querySelector('#adAutoCloseTimer');
   const tick = setInterval(() => {
     sec--;
     if(timerEl) timerEl.textContent = sec;
-    if(sec <= 0){
-      clearInterval(tick);
-      const el = document.getElementById('adRewardPopupGreen');
-      if(el) el.remove();
-    }
+    if(sec <= 0){ clearInterval(tick); const el = document.getElementById('adRewardPopupGreen'); if(el) el.remove(); }
   }, 1000);
 }
 async function claimAdReward(){
@@ -935,17 +864,13 @@ async function claimAdReward(){
       b.textContent='✅';
       const rw = Number(data?.reward ?? data?.amount ?? data?.payout ?? 0);
       const tk = data?.reward_token ?? data?.token ?? 'TUSD';
-      await loadUser();
-      await loadCustomBalances();
+      await loadUser(); await loadCustomBalances();
       setTimeout(() => {
         closeAdModal();
         if(rw > 0) showAdRewardPopup(rw, tk, data?.is_bonus_day ? '⭐ БОНУС ×2' : '');
         else msg('💰 Зачислено на кошелёк', 'success');
       }, 600);
-    } else {
-      b.disabled=false;
-      b.textContent='🎁 ПОЛУЧИТЬ';
-    }
+    } else { b.disabled=false; b.textContent='🎁 ПОЛУЧИТЬ'; }
   }catch(e){r.innerHTML=`<span class="er">${esc(e.message)}</span>`;b.disabled=false;b.textContent='🎁 ПОЛУЧИТЬ'}
 }
 
@@ -961,13 +886,7 @@ async function openTasks(){
   if(__PENDING_TASK){
     const pt=data.find(x=>String(x.id)===String(__PENDING_TASK));
     if(pt && !pt.is_completed){
-      pendingBlock=`
-        <div class="task-pending">
-          <div class="tp-title">📌 Задание открыто</div>
-          <div class="info" style="margin-bottom:10px">Подпишитесь/выполните и нажмите кнопку:</div>
-          <button onclick="claimTaskReward('${esc(pt.id)}')">✅ Я выполнил — получить награду</button>
-          <button class="sec" onclick="cancelPendingTask()">Отмена</button>
-        </div>`;
+      pendingBlock=`<div class="task-pending"><div class="tp-title">📌 Задание открыто</div><div class="info" style="margin-bottom:10px">Подпишитесь/выполните и нажмите кнопку:</div><button onclick="claimTaskReward('${esc(pt.id)}')">✅ Я выполнил — получить награду</button><button class="sec" onclick="cancelPendingTask()">Отмена</button></div>`;
     }
   }
   box.innerHTML = pendingBlock + data.map(t=>{
@@ -978,11 +897,7 @@ async function openTasks(){
   }).join('');
 }
 function closeTasks(e){if(e&&e.target!==document.getElementById('tasksModal'))return;document.getElementById('tasksModal').classList.remove('show')}
-function cancelPendingTask(){
-  __PENDING_TASK=null;
-  if(__RETURN_TIMER){clearTimeout(__RETURN_TIMER);__RETURN_TIMER=null}
-  openTasks();
-}
+function cancelPendingTask(){ __PENDING_TASK=null; if(__RETURN_TIMER){clearTimeout(__RETURN_TIMER);__RETURN_TIMER=null} openTasks(); }
 function startTask(id,link){
   if(!id)return;
   try{window.Telegram?.WebApp?.openLink?window.Telegram.WebApp.openLink(link):window.open(link,'_blank')}catch{window.open(link,'_blank')}
@@ -997,12 +912,8 @@ async function claimTaskReward(tid){
     __PENDING_TASK=null;
     if(__RETURN_TIMER){clearTimeout(__RETURN_TIMER);__RETURN_TIMER=null}
     msg(`🎁 +${f(data.payout||data.reward)} ${esc(data.token)}`,'success');
-    await loadUser();
-    await loadCustomBalances();
-    await openTasks();
-  } else {
-    msg(data?.error||'Ошибка','error');
-  }
+    await loadUser(); await loadCustomBalances(); await openTasks();
+  } else { msg(data?.error||'Ошибка','error'); }
 }
 document.addEventListener('visibilitychange',()=>{
   if(document.visibilityState==='visible'&&__PENDING_TASK){
@@ -1017,15 +928,10 @@ async function adminLoadUser(){
   const id=document.getElementById('userSearchId').value.trim();
   if(!id){msg('Введите ID','error');return}
   const box=document.getElementById('adminUserCard');
-  box.classList.remove('hide');
-  box.innerHTML='<div class="info">Загрузка...</div>';
+  box.classList.remove('hide'); box.innerHTML='<div class="info">Загрузка...</div>';
   const{data,error}=await sb.rpc('admin_get_user',{p_telegram_id:id});
-  if(error||!data||data.ok===false){
-    box.innerHTML=`<div class="er">${esc(error?.message||data?.error||'Ошибка')}</div>`;
-    return;
-  }
-  ADMIN_USER=data;
-  renderAdminUser();
+  if(error||!data||data.ok===false){ box.innerHTML=`<div class="er">${esc(error?.message||data?.error||'Ошибка')}</div>`; return; }
+  ADMIN_USER=data; renderAdminUser();
 }
 function renderAdminUser(){
   const box=document.getElementById('adminUserCard');if(!box||!ADMIN_USER)return;
@@ -1034,30 +940,11 @@ function renderAdminUser(){
   if(u.is_banned)badges.push('<span class="er">🚫 ЗАБАНЕН</span>');
   if(u.is_frozen)badges.push('<span class="er">🔒 ЗАМОРОЖЕН</span>');
   if(!u.is_banned&&!u.is_frozen)badges.push('<span class="ok">✅ АКТИВЕН</span>');
-  let html=`<div class="pc">
-    <div class="pt">👤 ${esc(u.first_name||u.username||u.telegram_id)}</div>
-    <div class="info">ID: ${esc(u.telegram_id)}</div>
-    <div class="info">Титул: ${esc(u.rank_name||'—')} (уровень ${u.rank_level||1})</div>
-    <div class="info">Регистрация: ${new Date(u.created_at).toLocaleDateString('ru-RU')}</div>
-    <div style="margin-top:6px">${badges.join(' ')}</div>
-  </div>
-  <div class="title" style="margin-top:14px;font-size:12px">💰 БАЛАНСЫ</div>`;
+  let html=`<div class="pc"><div class="pt">👤 ${esc(u.first_name||u.username||u.telegram_id)}</div><div class="info">ID: ${esc(u.telegram_id)}</div><div class="info">Титул: ${esc(u.rank_name||'—')} (уровень ${u.rank_level||1})</div><div class="info">Регистрация: ${new Date(u.created_at).toLocaleDateString('ru-RU')}</div><div style="margin-top:6px">${badges.join(' ')}</div></div><div class="title" style="margin-top:14px;font-size:12px">💰 БАЛАНСЫ</div>`;
   (ADMIN_USER.balances||[]).forEach(b=>{
-    html+=`<div class="pc">
-      <div class="pt">${esc(b.symbol)} — ${esc(b.name||'')}</div>
-      <div class="tval">${f(b.balance)} ${esc(b.symbol)}</div>
-      <div class="row" style="margin-top:8px">
-        <button class="sm" onclick="adminBalanceAction('${esc(b.symbol)}','add')">➕</button>
-        <button class="sm dng" onclick="adminBalanceAction('${esc(b.symbol)}','sub')">➖</button>
-        <button class="sm sec" onclick="adminBalanceAction('${esc(b.symbol)}','set')">✏️</button>
-      </div>
-    </div>`;
+    html+=`<div class="pc"><div class="pt">${esc(b.symbol)} — ${esc(b.name||'')}</div><div class="tval">${f(b.balance)} ${esc(b.symbol)}</div><div class="row" style="margin-top:8px"><button class="sm" onclick="adminBalanceAction('${esc(b.symbol)}','add')">➕</button><button class="sm dng" onclick="adminBalanceAction('${esc(b.symbol)}','sub')">➖</button><button class="sm sec" onclick="adminBalanceAction('${esc(b.symbol)}','set')">✏️</button></div></div>`;
   });
-  html+=`<div class="title" style="margin-top:14px;font-size:12px">⚙️ ДЕЙСТВИЯ</div>
-  <div class="row">
-    <button class="sm ${u.is_frozen?'':'dng'}" onclick="adminToggleFlag('frozen',${!u.is_frozen})">${u.is_frozen?'🔓 Разморозить':'🔒 Заморозить'}</button>
-    <button class="sm ${u.is_banned?'':'dng'}" onclick="adminToggleFlag('banned',${!u.is_banned})">${u.is_banned?'✅ Разбанить':'🚫 Забанить'}</button>
-  </div>`;
+  html+=`<div class="title" style="margin-top:14px;font-size:12px">⚙️ ДЕЙСТВИЯ</div><div class="row"><button class="sm ${u.is_frozen?'':'dng'}" onclick="adminToggleFlag('frozen',${!u.is_frozen})">${u.is_frozen?'🔓 Разморозить':'🔒 Заморозить'}</button><button class="sm ${u.is_banned?'':'dng'}" onclick="adminToggleFlag('banned',${!u.is_banned})">${u.is_banned?'✅ Разбанить':'🚫 Забанить'}</button></div>`;
   box.innerHTML=html;
 }
 async function adminBalanceAction(token,mode){
@@ -1069,17 +956,8 @@ async function adminBalanceAction(token,mode){
   const amount=Number(amountStr);
   if(!Number.isFinite(amount)||amount<0){msg('Некорректная сумма','error');return}
   const reason=prompt('Причина (необязательно):');
-  const{data,error}=await sb.rpc('admin_set_balance',{
-    p_target_id:Number(u.telegram_id),
-    p_token:token,
-    p_amount:amount,
-    p_mode:mode,
-    p_reason:reason||null
-  });
-  if(error||!data||data.ok===false){
-    msg(error?.message||data?.error||'Ошибка','error');
-    return;
-  }
+  const{data,error}=await sb.rpc('admin_set_balance',{p_target_id:Number(u.telegram_id),p_token:token,p_amount:amount,p_mode:mode,p_reason:reason||null});
+  if(error||!data||data.ok===false){ msg(error?.message||data?.error||'Ошибка','error'); return; }
   msg(`✅ ${token}: ${f(data.new_balance)}`,'success');
   await adminLoadUser();
 }
@@ -1087,84 +965,31 @@ async function adminToggleFlag(flag,value){
   if(!ADMIN_USER)return;
   const u=ADMIN_USER.user;
   let reason=null;
-  if(value){
-    reason=prompt('Причина:');
-    if(!reason){msg('Причина обязательна','error');return}
-  }
-  const{data,error}=await sb.rpc('admin_toggle_user_flag',{
-    p_target_id:Number(u.telegram_id),
-    p_flag:flag,
-    p_value:value,
-    p_reason:reason
-  });
-  if(error||!data||data.ok===false){
-    msg(error?.message||data?.error||'Ошибка','error');
-    return;
-  }
+  if(value){ reason=prompt('Причина:'); if(!reason){msg('Причина обязательна','error');return} }
+  const{data,error}=await sb.rpc('admin_toggle_user_flag',{p_target_id:Number(u.telegram_id),p_flag:flag,p_value:value,p_reason:reason});
+  if(error||!data||data.ok===false){ msg(error?.message||data?.error||'Ошибка','error'); return; }
   msg('✅ Готово','success');
   await adminLoadUser();
 }
 
 async function loadAdminCheckin(){
-  const box=document.getElementById('adminCheckinBox');
-  if(!box)return;
+  const box=document.getElementById('adminCheckinBox');if(!box)return;
   box.innerHTML='<div class="info">Загрузка...</div>';
   const{data,error}=await sb.rpc('admin_get_checkin_config');
-  if(error||!data||data.ok===false){
-    box.innerHTML=`<div class="er">${esc(error?.message||data?.error||'Ошибка')}</div>`;return;
-  }
+  if(error||!data||data.ok===false){ box.innerHTML=`<div class="er">${esc(error?.message||data?.error||'Ошибка')}</div>`;return; }
   const s=data.settings||{};
   const tokens=data.tokens||[];
-  let html=`<div class="title" style="font-size:12px">ОБЩИЕ НАСТРОЙКИ</div>
-    <label>Максимум дней серии</label>
-    <input id="ci_max_days" type="number" value="${s.max_days||30}">
-    <label style="margin-top:8px">Прирост в день (%)</label>
-    <input id="ci_growth" type="number" step="0.1" value="${s.growth_percent||5}">
-    <label style="margin-top:8px">Бонусный множитель</label>
-    <input id="ci_bonus_mult" type="number" step="0.1" value="${s.bonus_multiplier||2}">
-    <label style="margin-top:8px">Бонус каждые N дней</label>
-    <input id="ci_bonus_every" type="number" value="${s.bonus_every_days||7}">
-    <button class="sm" style="margin-top:8px" onclick="saveAdminCheckinSettings()">💾 Сохранить настройки</button>
-    <div class="title" style="margin-top:16px;font-size:12px">ТОКЕНЫ В ЧЕКИНЕ</div>`;
+  let html=`<div class="title" style="font-size:12px">ОБЩИЕ НАСТРОЙКИ</div><label>Максимум дней серии</label><input id="ci_max_days" type="number" value="${s.max_days||30}"><label style="margin-top:8px">Прирост в день (%)</label><input id="ci_growth" type="number" step="0.1" value="${s.growth_percent||5}"><label style="margin-top:8px">Бонусный множитель</label><input id="ci_bonus_mult" type="number" step="0.1" value="${s.bonus_multiplier||2}"><label style="margin-top:8px">Бонус каждые N дней</label><input id="ci_bonus_every" type="number" value="${s.bonus_every_days||7}"><button class="sm" style="margin-top:8px" onclick="saveAdminCheckinSettings()">💾 Сохранить настройки</button><div class="title" style="margin-top:16px;font-size:12px">ТОКЕНЫ В ЧЕКИНЕ</div>`;
   tokens.forEach(t=>{
-    html+=`<div class="pc" style="margin-top:6px">
-      <div class="ol">
-        <div style="flex:1">
-          <div class="pt">${esc(t.token_symbol)}</div>
-          <input id="ci_tok_${esc(t.token_symbol)}" type="number" step="0.00000001" value="${t.base_amount}" style="margin-top:4px">
-        </div>
-        <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end">
-          <label style="margin:0;font-size:11px"><input type="checkbox" id="ci_act_${esc(t.token_symbol)}" ${t.active?'checked':''} style="width:auto"> Активен</label>
-          <button class="sm" onclick="saveAdminCheckinToken('${esc(t.token_symbol)}')">💾</button>
-          <button class="sm dng" onclick="removeAdminCheckinToken('${esc(t.token_symbol)}')">🗑</button>
-        </div>
-      </div>
-    </div>`;
+    html+=`<div class="pc" style="margin-top:6px"><div class="ol"><div style="flex:1"><div class="pt">${esc(t.token_symbol)}</div><input id="ci_tok_${esc(t.token_symbol)}" type="number" step="0.00000001" value="${t.base_amount}" style="margin-top:4px"></div><div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end"><label style="margin:0;font-size:11px"><input type="checkbox" id="ci_act_${esc(t.token_symbol)}" ${t.active?'checked':''} style="width:auto"> Активен</label><button class="sm" onclick="saveAdminCheckinToken('${esc(t.token_symbol)}')">💾</button><button class="sm dng" onclick="removeAdminCheckinToken('${esc(t.token_symbol)}')">🗑</button></div></div></div>`;
   });
-  html+=`<div class="title" style="margin-top:16px;font-size:12px">ДОБАВИТЬ ТОКЕН</div>
-    <label>Токен</label>
-    <select id="ci_new_symbol"></select>
-    <label style="margin-top:8px">Базовая награда</label>
-    <input id="ci_new_amount" type="number" step="0.00000001" placeholder="Например: 1">
-    <button class="sm" style="margin-top:8px" onclick="addAdminCheckinToken()">➕ Добавить токен</button>`;
+  html+=`<div class="title" style="margin-top:16px;font-size:12px">ДОБАВИТЬ ТОКЕН</div><label>Токен</label><select id="ci_new_symbol"></select><label style="margin-top:8px">Базовая награда</label><input id="ci_new_amount" type="number" step="0.00000001" placeholder="Например: 1"><button class="sm" style="margin-top:8px" onclick="addAdminCheckinToken()">➕ Добавить токен</button>`;
   box.innerHTML=html;
   const sel=document.getElementById('ci_new_symbol');
-  if(sel){
-    ALL_TOKENS.forEach(t=>{
-      const o=document.createElement('option');
-      o.value=t.symbol;
-      o.textContent=t.symbol+(t.name?' — '+t.name:'');
-      sel.appendChild(o);
-    });
-  }
+  if(sel){ ALL_TOKENS.forEach(t=>{ const o=document.createElement('option'); o.value=t.symbol; o.textContent=t.symbol+(t.name?' — '+t.name:''); sel.appendChild(o); }); }
 }
 async function saveAdminCheckinSettings(){
-  const fields=[
-    ['checkin_max_days', document.getElementById('ci_max_days').value],
-    ['checkin_growth_percent', document.getElementById('ci_growth').value],
-    ['checkin_bonus_day_multiplier', document.getElementById('ci_bonus_mult').value],
-    ['checkin_bonus_every_days', document.getElementById('ci_bonus_every').value],
-  ];
+  const fields=[['checkin_max_days', document.getElementById('ci_max_days').value],['checkin_growth_percent', document.getElementById('ci_growth').value],['checkin_bonus_day_multiplier', document.getElementById('ci_bonus_mult').value],['checkin_bonus_every_days', document.getElementById('ci_bonus_every').value]];
   for(const [k,v] of fields){
     const{data,error}=await sb.rpc('admin_update_checkin_setting',{p_key:k,p_value:String(v)});
     if(error||!data||data.ok===false){msg(error?.message||data?.error||'Ошибка','error');return;}
@@ -1269,14 +1094,7 @@ async function loadAdminVerification(){
     const status=isVerified?(isBase?'✅ БАЗОВЫЙ (всегда вериф.)':'✅ ВЕРИФИЦИРОВАН'):'❌ НЕ ВЕРИФИЦИРОВАН';
     const manualTag=t.manual_verified?' <span style="color:#f4cf70;font-size:11px">[вручную]</span>':'';
     const reason=!isBase && t.verify_reason?`<div class="info" style="font-size:11px;color:#ff8a8a">Причина: ${esc(t.verify_reason)}</div>`:'';
-    d.innerHTML=`<div>
-      <div class="pt">🪙 ${esc(t.symbol)} — ${esc(t.name||'')}${manualTag}</div>
-      <div class="info">Владелец: ${t.owner_telegram_id||'—'} (титул ${t.owner_rank||'?'})</div>
-      <div class="info">Пул: $${f(t.pool_usd,2)} • Держателей: ${t.holders} • Возраст: ${t.days_old} дн.</div>
-      <div class="${sc}" style="font-size:12px;margin-top:5px">${status}</div>
-      ${reason}
-      ${isBase?'':`<div class="row" style="margin-top:10px"><button onclick="setTokenVerified('${esc(t.id)}',${t.manual_verified?'false':'true'})">${t.manual_verified?'❌ Снять вручную':'✅ Верифицировать вручную'}</button></div>`}
-    </div>`;
+    d.innerHTML=`<div><div class="pt">🪙 ${esc(t.symbol)} — ${esc(t.name||'')}${manualTag}</div><div class="info">Владелец: ${t.owner_telegram_id||'—'} (титул ${t.owner_rank||'?'})</div><div class="info">Пул: $${f(t.pool_usd,2)} • Держателей: ${t.holders} • Возраст: ${t.days_old} дн.</div><div class="${sc}" style="font-size:12px;margin-top:5px">${status}</div>${reason}${isBase?'':`<div class="row" style="margin-top:10px"><button onclick="setTokenVerified('${esc(t.id)}',${t.manual_verified?'false':'true'})">${t.manual_verified?'❌ Снять вручную':'✅ Верифицировать вручную'}</button></div>`}</div>`;
     b.appendChild(d);
   });
 }
@@ -1285,8 +1103,7 @@ async function setTokenVerified(id,v){
   const{data,error}=await sb.rpc('telepat_admin_set_token_verified',{p_token_id:id,p_manual:v});
   if(error){msg(error.message,'error');return}
   msg(v?'✅ Верифицирован':'🔄 Ручная снята','success');
-  await loadAllTokens();
-  await loadAdminVerification();
+  await loadAllTokens(); await loadAdminVerification();
 }
 
 async function loadAdminListings(){
@@ -1401,23 +1218,7 @@ function orderCard(o){
   const p=CP[String(o.from_token).toUpperCase()];
   let pl='';
   if(p){let tx=`${f(p.reserve_amount,6)} ${esc(o.from_token)}`;if(p.reserve_tusd>0)tx+=` + ${f(p.reserve_tusd,2)} TUSD`;pl=`<div class="dt"><span>💧 Резерв</span><span>${tx}</span></div>`}
-  return `<div class="order" id="order-${esc(o.id)}" style="--rc:${c};--rg:${g}">
-    <div class="oh" onclick="toggleOrder('${esc(o.id)}')">
-      <div class="ol"><div class="om">${f(o.from_amount)} ${esc(o.from_token)} → ${f(o.to_amount)} ${esc(o.to_token)}</div><div class="rb">👑 ${esc(o.creator_rank_name)}</div></div>
-      <div class="op">1 ${esc(o.from_token)} = ${f(rt,12)} ${esc(o.to_token)}</div>
-      <div class="os"><span>👍 ${n(o.likes)}</span><span>👎 ${n(o.dislikes)}</span><span>🤝 ${n(o.completed_trades)}</span></div>
-    </div>
-    <div class="oe">
-      <div class="dt"><span>Владелец</span><span class="pl" onclick="openProfile(${Number(o.creator_id)});event.stopPropagation()">👤 ${Number(o.creator_id)}</span></div>
-      <div class="dt"><span>Отдаёт</span><span>${f(o.from_amount)} ${esc(o.from_token)}</span></div>
-      <div class="dt"><span>Получает</span><span>${f(o.to_amount)} ${esc(o.to_token)}</span></div>
-      <div class="dt"><span>Курс</span><span>1 ${esc(o.from_token)} = ${f(rt,12)} ${esc(o.to_token)}</span></div>
-      <div class="dt"><span>Титул</span><span style="color:${c};font-weight:bold">👑 ${esc(o.creator_rank_name)}</span></div>
-      ${pl}
-      <div class="dt"><span>Дата</span><span>${esc(dt)}</span></div>
-      <div class="oa"><button class="sec" onclick="openProfile(${Number(o.creator_id)});event.stopPropagation()">👤</button>${isMine?`<button class="dng" onclick="cancelP2POrder('${esc(o.id)}');event.stopPropagation()">❌</button>`:`<button onclick="acceptP2POrder('${esc(o.id)}');event.stopPropagation()">🤝</button>`}</div>
-    </div>
-  </div>`;
+  return `<div class="order" id="order-${esc(o.id)}" style="--rc:${c};--rg:${g}"><div class="oh" onclick="toggleOrder('${esc(o.id)}')"><div class="ol"><div class="om">${f(o.from_amount)} ${esc(o.from_token)} → ${f(o.to_amount)} ${esc(o.to_token)}</div><div class="rb">👑 ${esc(o.creator_rank_name)}</div></div><div class="op">1 ${esc(o.from_token)} = ${f(rt,12)} ${esc(o.to_token)}</div><div class="os"><span>👍 ${n(o.likes)}</span><span>👎 ${n(o.dislikes)}</span><span>🤝 ${n(o.completed_trades)}</span></div></div><div class="oe"><div class="dt"><span>Владелец</span><span class="pl" onclick="openProfile(${Number(o.creator_id)});event.stopPropagation()">👤 ${Number(o.creator_id)}</span></div><div class="dt"><span>Отдаёт</span><span>${f(o.from_amount)} ${esc(o.from_token)}</span></div><div class="dt"><span>Получает</span><span>${f(o.to_amount)} ${esc(o.to_token)}</span></div><div class="dt"><span>Курс</span><span>1 ${esc(o.from_token)} = ${f(rt,12)} ${esc(o.to_token)}</span></div><div class="dt"><span>Титул</span><span style="color:${c};font-weight:bold">👑 ${esc(o.creator_rank_name)}</span></div>${pl}<div class="dt"><span>Дата</span><span>${esc(dt)}</span></div><div class="oa"><button class="sec" onclick="openProfile(${Number(o.creator_id)});event.stopPropagation()">👤</button>${isMine?`<button class="dng" onclick="cancelP2POrder('${esc(o.id)}');event.stopPropagation()">❌</button>`:`<button onclick="acceptP2POrder('${esc(o.id)}');event.stopPropagation()">🤝</button>`}</div></div></div>`;
 }
 function toggleOrder(id){document.getElementById('order-'+id)?.classList.toggle('opened')}
 async function acceptP2POrder(id){
@@ -1492,11 +1293,7 @@ async function loadAdminStats(){
   const box=document.getElementById('adminCustomTokens');
   if(box){
     box.innerHTML = all.length
-      ? all.map(x=>{
-          const isBase=['TG','AI','TUSD'].includes(x.symbol);
-          const vchk=isBase?' ✅':'';
-          return `<div class="st"><b>${f(x.total_balance,2)}</b><span>${esc(x.symbol)}${vchk} • ${x.holders}👤</span></div>`;
-        }).join('')
+      ? all.map(x=>{ const isBase=['TG','AI','TUSD'].includes(x.symbol); const vchk=isBase?' ✅':''; return `<div class="st"><b>${f(x.total_balance,2)}</b><span>${esc(x.symbol)}${vchk} • ${x.holders}👤</span></div>`; }).join('')
       : '<div class="info">Нет данных.</div>';
   }
 }
@@ -1591,6 +1388,45 @@ async function createTokenListing(){
     calculateListingPreview();
     await loadAdminListings();
   }finally{if(b){b.disabled=false;b.textContent='➕ СОЗДАТЬ ЗАЯВКУ'}}
+}
+async function adminCreateAd(){
+  if(UID !== AID){ msg('Нет доступа', 'error'); return; }
+  const status = document.getElementById('ad_new_status');
+  status.className = 'info'; status.textContent = 'Проверка...';
+  const title = document.getElementById('ad_new_title').value.trim();
+  const desc = document.getElementById('ad_new_desc').value.trim();
+  const url = document.getElementById('ad_new_url').value.trim();
+  const cta = document.getElementById('ad_new_cta').value.trim() || '🚀 ПЕРЕЙТИ';
+  const duration = parseInt(document.getElementById('ad_new_duration').value) || 15;
+  const buffer = parseInt(document.getElementById('ad_new_buffer').value) || 10;
+  const reward = Number(document.getElementById('ad_new_reward').value) || 0.0005;
+  const tokenId = document.getElementById('ad_new_token').value || null;
+  const target = parseInt(document.getElementById('ad_new_target').value) || 1000;
+  const fileInput = document.getElementById('ad_new_video');
+  const file = fileInput.files[0];
+  if(!title){ status.className='er'; status.textContent='Введите название'; return; }
+  if(!url){ status.className='er'; status.textContent='Введите ссылку'; return; }
+  if(!file){ status.className='er'; status.textContent='Выберите видео MP4'; return; }
+  if(file.size > 50*1024*1024){ status.className='er'; status.textContent='Видео больше 50 МБ'; return; }
+  const btn = document.getElementById('ad_new_submit');
+  btn.disabled = true; status.textContent = 'Загрузка видео...';
+  try {
+    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+    const fileName = 'videos/' + Date.now() + '_' + safeName;
+    const { error: uploadError } = await sb.storage.from('ads').upload(fileName, file, { contentType: 'video/mp4', upsert: false });
+    if(uploadError){ status.className='er'; status.textContent='Ошибка: '+uploadError.message; btn.disabled=false; return; }
+    const { data: urlData } = sb.storage.from('ads').getPublicUrl(fileName);
+    const videoUrl = urlData.publicUrl;
+    status.textContent = 'Создание кампании...';
+    const { error: insertError } = await sb.from('telepat_ad_campaigns').insert({advertiser_telegram_id: UID, title: title, description: desc, campaign_type: 'video', url: url, video_url: videoUrl, reward_per_action: reward, reward_token_id: tokenId, target_actions: target, completed_actions: 0, duration_seconds: duration, buffer_seconds: buffer, cta_button_text: cta, cta_text: desc, payment_status: 'paid', admin_status: 'approved'});
+    if(insertError){ status.className='er'; status.textContent='Ошибка: '+insertError.message; btn.disabled=false; return; }
+    status.className='ok'; status.innerHTML = '✅ Реклама создана!<br>'+videoUrl;
+    fileInput.value='';
+    document.getElementById('ad_new_title').value='';
+    document.getElementById('ad_new_desc').value='';
+    document.getElementById('ad_new_url').value='';
+    btn.disabled=false;
+  } catch(e){ status.className='er'; status.textContent='Ошибка: '+e.message; btn.disabled=false; }
 }
 async function adminTransfer(){
   if(UID!==AID){msg('Нет','error');return}
