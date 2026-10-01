@@ -652,23 +652,48 @@ function goToMyOrders(){showSection('exchange');setTimeout(()=>document.getEleme
 function goToPools(){showSection('exchange');setTimeout(()=>document.getElementById('poolsCard')?.scrollIntoView({behavior:'smooth',block:'start'}),400)}
 function goToTrades(){showSection('exchange');setTimeout(()=>document.getElementById('tradesCard')?.scrollIntoView({behavior:'smooth',block:'start'}),400)}
 
-// === ИСПРАВЛЕНО: читаем users по telegram_id (bigint), а не по Ttelegram_id ===
+// ================= ИСПРАВЛЕНО: автосоздание пользователя =================
 async function loadUser(){
   if(!UID){msg('Открой в Telegram','error');return}
-  const{data,error}=await sb.from('users').select('*').eq('telegram_id',UID).maybeSingle();
-  if(error){
-    console.error('[loadUser] supabase error:',error);
-    msg('Ошибка загрузки профиля','error');
-    return;
-  }
+
+  // 1) пробуем прочитать
+  let {data, error} = await sb
+    .from('users')
+    .select('*')
+    .eq('telegram_id', UID)
+    .maybeSingle();
+
+  if(error) console.error('[loadUser] read error:', error);
+
+  // 2) если не нашли — создаём через RPC
   if(!data){
-    console.warn('[loadUser] пользователь не найден по telegram_id =',UID);
-    msg('Профиль не найден','error');
+    console.warn('[loadUser] user not found, creating:', UID);
+    try {
+      await sb.rpc('ensure_user_exists', { p_telegram_id: UID });
+    } catch(e){
+      console.error('[loadUser] ensure error:', e);
+    }
+    // 3) читаем повторно
+    const r2 = await sb
+      .from('users')
+      .select('*')
+      .eq('telegram_id', UID)
+      .maybeSingle();
+    data = r2.data;
+    error = r2.error;
+  }
+
+  if(!data){
+    console.warn('[loadUser] user still not found:', UID);
+    msg('Не удалось загрузить профиль. Напиши сообщение в чате.', 'error');
     return;
   }
-  CU=data;renderUser();
-  if(UID===AID)document.getElementById('n-admin').classList.remove('hide');
-  loadReferral();updateOrderForm();
+
+  CU = data;
+  renderUser();
+  if(UID === AID) document.getElementById('n-admin').classList.remove('hide');
+  loadReferral();
+  updateOrderForm();
 }
 
 function renderUser(){
@@ -1298,7 +1323,6 @@ async function openProfile(uid){
   const c=n(p.completed_trades),cn=n(p.cancelled_trades),t=c+cn,s=t>0?(c/t)*100:100;
   const col=rk(p.rank_level);
   document.getElementById('profileRank').innerHTML=`<span style="color:${col}">👑 ${esc(p.rank_name)}</span>`;
-  // === ИСПРАВЛЕНО: telegram_id в приоритете, Ttelegram_id — для обратной совместимости RPC ===
   document.getElementById('profileId').textContent='ID: '+(p.telegram_id??p.Ttelegram_id??p.user_id??'—');
   document.getElementById('profileTrades').textContent=c;
   document.getElementById('profileSuccess').textContent=s.toFixed(1)+'%';
