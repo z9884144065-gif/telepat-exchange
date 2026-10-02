@@ -1083,14 +1083,20 @@ function startTask(id,link){
   document.getElementById('tasksModal').classList.add('show');
   document.getElementById('tasksList').innerHTML='<div style="text-align:center;padding:20px"><div class="info" style="font-size:14px">⏳ Выполняем задание…</div><div class="info" style="margin-top:10px">Подпишитесь и вернитесь в бота</div></div>';
 }
+// ================= ИЗМЕНЕНО: награда идёт в НАКОПЛЕНО =================
 async function claimTaskReward(tid){
   const{data,error}=await sb.rpc('complete_task',{p_task_id:tid,p_user_id:String(UID)});
   if(error){msg(error.message,'error');return}
   if(data?.ok===true){
     __PENDING_TASK=null;
     if(__RETURN_TIMER){clearTimeout(__RETURN_TIMER);__RETURN_TIMER=null}
-    msg(`🎁 +${f(data.payout||data.reward)} ${esc(data.token)}`,'success');
-    await loadUser(); await loadCustomBalances(); await openTasks();
+    const added = data?.accumulated_added ? `+${f(data.accumulated_added,6)} TUSD` : (data?.payout ? `+${f(data.payout,6)} ${esc(data.token)}` : '');
+    msg(`🎁 Награда зачислена в НАКОПЛЕНО ${added}`,'success');
+    // обновляем всё: профиль, кастомные балансы, состояние стейкинга (где accumulated)
+    await loadUser();
+    await loadCustomBalances();
+    await loadStakeState();
+    await openTasks();
   } else { msg(data?.error||'Ошибка','error'); }
 }
 document.addEventListener('visibilitychange',()=>{
