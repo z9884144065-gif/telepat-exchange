@@ -117,10 +117,16 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 .acc-body{display:none;padding:4px 16px 16px 16px;border-top:1px solid #1a2534}
 .acc-item.open .acc-body{display:block}
 .ad-balance-value{text-align:center;font-size:34px;font-weight:bold;color:#39d98a;text-shadow:0 0 18px #39d98a88;line-height:1.1}
-.tlogo{position:relative;width:42px;height:42px;flex:0 0 42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;overflow:hidden;background:#0d1520}
-.tlogo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%}
-.tlogo.sm{width:28px;height:28px;flex:0 0 28px;font-size:14px}
-.tlogo.xs{width:22px;height:22px;flex:0 0 22px;font-size:12px;vertical-align:middle;display:inline-flex;margin-right:4px}
+/* === Логотипы токенов === */
+.tlogo{position:relative;width:48px;height:48px;flex:0 0 48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;overflow:hidden;background:#0d1520;box-shadow:0 4px 14px rgba(0,0,0,.45),inset 0 0 0 1.5px rgba(255,255,255,.07);transition:transform .15s}
+.tlogo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%;background:#0d1520}
+.tlogo.sm{width:30px;height:30px;flex:0 0 30px;font-size:14px;box-shadow:0 2px 8px rgba(0,0,0,.4),inset 0 0 0 1px rgba(255,255,255,.06)}
+.tlogo.xs{width:24px;height:24px;flex:0 0 24px;font-size:13px;vertical-align:middle;display:inline-flex;margin-right:4px;box-shadow:0 1px 4px rgba(0,0,0,.35),inset 0 0 0 1px rgba(255,255,255,.05)}
+.tlogo.lg{width:52px;height:52px;flex:0 0 52px;font-size:24px}
+.wallet-token-row{display:flex;align-items:center;gap:12px;padding:11px 13px;background:linear-gradient(145deg,#101a28,#0c121c);border:1px solid #2d3a4c;border-radius:15px;box-shadow:0 4px 12px rgba(0,0,0,.3)}
+.logo-thumb-preview{width:56px;height:56px;flex:0 0 56px;border-radius:50%;background:#0d1520;display:flex;align-items:center;justify-content:center;font-size:24px;overflow:hidden;position:relative;box-shadow:0 4px 14px rgba(0,0,0,.5),inset 0 0 0 1.5px rgba(255,255,255,.08);border:2px solid #4a596d}
+.logo-thumb-preview img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%}
+.logo-thumb-preview.on{border-color:#39d98a;box-shadow:0 4px 14px rgba(57,217,138,.35),inset 0 0 0 1.5px rgba(57,217,138,.3)}
 </style></head><body>
 <div id="message" class="msg"></div>
 <div class="app">
@@ -169,7 +175,7 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 <button class="stake-sound" id="stakeSoundBtn" style="width:44px;flex:0 0 44px;margin:0;padding:11px;font-size:16px" onclick="toggleStakeSound()">🔇</button>
 </div>
 <div class="title" style="font-size:12px;color:#9da9b9;margin-top:18px;margin-bottom:8px">МОИ ТОКЕНЫ</div>
-<div id="tokensList" style="display:flex;flex-direction:column;gap:6px"></div>
+<div id="tokensList" style="display:flex;flex-direction:column;gap:7px"></div>
 </div>
 
 <div class="card gold" id="adBalanceCard">
@@ -313,6 +319,13 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
   </div>
   <div id="uiSettingsStatus" class="info" style="margin-top:8px"></div>
 </div>
+</div>
+
+<div class="card admin">
+<div class="title">🖼️ ЛОГОТИПЫ ТОКЕНОВ</div>
+<div class="info" style="margin-bottom:10px">Задай лого для любого токена — оно появится на главной, в ордерах, сделках, заданиях, чекине. Поддерживаются прямые ссылки на PNG/JPG/SVG/WebP.</div>
+<button onclick="loadAllLogos()">🔄 Загрузить все токены</button>
+<div id="adminLogosList" style="margin-top:12px"><div class="info">Нажми «Загрузить все токены».</div></div>
 </div>
 
 <div class="card admin">
@@ -592,7 +605,7 @@ function tokenIcon(sym){
 }
 function tokenIconHTML(sym, size){
   const ic = tokenIcon(sym);
-  const cls = 'tlogo' + (size === 'sm' ? ' sm' : size === 'xs' ? ' xs' : '');
+  const cls = 'tlogo' + (size === 'sm' ? ' sm' : size === 'xs' ? ' xs' : size === 'lg' ? ' lg' : '');
   const bg = ic.bg || 'linear-gradient(135deg,#7f8c9f,#4a596d)';
   const emoji = ic.emoji || '🪙';
   const img = ic.logo
@@ -644,14 +657,15 @@ async function loadAllTokens(){
   Object.keys(PRICE_CACHE).forEach(k=>delete PRICE_CACHE[k]);
 
   try{
-    const {data: full} = await sb.from('telepat_tokens').select('symbol,logo_url,logo,icon_url,icon');
+    const {data: full} = await sb.from('telepat_tokens').select('*');
     if(full && full.length){
       const byS = {};
       full.forEach(t => { byS[t.symbol] = t; });
       ALL_TOKENS.forEach(t => {
         const row = byS[t.symbol];
-        if(row && !t.logo_url){
-          t.logo_url = pickLogo(row);
+        if(row){
+          if(!t.logo_url) t.logo_url = pickLogo(row);
+          if(row.id) t.id = row.id;
         }
       });
     }
@@ -904,19 +918,23 @@ function renderTotalTusd(){
   list.innerHTML = tokens.map(t => {
     const minW = minMap[t.sym] || 0;
     const canWithdraw = minW > 0 && t.amt >= minW;
-    const icon = tokenIconHTML(t.sym);
+    const icon = tokenIconHTML(t.sym, 'lg');
+    const verified = VERIFIED_SYMBOLS.has(t.sym);
     return `
-      <div style="display:flex;align-items:center;gap:12px;padding:10px 12px;background:#0d1520;border:1px solid #2d3a4c;border-radius:14px">
+      <div class="wallet-token-row">
         ${icon}
         <div style="flex:1;min-width:0">
-          <div style="color:#fff;font-weight:bold;font-size:14px">${esc(t.sym)}</div>
-          <div style="color:#8f9bab;font-size:11px;margin-top:2px">Мин. вывод: ${minW > 0 ? f(minW, 6) : '—'} ${esc(t.sym)}</div>
+          <div style="color:#fff;font-weight:bold;font-size:15px;display:flex;align-items:center;gap:5px">
+            ${esc(t.sym)}
+            ${verified ? '<span title="Верифицирован" style="color:#39d98a;font-size:13px">✅</span>' : ''}
+          </div>
+          <div style="color:#8f9bab;font-size:11px;margin-top:2px">Мин. вывод: ${minW > 0 ? f(minW, 6) : '—'}</div>
         </div>
-        <div style="text-align:right;margin-right:8px">
-          <div style="color:#fff;font-weight:bold;font-size:14px">${f(t.amt, 6)}</div>
+        <div style="text-align:right;margin-right:6px">
+          <div style="color:#fff;font-weight:bold;font-size:15px">${f(t.amt, 6)}</div>
           <div style="color:#8f9bab;font-size:11px">≈ ${f(t.tusd, 2)} TUSD</div>
         </div>
-        <div style="display:flex;flex-direction:column;gap:4px;margin-left:6px">
+        <div style="display:flex;flex-direction:column;gap:4px;margin-left:4px">
           <button onclick="openTokenDeposit('${esc(t.sym)}')" style="width:auto;padding:6px 10px;margin:0;font-size:11px">➕</button>
           <button onclick="openWithdraw('${esc(t.sym)}', ${t.amt}, ${minW})" style="width:auto;padding:6px 10px;margin:0;font-size:11px;${canWithdraw ? '' : 'opacity:.4;'}" ${canWithdraw ? '' : 'disabled'}>↩️</button>
         </div>
@@ -940,7 +958,7 @@ function showSection(name){
   if(name==='exchange'){loadOrders();loadMyOrders();loadMyTrades();loadTokenReserves()}
   if(name==='friends'){loadMyReferrals()}
   if(name==='earn'){loadCheckin()}
-  if(name==='admin'&&UID===AID){loadAdminStats();loadAdminChats();loadAdminListings();loadAdminTasks();loadAdminVerification();loadAdminCheckin()}
+  if(name==='admin'&&UID===AID){loadAdminStats();loadAdminChats();loadAdminListings();loadAdminTasks();loadAdminVerification();loadAdminCheckin();loadAllLogos()}
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -1303,6 +1321,146 @@ document.addEventListener('visibilitychange',()=>{
   }
 });
 
+/* ============ АДМИН: ЛОГОТИПЫ ТОКЕНОВ ============ */
+async function loadAllLogos(){
+  const box = document.getElementById('adminLogosList');
+  if(!box) return;
+  box.innerHTML = '<div class="info">Загрузка...</div>';
+  try{
+    const {data, error} = await sb.from('telepat_tokens').select('id,symbol,name,logo_url,active,verified').order('symbol');
+    if(error){ box.innerHTML = `<div class="er">${esc(error.message)}</div>`; return; }
+    if(!data || !data.length){ box.innerHTML = '<div class="info">Нет токенов.</div>'; return; }
+    
+    // Обновить локальный кэш
+    data.forEach(row => {
+      const t = ALL_TOKENS.find(x => x.symbol === row.symbol);
+      if(t){
+        t.id = row.id;
+        t.logo_url = row.logo_url || null;
+      }
+    });
+    
+    box.innerHTML = data.map(t => {
+      const base = TOKEN_ICONS[t.symbol] || TOKEN_ICONS.DEFAULT;
+      const hasLogo = !!(t.logo_url && String(t.logo_url).trim());
+      const verified = ['TG','AI','TUSD'].includes(t.symbol) || t.verified;
+      return `
+        <div class="pc" style="margin-top:8px">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div id="lg-prev-${esc(t.id)}" class="logo-thumb-preview ${hasLogo?'on':''}" style="background:${base.bg}">
+              <span>${base.emoji}</span>
+              ${hasLogo ? `<img src="${esc(t.logo_url)}" alt="" onerror="this.remove()">` : ''}
+            </div>
+            <div style="flex:1;min-width:0">
+              <div class="pt" style="display:flex;align-items:center;gap:6px">
+                ${esc(t.symbol)}
+                ${verified ? '<span style="color:#39d98a;font-size:12px">✅</span>' : ''}
+                ${t.active === false ? '<span style="color:#ff647c;font-size:11px">(выкл)</span>' : ''}
+              </div>
+              <div class="info" style="font-size:11px;margin-top:2px">${esc(t.name||'')}</div>
+            </div>
+          </div>
+          <label style="margin-top:10px">🔗 Ссылка на логотип</label>
+          <input type="text" id="lg-url-${esc(t.id)}" value="${esc(t.logo_url||'')}" placeholder="https://example.com/logo.png" oninput="previewAdminLogo('${esc(t.id)}','${esc(t.symbol)}')">
+          <div class="info" style="margin-top:5px;font-size:11px">💡 Прямая ссылка на PNG / JPG / SVG / WebP</div>
+          <div class="row" style="margin-top:8px">
+            <button onclick="saveAdminLogo('${esc(t.id)}','${esc(t.symbol)}')">💾 Сохранить лого</button>
+            <button class="sec" onclick="clearAdminLogo('${esc(t.id)}','${esc(t.symbol)}')">🗑 Убрать</button>
+          </div>
+          <div id="lg-status-${esc(t.id)}" class="info" style="margin-top:6px;text-align:center"></div>
+        </div>`;
+    }).join('');
+  }catch(e){ box.innerHTML = `<div class="er">${esc(e.message)}</div>`; }
+}
+
+function previewAdminLogo(id, sym){
+  const inp = document.getElementById('lg-url-'+id);
+  const box = document.getElementById('lg-prev-'+id);
+  if(!inp || !box) return;
+  const url = inp.value.trim();
+  const base = TOKEN_ICONS[sym] || TOKEN_ICONS.DEFAULT;
+  box.innerHTML = `<span>${base.emoji}</span>`;
+  if(url){
+    const img = document.createElement('img');
+    img.src = url;
+    img.loading = 'lazy';
+    img.onerror = () => { img.remove(); box.classList.remove('on'); };
+    img.onload = () => { box.classList.add('on'); };
+    box.appendChild(img);
+  } else {
+    box.classList.remove('on');
+  }
+}
+
+async function saveAdminLogo(id, sym){
+  const inp = document.getElementById('lg-url-'+id);
+  const status = document.getElementById('lg-status-'+id);
+  if(!inp) return;
+  const url = inp.value.trim();
+  
+  if(status){ status.className='info'; status.textContent='⏳ Сохранение...'; }
+  
+  let ok = false;
+  let errMsg = '';
+  
+  // 1. Пробуем через RPC
+  try{
+    const r = await sb.rpc('admin_set_token_logo', { p_token_id: id, p_logo_url: url || null });
+    if(r.error){ 
+      errMsg = r.error.message;
+      console.warn('[admin_set_token_logo error]', r.error);
+    } else if(r.data && r.data.ok === false){
+      errMsg = (r.data && r.data.error) || 'ошибка';
+    } else {
+      ok = true;
+    }
+  }catch(e){ errMsg = e.message; console.warn('[rpc throw]', e); }
+  
+  // 2. Fallback — прямое обновление таблицы
+  if(!ok){
+    try{
+      const upd = await sb.from('telepat_tokens').update({ logo_url: url || null }).eq('id', id);
+      if(upd.error){ errMsg = upd.error.message; }
+      else { ok = true; }
+    }catch(e){ errMsg = e.message; }
+  }
+  
+  if(!ok){
+    if(status){ status.className='er'; status.textContent='✗ '+(errMsg||'ошибка'); }
+    msg('Лого не сохранён: '+(errMsg||'ошибка'), 'error');
+    return;
+  }
+  
+  // Обновить локальный кэш
+  const cached = ALL_TOKENS.find(t => t.symbol === sym) || ALL_TOKENS.find(t => String(t.id) === String(id));
+  if(cached) cached.logo_url = url || null;
+  
+  if(status){ status.className='ok'; status.textContent='✅ Сохранено'; }
+  msg('🖼️ Лого обновлён', 'success');
+  
+  // Обновить превью-класс
+  const prev = document.getElementById('lg-prev-'+id);
+  if(prev){ if(url){ prev.classList.add('on'); } else { prev.classList.remove('on'); } }
+  
+  // Обновить всё приложение — главная, ордера, чекин, задания
+  renderCustom();
+  fillAll();
+}
+
+async function clearAdminLogo(id, sym){
+  const inp = document.getElementById('lg-url-'+id);
+  if(inp) inp.value = '';
+  await saveAdminLogo(id, sym);
+  const prev = document.getElementById('lg-prev-'+id);
+  if(prev){
+    const base = TOKEN_ICONS[sym] || TOKEN_ICONS.DEFAULT;
+    prev.innerHTML = `<span>${base.emoji}</span>`;
+    prev.classList.remove('on');
+  }
+}
+
+/* ============ /АДМИН: ЛОГОТИПЫ ============ */
+
 async function adminLoadUser(){
   const id=document.getElementById('userSearchId').value.trim();
   if(!id){msg('Введите ID','error');return}
@@ -1494,15 +1652,16 @@ async function loadAdminTokenPrices(){
   box.innerHTML = data.map(t => `
     <div class="pc" style="margin-top:8px">
       <div class="pt" style="display:flex;align-items:center">${tokenIconHTML(t.symbol,'sm')} <span style="margin-left:8px">${esc(t.symbol)} — ${esc(t.name||'')}</span></div>
-      <label style="margin-top:8px">Лого (URL)</label>
+      <label style="margin-top:8px">🔗 Лого (URL)</label>
       <input type="text" id="tp-logo-${esc(t.id)}" value="${esc(t.logo_url||'')}" placeholder="https://...">
-      <label style="margin-top:8px">Курс в TUSD</label>
+      <label style="margin-top:8px">💰 Курс в TUSD</label>
       <input type="number" id="tp-price-${esc(t.id)}" step="0.00000001" min="0" value="${t.price_tusd}">
-      <label style="margin-top:8px">Минимум вывода</label>
+      <label style="margin-top:8px">⬇️ Минимум вывода</label>
       <input type="number" id="tp-min-${esc(t.id)}" step="0.00000001" min="0" value="${t.min_withdrawal}">
       <div class="row" style="margin-top:10px">
         <button onclick="saveAdminTokenParams('${esc(t.id)}')">💾 Сохранить</button>
       </div>
+      <div id="tp-status-${esc(t.id)}" class="info" style="margin-top:6px;text-align:center"></div>
     </div>
   `).join('');
 }
@@ -1510,26 +1669,40 @@ async function saveAdminTokenParams(id){
   const priceEl = document.getElementById('tp-price-' + id);
   const minEl   = document.getElementById('tp-min-' + id);
   const logoEl  = document.getElementById('tp-logo-' + id);
+  const statusEl = document.getElementById('tp-status-' + id);
   if(!priceEl || !minEl) return;
+  if(statusEl){ statusEl.className='info'; statusEl.textContent='⏳ Сохранение...'; }
   const price = Number(priceEl.value);
   const minW  = Number(minEl.value);
-  const logo  = logoEl ? logoEl.value.trim() : null;
-  if(!Number.isFinite(price) || price < 0){ msg('Некорректный курс','error'); return; }
-  if(!Number.isFinite(minW) || minW < 0){ msg('Некорректный минимум','error'); return; }
+  const logo  = logoEl ? logoEl.value.trim() : '';
+  if(!Number.isFinite(price) || price < 0){ msg('Некорректный курс','error'); if(statusEl){statusEl.className='er';statusEl.textContent='✗ Курс';} return; }
+  if(!Number.isFinite(minW) || minW < 0){ msg('Некорректный минимум','error'); if(statusEl){statusEl.className='er';statusEl.textContent='✗ Минимум';} return; }
   const { data, error } = await sb.rpc('admin_set_token_params', {
     p_token_id: id, p_price_tusd: price, p_min_withdrawal: minW
   });
-  if(error){ msg(error.message,'error'); return; }
-  if(!data || data.ok === false){ msg((data && data.error) || 'Ошибка','error'); return; }
-
+  if(error){ msg(error.message,'error'); if(statusEl){statusEl.className='er';statusEl.textContent='✗ '+error.message;} return; }
+  if(!data || data.ok === false){ msg((data && data.error) || 'Ошибка','error'); if(statusEl){statusEl.className='er';statusEl.textContent='✗ '+((data&&data.error)||'');} return; }
   if(logoEl){
-    try{
-      await sb.from('telepat_tokens').update({ logo_url: logo || null }).eq('id', id);
-    }catch(e){}
+    let ok = false;
+    try {
+      const r = await sb.rpc('admin_set_token_logo', { p_token_id: id, p_logo_url: logo || null });
+      if(r.error){ console.warn('[logo rpc]', r.error); }
+      else if(r.data && r.data.ok === false){ console.warn('[logo rpc reason]', r.data.error); }
+      else ok = true;
+    } catch(e){ console.warn('[logo rpc throw]', e); }
+    if(!ok){
+      try {
+        const upd = await sb.from('telepat_tokens').update({ logo_url: logo || null }).eq('id', id);
+        if(upd.error){ msg('Лого: '+upd.error.message, 'error'); if(statusEl){statusEl.className='er';statusEl.textContent='✗ Лого: '+upd.error.message;} return; }
+      } catch(e){ msg('Лого: '+e.message, 'error'); if(statusEl){statusEl.className='er';statusEl.textContent='✗ Лого';} return; }
+    }
   }
-
   msg('✅ Сохранено','success');
+  if(statusEl){ statusEl.className='ok'; statusEl.textContent='✅ Сохранено'; }
+  const cached = (ALL_TOKENS||[]).find(t => String(t.id) === String(id));
+  if(cached) cached.logo_url = logo || null;
   await loadAllTokens(); await loadUser(); await loadCustomBalances(); await loadStakeState();
+  renderCustom(); fillAll();
 }
 
 async function loadAdminBonusConfig(){
@@ -1774,7 +1947,7 @@ function orderCard(o){
   const p=CP[String(o.from_token).toUpperCase()];
   let pl='';
   if(p){let tx=`${f(p.reserve_amount,6)} ${esc(o.from_token)}`;if(p.reserve_tusd>0)tx+=` + ${f(p.reserve_tusd,2)} TUSD`;pl=`<div class="dt"><span>💧 Резерв</span><span>${tx}</span></div>`}
-  return `<div class="order" id="order-${esc(o.id)}" style="--rc:${c};--rg:${g}"><div class="oh" onclick="toggleOrder('${esc(o.id)}')"><div class="ol"><div class="om">${tokenIconHTML(o.from_token,'xs')} ${f(o.from_amount)} ${esc(o.from_token)} → ${f(o.to_amount)} ${esc(o.to_token)}</div><div class="rb">👑 ${esc(o.creator_rank_name)}</div></div><div class="op">1 ${esc(o.from_token)} = ${f(rt,12)} ${esc(o.to_token)}</div><div class="os"><span>👍 ${n(o.likes)}</span><span>👎 ${n(o.dislikes)}</span><span>🤝 ${n(o.completed_trades)}</span></div></div><div class="oe"><div class="dt"><span>Владелец</span><span class="pl" onclick="openProfile(${Number(o.creator_id)});event.stopPropagation()">👤 ${Number(o.creator_id)}</span></div><div class="dt"><span>Отдаёт</span><span>${f(o.from_amount)} ${esc(o.from_token)}</span></div><div class="dt"><span>Получает</span><span>${f(o.to_amount)} ${esc(o.to_token)}</span></div><div class="dt"><span>Курс</span><span>1 ${esc(o.from_token)} = ${f(rt,12)} ${esc(o.to_token)}</span></div><div class="dt"><span>Титул</span><span style="color:${c};font-weight:bold">👑 ${esc(o.creator_rank_name)}</span></div>${pl}<div class="dt"><span>Дата</span><span>${esc(dt)}</span></div><div class="oa"><button class="sec" onclick="openProfile(${Number(o.creator_id)});event.stopPropagation()">👤</button>${isMine?`<button class="dng" onclick="cancelP2POrder('${esc(o.id)}');event.stopPropagation()">❌</button>`:`<button onclick="acceptP2POrder('${esc(o.id)}');event.stopPropagation()">🤝</button>`}</div></div></div>`;
+  return `<div class="order" id="order-${esc(o.id)}" style="--rc:${c};--rg:${g}"><div class="oh" onclick="toggleOrder('${esc(o.id)}')"><div class="ol"><div class="om" style="display:flex;align-items:center;gap:6px">${tokenIconHTML(o.from_token,'xs')} ${f(o.from_amount)} ${esc(o.from_token)} → ${f(o.to_amount)} ${esc(o.to_token)}</div><div class="rb">👑 ${esc(o.creator_rank_name)}</div></div><div class="op">1 ${esc(o.from_token)} = ${f(rt,12)} ${esc(o.to_token)}</div><div class="os"><span>👍 ${n(o.likes)}</span><span>👎 ${n(o.dislikes)}</span><span>🤝 ${n(o.completed_trades)}</span></div></div><div class="oe"><div class="dt"><span>Владелец</span><span class="pl" onclick="openProfile(${Number(o.creator_id)});event.stopPropagation()">👤 ${Number(o.creator_id)}</span></div><div class="dt"><span>Отдаёт</span><span>${f(o.from_amount)} ${esc(o.from_token)}</span></div><div class="dt"><span>Получает</span><span>${f(o.to_amount)} ${esc(o.to_token)}</span></div><div class="dt"><span>Курс</span><span>1 ${esc(o.from_token)} = ${f(rt,12)} ${esc(o.to_token)}</span></div><div class="dt"><span>Титул</span><span style="color:${c};font-weight:bold">👑 ${esc(o.creator_rank_name)}</span></div>${pl}<div class="dt"><span>Дата</span><span>${esc(dt)}</span></div><div class="oa"><button class="sec" onclick="openProfile(${Number(o.creator_id)});event.stopPropagation()">👤</button>${isMine?`<button class="dng" onclick="cancelP2POrder('${esc(o.id)}');event.stopPropagation()">❌</button>`:`<button onclick="acceptP2POrder('${esc(o.id)}');event.stopPropagation()">🤝</button>`}</div></div></div>`;
 }
 function toggleOrder(id){document.getElementById('order-'+id)?.classList.toggle('opened')}
 async function acceptP2POrder(id){
@@ -1816,7 +1989,7 @@ async function loadMyTrades(){
   b.innerHTML=data.map(t=>{
     const id=String(t?.id||'');if(!id)return'';
     const rated=t.my_rating!==null&&t.my_rating!==undefined;
-    return `<div class="ti" id="trade-${esc(id)}"><div class="om">${tokenIconHTML(t.my_give_token,'xs')} ${f(t.my_give_amount)} ${esc(t.my_give_token)} → ${f(t.my_get_amount)} ${esc(t.my_get_token)}</div><div class="info">С: ${Number(t.other_user_id)}</div>${rated?`<div class="ok">${Number(t.my_rating)>0?'👍':'👎'}</div>`:`<div class="rat"><button id="rl-${esc(id)}" onclick="rateTrade('${esc(id)}',1)">👍</button><button id="rd-${esc(id)}" class="dng" onclick="rateTrade('${esc(id)}',-1)">👎</button></div>`}</div>`;
+    return `<div class="ti" id="trade-${esc(id)}"><div class="om" style="display:flex;align-items:center;gap:6px">${tokenIconHTML(t.my_give_token,'xs')} ${f(t.my_give_amount)} ${esc(t.my_give_token)} → ${f(t.my_get_amount)} ${esc(t.my_get_token)}</div><div class="info">С: ${Number(t.other_user_id)}</div>${rated?`<div class="ok">${Number(t.my_rating)>0?'👍':'👎'}</div>`:`<div class="rat"><button id="rl-${esc(id)}" onclick="rateTrade('${esc(id)}',1)">👍</button><button id="rd-${esc(id)}" class="dng" onclick="rateTrade('${esc(id)}',-1)">👎</button></div>`}</div>`;
   }).join('');
 }
 async function rateTrade(id,r){
