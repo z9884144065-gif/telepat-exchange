@@ -652,7 +652,7 @@ function goToMyOrders(){showSection('exchange');setTimeout(()=>document.getEleme
 function goToPools(){showSection('exchange');setTimeout(()=>document.getElementById('poolsCard')?.scrollIntoView({behavior:'smooth',block:'start'}),400)}
 function goToTrades(){showSection('exchange');setTimeout(()=>document.getElementById('tradesCard')?.scrollIntoView({behavior:'smooth',block:'start'}),400)}
 
-// ================= ИСПРАВЛЕНО: автосоздание пользователя =================
+// ================= loadUser: автосоздание + реферальная привязка =================
 async function loadUser(){
   if(!UID){msg('Открой в Telegram','error');return}
 
@@ -673,7 +673,6 @@ async function loadUser(){
     } catch(e){
       console.error('[loadUser] ensure error:', e);
     }
-    // 3) читаем повторно
     const r2 = await sb
       .from('users')
       .select('*')
@@ -690,6 +689,29 @@ async function loadUser(){
   }
 
   CU = data;
+
+  // 3) РЕФЕРАЛЬНАЯ ПРИВЯЗКА: если пришли по ссылке и referrer_id ещё не установлен
+  const startParam = tg?.initDataUnsafe?.start_param;
+  if(startParam && !CU.referrer_id){
+    const refId = Number(startParam);
+    if(Number.isFinite(refId) && refId > 0 && refId !== UID){
+      try {
+        const r = await sb.rpc('set_referrer', { p_user_id: UID, p_referrer_id: refId });
+        console.log('[loadUser] set_referrer:', r.data);
+        if(r.data && r.data.ok){
+          const r3 = await sb
+            .from('users')
+            .select('*')
+            .eq('telegram_id', UID)
+            .maybeSingle();
+          if(r3.data) CU = r3.data;
+        }
+      } catch(e){
+        console.error('[loadUser] set_referrer error:', e);
+      }
+    }
+  }
+
   renderUser();
   if(UID === AID) document.getElementById('n-admin').classList.remove('hide');
   loadReferral();
