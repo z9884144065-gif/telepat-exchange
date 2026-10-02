@@ -107,7 +107,6 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 @keyframes adBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 .stake-collect{background:linear-gradient(135deg,#39d98a,#2ba86a);color:#0d280d;font-weight:bold}
 .stake-sound{background:#1b2635;color:#fff;border:1px solid #4a596d;font-size:16px}
-/* аккордеон в админке */
 .acc-item{margin-top:8px;background:#0d1520;border:1px solid #2d3a4c;border-radius:14px;overflow:hidden;transition:border-color .2s}
 .acc-item.open{border-color:#68562a}
 .acc-header{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;cursor:pointer;font-weight:bold;color:var(--gold);font-size:14px;user-select:none;transition:background .2s}
@@ -148,7 +147,7 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 <div id="totalUsdBalance" style="text-align:center;font-size:42px;font-weight:bold;color:#fff;line-height:1;letter-spacing:-1.5px">0<span style="color:#8f9bab;font-size:22px">,00 TUSD</span></div>
 <div style="text-align:center;margin-top:14px">
 <div style="color:#7fc97f;font-size:11px;letter-spacing:1px;margin-bottom:2px">⛏️ НАКОПЛЕНО</div>
-<div id="stakeAccum" style="color:#39d98a;font-size:34px;font-weight:bold;font-family:'Courier New',monospace;line-height:1.1;text-shadow:0 0 18px #39d98a88">0.00000000 <span style="font-size:16px;color:#7fc97f;font-weight:normal">TUSD</span></div>
+<div id="stakeAccum" style="color:#39d98a;font-size:30px;font-weight:bold;font-family:'Courier New',monospace;line-height:1.1;text-shadow:0 0 18px #39d98a88;word-break:break-all">0.00000000 <span style="font-size:16px;color:#7fc97f;font-weight:normal">TUSD</span></div>
 <div id="stakeTick" style="color:#39d98a;font-size:16px;font-weight:bold;font-family:'Courier New',monospace;margin-top:8px">+0.0000 <span style="font-size:12px;color:#7fc97f;font-weight:normal">TUSD/день</span></div>
 <div id="stakeMonth" style="color:#7fc97f;font-size:13px;font-weight:bold;font-family:'Courier New',monospace;margin-top:2px">≈ 0.0000 <span style="font-size:11px;color:#7fc97f;font-weight:normal">TUSD/месяц</span></div>
 <div id="stakeRate" style="color:#8f9bab;font-size:11px;margin-top:6px">Загрузка...</div>
@@ -439,7 +438,6 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 </section>
 </div>
 
-<!-- ================= PROFILE MODAL ================= -->
 <div id="profileModal" class="pcard" onclick="closeProfile(event)">
 <div class="pin" onclick="event.stopPropagation()">
 <div class="title">👤 ПРОФИЛЬ</div>
@@ -455,7 +453,6 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 <button class="sec" onclick="closeProfile()">Закрыть</button>
 </div></div>
 
-<!-- ================= ADD LIQUIDITY MODAL ================= -->
 <div id="addLiqModal" class="mo" onclick="closeAddLiq(event)">
 <div class="mb" onclick="event.stopPropagation()">
 <div class="title">💧 ПУЛ</div>
@@ -467,7 +464,6 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 <button class="sec" onclick="closeAddLiq()">Отмена</button>
 </div></div>
 
-<!-- ================= AD MODAL ================= -->
 <div id="adModal" class="mo">
 <div class="af">
 <video id="adVideo" playsinline preload="auto" webkit-playsinline></video>
@@ -480,7 +476,6 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 <div id="adResult" class="info" style="text-align:center"></div>
 </div></div></div>
 
-<!-- ================= TASKS MODAL ================= -->
 <div id="tasksModal" class="mo" onclick="closeTasks(event)">
 <div class="mb" style="width:min(500px,100%)" onclick="event.stopPropagation()">
 <div class="title">📋 ЗАДАНИЯ</div>
@@ -488,7 +483,6 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 <button class="sec" onclick="closeTasks()">Закрыть</button>
 </div></div>
 
-<!-- ================= NAV ================= -->
 <div class="nav">
 <button id="n-wallet" class="active" onclick="showSection('wallet')">🏠 Кошелёк</button>
 <button id="n-exchange" onclick="showSection('exchange')">🔄 Обмен</button>
@@ -537,6 +531,23 @@ const f=(v,m=8)=>n(v).toLocaleString('ru-RU',{maximumFractionDigits:m});
 const tb=t=>{if(!CU)return 0;if(t==='TG')return n(CU.tg_balance);if(t==='AI')return n(CU.ai_balance);if(t==='TUSD')return n(CU.tusd_balance);return n(CB[t])};
 function msg(t,ty='info'){const e=document.getElementById('message');e.textContent=t;e.style.borderColor=ty==='error'?'#8b3f4c':ty==='success'?'#397b5b':'#4c5b70';e.classList.add('show');setTimeout(()=>e.classList.remove('show'),3000)}
 
+// ============ ФОРМАТ ЧИСЛА ДЛЯ НАКОПЛЕНО ============
+function fmtAccum(v){
+  const x = Number(v)||0;
+  if(x === 0) return '0.00000000';
+  if(x >= 0.01) return x.toFixed(8);
+  if(x >= 0.0001) return x.toFixed(10);
+  if(x >= 0.000001) return x.toFixed(12);
+  // очень малое — считаем знаков после запятой, пока не встретим значимую цифру
+  const s = x.toFixed(20);
+  const match = s.match(/^0\.(0*)(\d+)/);
+  if(!match) return x.toFixed(8);
+  const zeros = match[1].length;
+  const digits = match[2].slice(0, 4);
+  const totalDigits = Math.min(zeros + 4, 20);
+  return x.toFixed(totalDigits).replace(/0+$/,'');
+}
+
 // ================= КУРСЫ ТОКЕНОВ =================
 const PRICE_CACHE = {};
 const TOKEN_ICONS = {
@@ -552,19 +563,14 @@ function priceOf(sym){
   if(PRICE_CACHE[sym] != null) return PRICE_CACHE[sym];
   const t = (ALL_TOKENS || []).find(x => x.symbol === sym);
   const p = t && t.price_tusd != null ? Number(t.price_tusd) : null;
-  if(p != null && p > 0){
-    PRICE_CACHE[sym] = p;
-    return p;
-  }
+  if(p != null && p > 0){ PRICE_CACHE[sym] = p; return p; }
   if(sym === 'TUSD') return 1;
   if(sym === 'TG')   return 100;
   if(sym === 'AI')   return 0.01;
   return 1;
 }
 
-function tokenToTusd(sym, amount){
-  return amount * priceOf(sym);
-}
+function tokenToTusd(sym, amount){ return amount * priceOf(sym); }
 
 async function loadAllTokens(){
   VERIFIED_SYMBOLS=new Set(BASE_VERIFIED);
@@ -572,9 +578,7 @@ async function loadAllTokens(){
     const{data,error}=await sb.rpc('list_tokens_public');
     if(!error&&data&&data.length){
       ALL_TOKENS=data.map(t=>({
-        id:t.id,
-        symbol:t.symbol,
-        name:t.name,
+        id:t.id, symbol:t.symbol, name:t.name,
         price_tusd:Number(t.price_tusd)||0,
         min_withdrawal:Number(t.min_withdrawal)||0,
         decimals:t.decimals
@@ -671,19 +675,20 @@ function startStakeTimer(){
     renderStake();
   }, 1000);
 }
+
+// ============ ИЗМЕНЕНО: показываем больше знаков в НАКОПЛЕНО ============
 function renderStake(){
   const perDay = STAKE_BALANCE_USD * STAKE_RATE_SEC * 86400;
   const perMonth = perDay * 30;
+
   const elA = document.getElementById('stakeAccum');
   if(elA){
-    const intPart = Math.floor(STAKE_ACCUM);
-    const frac = (STAKE_ACCUM - intPart).toFixed(8).substring(1);
-    elA.innerHTML = `${intPart.toLocaleString('ru-RU')}<span style="color:#7fc97f;font-size:20px">${frac}</span> <span style="font-size:16px;color:#7fc97f;font-weight:normal">TUSD</span>`;
+    elA.innerHTML = `${fmtAccum(STAKE_ACCUM)} <span style="font-size:16px;color:#7fc97f;font-weight:normal">TUSD</span>`;
   }
   const el = document.getElementById('stakeTick');
-  if(el) el.innerHTML = `<span style="color:#39d98a;font-weight:bold">+${perDay.toFixed(4)}</span> <span style="font-size:12px;color:#7fc97f;font-weight:normal">TUSD/день</span>`;
+  if(el) el.innerHTML = `<span style="color:#39d98a;font-weight:bold">+${fmtAccum(perDay)}</span> <span style="font-size:12px;color:#7fc97f;font-weight:normal">TUSD/день</span>`;
   const elM = document.getElementById('stakeMonth');
-  if(elM) elM.innerHTML = `≈ <b>${perMonth.toFixed(2)}</b> <span style="font-size:11px;color:#7fc97f;font-weight:normal">TUSD/месяц</span>`;
+  if(elM) elM.innerHTML = `≈ <b>${perMonth < 0.01 ? fmtAccum(perMonth) : perMonth.toFixed(4)}</b> <span style="font-size:11px;color:#7fc97f;font-weight:normal">TUSD/месяц</span>`;
   if(STAKE_SOUND_ON && Math.floor(Date.now()/1000) % 5 === 0) playCoinSound();
 }
 function playCoinSound(){
@@ -849,10 +854,7 @@ function renderTotalTusd(){
 }
 
 function openWithdraw(symbol, amount, minW){
-  if(amount < minW){
-    msg(`Минимум для вывода ${symbol}: ${f(minW,6)}`, 'error');
-    return;
-  }
+  if(amount < minW){ msg(`Минимум для вывода ${symbol}: ${f(minW,6)}`, 'error'); return; }
   msg(`Вывод ${f(amount,6)} ${symbol} — скоро добавим`, 'info');
 }
 
@@ -1018,7 +1020,7 @@ function showAdRewardPopup(reward, token, extra){
   overlay.style.cssText = 'position:fixed;z-index:6000;inset:0;background:#000c;display:flex;align-items:center;justify-content:center;padding:20px;animation:adFadeIn .3s';
   overlay.onclick = (e) => { if(e.target === overlay) overlay.remove(); };
   const bonusLine = extra ? `<div style="color:#f4cf70;font-size:13px;margin-bottom:10px;font-weight:bold">${extra}</div>` : '';
-  overlay.innerHTML = `<div style="width:min(360px,100%);background:linear-gradient(145deg,#1f4a1f,#0d280d);border:3px solid #39d98a;border-radius:22px;padding:26px 22px;text-align:center;box-shadow:0 0 50px #39d98a88, inset 0 0 20px #39d98a22;animation:adPopIn .5s cubic-bezier(0.34,1.56,0.64,1)"><div style="font-size:64px;line-height:1;animation:adBounce 1s infinite">🎉</div><div style="color:#39d98a;font-size:22px;font-weight:bold;margin-top:12px;text-shadow:0 0 16px #39d98a99">НАГРАДА ПОЛУЧЕНА!</div>${bonusLine}<div style="background:#0006;border:2px solid #39d98a55;border-radius:14px;padding:14px;margin:16px 0;font-size:24px;font-weight:bold;color:#39d98a;text-shadow:0 0 12px #39d98a88">+${f(reward,5)} ${esc(token)}</div><div style="color:#a8e6a8;font-size:12px;margin-bottom:16px">Зачислено на кошелёк</div><button onclick="document.getElementById('adRewardPopupGreen').remove()" style="width:100%;background:linear-gradient(135deg,#39d98a,#2ba86a);color:#0d280d;font-weight:bold;padding:14px;border-radius:14px;border:0;font-size:16px;cursor:pointer">👍 ОТЛИЧНО!</button><div style="color:#7fc97f;font-size:11px;margin-top:10px">Закроется через <span id="adAutoCloseTimer">5</span> сек</div></div>`;
+  overlay.innerHTML = `<div style="width:min(360px,100%);background:linear-gradient(145deg,#1f4a1f,#0d280d);border:3px solid #39d98a;border-radius:22px;padding:26px 22px;text-align:center;box-shadow:0 0 50px #39d98a88, inset 0 0 20px #39d98a22;animation:adPopIn .5s cubic-bezier(0.34,1.56,0.64,1)"><div style="font-size:64px;line-height:1;animation:adBounce 1s infinite">🎉</div><div style="color:#39d98a;font-size:22px;font-weight:bold;margin-top:12px;text-shadow:0 0 16px #39d98a99">НАГРАДА ПОЛУЧЕНА!</div>${bonusLine}<div style="background:#0006;border:2px solid #39d98a55;border-radius:14px;padding:14px;margin:16px 0;font-size:24px;font-weight:bold;color:#39d98a;text-shadow:0 0 12px #39d98a88">+${fmtAccum(reward)} ${esc(token)}</div><div style="color:#a8e6a8;font-size:12px;margin-bottom:16px">Зачислено на кошелёк</div><button onclick="document.getElementById('adRewardPopupGreen').remove()" style="width:100%;background:linear-gradient(135deg,#39d98a,#2ba86a);color:#0d280d;font-weight:bold;padding:14px;border-radius:14px;border:0;font-size:16px;cursor:pointer">👍 ОТЛИЧНО!</button><div style="color:#7fc97f;font-size:11px;margin-top:10px">Закроется через <span id="adAutoCloseTimer">5</span> сек</div></div>`;
   document.body.appendChild(overlay);
   let sec = 5;
   const timerEl = overlay.querySelector('#adAutoCloseTimer');
@@ -1083,16 +1085,30 @@ function startTask(id,link){
   document.getElementById('tasksModal').classList.add('show');
   document.getElementById('tasksList').innerHTML='<div style="text-align:center;padding:20px"><div class="info" style="font-size:14px">⏳ Выполняем задание…</div><div class="info" style="margin-top:10px">Подпишитесь и вернитесь в бота</div></div>';
 }
-// ================= ИЗМЕНЕНО: награда идёт в НАКОПЛЕНО =================
+
+// ============ ИЗМЕНЕНО: точное сообщение о начислении в НАКОПЛЕНО ============
 async function claimTaskReward(tid){
   const{data,error}=await sb.rpc('complete_task',{p_task_id:tid,p_user_id:String(UID)});
   if(error){msg(error.message,'error');return}
   if(data?.ok===true){
     __PENDING_TASK=null;
     if(__RETURN_TIMER){clearTimeout(__RETURN_TIMER);__RETURN_TIMER=null}
-    const added = data?.accumulated_added ? `+${f(data.accumulated_added,6)} TUSD` : (data?.payout ? `+${f(data.payout,6)} ${esc(data.token)}` : '');
-    msg(`🎁 Награда зачислена в НАКОПЛЕНО ${added}`,'success');
-    // обновляем всё: профиль, кастомные балансы, состояние стейкинга (где accumulated)
+
+    const added = Number(data?.accumulated_added) || 0;
+    const inToken = Number(data?.payout) || 0;
+    const token = data?.token || '';
+
+    let amountStr;
+    if(added > 0){
+      amountStr = `+${fmtAccum(added)} TUSD`;
+    } else if(inToken > 0){
+      amountStr = `+${fmtAccum(inToken)} ${esc(token)}`;
+    } else {
+      amountStr = '';
+    }
+
+    msg(`🎁 ${amountStr} → в НАКОПЛЕНО`, 'success');
+
     await loadUser();
     await loadCustomBalances();
     await loadStakeState();
