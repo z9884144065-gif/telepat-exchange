@@ -117,6 +117,10 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 .acc-body{display:none;padding:4px 16px 16px 16px;border-top:1px solid #1a2534}
 .acc-item.open .acc-body{display:block}
 .ad-balance-value{text-align:center;font-size:34px;font-weight:bold;color:#39d98a;text-shadow:0 0 18px #39d98a88;line-height:1.1}
+.tlogo{position:relative;width:42px;height:42px;flex:0 0 42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;overflow:hidden;background:#0d1520}
+.tlogo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%}
+.tlogo.sm{width:28px;height:28px;flex:0 0 28px;font-size:14px}
+.tlogo.xs{width:22px;height:22px;flex:0 0 22px;font-size:12px;vertical-align:middle;display:inline-flex;margin-right:4px}
 </style></head><body>
 <div id="message" class="msg"></div>
 <div class="app">
@@ -131,7 +135,6 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 <button onclick="openSettings()">⚙️</button>
 </div>
 
-<!-- ПРИВЕТСТВЕННЫЙ БОНУС (скрыт по умолчанию) -->
 <div class="card gold hide" id="bonusCard">
 <div class="title">🎁 ПРИВЕТСТВЕННЫЙ БОНУС</div>
 <div id="bonusStatus" class="info">Загрузка...</div>
@@ -169,7 +172,6 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 <div id="tokensList" style="display:flex;flex-direction:column;gap:6px"></div>
 </div>
 
-<!-- РЕКЛАМНЫЙ БАЛАНС -->
 <div class="card gold" id="adBalanceCard">
 <div class="title">📢 РЕКЛАМНЫЙ БАЛАНС</div>
 <div class="ad-balance-value"><span id="adBalanceValue">0.00</span> <span style="font-size:18px;color:#7fc97f;font-weight:normal">TUSD</span></div>
@@ -179,19 +181,6 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 <button class="sec" onclick="openAdWithdraw()">↩️ Вывести</button>
 </div>
 </div>
-
-<div class="card">
-<div class="title">⚡ БЫСТРЫЕ ДЕЙСТВИЯ</div>
-<div class="qa">
-<button class="qb" onclick="showSection('exchange')"><span class="qi">🔄</span>ОБМЕН</button>
-<button class="qb" onclick="goToMyOrders()"><span class="qi">📋</span>МОИ ОРДЕРА</button>
-<button class="qb" onclick="goToPools()"><span class="qi">💧</span>ПУЛЫ</button>
-<button class="qb" onclick="goToTrades()"><span class="qi">🤝</span>СДЕЛКИ</button>
-<button class="qb gold" onclick="watchAd()"><span class="qi">📺</span>РЕКЛАМА</button>
-<button class="qb gold" onclick="openTasks()"><span class="qi">📋</span>ЗАДАНИЯ</button>
-<button class="qb gold" onclick="claimWelcomeBonus()"><span class="qi">🎁</span>БОНУС</button>
-<button class="qb gold" onclick="showSection('earn')"><span class="qi">🔥</span>ЧЕКИН</button>
-</div></div>
 </section>
 
 <section id="s-exchange" class="hide">
@@ -248,6 +237,19 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 </section>
 
 <section id="s-earn" class="hide">
+<div class="card">
+<div class="title">⚡ БЫСТРЫЕ ДЕЙСТВИЯ</div>
+<div class="qa">
+<button class="qb" onclick="showSection('exchange')"><span class="qi">🔄</span>ОБМЕН</button>
+<button class="qb" onclick="goToMyOrders()"><span class="qi">📋</span>МОИ ОРДЕРА</button>
+<button class="qb" onclick="goToPools()"><span class="qi">💧</span>ПУЛЫ</button>
+<button class="qb" onclick="goToTrades()"><span class="qi">🤝</span>СДЕЛКИ</button>
+<button class="qb gold" onclick="watchAd()"><span class="qi">📺</span>РЕКЛАМА</button>
+<button class="qb gold" onclick="openTasks()"><span class="qi">📋</span>ЗАДАНИЯ</button>
+<button class="qb gold" onclick="claimWelcomeBonus()"><span class="qi">🎁</span>БОНУС</button>
+<button class="qb gold" onclick="showSection('earn')"><span class="qi">🔥</span>ЧЕКИН</button>
+</div></div>
+
 <div class="card gold">
 <div class="title">💎 ЗАРАБОТОК</div>
 <div class="rbox">
@@ -354,6 +356,7 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 <label>Название</label><input id="listingTokenName" type="text">
 <label style="margin-top:9px">Символ</label><input id="listingTokenSymbol" type="text" maxlength="20">
 <label style="margin-top:9px">Jetton Master</label><input id="listingJettonMaster" type="text">
+<label style="margin-top:9px">Лого (URL)</label><input id="listingLogoUrl" type="text" placeholder="https://...">
 <label style="margin-top:9px">Decimals</label><input id="listingDecimals" type="number" value="9" min="0" max="18">
 <label style="margin-top:9px">Supply</label><input id="listingTotalSupply" type="number" oninput="calculateListingPreview()">
 <div class="prev" style="margin-top:12px">
@@ -477,7 +480,6 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 <button class="sec" onclick="closeAddLiq()">Отмена</button>
 </div></div>
 
-<!-- МОДАЛКА РЕКЛАМНОГО БАЛАНСА -->
 <div id="adBalanceModal" class="mo" onclick="closeAdBalanceModal(event)">
 <div class="mb" onclick="event.stopPropagation()">
 <div class="title" id="adBalanceModalTitle">📢 РЕКЛАМНЫЙ БАЛАНС</div>
@@ -580,7 +582,24 @@ const TOKEN_ICONS = {
   'VKCOIN': { emoji: '🎮', bg: 'linear-gradient(135deg,#4f8cff,#2563eb)' },
   'DEFAULT':{ emoji: '🪙', bg: 'linear-gradient(135deg,#7f8c9f,#4a596d)' }
 };
-function tokenIcon(sym){ return TOKEN_ICONS[sym] || TOKEN_ICONS.DEFAULT; }
+function tokenIcon(sym){
+  const t = (ALL_TOKENS || []).find(x => x.symbol === sym);
+  const base = TOKEN_ICONS[sym] || TOKEN_ICONS.DEFAULT;
+  if(t && t.logo_url){
+    return { emoji: base.emoji, bg: base.bg, logo: t.logo_url };
+  }
+  return base;
+}
+function tokenIconHTML(sym, size){
+  const ic = tokenIcon(sym);
+  const cls = 'tlogo' + (size === 'sm' ? ' sm' : size === 'xs' ? ' xs' : '');
+  const bg = ic.bg || 'linear-gradient(135deg,#7f8c9f,#4a596d)';
+  const emoji = ic.emoji || '🪙';
+  const img = ic.logo
+    ? `<img src="${esc(ic.logo)}" alt="${esc(sym)}" loading="lazy" onerror="this.remove()">`
+    : '';
+  return `<div class="${cls}" style="background:${bg}"><span>${emoji}</span>${img}</div>`;
+}
 
 function priceOf(sym){
   if(PRICE_CACHE[sym] != null) return PRICE_CACHE[sym];
@@ -597,6 +616,7 @@ function tokenToTusd(sym, amount){ return amount * priceOf(sym); }
 
 async function loadAllTokens(){
   VERIFIED_SYMBOLS=new Set(BASE_VERIFIED);
+  const pickLogo = t => t?.logo_url || t?.logo || t?.icon_url || t?.icon || t?.image_url || null;
   try{
     const{data,error}=await sb.rpc('list_tokens_public');
     if(!error&&data&&data.length){
@@ -604,23 +624,38 @@ async function loadAllTokens(){
         id:t.id, symbol:t.symbol, name:t.name,
         price_tusd:Number(t.price_tusd)||0,
         min_withdrawal:Number(t.min_withdrawal)||0,
-        decimals:t.decimals
+        decimals:t.decimals,
+        logo_url: pickLogo(t)
       }));
     } else {
       ALL_TOKENS=[
-        {symbol:'TG',name:'Telepat Gold',price_tusd:100,min_withdrawal:10},
-        {symbol:'AI',name:'AI Token',price_tusd:0.01,min_withdrawal:100},
-        {symbol:'TUSD',name:'Telepat Dollar',price_tusd:1,min_withdrawal:5}
+        {symbol:'TG',name:'Telepat Gold',price_tusd:100,min_withdrawal:10,logo_url:null},
+        {symbol:'AI',name:'AI Token',price_tusd:0.01,min_withdrawal:100,logo_url:null},
+        {symbol:'TUSD',name:'Telepat Dollar',price_tusd:1,min_withdrawal:5,logo_url:null}
       ];
     }
   }catch{
     ALL_TOKENS=[
-      {symbol:'TG',name:'Telepat Gold',price_tusd:100,min_withdrawal:10},
-      {symbol:'AI',name:'AI Token',price_tusd:0.01,min_withdrawal:100},
-      {symbol:'TUSD',name:'Telepat Dollar',price_tusd:1,min_withdrawal:5}
+      {symbol:'TG',name:'Telepat Gold',price_tusd:100,min_withdrawal:10,logo_url:null},
+      {symbol:'AI',name:'AI Token',price_tusd:0.01,min_withdrawal:100,logo_url:null},
+      {symbol:'TUSD',name:'Telepat Dollar',price_tusd:1,min_withdrawal:5,logo_url:null}
     ];
   }
   Object.keys(PRICE_CACHE).forEach(k=>delete PRICE_CACHE[k]);
+
+  try{
+    const {data: full} = await sb.from('telepat_tokens').select('symbol,logo_url,logo,icon_url,icon');
+    if(full && full.length){
+      const byS = {};
+      full.forEach(t => { byS[t.symbol] = t; });
+      ALL_TOKENS.forEach(t => {
+        const row = byS[t.symbol];
+        if(row && !t.logo_url){
+          t.logo_url = pickLogo(row);
+        }
+      });
+    }
+  }catch(e){}
 
   fillAll();
   const adTokSel = document.getElementById('ad_new_token');
@@ -867,12 +902,12 @@ function renderTotalTusd(){
   (ALL_TOKENS || []).forEach(t => { minMap[t.symbol] = n(t.min_withdrawal); });
 
   list.innerHTML = tokens.map(t => {
-    const ic = tokenIcon(t.sym);
     const minW = minMap[t.sym] || 0;
     const canWithdraw = minW > 0 && t.amt >= minW;
+    const icon = tokenIconHTML(t.sym);
     return `
       <div style="display:flex;align-items:center;gap:12px;padding:10px 12px;background:#0d1520;border:1px solid #2d3a4c;border-radius:14px">
-        <div style="width:42px;height:42px;flex:0 0 42px;border-radius:50%;background:${ic.bg};display:flex;align-items:center;justify-content:center;font-size:20px">${ic.emoji}</div>
+        ${icon}
         <div style="flex:1;min-width:0">
           <div style="color:#fff;font-weight:bold;font-size:14px">${esc(t.sym)}</div>
           <div style="color:#8f9bab;font-size:11px;margin-top:2px">Мин. вывод: ${minW > 0 ? f(minW, 6) : '—'} ${esc(t.sym)}</div>
@@ -909,7 +944,6 @@ function showSection(name){
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
-// ============ РЕКЛАМНЫЙ БАЛАНС ============
 async function loadAdBalance(){
   const el = document.getElementById('adBalanceValue');
   const hint = document.getElementById('adBalanceHint');
@@ -977,7 +1011,6 @@ async function confirmAdBalanceAction(){
   await loadAdBalance();
 }
 
-// ============ ПРИВЕТСТВЕННЫЙ БОНУС ============
 async function loadWelcomeBonusStatus(){
   const card = document.getElementById('bonusCard');
   const el = document.getElementById('bonusStatus');
@@ -1077,7 +1110,7 @@ async function loadCheckin(){
   const preview=document.getElementById('checkinRewardPreview');
   const r=data.next_rewards||{};
   let lines='';
-  Object.keys(r).forEach(k=>{ if(n(r[k])>0)lines+=`<div style="display:flex;justify-content:space-between;padding:3px 0"><span>${esc(k)}</span><span style="color:#f4cf70;font-weight:bold">+${f(r[k],8)}</span></div>`; });
+  Object.keys(r).forEach(k=>{ if(n(r[k])>0)lines+=`<div style="display:flex;justify-content:space-between;padding:3px 0;align-items:center">${tokenIconHTML(k,'xs')}<span>${esc(k)}</span><span style="color:#f4cf70;font-weight:bold">+${f(r[k],8)}</span></div>`; });
   preview.innerHTML=lines||'<div class="info">Нет активных токенов в чекине</div>';
   const bonus=document.getElementById('checkinBonus');
   if(data.is_bonus_day)bonus.classList.remove('hide');else bonus.classList.add('hide');
@@ -1120,7 +1153,7 @@ async function claimCheckin(){
   if(error||!data||data.ok===false){ msg(error?.message||data?.error||'Ошибка','error'); await loadCheckin(); return; }
   const r=data.rewards||{};
   let lines='';
-  Object.keys(r).forEach(t=>{ if(n(r[t])>0)lines+=`<div style="display:flex;justify-content:space-between;padding:3px 0"><span>${esc(t)}</span><span style="color:#39d98a;font-weight:bold">+${f(r[t],8)}</span></div>`; });
+  Object.keys(r).forEach(t=>{ if(n(r[t])>0)lines+=`<div style="display:flex;justify-content:space-between;padding:3px 0;align-items:center">${tokenIconHTML(t,'xs')}<span>${esc(t)}</span><span style="color:#39d98a;font-weight:bold">+${f(r[t],8)}</span></div>`; });
   showCheckinReward(data.day, lines, data.is_bonus_day);
   await loadUser(); await loadCustomBalances(); await loadCheckin();
 }
@@ -1175,7 +1208,8 @@ function showAdRewardPopup(reward, token, extra){
   overlay.style.cssText = 'position:fixed;z-index:6000;inset:0;background:#000c;display:flex;align-items:center;justify-content:center;padding:20px;animation:adFadeIn .3s';
   overlay.onclick = (e) => { if(e.target === overlay) overlay.remove(); };
   const bonusLine = extra ? `<div style="color:#f4cf70;font-size:13px;margin-bottom:10px;font-weight:bold;text-align:center">${extra}</div>` : '';
-  overlay.innerHTML = `<div style="width:min(360px,100%);background:linear-gradient(145deg,#1f4a1f,#0d280d);border:3px solid #39d98a;border-radius:22px;padding:26px 22px;text-align:center;box-shadow:0 0 50px #39d98a88, inset 0 0 20px #39d98a22;animation:adPopIn .5s cubic-bezier(0.34,1.56,0.64,1)"><div style="font-size:64px;line-height:1;animation:adBounce 1s infinite">🎉</div><div style="color:#39d98a;font-size:22px;font-weight:bold;margin-top:12px;text-shadow:0 0 16px #39d98a99">НАГРАДА ПОЛУЧЕНА!</div>${bonusLine}<div style="background:#0006;border:2px solid #39d98a55;border-radius:14px;padding:14px;margin:16px 0;font-size:24px;font-weight:bold;color:#39d98a;text-shadow:0 0 12px #39d98a88">+${f(reward,5)} ${esc(token)}</div><div style="color:#a8e6a8;font-size:12px;margin-bottom:16px">Зачислено на кошелёк</div><button onclick="document.getElementById('adRewardPopupGreen').remove()" style="width:100%;background:linear-gradient(135deg,#39d98a,#2ba86a);color:#0d280d;font-weight:bold;padding:14px;border-radius:14px;border:0;font-size:16px;cursor:pointer">👍 ОТЛИЧНО!</button><div style="color:#7fc97f;font-size:11px;margin-top:10px">Закроется через <span id="adAutoCloseTimer">5</span> сек</div></div>`;
+  const icon = tokenIconHTML(token);
+  overlay.innerHTML = `<div style="width:min(360px,100%);background:linear-gradient(145deg,#1f4a1f,#0d280d);border:3px solid #39d98a;border-radius:22px;padding:26px 22px;text-align:center;box-shadow:0 0 50px #39d98a88, inset 0 0 20px #39d98a22;animation:adPopIn .5s cubic-bezier(0.34,1.56,0.64,1)"><div style="font-size:64px;line-height:1;animation:adBounce 1s infinite">🎉</div><div style="color:#39d98a;font-size:22px;font-weight:bold;margin-top:12px;text-shadow:0 0 16px #39d98a99">НАГРАДА ПОЛУЧЕНА!</div>${bonusLine}<div style="background:#0006;border:2px solid #39d98a55;border-radius:14px;padding:14px;margin:16px 0;font-size:24px;font-weight:bold;color:#39d98a;text-shadow:0 0 12px #39d98a88;display:flex;align-items:center;justify-content:center;gap:10px">${icon}+${f(reward,5)} ${esc(token)}</div><div style="color:#a8e6a8;font-size:12px;margin-bottom:16px">Зачислено на кошелёк</div><button onclick="document.getElementById('adRewardPopupGreen').remove()" style="width:100%;background:linear-gradient(135deg,#39d98a,#2ba86a);color:#0d280d;font-weight:bold;padding:14px;border-radius:14px;border:0;font-size:16px;cursor:pointer">👍 ОТЛИЧНО!</button><div style="color:#7fc97f;font-size:11px;margin-top:10px">Закроется через <span id="adAutoCloseTimer">5</span> сек</div></div>`;
   document.body.appendChild(overlay);
   let sec = 5;
   const timerEl = overlay.querySelector('#adAutoCloseTimer');
@@ -1269,7 +1303,6 @@ document.addEventListener('visibilitychange',()=>{
   }
 });
 
-// АДМИН
 async function adminLoadUser(){
   const id=document.getElementById('userSearchId').value.trim();
   if(!id){msg('Введите ID','error');return}
@@ -1288,7 +1321,7 @@ function renderAdminUser(){
   if(!u.is_banned&&!u.is_frozen)badges.push('<span class="ok">✅ АКТИВЕН</span>');
   let html=`<div class="pc"><div class="pt">👤 ${esc(u.first_name||u.username||u.telegram_id)}</div><div class="info">ID: ${esc(u.telegram_id)}</div><div class="info">Титул: ${esc(u.rank_name||'—')} (уровень ${u.rank_level||1})</div><div class="info">Регистрация: ${new Date(u.created_at).toLocaleDateString('ru-RU')}</div><div style="margin-top:6px">${badges.join(' ')}</div></div><div class="title" style="margin-top:14px;font-size:12px">💰 БАЛАНСЫ</div>`;
   (ADMIN_USER.balances||[]).forEach(b=>{
-    html+=`<div class="pc"><div class="pt">${esc(b.symbol)} — ${esc(b.name||'')}</div><div class="tval">${f(b.balance)} ${esc(b.symbol)}</div><div class="row" style="margin-top:8px"><button class="sm" onclick="adminBalanceAction('${esc(b.symbol)}','add')">➕</button><button class="sm dng" onclick="adminBalanceAction('${esc(b.symbol)}','sub')">➖</button><button class="sm sec" onclick="adminBalanceAction('${esc(b.symbol)}','set')">✏️</button></div></div>`;
+    html+=`<div class="pc"><div class="pt">${tokenIconHTML(b.symbol,'xs')} ${esc(b.symbol)} — ${esc(b.name||'')}</div><div class="tval">${f(b.balance)} ${esc(b.symbol)}</div><div class="row" style="margin-top:8px"><button class="sm" onclick="adminBalanceAction('${esc(b.symbol)}','add')">➕</button><button class="sm dng" onclick="adminBalanceAction('${esc(b.symbol)}','sub')">➖</button><button class="sm sec" onclick="adminBalanceAction('${esc(b.symbol)}','set')">✏️</button></div></div>`;
   });
   html+=`<div class="title" style="margin-top:14px;font-size:12px">⚙️ ДЕЙСТВИЯ</div><div class="row"><button class="sm ${u.is_frozen?'':'dng'}" onclick="adminToggleFlag('frozen',${!u.is_frozen})">${u.is_frozen?'🔓 Разморозить':'🔒 Заморозить'}</button><button class="sm ${u.is_banned?'':'dng'}" onclick="adminToggleFlag('banned',${!u.is_banned})">${u.is_banned?'✅ Разбанить':'🚫 Забанить'}</button></div>`;
   box.innerHTML=html;
@@ -1327,7 +1360,7 @@ async function loadAdminCheckin(){
   const tokens=data.tokens||[];
   let html=`<div class="title" style="font-size:12px">ОБЩИЕ НАСТРОЙКИ</div><label>Максимум дней серии</label><input id="ci_max_days" type="number" value="${s.max_days||30}"><label style="margin-top:8px">Прирост в день (%)</label><input id="ci_growth" type="number" step="0.1" value="${s.growth_percent||5}"><label style="margin-top:8px">Бонусный множитель</label><input id="ci_bonus_mult" type="number" step="0.1" value="${s.bonus_multiplier||2}"><label style="margin-top:8px">Бонус каждые N дней</label><input id="ci_bonus_every" type="number" value="${s.bonus_every_days||7}"><button class="sm" style="margin-top:8px" onclick="saveAdminCheckinSettings()">💾 Сохранить настройки</button><div class="title" style="margin-top:16px;font-size:12px">ТОКЕНЫ В ЧЕКИНЕ</div>`;
   tokens.forEach(t=>{
-    html+=`<div class="pc" style="margin-top:6px"><div class="ol"><div style="flex:1"><div class="pt">${esc(t.token_symbol)}</div><input id="ci_tok_${esc(t.token_symbol)}" type="number" step="0.00000001" value="${t.base_amount}" style="margin-top:4px"></div><div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end"><label style="margin:0;font-size:11px"><input type="checkbox" id="ci_act_${esc(t.token_symbol)}" ${t.active?'checked':''} style="width:auto"> Активен</label><button class="sm" onclick="saveAdminCheckinToken('${esc(t.token_symbol)}')">💾</button><button class="sm dng" onclick="removeAdminCheckinToken('${esc(t.token_symbol)}')">🗑</button></div></div></div>`;
+    html+=`<div class="pc" style="margin-top:6px"><div class="ol"><div style="flex:1"><div class="pt">${tokenIconHTML(t.token_symbol,'xs')} ${esc(t.token_symbol)}</div><input id="ci_tok_${esc(t.token_symbol)}" type="number" step="0.00000001" value="${t.base_amount}" style="margin-top:4px"></div><div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end"><label style="margin:0;font-size:11px"><input type="checkbox" id="ci_act_${esc(t.token_symbol)}" ${t.active?'checked':''} style="width:auto"> Активен</label><button class="sm" onclick="saveAdminCheckinToken('${esc(t.token_symbol)}')">💾</button><button class="sm dng" onclick="removeAdminCheckinToken('${esc(t.token_symbol)}')">🗑</button></div></div></div>`;
   });
   html+=`<div class="title" style="margin-top:16px;font-size:12px">ДОБАВИТЬ ТОКЕН</div><label>Токен</label><select id="ci_new_symbol"></select><label style="margin-top:8px">Базовая награда</label><input id="ci_new_amount" type="number" step="0.00000001" placeholder="Например: 1"><button class="sm" style="margin-top:8px" onclick="addAdminCheckinToken()">➕ Добавить токен</button>`;
   box.innerHTML=html;
@@ -1380,7 +1413,7 @@ async function loadAdminTasks(){
   data.forEach(t=>{
     const d=document.createElement('div');d.className='pc';
     const sc=t.status==='approved'?'ok':'er';
-    d.innerHTML=`<div class="ol"><div><div class="pt">${esc(t.type)}</div><div class="info" style="margin-top:4px">${esc(t.link)}</div><div class="${sc}" style="font-size:12px;margin-top:5px">+${f(t.reward)} ${esc(t.reward_token)} • ${t.completed_count}/${t.limit_count} • ${t.status}</div></div><div style="display:flex;flex-direction:column;gap:4px"><button class="sec sm" onclick="openAdminTaskForm('${esc(t.id)}')">✏️</button><button class="dng sm" onclick="deleteAdminTask('${esc(t.id)}')">🗑</button></div></div>`;
+    d.innerHTML=`<div class="ol"><div><div class="pt">${esc(t.type)}</div><div class="info" style="margin-top:4px">${esc(t.link)}</div><div class="${sc}" style="font-size:12px;margin-top:5px">${tokenIconHTML(t.reward_token,'xs')} +${f(t.reward)} ${esc(t.reward_token)} • ${t.completed_count}/${t.limit_count} • ${t.status}</div></div><div style="display:flex;flex-direction:column;gap:4px"><button class="sec sm" onclick="openAdminTaskForm('${esc(t.id)}')">✏️</button><button class="dng sm" onclick="deleteAdminTask('${esc(t.id)}')">🗑</button></div></div>`;
     b.appendChild(d);
   });
   window.__AT=data;
@@ -1439,7 +1472,7 @@ async function loadAdminVerification(){
     const sc=isVerified?'ok':'er';
     const status=isVerified?(isBase?'✅ БАЗОВЫЙ':'✅ ВЕРИФИЦИРОВАН'):'❌ НЕ ВЕРИФИЦИРОВАН';
     const manualTag=t.manual_verified?' <span style="color:#f4cf70;font-size:11px">[вручную]</span>':'';
-    d.innerHTML=`<div><div class="pt">🪙 ${esc(t.symbol)} — ${esc(t.name||'')}${manualTag}</div><div class="info">Владелец: ${t.owner_telegram_id||'—'} (титул ${t.owner_rank||'?'})</div><div class="info">Пул: $${f(t.pool_usd,2)} • Держателей: ${t.holders}</div><div class="${sc}" style="font-size:12px;margin-top:5px">${status}</div>${isBase?'':`<div class="row" style="margin-top:10px"><button onclick="setTokenVerified('${esc(t.id)}',${t.manual_verified?'false':'true'})">${t.manual_verified?'❌ Снять':'✅ Верифицировать'}</button></div>`}</div>`;
+    d.innerHTML=`<div><div class="pt" style="display:flex;align-items:center">${tokenIconHTML(t.symbol,'sm')} <span style="margin-left:8px">${esc(t.symbol)} — ${esc(t.name||'')}${manualTag}</span></div><div class="info">Владелец: ${t.owner_telegram_id||'—'} (титул ${t.owner_rank||'?'})</div><div class="info">Пул: $${f(t.pool_usd,2)} • Держателей: ${t.holders}</div><div class="${sc}" style="font-size:12px;margin-top:5px">${status}</div>${isBase?'':`<div class="row" style="margin-top:10px"><button onclick="setTokenVerified('${esc(t.id)}',${t.manual_verified?'false':'true'})">${t.manual_verified?'❌ Снять':'✅ Верифицировать'}</button></div>`}</div>`;
     b.appendChild(d);
   });
 }
@@ -1460,7 +1493,9 @@ async function loadAdminTokenPrices(){
   if(!data || !data.length){ box.innerHTML = '<div class="info">Нет токенов.</div>'; return; }
   box.innerHTML = data.map(t => `
     <div class="pc" style="margin-top:8px">
-      <div class="pt">🪙 ${esc(t.symbol)} — ${esc(t.name||'')}</div>
+      <div class="pt" style="display:flex;align-items:center">${tokenIconHTML(t.symbol,'sm')} <span style="margin-left:8px">${esc(t.symbol)} — ${esc(t.name||'')}</span></div>
+      <label style="margin-top:8px">Лого (URL)</label>
+      <input type="text" id="tp-logo-${esc(t.id)}" value="${esc(t.logo_url||'')}" placeholder="https://...">
       <label style="margin-top:8px">Курс в TUSD</label>
       <input type="number" id="tp-price-${esc(t.id)}" step="0.00000001" min="0" value="${t.price_tusd}">
       <label style="margin-top:8px">Минимум вывода</label>
@@ -1474,9 +1509,11 @@ async function loadAdminTokenPrices(){
 async function saveAdminTokenParams(id){
   const priceEl = document.getElementById('tp-price-' + id);
   const minEl   = document.getElementById('tp-min-' + id);
+  const logoEl  = document.getElementById('tp-logo-' + id);
   if(!priceEl || !minEl) return;
   const price = Number(priceEl.value);
   const minW  = Number(minEl.value);
+  const logo  = logoEl ? logoEl.value.trim() : null;
   if(!Number.isFinite(price) || price < 0){ msg('Некорректный курс','error'); return; }
   if(!Number.isFinite(minW) || minW < 0){ msg('Некорректный минимум','error'); return; }
   const { data, error } = await sb.rpc('admin_set_token_params', {
@@ -1484,11 +1521,17 @@ async function saveAdminTokenParams(id){
   });
   if(error){ msg(error.message,'error'); return; }
   if(!data || data.ok === false){ msg((data && data.error) || 'Ошибка','error'); return; }
-  msg('✅ Курс сохранён','success');
+
+  if(logoEl){
+    try{
+      await sb.from('telepat_tokens').update({ logo_url: logo || null }).eq('id', id);
+    }catch(e){}
+  }
+
+  msg('✅ Сохранено','success');
   await loadAllTokens(); await loadUser(); await loadCustomBalances(); await loadStakeState();
 }
 
-// АДМИН: БОНУС НОВИЧКА
 async function loadAdminBonusConfig(){
   const box = document.getElementById('adminBonusBox');
   if(!box) return;
@@ -1630,7 +1673,7 @@ async function loadAdminListings(){
     const d=document.createElement('div');d.className='pc';
     const sc=l.admin_status==='approved'?'ok':(l.admin_status==='rejected'?'er':'');
     const st=l.admin_status==='approved'?'ОДОБРЕНО':(l.admin_status==='rejected'?'ОТКЛОНЕНО':'ОЖИДАЕТ');
-    d.innerHTML=`<div><div class="pt">🪙 ${esc(l.token_symbol)} — ${esc(l.token_name)}</div><div class="info">От: ${l.telegram_id}</div><div class="info">Jetton: ${esc(l.jetton_master||'—')}</div><div class="info">Supply: ${f(l.total_supply)} • Оплата: ${f(l.listing_fee_tusd)} TUSD</div><div class="${sc}" style="font-size:12px">${st}</div>${l.admin_status==='pending'?`<div class="row" style="margin-top:10px"><button onclick="approveListing('${esc(l.id)}')">✅ ОДОБРИТЬ</button><button class="dng" onclick="rejectListing('${esc(l.id)}')">❌ ОТКЛОНИТЬ</button></div>`:''}</div>`;
+    d.innerHTML=`<div><div class="pt">${tokenIconHTML(l.token_symbol,'xs')} ${esc(l.token_symbol)} — ${esc(l.token_name)}</div><div class="info">От: ${l.telegram_id}</div><div class="info">Jetton: ${esc(l.jetton_master||'—')}</div><div class="info">Supply: ${f(l.total_supply)} • Оплата: ${f(l.listing_fee_tusd)} TUSD</div><div class="${sc}" style="font-size:12px">${st}</div>${l.admin_status==='pending'?`<div class="row" style="margin-top:10px"><button onclick="approveListing('${esc(l.id)}')">✅ ОДОБРИТЬ</button><button class="dng" onclick="rejectListing('${esc(l.id)}')">❌ ОТКЛОНИТЬ</button></div>`:''}</div>`;
     box.appendChild(d);
   });
 }
@@ -1657,7 +1700,7 @@ async function loadTokenReserves(){
   box.innerHTML=v.map(x=>{
     let l=`${f(x.reserve_amount,6)} ${x.token_symbol}`;
     if(x.token_tusd_value>0)l+=` ≈ ${f(x.token_tusd_value,2)} TUSD`;
-    return `<div class="pc"><div class="pt">🪙 ${esc(x.token_symbol)}</div><div class="info">Токенов: ${l}</div><div class="info">TUSD: ${f(x.reserve_tusd,2)}</div><div class="ok" style="font-weight:bold">Итого: ${f(x.total_tusd_value,2)} TUSD</div><button class="sm" style="margin-top:8px" onclick="openAddLiq('${esc(x.token_symbol)}')">➕ TUSD</button></div>`;
+    return `<div class="pc"><div class="pt" style="display:flex;align-items:center">${tokenIconHTML(x.token_symbol,'sm')} <span style="margin-left:8px">${esc(x.token_symbol)}</span></div><div class="info">Токенов: ${l}</div><div class="info">TUSD: ${f(x.reserve_tusd,2)}</div><div class="ok" style="font-weight:bold">Итого: ${f(x.total_tusd_value,2)} TUSD</div><button class="sm" style="margin-top:8px" onclick="openAddLiq('${esc(x.token_symbol)}')">➕ TUSD</button></div>`;
   }).join('');
 }
 function openAddLiq(t){if(!t)return;AL=t;document.getElementById('addLiqToken').textContent=t;document.getElementById('addLiqAmount').value='';document.getElementById('addLiqAvailable').textContent=`Доступно: ${f(tb('TUSD'))}`;document.getElementById('addLiqModal').classList.add('show')}
@@ -1731,7 +1774,7 @@ function orderCard(o){
   const p=CP[String(o.from_token).toUpperCase()];
   let pl='';
   if(p){let tx=`${f(p.reserve_amount,6)} ${esc(o.from_token)}`;if(p.reserve_tusd>0)tx+=` + ${f(p.reserve_tusd,2)} TUSD`;pl=`<div class="dt"><span>💧 Резерв</span><span>${tx}</span></div>`}
-  return `<div class="order" id="order-${esc(o.id)}" style="--rc:${c};--rg:${g}"><div class="oh" onclick="toggleOrder('${esc(o.id)}')"><div class="ol"><div class="om">${f(o.from_amount)} ${esc(o.from_token)} → ${f(o.to_amount)} ${esc(o.to_token)}</div><div class="rb">👑 ${esc(o.creator_rank_name)}</div></div><div class="op">1 ${esc(o.from_token)} = ${f(rt,12)} ${esc(o.to_token)}</div><div class="os"><span>👍 ${n(o.likes)}</span><span>👎 ${n(o.dislikes)}</span><span>🤝 ${n(o.completed_trades)}</span></div></div><div class="oe"><div class="dt"><span>Владелец</span><span class="pl" onclick="openProfile(${Number(o.creator_id)});event.stopPropagation()">👤 ${Number(o.creator_id)}</span></div><div class="dt"><span>Отдаёт</span><span>${f(o.from_amount)} ${esc(o.from_token)}</span></div><div class="dt"><span>Получает</span><span>${f(o.to_amount)} ${esc(o.to_token)}</span></div><div class="dt"><span>Курс</span><span>1 ${esc(o.from_token)} = ${f(rt,12)} ${esc(o.to_token)}</span></div><div class="dt"><span>Титул</span><span style="color:${c};font-weight:bold">👑 ${esc(o.creator_rank_name)}</span></div>${pl}<div class="dt"><span>Дата</span><span>${esc(dt)}</span></div><div class="oa"><button class="sec" onclick="openProfile(${Number(o.creator_id)});event.stopPropagation()">👤</button>${isMine?`<button class="dng" onclick="cancelP2POrder('${esc(o.id)}');event.stopPropagation()">❌</button>`:`<button onclick="acceptP2POrder('${esc(o.id)}');event.stopPropagation()">🤝</button>`}</div></div></div>`;
+  return `<div class="order" id="order-${esc(o.id)}" style="--rc:${c};--rg:${g}"><div class="oh" onclick="toggleOrder('${esc(o.id)}')"><div class="ol"><div class="om">${tokenIconHTML(o.from_token,'xs')} ${f(o.from_amount)} ${esc(o.from_token)} → ${f(o.to_amount)} ${esc(o.to_token)}</div><div class="rb">👑 ${esc(o.creator_rank_name)}</div></div><div class="op">1 ${esc(o.from_token)} = ${f(rt,12)} ${esc(o.to_token)}</div><div class="os"><span>👍 ${n(o.likes)}</span><span>👎 ${n(o.dislikes)}</span><span>🤝 ${n(o.completed_trades)}</span></div></div><div class="oe"><div class="dt"><span>Владелец</span><span class="pl" onclick="openProfile(${Number(o.creator_id)});event.stopPropagation()">👤 ${Number(o.creator_id)}</span></div><div class="dt"><span>Отдаёт</span><span>${f(o.from_amount)} ${esc(o.from_token)}</span></div><div class="dt"><span>Получает</span><span>${f(o.to_amount)} ${esc(o.to_token)}</span></div><div class="dt"><span>Курс</span><span>1 ${esc(o.from_token)} = ${f(rt,12)} ${esc(o.to_token)}</span></div><div class="dt"><span>Титул</span><span style="color:${c};font-weight:bold">👑 ${esc(o.creator_rank_name)}</span></div>${pl}<div class="dt"><span>Дата</span><span>${esc(dt)}</span></div><div class="oa"><button class="sec" onclick="openProfile(${Number(o.creator_id)});event.stopPropagation()">👤</button>${isMine?`<button class="dng" onclick="cancelP2POrder('${esc(o.id)}');event.stopPropagation()">❌</button>`:`<button onclick="acceptP2POrder('${esc(o.id)}');event.stopPropagation()">🤝</button>`}</div></div></div>`;
 }
 function toggleOrder(id){document.getElementById('order-'+id)?.classList.toggle('opened')}
 async function acceptP2POrder(id){
@@ -1773,7 +1816,7 @@ async function loadMyTrades(){
   b.innerHTML=data.map(t=>{
     const id=String(t?.id||'');if(!id)return'';
     const rated=t.my_rating!==null&&t.my_rating!==undefined;
-    return `<div class="ti" id="trade-${esc(id)}"><div class="om">${f(t.my_give_amount)} ${esc(t.my_give_token)} → ${f(t.my_get_amount)} ${esc(t.my_get_token)}</div><div class="info">С: ${Number(t.other_user_id)}</div>${rated?`<div class="ok">${Number(t.my_rating)>0?'👍':'👎'}</div>`:`<div class="rat"><button id="rl-${esc(id)}" onclick="rateTrade('${esc(id)}',1)">👍</button><button id="rd-${esc(id)}" class="dng" onclick="rateTrade('${esc(id)}',-1)">👎</button></div>`}</div>`;
+    return `<div class="ti" id="trade-${esc(id)}"><div class="om">${tokenIconHTML(t.my_give_token,'xs')} ${f(t.my_give_amount)} ${esc(t.my_give_token)} → ${f(t.my_get_amount)} ${esc(t.my_get_token)}</div><div class="info">С: ${Number(t.other_user_id)}</div>${rated?`<div class="ok">${Number(t.my_rating)>0?'👍':'👎'}</div>`:`<div class="rat"><button id="rl-${esc(id)}" onclick="rateTrade('${esc(id)}',1)">👍</button><button id="rd-${esc(id)}" class="dng" onclick="rateTrade('${esc(id)}',-1)">👎</button></div>`}</div>`;
   }).join('');
 }
 async function rateTrade(id,r){
@@ -1806,7 +1849,7 @@ async function loadAdminStats(){
   const box=document.getElementById('adminCustomTokens');
   if(box){
     box.innerHTML = all.length
-      ? all.map(x=>{ const isBase=['TG','AI','TUSD'].includes(x.symbol); const vchk=isBase?' ✅':''; return `<div class="st"><b>${f(x.total_balance,2)}</b><span>${esc(x.symbol)}${vchk} • ${x.holders}👤</span></div>`; }).join('')
+      ? all.map(x=>{ const isBase=['TG','AI','TUSD'].includes(x.symbol); const vchk=isBase?' ✅':''; return `<div class="st"><b>${f(x.total_balance,2)}</b><span style="display:flex;align-items:center;gap:6px">${tokenIconHTML(x.symbol,'xs')} ${esc(x.symbol)}${vchk} • ${x.holders}👤</span></div>`; }).join('')
       : '<div class="info">Нет данных.</div>';
   }
 }
@@ -1882,6 +1925,7 @@ async function loadListingSettings(){
 async function createTokenListing(){
   if(UID!==AID){msg('Нет доступа','error');return}
   const nm=document.getElementById('listingTokenName').value.trim(),sm=document.getElementById('listingTokenSymbol').value.trim(),jm=document.getElementById('listingJettonMaster').value.trim();
+  const logo=(document.getElementById('listingLogoUrl')?.value||'').trim();
   const dc=Number(document.getElementById('listingDecimals').value),sp=n(document.getElementById('listingTotalSupply').value);
   const r=document.getElementById('listingCreateResult'),b=document.getElementById('createListingButton');
   if(!nm||!sm||!jm){msg('Заполните','error');return}
@@ -1889,7 +1933,7 @@ async function createTokenListing(){
   if(sp<=0){msg('Supply>0','error');return}
   if(b){b.disabled=true;b.textContent='⏳...'}
   try{
-    const{data,error}=await sb.rpc('telepat_create_listing',{p_token_name:nm,p_token_symbol:sm,p_jetton_master:jm,p_network:'TON',p_decimals:dc,p_total_supply:sp,p_description:null,p_logo_url:null});
+    const{data,error}=await sb.rpc('telepat_create_listing',{p_token_name:nm,p_token_symbol:sm,p_jetton_master:jm,p_network:'TON',p_decimals:dc,p_total_supply:sp,p_description:null,p_logo_url:logo||null});
     if(error){if(r)r.innerHTML=`<span class="er">${esc(error.message)}</span>`;msg(error.message,'error');return}
     const l=Array.isArray(data)?data[0]:data;
     if(r)r.innerHTML=`<span class="ok">✅ ID: ${esc(l?.id||'')}</span>`;
@@ -1897,6 +1941,7 @@ async function createTokenListing(){
     document.getElementById('listingTokenName').value='';
     document.getElementById('listingTokenSymbol').value='';
     document.getElementById('listingJettonMaster').value='';
+    if(document.getElementById('listingLogoUrl'))document.getElementById('listingLogoUrl').value='';
     document.getElementById('listingTotalSupply').value='';
     calculateListingPreview();
     await loadAdminListings();
