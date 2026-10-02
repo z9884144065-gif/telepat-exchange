@@ -116,6 +116,7 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 .acc-item.open .acc-header .acc-arrow{transform:rotate(90deg);color:var(--gold)}
 .acc-body{display:none;padding:4px 16px 16px 16px;border-top:1px solid #1a2534}
 .acc-item.open .acc-body{display:block}
+.ad-balance-value{text-align:center;font-size:34px;font-weight:bold;color:#39d98a;text-shadow:0 0 18px #39d98a88;line-height:1.1}
 </style></head><body>
 <div id="message" class="msg"></div>
 <div class="app">
@@ -129,6 +130,14 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 <button onclick="showFAQ()">❓</button>
 <button onclick="openSettings()">⚙️</button>
 </div>
+
+<!-- ПРИВЕТСТВЕННЫЙ БОНУС (скрыт по умолчанию) -->
+<div class="card gold hide" id="bonusCard">
+<div class="title">🎁 ПРИВЕТСТВЕННЫЙ БОНУС</div>
+<div id="bonusStatus" class="info">Загрузка...</div>
+<button id="bonusBtn" onclick="claimWelcomeBonus()">🎁 Получить</button>
+</div>
+
 <div class="card gold">
 <div class="title">👤 МОЙ ПРОФИЛЬ</div>
 <div id="userName">Загрузка...</div>
@@ -160,6 +169,17 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 <div id="tokensList" style="display:flex;flex-direction:column;gap:6px"></div>
 </div>
 
+<!-- РЕКЛАМНЫЙ БАЛАНС -->
+<div class="card gold" id="adBalanceCard">
+<div class="title">📢 РЕКЛАМНЫЙ БАЛАНС</div>
+<div class="ad-balance-value"><span id="adBalanceValue">0.00</span> <span style="font-size:18px;color:#7fc97f;font-weight:normal">TUSD</span></div>
+<div class="info" style="text-align:center;margin-top:8px" id="adBalanceHint">Средства на рекламу</div>
+<div class="row" style="margin-top:12px">
+<button onclick="openAdTopup()">➕ Пополнить</button>
+<button class="sec" onclick="openAdWithdraw()">↩️ Вывести</button>
+</div>
+</div>
+
 <div class="card">
 <div class="title">⚡ БЫСТРЫЕ ДЕЙСТВИЯ</div>
 <div class="qa">
@@ -172,11 +192,6 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 <button class="qb gold" onclick="claimWelcomeBonus()"><span class="qi">🎁</span>БОНУС</button>
 <button class="qb gold" onclick="showSection('earn')"><span class="qi">🔥</span>ЧЕКИН</button>
 </div></div>
-<div class="card">
-<div class="title">🎁 ПРИВЕТСТВЕННЫЙ БОНУС</div>
-<div id="bonusStatus" class="info"></div>
-<button onclick="claimWelcomeBonus()">🎁 Получить бонус</button>
-</div>
 </section>
 
 <section id="s-exchange" class="hide">
@@ -260,15 +275,6 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 <div class="title" style="margin-top:16px;font-size:12px">КАЛЕНДАРЬ 30 ДНЕЙ</div>
 <div id="checkinCalendar" class="ci-grid"></div>
 </div>
-
-<div class="card">
-<div class="title">💰 ИСТОЧНИКИ ДОХОДА</div>
-<div class="qa">
-<button class="qb gold" onclick="watchAd()"><span class="qi">📺</span>РЕКЛАМА</button>
-<button class="qb gold" onclick="openTasks()"><span class="qi">📋</span>ЗАДАНИЯ</button>
-<button class="qb gold" onclick="claimWelcomeBonus()"><span class="qi">🎁</span>БОНУС</button>
-</div>
-</div>
 </section>
 
 <section id="s-admin" class="hide">
@@ -309,9 +315,16 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 
 <div class="card admin">
 <div class="title">💱 КУРСЫ И МИНИМУМЫ ТОКЕНОВ</div>
-<div class="info" style="margin-bottom:10px">Курс токена в TUSD и минимальная сумма вывода. Применяется сразу.</div>
+<div class="info" style="margin-bottom:10px">Курс токена в TUSD и минимальная сумма вывода.</div>
 <button class="sec" onclick="loadAdminTokenPrices()">🔄 Загрузить курсы</button>
 <div id="adminTokenPricesList" style="margin-top:12px"><div class="info">Нажми «Загрузить курсы».</div></div>
+</div>
+
+<div class="card admin">
+<div class="title">🎁 БОНУС НОВИЧКА — НАСТРОЙКИ</div>
+<div class="info" style="margin-bottom:10px">Сумма приветственного бонуса и количество участников.</div>
+<button class="sec" onclick="loadAdminBonusConfig()">🔄 Загрузить</button>
+<div id="adminBonusBox" style="margin-top:12px"><div class="info">Нажми «Загрузить».</div></div>
 </div>
 
 <div class="card admin">
@@ -385,7 +398,7 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 
 <div class="card admin">
 <div class="title">🛡️ ВЕРИФИКАЦИЯ ТОКЕНОВ</div>
-<div class="info" style="margin-bottom:10px">Пул ≥ $1000, возраст ≥ 30 дней, владелец ≥ Барон, ≥ 10 держателей, макс. 3 токена на владельца. TG, AI, TUSD — всегда верифицированы.</div>
+<div class="info" style="margin-bottom:10px">Пул ≥ $1000, возраст ≥ 30 дней, владелец ≥ Барон, ≥ 10 держателей.</div>
 <button class="sec" onclick="loadAdminVerification()">🔄 ЗАГРУЗИТЬ</button>
 <div id="adminVerifyList" style="margin-top:12px"><div class="info">Нажми «Загрузить».</div></div>
 </div>
@@ -464,6 +477,18 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 <button class="sec" onclick="closeAddLiq()">Отмена</button>
 </div></div>
 
+<!-- МОДАЛКА РЕКЛАМНОГО БАЛАНСА -->
+<div id="adBalanceModal" class="mo" onclick="closeAdBalanceModal(event)">
+<div class="mb" onclick="event.stopPropagation()">
+<div class="title" id="adBalanceModalTitle">📢 РЕКЛАМНЫЙ БАЛАНС</div>
+<label>Сумма TUSD</label>
+<input id="adBalanceAmount" type="number" step="any" min="0" placeholder="Например: 100">
+<div class="info" style="margin-top:8px" id="adBalanceAvail">Доступно: —</div>
+<button onclick="confirmAdBalanceAction()" id="adBalanceBtn">✅ Подтвердить</button>
+<button class="sec" onclick="closeAdBalanceModal()">Отмена</button>
+</div>
+</div>
+
 <div id="adModal" class="mo">
 <div class="af">
 <video id="adVideo" playsinline preload="auto" webkit-playsinline></video>
@@ -495,7 +520,7 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 const SU='https://jutszxuzjzyfxarceydw.supabase.co';
 const SK='sb_publishable_geRczpRc3faUHRGto2ue7A_eFFiJDwO';
 const EF=SU+'/functions/v1/telegram-auth';
-const AID=949707357,TGU=100,AIU=0.01;
+const AID=949707357;
 const TASK_CHECK_DELAY=5000;
 const BASE_VERIFIED=['TG','AI','TUSD'];
 let __jwt=sessionStorage.getItem('__jwt')||null;
@@ -504,6 +529,7 @@ let VERIFIED_SYMBOLS=new Set(BASE_VERIFIED);
 let __PENDING_TASK=null,__RETURN_TIMER=null;
 let ADMIN_USER=null;
 let STAKE_STATE=null,STAKE_TIMER=null,STAKE_SOUND_ON=false,STAKE_LAST_TS=0,STAKE_RATE_SEC=0,STAKE_ACCUM=0,STAKE_BALANCE_USD=0;
+let _adModalMode = 'topup';
 
 async function refreshJwt(){
   const id=window.Telegram?.WebApp?.initData;
@@ -676,9 +702,7 @@ function renderStake(){
   const perDay = STAKE_BALANCE_USD * STAKE_RATE_SEC * 86400;
   const perMonth = perDay * 30;
   const elA = document.getElementById('stakeAccum');
-  if(elA){
-    elA.innerHTML = `${fmtAccum(STAKE_ACCUM)} <span style="font-size:16px;color:#7fc97f;font-weight:normal">TUSD</span>`;
-  }
+  if(elA) elA.innerHTML = `${fmtAccum(STAKE_ACCUM)} <span style="font-size:16px;color:#7fc97f;font-weight:normal">TUSD</span>`;
   const el = document.getElementById('stakeTick');
   if(el) el.innerHTML = `<span style="color:#39d98a;font-weight:bold">+${fmtAccum(perDay)}</span> <span style="font-size:12px;color:#7fc97f;font-weight:normal">TUSD/день</span>`;
   const elM = document.getElementById('stakeMonth');
@@ -735,13 +759,29 @@ async function loadUser(){
   if(error) console.error('[loadUser] read error:', error);
   if(!data){
     console.warn('[loadUser] user not found, creating:', UID);
-    try { await sb.rpc('ensure_user_exists', { p_telegram_id: UID }); } catch(e){ console.error('[loadUser] ensure error:', e); }
+    try {
+      await sb.rpc('ensure_user_exists', {
+        p_telegram_id: UID,
+        p_first_name: tgu?.first_name || null,
+        p_username: tgu?.username || null
+      });
+    } catch(e){ console.error('[loadUser] ensure error:', e); }
     const r2 = await sb.from('users').select('*').eq('telegram_id', UID).maybeSingle();
     data = r2.data; error = r2.error;
   }
   if(!data){ console.warn('[loadUser] user still not found:', UID); msg('Не удалось загрузить профиль. Напиши сообщение в чате.', 'error'); return; }
 
   CU = data;
+
+  try {
+    const upd = {};
+    if(tgu?.first_name && CU.first_name !== tgu.first_name) upd.first_name = tgu.first_name;
+    if(tgu?.username   && CU.username   !== tgu.username)   upd.username   = tgu.username;
+    if(Object.keys(upd).length){
+      await sb.from('users').update(upd).eq('telegram_id', UID);
+      Object.assign(CU, upd);
+    }
+  } catch(e){ console.warn('[user sync]', e); }
 
   const startParam = tg?.initDataUnsafe?.start_param;
   if(startParam && !CU.referrer_id){
@@ -766,7 +806,7 @@ async function loadUser(){
 
 function renderUser(){
   if(!CU)return;
-  const name=[tgu?.first_name||'',tgu?.last_name||''].join(' ').trim()||tgu?.username||'User';
+  const name=[tgu?.first_name||'',tgu?.last_name||''].join(' ').trim()||tgu?.username||CU.first_name||CU.username||'User';
   document.getElementById('userName').textContent=name;
   document.getElementById('telegramId').textContent='ID: '+UID;
   const rl=Number(CU.rank_level||1);
@@ -788,7 +828,6 @@ function renderUser(){
     document.getElementById('rankRequirement').textContent=`Максимальный уровень! Всего ${f(total,2)} TUSD`;
   }
   document.getElementById('earnDetails').innerHTML=`Всего: <b>${f(total,2)} TUSD</b><br>TG: <b>${f(tgu2,2)}</b> • AI: <b>${f(aie,2)}</b><br>До следующего: <b>${f(Math.max(0,nextReq-total),2)} TUSD</b>`;
-  document.getElementById('bonusStatus').textContent=CU.welcome_bonus_claimed?'Уже получен.':'Доступен.';
   document.getElementById('refTG').textContent=f(CU.referral_tg_earned);
   document.getElementById('refTUSD').textContent=f(CU.referral_tusd_earned);
   renderTotalTusd();
@@ -842,14 +881,20 @@ function renderTotalTusd(){
           <div style="color:#fff;font-weight:bold;font-size:14px">${f(t.amt, 6)}</div>
           <div style="color:#8f9bab;font-size:11px">≈ ${f(t.tusd, 2)} TUSD</div>
         </div>
-        <button onclick="openWithdraw('${esc(t.sym)}', ${t.amt}, ${minW})" style="width:auto;padding:8px 12px;margin:0;font-size:12px;${canWithdraw ? '' : 'opacity:.4;'}" ${canWithdraw ? '' : 'disabled'}>↑</button>
+        <div style="display:flex;flex-direction:column;gap:4px;margin-left:6px">
+          <button onclick="openTokenDeposit('${esc(t.sym)}')" style="width:auto;padding:6px 10px;margin:0;font-size:11px">➕</button>
+          <button onclick="openWithdraw('${esc(t.sym)}', ${t.amt}, ${minW})" style="width:auto;padding:6px 10px;margin:0;font-size:11px;${canWithdraw ? '' : 'opacity:.4;'}" ${canWithdraw ? '' : 'disabled'}>↩️</button>
+        </div>
       </div>`;
   }).join('');
 }
 
 function openWithdraw(symbol, amount, minW){
   if(amount < minW){ msg(`Минимум для вывода ${symbol}: ${f(minW,6)}`, 'error'); return; }
-  msg(`Вывод ${f(amount,6)} ${symbol} — скоро добавим`, 'info');
+  msg(`Вывод ${f(amount,6)} ${symbol} — подключите TON-кошелёк (скоро)`, 'info');
+}
+function openTokenDeposit(symbol){
+  msg(`Пополнение ${symbol}: подключите TON-кошелёк (скоро)`, 'info');
 }
 
 function showSection(name){
@@ -864,13 +909,130 @@ function showSection(name){
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
-async function claimWelcomeBonus(){
-  if(!UID)return;
-  const{data,error}=await sb.rpc('grant_welcome_bonus_v2');
-  if(error){msg(error.message,'error');return}
-  msg(data?.message||(data?.success?'🎁 Начислен':'Не удалось'),data?.success?'success':'error');
-  await loadUser();await loadCustomBalances();
+// ============ РЕКЛАМНЫЙ БАЛАНС ============
+async function loadAdBalance(){
+  const el = document.getElementById('adBalanceValue');
+  const hint = document.getElementById('adBalanceHint');
+  if(!el) return;
+  try {
+    const {data, error} = await sb.rpc('get_ad_balance');
+    if(error || !data || data.ok === false) return;
+    el.textContent = n(data.ad_balance).toFixed(2);
+    if(hint && n(data.locked) > 0){
+      hint.innerHTML = `Средства на рекламу • 🔒 Заблокировано: <b>${n(data.locked).toFixed(2)} TUSD</b>`;
+    } else if(hint){
+      hint.textContent = 'Средства на рекламу';
+    }
+  } catch(e){ console.warn('[adBalance] load error:', e); }
 }
+async function openAdTopup(){
+  _adModalMode = 'topup';
+  await openAdBalanceModal('topup');
+}
+async function openAdWithdraw(){
+  _adModalMode = 'withdraw';
+  await openAdBalanceModal('withdraw');
+}
+async function openAdBalanceModal(mode){
+  const modal = document.getElementById('adBalanceModal');
+  const title = document.getElementById('adBalanceModalTitle');
+  const avail = document.getElementById('adBalanceAvail');
+  const btn = document.getElementById('adBalanceBtn');
+  const inp = document.getElementById('adBalanceAmount');
+  if(!modal) return;
+
+  inp.value = '';
+  const {data} = await sb.rpc('get_ad_balance');
+  const ad = n(data?.ad_balance);
+  const main = n(data?.tusd_balance);
+  const free = n(data?.available_to_withdraw);
+
+  if(mode === 'topup'){
+    title.textContent = '📢 ПОПОЛНИТЬ РЕКЛАМНЫЙ БАЛАНС';
+    avail.textContent = `Доступно из кошелька: ${main.toFixed(2)} TUSD`;
+    btn.textContent = '✅ Пополнить';
+  } else {
+    title.textContent = '📢 ВЫВЕСТИ С РЕКЛАМНОГО';
+    avail.textContent = `Свободно к выводу: ${free.toFixed(2)} TUSD`;
+    btn.textContent = '✅ Вывести';
+  }
+  modal.classList.add('show');
+}
+function closeAdBalanceModal(e){
+  if(e && e.target !== document.getElementById('adBalanceModal')) return;
+  document.getElementById('adBalanceModal').classList.remove('show');
+}
+async function confirmAdBalanceAction(){
+  const amt = n(document.getElementById('adBalanceAmount').value);
+  if(amt <= 0){ msg('Введите сумму больше 0','error'); return; }
+
+  const rpcName = _adModalMode === 'topup' ? 'topup_ad_balance' : 'withdraw_ad_balance';
+  const {data, error} = await sb.rpc(rpcName, { p_amount: amt });
+  if(error){ msg(error.message,'error'); return; }
+  if(!data || data.ok === false){ msg(data?.error || 'Ошибка','error'); return; }
+
+  msg(_adModalMode === 'topup' ? `✅ Пополнено на ${amt} TUSD` : `✅ Выведено ${amt} TUSD`, 'success');
+  closeAdBalanceModal();
+  await loadUser();
+  await loadAdBalance();
+}
+
+// ============ ПРИВЕТСТВЕННЫЙ БОНУС ============
+async function loadWelcomeBonusStatus(){
+  const card = document.getElementById('bonusCard');
+  const el = document.getElementById('bonusStatus');
+  const btn = document.getElementById('bonusBtn');
+  if(!card || !el) return;
+
+  card.classList.add('hide');
+
+  try {
+    const {data, error} = await sb.rpc('get_welcome_bonus_status');
+    if(error || !data) return;
+
+    const claimed = !!CU?.welcome_bonus_claimed;
+    const amount = Number(data.amount) || 1;
+
+    if(claimed){
+      card.classList.remove('hide');
+      el.innerHTML = `✅ Вы уже получили <b>$${amount}</b>`;
+      if(btn){ btn.disabled = true; btn.textContent = '✅ Получено'; }
+      return;
+    }
+    if(!data.active) return;
+
+    card.classList.remove('hide');
+    el.innerHTML = `💵 Первые <b>${data.limit}</b> пользователей получают <b>$${amount}</b> на баланс<br>
+      🎯 Осталось мест: <b style="color:#f4cf70">${data.remaining}</b> из ${data.limit}`;
+    if(btn){ btn.disabled = false; btn.textContent = `🎁 Получить $${amount}`; }
+  } catch(e){ console.warn('[bonus] load error:', e); }
+}
+async function claimWelcomeBonus(){
+  if(!UID) return;
+  const btn = document.getElementById('bonusBtn');
+  if(btn){ btn.disabled = true; btn.textContent = '⏳...'; }
+
+  const {data, error} = await sb.rpc('grant_welcome_bonus_v2');
+  if(error){
+    msg(error.message, 'error');
+    if(btn){ btn.disabled = false; btn.textContent = '🎁 Получить'; }
+    return;
+  }
+  if(data?.success){
+    await loadUser();
+    await loadCustomBalances();
+    showAdRewardPopup(
+      Number(data.amount) || 1,
+      data.token || 'TUSD',
+      `🎁 ПРИВЕТСТВЕННЫЙ БОНУС • ВЫ ${data.place}-Й ИЗ ${data.limit}`
+    );
+    await loadWelcomeBonusStatus();
+  } else {
+    msg(data?.message || 'Не удалось', 'error');
+    await loadWelcomeBonusStatus();
+  }
+}
+
 async function loadReferral(){if(UID)document.getElementById('refLink').value=`https://t.me/TELEPATp2p_bot?start=${UID}`}
 async function copyRefLink(){try{await navigator.clipboard.writeText(document.getElementById('refLink').value);msg('Скопировано','success')}catch{msg('Ошибка','error')}}
 
@@ -968,7 +1130,6 @@ function showCheckinReward(day,lines,isBonus){
   overlay.innerHTML=`<div style="width:min(340px,100%);background:linear-gradient(145deg,#1a3a1a,#0d200d);border:2px solid #39d98a;border-radius:20px;padding:22px;text-align:center;box-shadow:0 0 40px #39d98a66"><div style="font-size:52px;margin-bottom:6px">🎉</div><div style="color:#39d98a;font-size:20px;font-weight:bold;margin-bottom:4px">ДЕНЬ ${day} ПРОЙДЕН!</div>${isBonus?'<div style="color:#f4cf70;font-size:12px;margin-bottom:10px">⭐ БОНУСНЫЙ ДЕНЬ ×2</div>':'<div style="margin-bottom:10px"></div>'}<div style="background:#0006;border-radius:12px;padding:12px;margin-bottom:14px;font-size:14px">${lines}</div><button onclick="this.parentElement.parentElement.remove()" style="width:100%">👍 ОТЛИЧНО!</button></div>`;
   document.body.appendChild(overlay);
 }
-async function claimDailyReward(){ return claimCheckin(); }
 
 let AD=null,ADT=null,ADR=false;
 async function watchAd(){
@@ -1013,8 +1174,8 @@ function showAdRewardPopup(reward, token, extra){
   overlay.id = 'adRewardPopupGreen';
   overlay.style.cssText = 'position:fixed;z-index:6000;inset:0;background:#000c;display:flex;align-items:center;justify-content:center;padding:20px;animation:adFadeIn .3s';
   overlay.onclick = (e) => { if(e.target === overlay) overlay.remove(); };
-  const bonusLine = extra ? `<div style="color:#f4cf70;font-size:13px;margin-bottom:10px;font-weight:bold">${extra}</div>` : '';
-  overlay.innerHTML = `<div style="width:min(360px,100%);background:linear-gradient(145deg,#1f4a1f,#0d280d);border:3px solid #39d98a;border-radius:22px;padding:26px 22px;text-align:center;box-shadow:0 0 50px #39d98a88, inset 0 0 20px #39d98a22;animation:adPopIn .5s cubic-bezier(0.34,1.56,0.64,1)"><div style="font-size:64px;line-height:1;animation:adBounce 1s infinite">🎉</div><div style="color:#39d98a;font-size:22px;font-weight:bold;margin-top:12px;text-shadow:0 0 16px #39d98a99">НАГРАДА ПОЛУЧЕНА!</div>${bonusLine}<div style="background:#0006;border:2px solid #39d98a55;border-radius:14px;padding:14px;margin:16px 0;font-size:24px;font-weight:bold;color:#39d98a;text-shadow:0 0 12px #39d98a88">+${fmtAccum(reward)} ${esc(token)}</div><div style="color:#a8e6a8;font-size:12px;margin-bottom:16px">Зачислено на кошелёк</div><button onclick="document.getElementById('adRewardPopupGreen').remove()" style="width:100%;background:linear-gradient(135deg,#39d98a,#2ba86a);color:#0d280d;font-weight:bold;padding:14px;border-radius:14px;border:0;font-size:16px;cursor:pointer">👍 ОТЛИЧНО!</button><div style="color:#7fc97f;font-size:11px;margin-top:10px">Закроется через <span id="adAutoCloseTimer">5</span> сек</div></div>`;
+  const bonusLine = extra ? `<div style="color:#f4cf70;font-size:13px;margin-bottom:10px;font-weight:bold;text-align:center">${extra}</div>` : '';
+  overlay.innerHTML = `<div style="width:min(360px,100%);background:linear-gradient(145deg,#1f4a1f,#0d280d);border:3px solid #39d98a;border-radius:22px;padding:26px 22px;text-align:center;box-shadow:0 0 50px #39d98a88, inset 0 0 20px #39d98a22;animation:adPopIn .5s cubic-bezier(0.34,1.56,0.64,1)"><div style="font-size:64px;line-height:1;animation:adBounce 1s infinite">🎉</div><div style="color:#39d98a;font-size:22px;font-weight:bold;margin-top:12px;text-shadow:0 0 16px #39d98a99">НАГРАДА ПОЛУЧЕНА!</div>${bonusLine}<div style="background:#0006;border:2px solid #39d98a55;border-radius:14px;padding:14px;margin:16px 0;font-size:24px;font-weight:bold;color:#39d98a;text-shadow:0 0 12px #39d98a88">+${f(reward,5)} ${esc(token)}</div><div style="color:#a8e6a8;font-size:12px;margin-bottom:16px">Зачислено на кошелёк</div><button onclick="document.getElementById('adRewardPopupGreen').remove()" style="width:100%;background:linear-gradient(135deg,#39d98a,#2ba86a);color:#0d280d;font-weight:bold;padding:14px;border-radius:14px;border:0;font-size:16px;cursor:pointer">👍 ОТЛИЧНО!</button><div style="color:#7fc97f;font-size:11px;margin-top:10px">Закроется через <span id="adAutoCloseTimer">5</span> сек</div></div>`;
   document.body.appendChild(overlay);
   let sec = 5;
   const timerEl = overlay.querySelector('#adAutoCloseTimer');
@@ -1038,7 +1199,6 @@ async function claimAdReward(){
       b.textContent='✅';
       const rw = Number(data?.accumulated_added ?? data?.reward ?? 0);
       const tk = data?.reward_token ?? data?.token ?? 'TUSD';
-      // === обновляем всё: баланс, кастомные токены и НАКОПЛЕНО ===
       await loadUser(); await loadCustomBalances(); await loadStakeState();
       setTimeout(() => {
         closeAdModal();
@@ -1086,22 +1246,14 @@ async function claimTaskReward(tid){
   if(data?.ok===true){
     __PENDING_TASK=null;
     if(__RETURN_TIMER){clearTimeout(__RETURN_TIMER);__RETURN_TIMER=null}
-
     const added = Number(data?.accumulated_added) || 0;
     const inToken = Number(data?.payout) || 0;
     const token = data?.token || '';
-
     let amountStr;
-    if(added > 0){
-      amountStr = `+${fmtAccum(added)} TUSD`;
-    } else if(inToken > 0){
-      amountStr = `+${fmtAccum(inToken)} ${esc(token)}`;
-    } else {
-      amountStr = '';
-    }
-
+    if(added > 0){ amountStr = `+${fmtAccum(added)} TUSD`; }
+    else if(inToken > 0){ amountStr = `+${fmtAccum(inToken)} ${esc(token)}`; }
+    else { amountStr = ''; }
     msg(`🎁 ${amountStr} → в НАКОПЛЕНО`, 'success');
-
     await loadUser();
     await loadCustomBalances();
     await loadStakeState();
@@ -1117,6 +1269,7 @@ document.addEventListener('visibilitychange',()=>{
   }
 });
 
+// АДМИН
 async function adminLoadUser(){
   const id=document.getElementById('userSearchId').value.trim();
   if(!id){msg('Введите ID','error');return}
@@ -1284,10 +1437,9 @@ async function loadAdminVerification(){
     const isBase=['TG','AI','TUSD'].includes(t.symbol);
     const isVerified=isBase || t.verified;
     const sc=isVerified?'ok':'er';
-    const status=isVerified?(isBase?'✅ БАЗОВЫЙ (всегда вериф.)':'✅ ВЕРИФИЦИРОВАН'):'❌ НЕ ВЕРИФИЦИРОВАН';
+    const status=isVerified?(isBase?'✅ БАЗОВЫЙ':'✅ ВЕРИФИЦИРОВАН'):'❌ НЕ ВЕРИФИЦИРОВАН';
     const manualTag=t.manual_verified?' <span style="color:#f4cf70;font-size:11px">[вручную]</span>':'';
-    const reason=!isBase && t.verify_reason?`<div class="info" style="font-size:11px;color:#ff8a8a">Причина: ${esc(t.verify_reason)}</div>`:'';
-    d.innerHTML=`<div><div class="pt">🪙 ${esc(t.symbol)} — ${esc(t.name||'')}${manualTag}</div><div class="info">Владелец: ${t.owner_telegram_id||'—'} (титул ${t.owner_rank||'?'})</div><div class="info">Пул: $${f(t.pool_usd,2)} • Держателей: ${t.holders} • Возраст: ${t.days_old} дн.</div><div class="${sc}" style="font-size:12px;margin-top:5px">${status}</div>${reason}${isBase?'':`<div class="row" style="margin-top:10px"><button onclick="setTokenVerified('${esc(t.id)}',${t.manual_verified?'false':'true'})">${t.manual_verified?'❌ Снять вручную':'✅ Верифицировать вручную'}</button></div>`}</div>`;
+    d.innerHTML=`<div><div class="pt">🪙 ${esc(t.symbol)} — ${esc(t.name||'')}${manualTag}</div><div class="info">Владелец: ${t.owner_telegram_id||'—'} (титул ${t.owner_rank||'?'})</div><div class="info">Пул: $${f(t.pool_usd,2)} • Держателей: ${t.holders}</div><div class="${sc}" style="font-size:12px;margin-top:5px">${status}</div>${isBase?'':`<div class="row" style="margin-top:10px"><button onclick="setTokenVerified('${esc(t.id)}',${t.manual_verified?'false':'true'})">${t.manual_verified?'❌ Снять':'✅ Верифицировать'}</button></div>`}</div>`;
     b.appendChild(d);
   });
 }
@@ -1303,17 +1455,15 @@ async function loadAdminTokenPrices(){
   const box = document.getElementById('adminTokenPricesList');
   if(!box) return;
   box.innerHTML = '<div class="info">Загрузка...</div>';
-
   const { data, error } = await sb.rpc('admin_list_tokens_with_prices');
   if(error){ box.innerHTML = `<div class="er">${esc(error.message)}</div>`; return; }
   if(!data || !data.length){ box.innerHTML = '<div class="info">Нет токенов.</div>'; return; }
-
   box.innerHTML = data.map(t => `
     <div class="pc" style="margin-top:8px">
       <div class="pt">🪙 ${esc(t.symbol)} — ${esc(t.name||'')}</div>
-      <label style="margin-top:8px">Курс в TUSD (сколько стоит 1 ${esc(t.symbol)})</label>
+      <label style="margin-top:8px">Курс в TUSD</label>
       <input type="number" id="tp-price-${esc(t.id)}" step="0.00000001" min="0" value="${t.price_tusd}">
-      <label style="margin-top:8px">Минимальная сумма вывода</label>
+      <label style="margin-top:8px">Минимум вывода</label>
       <input type="number" id="tp-min-${esc(t.id)}" step="0.00000001" min="0" value="${t.min_withdrawal}">
       <div class="row" style="margin-top:10px">
         <button onclick="saveAdminTokenParams('${esc(t.id)}')">💾 Сохранить</button>
@@ -1321,33 +1471,63 @@ async function loadAdminTokenPrices(){
     </div>
   `).join('');
 }
-
 async function saveAdminTokenParams(id){
   const priceEl = document.getElementById('tp-price-' + id);
   const minEl   = document.getElementById('tp-min-' + id);
   if(!priceEl || !minEl) return;
-
   const price = Number(priceEl.value);
   const minW  = Number(minEl.value);
-
   if(!Number.isFinite(price) || price < 0){ msg('Некорректный курс','error'); return; }
   if(!Number.isFinite(minW) || minW < 0){ msg('Некорректный минимум','error'); return; }
-
   const { data, error } = await sb.rpc('admin_set_token_params', {
-    p_token_id: id,
-    p_price_tusd: price,
-    p_min_withdrawal: minW
+    p_token_id: id, p_price_tusd: price, p_min_withdrawal: minW
   });
-
   if(error){ msg(error.message,'error'); return; }
   if(!data || data.ok === false){ msg((data && data.error) || 'Ошибка','error'); return; }
-
   msg('✅ Курс сохранён','success');
+  await loadAllTokens(); await loadUser(); await loadCustomBalances(); await loadStakeState();
+}
 
-  await loadAllTokens();
-  await loadUser();
-  await loadCustomBalances();
-  await loadStakeState();
+// АДМИН: БОНУС НОВИЧКА
+async function loadAdminBonusConfig(){
+  const box = document.getElementById('adminBonusBox');
+  if(!box) return;
+  box.innerHTML = '<div class="info">Загрузка...</div>';
+  const {data, error} = await sb.rpc('admin_get_welcome_bonus_config');
+  if(error){ box.innerHTML = `<div class="er">${esc(error.message)}</div>`; return; }
+  if(!data || data.ok === false){ box.innerHTML = `<div class="er">${esc(data?.error||'Ошибка')}</div>`; return; }
+  box.innerHTML = `
+    <div class="pc">
+      <div class="pt">🎁 БОНУС НОВИЧКА</div>
+      <div class="info" style="margin-top:6px">
+        Получили: <b>${data.claimed}</b> / ${data.limit} • Осталось: <b style="color:#39d98a">${data.remaining}</b>
+      </div>
+    </div>
+    <label style="margin-top:12px">Сумма бонуса (TUSD)</label>
+    <input type="number" id="wb_amount" step="0.01" min="0" value="${data.amount}">
+    <label style="margin-top:9px">Лимит участников</label>
+    <input type="number" id="wb_limit" step="1" min="1" value="${data.limit}">
+    <div class="row" style="margin-top:12px">
+      <button onclick="saveAdminBonusConfig()">💾 Сохранить</button>
+    </div>
+    <div id="adminBonusStatus" class="info" style="margin-top:8px"></div>
+  `;
+}
+async function saveAdminBonusConfig(){
+  const st = document.getElementById('adminBonusStatus');
+  if(st) st.textContent = 'Сохранение...';
+  const amount = Number(document.getElementById('wb_amount').value);
+  const limit = Number(document.getElementById('wb_limit').value);
+  if(!Number.isFinite(amount) || amount < 0){ if(st) st.textContent = 'Некорректная сумма'; return; }
+  if(!Number.isFinite(limit) || limit < 1){ if(st) st.textContent = 'Некорректный лимит'; return; }
+  const {data, error} = await sb.rpc('admin_set_welcome_bonus_config', { p_amount: amount, p_limit: limit });
+  if(error || !data || data.ok === false){
+    if(st) st.textContent = 'Ошибка: ' + (error?.message || data?.error || 'unknown');
+    return;
+  }
+  if(st) st.textContent = '✅ Сохранено';
+  await loadAdminBonusConfig();
+  await loadWelcomeBonusStatus();
 }
 
 function buildAdminAccordion(){
@@ -1356,45 +1536,32 @@ function buildAdminAccordion(){
   const cards = Array.from(sAdmin.children).filter(el => el.classList && el.classList.contains('card') && el.classList.contains('admin'));
   if(!cards.length) return;
   if(sAdmin.querySelector('.acc-item')) return;
-
   const wrap = document.createElement('div');
   cards.forEach(card => {
     const titleEl = card.querySelector('.title');
     const title = titleEl ? titleEl.textContent.trim() : 'Раздел';
-
     const item = document.createElement('div');
     item.className = 'acc-item';
-
     const header = document.createElement('div');
     header.className = 'acc-header';
     header.innerHTML = `<span class="acc-title">${esc(title)}</span><span class="acc-arrow">▶</span>`;
     header.onclick = () => item.classList.toggle('open');
-
     const body = document.createElement('div');
     body.className = 'acc-body';
-
     while(card.firstChild){
       const child = card.firstChild;
       if(child === titleEl){ card.removeChild(child); continue; }
       body.appendChild(child);
     }
-
     item.appendChild(header);
     item.appendChild(body);
     wrap.appendChild(item);
   });
-
   cards.forEach(c => c.remove());
   sAdmin.appendChild(wrap);
 }
 
-const UI_DEFAULTS = {
-  ui_bg: '#0b1018',
-  ui_bg_radial: '#26334a',
-  ui_accent: '#f4cf70',
-  ui_card: '#141c28'
-};
-
+const UI_DEFAULTS = { ui_bg:'#0b1018', ui_bg_radial:'#26334a', ui_accent:'#f4cf70', ui_card:'#141c28' };
 async function loadUiSettings(){
   try {
     const { data } = await sb.rpc('get_ui_settings');
@@ -1407,13 +1574,8 @@ async function loadUiSettings(){
     applyUiColors(s);
     const st = document.getElementById('uiSettingsStatus');
     if(st) st.textContent = '✅ Загружено';
-  } catch(e){
-    console.error('[loadUiSettings]', e);
-    const st = document.getElementById('uiSettingsStatus');
-    if(st) st.textContent = 'Ошибка загрузки';
-  }
+  } catch(e){ console.error('[loadUiSettings]', e); }
 }
-
 async function saveUiSettings(){
   const st = document.getElementById('uiSettingsStatus');
   if(st) st.textContent = 'Сохранение...';
@@ -1434,7 +1596,6 @@ async function saveUiSettings(){
   applyUiColors(values);
   if(st) st.textContent = '✅ Сохранено';
 }
-
 function resetUiSettings(){
   applyUiColors(UI_DEFAULTS);
   const el = id => document.getElementById(id);
@@ -1443,7 +1604,6 @@ function resetUiSettings(){
   if(el('ui-accent'))    el('ui-accent').value = UI_DEFAULTS.ui_accent;
   if(el('ui-card'))      el('ui-card').value = UI_DEFAULTS.ui_card;
 }
-
 function applyUiColors(colors){
   const root = document.documentElement;
   root.style.setProperty('--bg', colors.ui_bg);
@@ -1451,15 +1611,12 @@ function applyUiColors(colors){
   root.style.setProperty('--gold', colors.ui_accent);
   document.body.style.background = `radial-gradient(circle at 50% -10%, ${colors.ui_bg_radial} 0, ${colors.ui_bg} 42%), ${colors.ui_bg}`;
 }
-
 async function loadUiSettingsPublic(){
   try {
     const { data } = await sb.rpc('get_ui_settings');
     const s = Object.assign({}, UI_DEFAULTS, data || {});
     applyUiColors(s);
-  } catch(e){
-    console.warn('[ui] load public error', e);
-  }
+  } catch(e){ console.warn('[ui] load public error', e); }
 }
 
 async function loadAdminListings(){
@@ -1799,6 +1956,8 @@ document.addEventListener('DOMContentLoaded',async()=>{
   await loadUiSettingsPublic();
   buildAdminAccordion();
   await loadUser();
+  await loadWelcomeBonusStatus();
+  await loadAdBalance();
   await loadAllTokens();
   await loadCustomBalances();
   updateOrderForm();
