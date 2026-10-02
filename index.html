@@ -531,14 +531,12 @@ const f=(v,m=8)=>n(v).toLocaleString('ru-RU',{maximumFractionDigits:m});
 const tb=t=>{if(!CU)return 0;if(t==='TG')return n(CU.tg_balance);if(t==='AI')return n(CU.ai_balance);if(t==='TUSD')return n(CU.tusd_balance);return n(CB[t])};
 function msg(t,ty='info'){const e=document.getElementById('message');e.textContent=t;e.style.borderColor=ty==='error'?'#8b3f4c':ty==='success'?'#397b5b':'#4c5b70';e.classList.add('show');setTimeout(()=>e.classList.remove('show'),3000)}
 
-// ============ ФОРМАТ ЧИСЛА ДЛЯ НАКОПЛЕНО ============
 function fmtAccum(v){
   const x = Number(v)||0;
   if(x === 0) return '0.00000000';
   if(x >= 0.01) return x.toFixed(8);
   if(x >= 0.0001) return x.toFixed(10);
   if(x >= 0.000001) return x.toFixed(12);
-  // очень малое — считаем знаков после запятой, пока не встретим значимую цифру
   const s = x.toFixed(20);
   const match = s.match(/^0\.(0*)(\d+)/);
   if(!match) return x.toFixed(8);
@@ -548,7 +546,6 @@ function fmtAccum(v){
   return x.toFixed(totalDigits).replace(/0+$/,'');
 }
 
-// ================= КУРСЫ ТОКЕНОВ =================
 const PRICE_CACHE = {};
 const TOKEN_ICONS = {
   'TG':     { emoji: '🥇', bg: 'linear-gradient(135deg,#f5d477,#c99629)' },
@@ -675,12 +672,9 @@ function startStakeTimer(){
     renderStake();
   }, 1000);
 }
-
-// ============ ИЗМЕНЕНО: показываем больше знаков в НАКОПЛЕНО ============
 function renderStake(){
   const perDay = STAKE_BALANCE_USD * STAKE_RATE_SEC * 86400;
   const perMonth = perDay * 30;
-
   const elA = document.getElementById('stakeAccum');
   if(elA){
     elA.innerHTML = `${fmtAccum(STAKE_ACCUM)} <span style="font-size:16px;color:#7fc97f;font-weight:normal">TUSD</span>`;
@@ -1042,9 +1036,10 @@ async function claimAdReward(){
     r.innerHTML=ok?`<span class="ok">✅ ${esc(m)}</span>`:`<span class="er">${esc(m)}</span>`;
     if(ok){
       b.textContent='✅';
-      const rw = Number(data?.reward ?? data?.amount ?? data?.payout ?? 0);
+      const rw = Number(data?.accumulated_added ?? data?.reward ?? 0);
       const tk = data?.reward_token ?? data?.token ?? 'TUSD';
-      await loadUser(); await loadCustomBalances();
+      // === обновляем всё: баланс, кастомные токены и НАКОПЛЕНО ===
+      await loadUser(); await loadCustomBalances(); await loadStakeState();
       setTimeout(() => {
         closeAdModal();
         if(rw > 0) showAdRewardPopup(rw, tk, data?.is_bonus_day ? '⭐ БОНУС ×2' : '');
@@ -1085,8 +1080,6 @@ function startTask(id,link){
   document.getElementById('tasksModal').classList.add('show');
   document.getElementById('tasksList').innerHTML='<div style="text-align:center;padding:20px"><div class="info" style="font-size:14px">⏳ Выполняем задание…</div><div class="info" style="margin-top:10px">Подпишитесь и вернитесь в бота</div></div>';
 }
-
-// ============ ИЗМЕНЕНО: точное сообщение о начислении в НАКОПЛЕНО ============
 async function claimTaskReward(tid){
   const{data,error}=await sb.rpc('complete_task',{p_task_id:tid,p_user_id:String(UID)});
   if(error){msg(error.message,'error');return}
@@ -1306,7 +1299,6 @@ async function setTokenVerified(id,v){
   await loadAllTokens(); await loadAdminVerification();
 }
 
-// ================= АДМИН: КУРСЫ ТОКЕНОВ =================
 async function loadAdminTokenPrices(){
   const box = document.getElementById('adminTokenPricesList');
   if(!box) return;
@@ -1355,9 +1347,9 @@ async function saveAdminTokenParams(id){
   await loadAllTokens();
   await loadUser();
   await loadCustomBalances();
+  await loadStakeState();
 }
 
-// ================= АДМИН: АККОРДЕОН =================
 function buildAdminAccordion(){
   const sAdmin = document.getElementById('s-admin');
   if(!sAdmin) return;
@@ -1396,7 +1388,6 @@ function buildAdminAccordion(){
   sAdmin.appendChild(wrap);
 }
 
-// ================= АДМИН: UI НАСТРОЙКИ =================
 const UI_DEFAULTS = {
   ui_bg: '#0b1018',
   ui_bg_radial: '#26334a',
