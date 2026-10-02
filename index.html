@@ -20,6 +20,7 @@ button.dng{background:#542330;color:#fff;border:1px solid #884050}
 button.sm{width:auto;padding:8px 11px;margin:0;font-size:12px}
 button:disabled{opacity:.45;cursor:not-allowed}
 select,input{background:#0d1520;color:#fff;padding:12px;outline:none}
+input[type="color"]{padding:4px;height:46px;cursor:pointer}
 label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 .tbox{background:#0d1520;border:1px solid #303d50;border-radius:14px;padding:12px}
 .tname{color:var(--muted);font-size:12px}.tval{color:#fff;font-size:20px;font-weight:bold;margin-top:4px}
@@ -106,6 +107,16 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 @keyframes adBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 .stake-collect{background:linear-gradient(135deg,#39d98a,#2ba86a);color:#0d280d;font-weight:bold}
 .stake-sound{background:#1b2635;color:#fff;border:1px solid #4a596d;font-size:16px}
+/* аккордеон в админке */
+.acc-item{margin-top:8px;background:#0d1520;border:1px solid #2d3a4c;border-radius:14px;overflow:hidden;transition:border-color .2s}
+.acc-item.open{border-color:#68562a}
+.acc-header{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;cursor:pointer;font-weight:bold;color:var(--gold);font-size:14px;user-select:none;transition:background .2s}
+.acc-header:active{background:#141d2a}
+.acc-header .acc-title{flex:1;min-width:0;word-break:break-word;padding-right:10px}
+.acc-header .acc-arrow{flex:0 0 auto;color:#9da9b9;font-size:14px;transition:transform .25s}
+.acc-item.open .acc-header .acc-arrow{transform:rotate(90deg);color:var(--gold)}
+.acc-body{display:none;padding:4px 16px 16px 16px;border-top:1px solid #1a2534}
+.acc-item.open .acc-body{display:block}
 </style></head><body>
 <div id="message" class="msg"></div>
 <div class="app">
@@ -147,7 +158,7 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 <button class="stake-sound" id="stakeSoundBtn" style="width:44px;flex:0 0 44px;margin:0;padding:11px;font-size:16px" onclick="toggleStakeSound()">🔇</button>
 </div>
 <div class="title" style="font-size:12px;color:#9da9b9;margin-top:18px;margin-bottom:8px">МОИ ТОКЕНЫ</div>
-<div id="tokensList" style="display:flex;flex-direction:column;gap:8px"></div>
+<div id="tokensList" style="display:flex;flex-direction:column;gap:6px"></div>
 </div>
 
 <div class="card">
@@ -274,6 +285,34 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 <div class="title" style="margin-top:16px;font-size:12px;color:#9da9b9">ПОЛНЫЙ РАСКЛАД ПО ВСЕМ ТОКЕНАМ</div>
 <div class="sgrid" id="adminCustomTokens" style="margin-top:8px"></div>
 <button class="sec" onclick="loadAdminStats()">🔄 Обновить</button>
+</div>
+
+<div class="card admin">
+<div class="title">🎨 UI НАСТРОЙКИ</div>
+<div class="info" style="margin-bottom:10px">Цвета интерфейса. Применяются сразу после сохранения.</div>
+<button class="sec" onclick="loadUiSettings()">🔄 Загрузить настройки</button>
+<div id="uiSettingsBox" style="margin-top:12px">
+  <label style="margin-top:8px">Основной фон приложения</label>
+  <input type="color" id="ui-bg" value="#0b1018">
+  <label style="margin-top:12px">Цвет свечения вверху</label>
+  <input type="color" id="ui-bg-radial" value="#26334a">
+  <label style="margin-top:12px">Акцентный цвет (золотой)</label>
+  <input type="color" id="ui-accent" value="#f4cf70">
+  <label style="margin-top:12px">Цвет карточек</label>
+  <input type="color" id="ui-card" value="#141c28">
+  <div class="row" style="margin-top:14px">
+    <button onclick="saveUiSettings()">💾 Сохранить цвета</button>
+    <button class="sec" onclick="resetUiSettings()">↺ Сбросить</button>
+  </div>
+  <div id="uiSettingsStatus" class="info" style="margin-top:8px"></div>
+</div>
+</div>
+
+<div class="card admin">
+<div class="title">💱 КУРСЫ И МИНИМУМЫ ТОКЕНОВ</div>
+<div class="info" style="margin-bottom:10px">Курс токена в TUSD и минимальная сумма вывода. Применяется сразу.</div>
+<button class="sec" onclick="loadAdminTokenPrices()">🔄 Загрузить курсы</button>
+<div id="adminTokenPricesList" style="margin-top:12px"><div class="info">Нажми «Загрузить курсы».</div></div>
 </div>
 
 <div class="card admin">
@@ -498,20 +537,64 @@ const f=(v,m=8)=>n(v).toLocaleString('ru-RU',{maximumFractionDigits:m});
 const tb=t=>{if(!CU)return 0;if(t==='TG')return n(CU.tg_balance);if(t==='AI')return n(CU.ai_balance);if(t==='TUSD')return n(CU.tusd_balance);return n(CB[t])};
 function msg(t,ty='info'){const e=document.getElementById('message');e.textContent=t;e.style.borderColor=ty==='error'?'#8b3f4c':ty==='success'?'#397b5b':'#4c5b70';e.classList.add('show');setTimeout(()=>e.classList.remove('show'),3000)}
 
+// ================= КУРСЫ ТОКЕНОВ =================
+const PRICE_CACHE = {};
+const TOKEN_ICONS = {
+  'TG':     { emoji: '🥇', bg: 'linear-gradient(135deg,#f5d477,#c99629)' },
+  'AI':     { emoji: '🤖', bg: 'linear-gradient(135deg,#8b5cf6,#6d28d9)' },
+  'TUSD':   { emoji: '💵', bg: 'linear-gradient(135deg,#39d98a,#2ba86a)' },
+  'VKCOIN': { emoji: '🎮', bg: 'linear-gradient(135deg,#4f8cff,#2563eb)' },
+  'DEFAULT':{ emoji: '🪙', bg: 'linear-gradient(135deg,#7f8c9f,#4a596d)' }
+};
+function tokenIcon(sym){ return TOKEN_ICONS[sym] || TOKEN_ICONS.DEFAULT; }
+
+function priceOf(sym){
+  if(PRICE_CACHE[sym] != null) return PRICE_CACHE[sym];
+  const t = (ALL_TOKENS || []).find(x => x.symbol === sym);
+  const p = t && t.price_tusd != null ? Number(t.price_tusd) : null;
+  if(p != null && p > 0){
+    PRICE_CACHE[sym] = p;
+    return p;
+  }
+  if(sym === 'TUSD') return 1;
+  if(sym === 'TG')   return 100;
+  if(sym === 'AI')   return 0.01;
+  return 1;
+}
+
 function tokenToTusd(sym, amount){
-  if(sym==='TUSD') return amount;
-  if(sym==='TG') return amount * 100;
-  if(sym==='AI') return amount * 0.01;
-  return amount;
+  return amount * priceOf(sym);
 }
 
 async function loadAllTokens(){
   VERIFIED_SYMBOLS=new Set(BASE_VERIFIED);
   try{
-    const{data,error}=await sb.rpc('telepat_admin_list_tokens');
-    if(!error&&data&&data.length)ALL_TOKENS=data.map(t=>({id:t.id,symbol:t.symbol,name:t.name}));
-    else ALL_TOKENS=[{symbol:'TG',name:'Telepat Gold'},{symbol:'AI',name:'AI Token'},{symbol:'TUSD',name:'Telepat Dollar'}];
-  }catch{ALL_TOKENS=[{symbol:'TG',name:'Telepat Gold'},{symbol:'AI',name:'AI Token'},{symbol:'TUSD',name:'Telepat Dollar'}]}
+    const{data,error}=await sb.rpc('list_tokens_public');
+    if(!error&&data&&data.length){
+      ALL_TOKENS=data.map(t=>({
+        id:t.id,
+        symbol:t.symbol,
+        name:t.name,
+        price_tusd:Number(t.price_tusd)||0,
+        min_withdrawal:Number(t.min_withdrawal)||0,
+        decimals:t.decimals
+      }));
+    } else {
+      ALL_TOKENS=[
+        {symbol:'TG',name:'Telepat Gold',price_tusd:100,min_withdrawal:10},
+        {symbol:'AI',name:'AI Token',price_tusd:0.01,min_withdrawal:100},
+        {symbol:'TUSD',name:'Telepat Dollar',price_tusd:1,min_withdrawal:5}
+      ];
+    }
+  }catch{
+    ALL_TOKENS=[
+      {symbol:'TG',name:'Telepat Gold',price_tusd:100,min_withdrawal:10},
+      {symbol:'AI',name:'AI Token',price_tusd:0.01,min_withdrawal:100},
+      {symbol:'TUSD',name:'Telepat Dollar',price_tusd:1,min_withdrawal:5}
+    ];
+  }
+  Object.keys(PRICE_CACHE).forEach(k=>delete PRICE_CACHE[k]);
+
   fillAll();
   const adTokSel = document.getElementById('ad_new_token');
   if(adTokSel && ALL_TOKENS.length){
@@ -591,7 +674,6 @@ function startStakeTimer(){
 function renderStake(){
   const perDay = STAKE_BALANCE_USD * STAKE_RATE_SEC * 86400;
   const perMonth = perDay * 30;
-
   const elA = document.getElementById('stakeAccum');
   if(elA){
     const intPart = Math.floor(STAKE_ACCUM);
@@ -599,13 +681,9 @@ function renderStake(){
     elA.innerHTML = `${intPart.toLocaleString('ru-RU')}<span style="color:#7fc97f;font-size:20px">${frac}</span> <span style="font-size:16px;color:#7fc97f;font-weight:normal">TUSD</span>`;
   }
   const el = document.getElementById('stakeTick');
-  if(el){
-    el.innerHTML = `<span style="color:#39d98a;font-weight:bold">+${perDay.toFixed(4)}</span> <span style="font-size:12px;color:#7fc97f;font-weight:normal">TUSD/день</span>`;
-  }
+  if(el) el.innerHTML = `<span style="color:#39d98a;font-weight:bold">+${perDay.toFixed(4)}</span> <span style="font-size:12px;color:#7fc97f;font-weight:normal">TUSD/день</span>`;
   const elM = document.getElementById('stakeMonth');
-  if(elM){
-    elM.innerHTML = `≈ <b>${perMonth.toFixed(2)}</b> <span style="font-size:11px;color:#7fc97f;font-weight:normal">TUSD/месяц</span>`;
-  }
+  if(elM) elM.innerHTML = `≈ <b>${perMonth.toFixed(2)}</b> <span style="font-size:11px;color:#7fc97f;font-weight:normal">TUSD/месяц</span>`;
   if(STAKE_SOUND_ON && Math.floor(Date.now()/1000) % 5 === 0) playCoinSound();
 }
 function playCoinSound(){
@@ -652,45 +730,20 @@ function goToMyOrders(){showSection('exchange');setTimeout(()=>document.getEleme
 function goToPools(){showSection('exchange');setTimeout(()=>document.getElementById('poolsCard')?.scrollIntoView({behavior:'smooth',block:'start'}),400)}
 function goToTrades(){showSection('exchange');setTimeout(()=>document.getElementById('tradesCard')?.scrollIntoView({behavior:'smooth',block:'start'}),400)}
 
-// ================= loadUser: автосоздание + реферальная привязка =================
 async function loadUser(){
   if(!UID){msg('Открой в Telegram','error');return}
-
-  // 1) пробуем прочитать
-  let {data, error} = await sb
-    .from('users')
-    .select('*')
-    .eq('telegram_id', UID)
-    .maybeSingle();
-
+  let {data, error} = await sb.from('users').select('*').eq('telegram_id', UID).maybeSingle();
   if(error) console.error('[loadUser] read error:', error);
-
-  // 2) если не нашли — создаём через RPC
   if(!data){
     console.warn('[loadUser] user not found, creating:', UID);
-    try {
-      await sb.rpc('ensure_user_exists', { p_telegram_id: UID });
-    } catch(e){
-      console.error('[loadUser] ensure error:', e);
-    }
-    const r2 = await sb
-      .from('users')
-      .select('*')
-      .eq('telegram_id', UID)
-      .maybeSingle();
-    data = r2.data;
-    error = r2.error;
+    try { await sb.rpc('ensure_user_exists', { p_telegram_id: UID }); } catch(e){ console.error('[loadUser] ensure error:', e); }
+    const r2 = await sb.from('users').select('*').eq('telegram_id', UID).maybeSingle();
+    data = r2.data; error = r2.error;
   }
-
-  if(!data){
-    console.warn('[loadUser] user still not found:', UID);
-    msg('Не удалось загрузить профиль. Напиши сообщение в чате.', 'error');
-    return;
-  }
+  if(!data){ console.warn('[loadUser] user still not found:', UID); msg('Не удалось загрузить профиль. Напиши сообщение в чате.', 'error'); return; }
 
   CU = data;
 
-  // 3) РЕФЕРАЛЬНАЯ ПРИВЯЗКА: если пришли по ссылке и referrer_id ещё не установлен
   const startParam = tg?.initDataUnsafe?.start_param;
   if(startParam && !CU.referrer_id){
     const refId = Number(startParam);
@@ -699,16 +752,10 @@ async function loadUser(){
         const r = await sb.rpc('set_referrer', { p_user_id: UID, p_referrer_id: refId });
         console.log('[loadUser] set_referrer:', r.data);
         if(r.data && r.data.ok){
-          const r3 = await sb
-            .from('users')
-            .select('*')
-            .eq('telegram_id', UID)
-            .maybeSingle();
+          const r3 = await sb.from('users').select('*').eq('telegram_id', UID).maybeSingle();
           if(r3.data) CU = r3.data;
         }
-      } catch(e){
-        console.error('[loadUser] set_referrer error:', e);
-      }
+      } catch(e){ console.error('[loadUser] set_referrer error:', e); }
     }
   }
 
@@ -729,7 +776,7 @@ function renderUser(){
   const levelEl=document.getElementById('rankLevel');
   if(levelEl)levelEl.textContent=`Уровень ${rl} из 21`;
   document.getElementById('earnRank').textContent=rn;
-  const tgu2=n(CU.tg_balance)*TGU,aie=n(CU.ai_balance)*AIU;
+  const tgu2=n(CU.tg_balance)*priceOf('TG'),aie=n(CU.ai_balance)*priceOf('AI');
   const total=tgu2+aie;
   const currentRank=RANKS[rl-1]||RANKS[0];
   const nextRank=RANKS[rl]||null;
@@ -753,12 +800,15 @@ function renderTotalTusd(){
   let total = 0;
   const tokens = [];
   const tg = n(CU.tg_balance), ai = n(CU.ai_balance), tusd = n(CU.tusd_balance);
+
   total += tokenToTusd('TG', tg);
   total += tokenToTusd('AI', ai);
   total += tokenToTusd('TUSD', tusd);
+
   tokens.push({sym:'TG', amt:tg, tusd:tokenToTusd('TG',tg)});
   tokens.push({sym:'AI', amt:ai, tusd:tokenToTusd('AI',ai)});
   tokens.push({sym:'TUSD', amt:tusd, tusd:tokenToTusd('TUSD',tusd)});
+
   Object.keys(CB).forEach(sym=>{
     if(['TG','AI','TUSD'].includes(sym)) return;
     const amt = n(CB[sym]);
@@ -766,18 +816,44 @@ function renderTotalTusd(){
     total += tusdVal;
     tokens.push({sym, amt, tusd:tusdVal});
   });
+
   const intPart = Math.floor(total);
   const cents = (total - intPart).toFixed(2).substring(1);
   const el = document.getElementById('totalUsdBalance');
   if(el){ el.innerHTML = `${intPart.toLocaleString('ru-RU')}<span style="color:#8f9bab;font-size:20px">${cents} TUSD</span>`; }
+
   const list = document.getElementById('tokensList');
-  if(list){
-    list.innerHTML = tokens.map(t=>{
-      const isBase = ['TG','AI','TUSD'].includes(t.sym);
-      const chk = isBase ? ' <span style="color:#39d98a">✅</span>' : '';
-      return `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #1e2a3a"><div style="color:#aeb8c6;font-size:13px">${esc(t.sym)}${chk}</div><div style="text-align:right"><div style="color:#fff;font-size:13px;font-weight:bold">${f(t.amt,6)}</div><div style="color:#8f9bab;font-size:11px">≈ ${f(t.tusd,2)} TUSD</div></div></div>`;
-    }).join('');
+  if(!list) return;
+
+  const minMap = {};
+  (ALL_TOKENS || []).forEach(t => { minMap[t.symbol] = n(t.min_withdrawal); });
+
+  list.innerHTML = tokens.map(t => {
+    const ic = tokenIcon(t.sym);
+    const minW = minMap[t.sym] || 0;
+    const canWithdraw = minW > 0 && t.amt >= minW;
+    return `
+      <div style="display:flex;align-items:center;gap:12px;padding:10px 12px;background:#0d1520;border:1px solid #2d3a4c;border-radius:14px">
+        <div style="width:42px;height:42px;flex:0 0 42px;border-radius:50%;background:${ic.bg};display:flex;align-items:center;justify-content:center;font-size:20px">${ic.emoji}</div>
+        <div style="flex:1;min-width:0">
+          <div style="color:#fff;font-weight:bold;font-size:14px">${esc(t.sym)}</div>
+          <div style="color:#8f9bab;font-size:11px;margin-top:2px">Мин. вывод: ${minW > 0 ? f(minW, 6) : '—'} ${esc(t.sym)}</div>
+        </div>
+        <div style="text-align:right;margin-right:8px">
+          <div style="color:#fff;font-weight:bold;font-size:14px">${f(t.amt, 6)}</div>
+          <div style="color:#8f9bab;font-size:11px">≈ ${f(t.tusd, 2)} TUSD</div>
+        </div>
+        <button onclick="openWithdraw('${esc(t.sym)}', ${t.amt}, ${minW})" style="width:auto;padding:8px 12px;margin:0;font-size:12px;${canWithdraw ? '' : 'opacity:.4;'}" ${canWithdraw ? '' : 'disabled'}>↑</button>
+      </div>`;
+  }).join('');
+}
+
+function openWithdraw(symbol, amount, minW){
+  if(amount < minW){
+    msg(`Минимум для вывода ${symbol}: ${f(minW,6)}`, 'error');
+    return;
   }
+  msg(`Вывод ${f(amount,6)} ${symbol} — скоро добавим`, 'info');
 }
 
 function showSection(name){
@@ -1208,6 +1284,171 @@ async function setTokenVerified(id,v){
   await loadAllTokens(); await loadAdminVerification();
 }
 
+// ================= АДМИН: КУРСЫ ТОКЕНОВ =================
+async function loadAdminTokenPrices(){
+  const box = document.getElementById('adminTokenPricesList');
+  if(!box) return;
+  box.innerHTML = '<div class="info">Загрузка...</div>';
+
+  const { data, error } = await sb.rpc('admin_list_tokens_with_prices');
+  if(error){ box.innerHTML = `<div class="er">${esc(error.message)}</div>`; return; }
+  if(!data || !data.length){ box.innerHTML = '<div class="info">Нет токенов.</div>'; return; }
+
+  box.innerHTML = data.map(t => `
+    <div class="pc" style="margin-top:8px">
+      <div class="pt">🪙 ${esc(t.symbol)} — ${esc(t.name||'')}</div>
+      <label style="margin-top:8px">Курс в TUSD (сколько стоит 1 ${esc(t.symbol)})</label>
+      <input type="number" id="tp-price-${esc(t.id)}" step="0.00000001" min="0" value="${t.price_tusd}">
+      <label style="margin-top:8px">Минимальная сумма вывода</label>
+      <input type="number" id="tp-min-${esc(t.id)}" step="0.00000001" min="0" value="${t.min_withdrawal}">
+      <div class="row" style="margin-top:10px">
+        <button onclick="saveAdminTokenParams('${esc(t.id)}')">💾 Сохранить</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function saveAdminTokenParams(id){
+  const priceEl = document.getElementById('tp-price-' + id);
+  const minEl   = document.getElementById('tp-min-' + id);
+  if(!priceEl || !minEl) return;
+
+  const price = Number(priceEl.value);
+  const minW  = Number(minEl.value);
+
+  if(!Number.isFinite(price) || price < 0){ msg('Некорректный курс','error'); return; }
+  if(!Number.isFinite(minW) || minW < 0){ msg('Некорректный минимум','error'); return; }
+
+  const { data, error } = await sb.rpc('admin_set_token_params', {
+    p_token_id: id,
+    p_price_tusd: price,
+    p_min_withdrawal: minW
+  });
+
+  if(error){ msg(error.message,'error'); return; }
+  if(!data || data.ok === false){ msg((data && data.error) || 'Ошибка','error'); return; }
+
+  msg('✅ Курс сохранён','success');
+
+  await loadAllTokens();
+  await loadUser();
+  await loadCustomBalances();
+}
+
+// ================= АДМИН: АККОРДЕОН =================
+function buildAdminAccordion(){
+  const sAdmin = document.getElementById('s-admin');
+  if(!sAdmin) return;
+  const cards = Array.from(sAdmin.children).filter(el => el.classList && el.classList.contains('card') && el.classList.contains('admin'));
+  if(!cards.length) return;
+  if(sAdmin.querySelector('.acc-item')) return;
+
+  const wrap = document.createElement('div');
+  cards.forEach(card => {
+    const titleEl = card.querySelector('.title');
+    const title = titleEl ? titleEl.textContent.trim() : 'Раздел';
+
+    const item = document.createElement('div');
+    item.className = 'acc-item';
+
+    const header = document.createElement('div');
+    header.className = 'acc-header';
+    header.innerHTML = `<span class="acc-title">${esc(title)}</span><span class="acc-arrow">▶</span>`;
+    header.onclick = () => item.classList.toggle('open');
+
+    const body = document.createElement('div');
+    body.className = 'acc-body';
+
+    while(card.firstChild){
+      const child = card.firstChild;
+      if(child === titleEl){ card.removeChild(child); continue; }
+      body.appendChild(child);
+    }
+
+    item.appendChild(header);
+    item.appendChild(body);
+    wrap.appendChild(item);
+  });
+
+  cards.forEach(c => c.remove());
+  sAdmin.appendChild(wrap);
+}
+
+// ================= АДМИН: UI НАСТРОЙКИ =================
+const UI_DEFAULTS = {
+  ui_bg: '#0b1018',
+  ui_bg_radial: '#26334a',
+  ui_accent: '#f4cf70',
+  ui_card: '#141c28'
+};
+
+async function loadUiSettings(){
+  try {
+    const { data } = await sb.rpc('get_ui_settings');
+    const s = Object.assign({}, UI_DEFAULTS, data || {});
+    const el = id => document.getElementById(id);
+    if(el('ui-bg'))        el('ui-bg').value = s.ui_bg;
+    if(el('ui-bg-radial')) el('ui-bg-radial').value = s.ui_bg_radial;
+    if(el('ui-accent'))    el('ui-accent').value = s.ui_accent;
+    if(el('ui-card'))      el('ui-card').value = s.ui_card;
+    applyUiColors(s);
+    const st = document.getElementById('uiSettingsStatus');
+    if(st) st.textContent = '✅ Загружено';
+  } catch(e){
+    console.error('[loadUiSettings]', e);
+    const st = document.getElementById('uiSettingsStatus');
+    if(st) st.textContent = 'Ошибка загрузки';
+  }
+}
+
+async function saveUiSettings(){
+  const st = document.getElementById('uiSettingsStatus');
+  if(st) st.textContent = 'Сохранение...';
+  const el = id => document.getElementById(id);
+  const values = {
+    ui_bg:        el('ui-bg')?.value        || UI_DEFAULTS.ui_bg,
+    ui_bg_radial: el('ui-bg-radial')?.value || UI_DEFAULTS.ui_bg_radial,
+    ui_accent:    el('ui-accent')?.value    || UI_DEFAULTS.ui_accent,
+    ui_card:      el('ui-card')?.value      || UI_DEFAULTS.ui_card
+  };
+  for(const [k,v] of Object.entries(values)){
+    const { data, error } = await sb.rpc('admin_set_ui_setting', { p_key: k, p_value: v });
+    if(error || !data || data.ok === false){
+      if(st) st.textContent = 'Ошибка: ' + (error?.message || data?.error || 'unknown');
+      return;
+    }
+  }
+  applyUiColors(values);
+  if(st) st.textContent = '✅ Сохранено';
+}
+
+function resetUiSettings(){
+  applyUiColors(UI_DEFAULTS);
+  const el = id => document.getElementById(id);
+  if(el('ui-bg'))        el('ui-bg').value = UI_DEFAULTS.ui_bg;
+  if(el('ui-bg-radial')) el('ui-bg-radial').value = UI_DEFAULTS.ui_bg_radial;
+  if(el('ui-accent'))    el('ui-accent').value = UI_DEFAULTS.ui_accent;
+  if(el('ui-card'))      el('ui-card').value = UI_DEFAULTS.ui_card;
+}
+
+function applyUiColors(colors){
+  const root = document.documentElement;
+  root.style.setProperty('--bg', colors.ui_bg);
+  root.style.setProperty('--card', colors.ui_card);
+  root.style.setProperty('--gold', colors.ui_accent);
+  document.body.style.background = `radial-gradient(circle at 50% -10%, ${colors.ui_bg_radial} 0, ${colors.ui_bg} 42%), ${colors.ui_bg}`;
+}
+
+async function loadUiSettingsPublic(){
+  try {
+    const { data } = await sb.rpc('get_ui_settings');
+    const s = Object.assign({}, UI_DEFAULTS, data || {});
+    applyUiColors(s);
+  } catch(e){
+    console.warn('[ui] load public error', e);
+  }
+}
+
 async function loadAdminListings(){
   const box=document.getElementById('adminListingsList');if(!box)return;
   box.innerHTML='<div class="info">Загрузка...</div>';
@@ -1345,7 +1586,7 @@ async function openProfile(uid){
   const c=n(p.completed_trades),cn=n(p.cancelled_trades),t=c+cn,s=t>0?(c/t)*100:100;
   const col=rk(p.rank_level);
   document.getElementById('profileRank').innerHTML=`<span style="color:${col}">👑 ${esc(p.rank_name)}</span>`;
-  document.getElementById('profileId').textContent='ID: '+(p.telegram_id??p.Ttelegram_id??p.user_id??'—');
+  document.getElementById('profileId').textContent='ID: '+(p.telegram_id??p.user_id??'—');
   document.getElementById('profileTrades').textContent=c;
   document.getElementById('profileSuccess').textContent=s.toFixed(1)+'%';
   document.getElementById('profileLikes').textContent=n(p.likes);
@@ -1542,6 +1783,8 @@ async function adminTransfer(){
 
 document.addEventListener('DOMContentLoaded',async()=>{
   await refreshJwt();
+  await loadUiSettingsPublic();
+  buildAdminAccordion();
   await loadUser();
   await loadAllTokens();
   await loadCustomBalances();
