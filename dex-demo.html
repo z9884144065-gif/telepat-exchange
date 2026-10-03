@@ -1,85 +1,136 @@
 <!DOCTYPE html><html lang="ru"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>TELEPAT DEX — Демо</title>
+<title>TELEPAT Exchange — Демо</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
-:root{--bg:#0b0e11;--card:#151a21;--line:#2a323d;--gold:#f4cf70;--text:#fff;--muted:#8a94a6;--green:#39d98a;--red:#ff647c;--blue:#4f8cff}
+:root{--bg:#0b0e11;--card:#151a21;--line:#252b36;--gold:#f4cf70;--text:#fff;--muted:#8a94a6;--green:#26a17b;--red:#f6465d;--blue:#2f80ed}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;min-height:100vh}
-.app{max-width:520px;margin:auto;padding:16px 14px 40px}
-.top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
-.top-bar h1{color:var(--gold);margin:0;font-size:20px;font-weight:700}
-.wallet-btn{display:flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:8px 14px;color:#fff;font-size:12px;font-weight:600;cursor:pointer}
-.wallet-btn:active{background:#1e252f}
-.wallet-dot{width:8px;height:8px;border-radius:50%;background:var(--green)}
-.tabs{display:flex;gap:4px;margin-bottom:16px;background:var(--card);border-radius:12px;padding:4px}
-.tabs button{flex:1;padding:10px 8px;margin:0;background:transparent;color:var(--muted);border:0;font-size:13px;font-weight:600;cursor:pointer;border-radius:9px;transition:all .2s}
-.tabs button.active{background:var(--bg);color:var(--text)}
-.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px}
-.card-title{color:var(--gold);font-size:13px;font-weight:700;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
-.tbox{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:8px}
+.app{max-width:520px;margin:auto;padding:14px 12px 90px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.top h1{color:var(--gold);margin:0;font-size:18px;font-weight:700}
+.wallet-btn{display:flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:7px 12px;color:#fff;font-size:11px;font-weight:600;cursor:pointer}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--green)}
+.tabs-main{display:flex;gap:3px;margin-bottom:14px;background:var(--card);border-radius:12px;padding:4px}
+.tabs-main button{flex:1;padding:9px 4px;margin:0;background:transparent;color:var(--muted);border:0;font-size:11px;font-weight:700;cursor:pointer;border-radius:9px;transition:.2s}
+.tabs-main button.active{background:var(--bg);color:var(--text)}
+.tabs-sub{display:flex;gap:3px;margin-bottom:12px;overflow-x:auto;padding-bottom:2px}
+.tabs-sub button{padding:8px 14px;margin:0;background:var(--card);color:var(--muted);border:1px solid var(--line);font-size:12px;font-weight:700;cursor:pointer;border-radius:20px;white-space:nowrap;flex:0 0 auto}
+.tabs-sub button.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:10px}
+.card-title{color:var(--text);font-size:14px;font-weight:700;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+.tbox{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:6px}
 .tbox .lbl{color:var(--muted);font-size:11px;margin-bottom:6px;display:flex;justify-content:space-between}
 .tbox .row{display:flex;align-items:center;gap:8px}
-.tbox input[type=number]{flex:1;background:transparent;border:0;color:#fff;font-size:20px;font-weight:700;padding:0;outline:none;min-width:0}
-.tok-btn{display:flex;align-items:center;gap:6px;background:#1e252f;border:1px solid var(--line);border-radius:10px;padding:7px 12px;cursor:pointer;white-space:nowrap;font-weight:700;font-size:13px;color:#fff}
-.tok-btn:active{background:#252d38}
+.tbox input[type=number]{flex:1;background:transparent;border:0;color:#fff;font-size:22px;font-weight:700;padding:0;outline:none;min-width:0;font-family:inherit}
+.tok-btn{display:flex;align-items:center;gap:6px;background:#1e2530;border:1px solid var(--line);border-radius:10px;padding:7px 10px;cursor:pointer;white-space:nowrap;font-weight:700;font-size:13px;color:#fff}
 .tlogo{width:26px;height:26px;flex:0 0 26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;overflow:hidden;background:#2a323d}
-.swap-arrow{display:flex;justify-content:center;margin:-4px 0}
-.swap-arrow button{width:36px;height:36px;padding:0;margin:0;border-radius:50%;background:var(--card);border:3px solid var(--bg);color:var(--gold);font-size:16px;cursor:pointer}
+.tlogo.lg{width:38px;height:38px;flex:0 0 38px;font-size:17px}
+.swap-arrow{display:flex;justify-content:center;margin:-3px 0}
+.swap-arrow button{width:36px;height:36px;padding:0;margin:0;border-radius:50%;background:var(--card);border:3px solid var(--bg);color:var(--blue);font-size:16px;cursor:pointer}
 .info-row{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);padding:4px 0}
 .info-row b{color:#fff;font-weight:400}
-.info-row.warn b{color:var(--gold)}
 button.act{width:100%;padding:14px;margin:8px 0 0;border:0;border-radius:12px;background:var(--blue);color:#fff;font-weight:700;font-size:15px;cursor:pointer;transition:opacity .2s}
 button.act:disabled{opacity:.35;cursor:not-allowed}
+button.act.buy{background:var(--green)}button.act.sell{background:var(--red)}
+.row-tbl{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);font-size:12px;align-items:center}
+.row-tbl:last-child{border:0}
+.row-tbl .lft{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
+.row-tbl .rt{text-align:right}
+.row-tbl .price-b{color:var(--green);font-weight:600}
+.row-tbl .price-s{color:var(--red);font-weight:600}
+.order-book{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.order-side{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px;font-size:11px}
+.order-side .hdr{color:var(--muted);font-size:10px;margin-bottom:4px;font-weight:700}
+.order-side .line{display:flex;justify-content:space-between;padding:2px 0}
+.asks .line .p{color:var(--red)}
+.bids .line .p{color:var(--green)}
 .pool-row{display:flex;align-items:center;gap:10px;padding:12px;background:var(--bg);border:1px solid var(--line);border-radius:12px;margin-top:6px;cursor:pointer}
-.pool-row:active{background:#1e252f}
 .pool-row .info{flex:1;min-width:0}
 .pool-row .name{font-weight:700;color:#fff;font-size:14px}
 .pool-row .meta{color:var(--muted);font-size:11px;margin-top:2px}
 .pool-row .right{text-align:right}
-.pool-row .price{color:var(--green);font-weight:700;font-size:13px}
+.pool-row .apr{color:var(--green);font-weight:700;font-size:13px}
 .pool-row .tvl{color:var(--muted);font-size:10px;margin-top:2px}
-.bal-panel{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px;margin-bottom:12px}
-.bal-panel .hdr{color:var(--gold);font-size:11px;font-weight:700;margin-bottom:6px}
-.bal-panel .row{display:flex;justify-content:space-between;font-size:12px;padding:3px 0}
-.bal-panel .row .k{color:var(--muted)}
-.bal-panel .row .v{color:#fff;font-weight:600}
-.faucet-btn{width:100%;background:#1e252f;color:var(--gold);border:1px solid var(--gold);padding:10px;border-radius:10px;font-weight:700;font-size:12px;cursor:pointer;margin-bottom:12px}
-.faucet-btn:active{background:#2a2208}
-.history-item{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);font-size:12px}
-.history-item:last-child{border-bottom:0}
-.history-item .left{color:var(--muted)}
-.history-item .right{color:#fff;font-weight:600}
+.msg{position:fixed;z-index:8000;left:12px;right:12px;top:12px;padding:12px;border-radius:12px;background:#1e252f;border:1px solid var(--line);display:none;text-align:center;font-size:13px}
+.msg.show{display:block}
+.hint{color:var(--muted);font-size:11px;text-align:center;margin-top:8px}
+.hide{display:none!important}
 .modal{position:fixed;z-index:5000;inset:0;background:rgba(0,0,0,.7);display:none;align-items:flex-end;justify-content:center;padding:12px}
 .modal.show{display:flex}
 .modal-in{width:100%;max-width:520px;max-height:75vh;overflow-y:auto;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px}
 .modal-in .tok-item{display:flex;align-items:center;gap:12px;padding:12px;border-radius:10px;cursor:pointer;margin-top:6px;background:var(--bg);border:1px solid var(--line)}
-.modal-in .tok-item:active{background:#1e252f}
 .modal-in .tok-item .nm{flex:1;color:#fff;font-weight:700;font-size:14px}
-.msg{position:fixed;z-index:8000;left:12px;right:12px;top:12px;padding:12px;border-radius:12px;background:#1e252f;border:1px solid var(--line);display:none;text-align:center;font-size:13px}
-.msg.show{display:block}
-.hide{display:none!important}
-.hint{color:var(--muted);font-size:11px;text-align:center;margin-top:8px}
+.nav{position:fixed;z-index:900;bottom:0;left:0;right:0;background:#0e131a;border-top:1px solid var(--line);padding:8px 6px calc(8px + env(safe-area-inset-bottom));display:flex;justify-content:center;gap:4px}
+.nav button{flex:1;max-width:110px;padding:8px 4px;margin:0;background:transparent;color:var(--muted);border:0;font-size:10px;font-weight:600;cursor:pointer;border-radius:10px;line-height:1.4}
+.nav button.active{color:var(--gold);background:#151a21}
+.nav button .ic{font-size:20px;display:block;margin-bottom:2px}
+.bal-panel{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px;margin-bottom:10px}
+.bal-panel .hdr{color:var(--gold);font-size:11px;font-weight:700;margin-bottom:6px}
+.bal-panel .row{display:flex;justify-content:space-between;font-size:12px;padding:3px 0}
+.bal-panel .row .k{color:var(--muted)}
+.bal-panel .row .v{color:#fff;font-weight:600}
+.faucet-btn{width:100%;background:#1e2530;color:var(--gold);border:1px solid var(--gold);padding:10px;border-radius:10px;font-weight:700;font-size:12px;cursor:pointer;margin-bottom:12px}
+.total-bal{text-align:center;padding:14px;background:linear-gradient(135deg,#1a212c,#10151c);border-radius:14px;margin-bottom:12px}
+.total-bal .lbl{color:var(--muted);font-size:11px;margin-bottom:4px}
+.total-bal .val{color:#fff;font-size:28px;font-weight:700;letter-spacing:-.5px}
+.hist-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);font-size:12px}
+.hist-item:last-child{border:0}
+.hist-item .desc{color:var(--muted);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:8px}
+.hist-item .amt{color:#fff;font-weight:600;white-space:nowrap}
 </style></head><body>
 <div id="msg" class="msg"></div>
 <div class="app">
-<div class="top-bar">
-<h1>💎 TELEPAT DEX</h1>
+
+<div class="top">
+<h1>💎 TELEPAT</h1>
 <button class="wallet-btn" onclick="toggleWallet()">
-<span class="wallet-dot"></span>
-<span id="walletLabel">Connect Wallet</span>
+<span class="dot" id="dot"></span><span id="walletLabel">Connect</span>
 </button>
 </div>
 
-<div class="tabs">
-<button id="tab-swap" class="active" onclick="switchTab('swap')">Swap</button>
-<button id="tab-pools" onclick="switchTab('pools')">Pools</button>
-<button id="tab-liq" onclick="switchTab('liq')">Liquidity</button>
+<!-- =============== КОШЕЛЁК =============== -->
+<div id="s-wallet">
+<div class="total-bal">
+<div class="lbl">Portfolio Value</div>
+<div class="val">$<span id="portVal">0.00</span></div>
 </div>
 
-<!-- SWAP -->
-<div id="s-swap">
 <div class="card">
-<div class="card-title">Swap <span style="color:var(--muted);font-size:11px;cursor:pointer" onclick="changeSlippage()">Slippage: <span id="slipVal">0.5</span>% ⚙️</span></div>
+<div class="card-title">💰 Balances</div>
+<div id="balList"></div>
+</div>
+
+<div class="card">
+<div class="card-title">📌 Quick Actions</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+<button class="tok-btn" style="justify-content:center;padding:14px" onclick="goMain('exchange');switchSub('dex')">🔁 Swap</button>
+<button class="tok-btn" style="justify-content:center;padding:14px" onclick="goMain('exchange');switchSub('pools')">💧 Pools</button>
+<button class="tok-btn" style="justify-content:center;padding:14px" onclick="goMain('exchange');switchSub('p2p')">🤝 P2P</button>
+<button class="tok-btn" style="justify-content:center;padding:14px" onclick="goMain('exchange');switchSub('charts')">📈 Charts</button>
+</div>
+</div>
+
+<div class="card">
+<div class="card-title">📜 Recent Activity</div>
+<div id="histList"><div class="hint">No transactions yet</div></div>
+</div>
+
+<button class="faucet-btn" onclick="faucet()">🚰 GET TEST TOKENS</button>
+</div>
+
+<!-- =============== БИРЖА =============== -->
+<div id="s-exchange" class="hide">
+<div class="tabs-sub">
+<button id="sub-p2p" onclick="switchSub('p2p')">🤝 P2P</button>
+<button id="sub-dex" class="active" onclick="switchSub('dex')">⚡ DEX</button>
+<button id="sub-pools" onclick="switchSub('pools')">💧 Pools</button>
+<button id="sub-charts" onclick="switchSub('charts')">📈 Charts</button>
+</div>
+
+<!-- DEX -->
+<div id="sub-s-dex">
+<div class="card">
+<div class="card-title">Swap <span style="color:var(--muted);font-size:11px;font-weight:400">Slippage: 0.5% ⚙️</span></div>
 <div class="tbox">
 <div class="lbl"><span>You send</span><span id="balFrom">—</span></div>
 <div class="row">
@@ -95,76 +146,171 @@ button.act:disabled{opacity:.35;cursor:not-allowed}
 <button class="tok-btn" onclick="openTokModal('to')"><span class="tlogo" id="icoTo">🥇</span><span id="symTo">TG</span>▼</button>
 </div>
 </div>
-<div style="margin-top:10px">
+<div style="margin-top:8px">
 <div class="info-row"><span>Rate</span><b id="rateInfo">—</b></div>
 <div class="info-row"><span>Price Impact</span><b id="impactInfo">—</b></div>
 <div class="info-row"><span>Fee (0.3%)</span><b id="feeInfo">—</b></div>
-<div class="info-row warn"><span>Min. received</span><b id="minRecv">—</b></div>
+<div class="info-row"><span>Min. received</span><b id="minRecv">—</b></div>
 </div>
 <button class="act" id="btnSwap" onclick="doSwap()" disabled>Connect Wallet</button>
 </div>
 </div>
 
 <!-- POOLS -->
-<div id="s-pools" class="hide">
+<div id="sub-s-pools" class="hide">
 <div class="card">
-<div class="card-title">Pools</div>
+<div class="card-title">💧 Liquidity Pools</div>
 <div id="poolsList"></div>
 </div>
 <div class="card">
-<div class="card-title">My Positions</div>
+<div class="card-title">📊 My Positions</div>
 <div id="myLpList"></div>
 </div>
 </div>
 
-<!-- LIQUIDITY -->
-<div id="s-liq" class="hide">
+<!-- CHARTS -->
+<div id="sub-s-charts" class="hide">
 <div class="card">
-<div class="card-title">Add Liquidity</div>
-<button class="tok-btn" style="width:100%;justify-content:space-between;padding:12px" onclick="openTokModal('liq')">
-<span style="display:flex;align-items:center;gap:8px"><span class="tlogo" id="icoLiq">🪙</span><span id="symLiq">Select token</span></span>▼
-</button>
-<label style="display:block;color:var(--muted);font-size:12px;margin:12px 0 6px">TUSD Amount</label>
-<input type="number" id="liqTusd" placeholder="0.0" oninput="calcLiq()" style="width:100%;background:var(--bg);color:#fff;padding:12px;border:1px solid var(--line);border-radius:10px;font-size:15px;outline:none">
-<label style="display:block;color:var(--muted);font-size:12px;margin:12px 0 6px">Token Amount</label>
-<input type="number" id="liqToken" placeholder="0.0" oninput="calcLiq(true)" style="width:100%;background:var(--bg);color:#fff;padding:12px;border:1px solid var(--line);border-radius:10px;font-size:15px;outline:none">
-<div style="margin-top:10px">
-<div class="info-row"><span>Pool Rate</span><b id="liqRate">—</b></div>
-<div class="info-row"><span>You will receive LP</span><b id="liqLpPreview">—</b></div>
-<div class="info-row"><span>Your pool share</span><b id="liqSharePreview">—</b></div>
+<div class="card-title">📈 Price Chart <span style="color:var(--muted);font-size:11px;font-weight:400" id="chartSym">TG/TUSD</span></div>
+<div style="display:flex;gap:6px;margin-bottom:10px;overflow-x:auto">
+<div id="chartTabs"></div>
 </div>
-<button class="act" id="btnLiq" onclick="doAddLiq()" disabled>Connect Wallet</button>
-<div class="hint">No pool yet? It will be created. First deposit sets the price.</div>
+<svg id="priceChart" viewBox="0 0 500 200" style="width:100%;height:200px;background:#0b0e11;border-radius:10px"></svg>
+<div style="display:flex;justify-content:space-between;margin-top:10px;font-size:12px">
+<div><span style="color:var(--muted)">Current: </span><b id="chartCurrent" style="color:var(--green)">—</b></div>
+<div><span style="color:var(--muted)">24h: </span><b id="chartChange">—</b></div>
+</div>
 </div>
 </div>
 
-<!-- HISTORY -->
+<!-- P2P -->
+<div id="sub-s-p2p" class="hide">
 <div class="card">
-<div class="card-title">Recent Activity</div>
-<div id="historyList"><div class="hint">No transactions yet</div></div>
+<div class="card-title">📖 Order Book <span style="color:var(--muted);font-size:11px;font-weight:400">TG / TUSD</span></div>
+<div class="order-book">
+<div class="order-side bids">
+<div class="hdr">🟢 BUY TG</div>
+<div class="line"><span>0.0132</span><span class="p">1.50 TG</span></div>
+<div class="line"><span>0.0131</span><span class="p">2.30 TG</span></div>
+<div class="line"><span>0.0130</span><span class="p">3.10 TG</span></div>
+<div class="line"><span>0.0128</span><span class="p">5.00 TG</span></div>
+</div>
+<div class="order-side asks">
+<div class="hdr">🔴 SELL TG</div>
+<div class="line"><span>0.0134</span><span class="p">2.10 TG</span></div>
+<div class="line"><span>0.0135</span><span class="p">1.20 TG</span></div>
+<div class="line"><span>0.0137</span><span class="p">4.80 TG</span></div>
+<div class="line"><span>0.0139</span><span class="p">6.00 TG</span></div>
+</div>
+</div>
 </div>
 
-<!-- BALANCES -->
-<div class="bal-panel">
-<div class="hdr">💰 YOUR BALANCES</div>
-<div id="balList"></div>
+<div class="card">
+<div class="card-title">📋 Active Orders</div>
+<div id="p2pList"></div>
 </div>
 
-<button class="faucet-btn" onclick="faucet()">🚰 GET TEST TOKENS (+10,000 TUSD & more)</button>
+<div class="card">
+<div class="card-title">➕ Create Order</div>
+<div class="tbox">
+<div class="lbl"><span>You send</span></div>
+<div class="row">
+<input type="number" id="p2pFrom" placeholder="0.0">
+<button class="tok-btn"><span class="tlogo">💵</span>TUSD▼</button>
+</div>
+</div>
+<div class="swap-arrow"><button>⇅</button></div>
+<div class="tbox">
+<div class="lbl"><span>You receive</span></div>
+<div class="row">
+<input type="number" id="p2pTo" placeholder="0.0">
+<button class="tok-btn"><span class="tlogo">🥇</span>TG▼</button>
+</div>
+</div>
+<button class="act" onclick="msg('✅ Order created (demo)','success')">🚀 Create Order</button>
+</div>
+</div>
+
+</div>
+
+<!-- =============== ДРУЗЬЯ =============== -->
+<div id="s-friends" class="hide">
+<div class="card">
+<div class="card-title">👥 Invite Friends</div>
+<div class="info-row"><span>🥇 Level 1</span><b>10%</b></div>
+<div class="info-row"><span>🥈 Level 2</span><b>5%</b></div>
+<div class="info-row"><span>🥉 Level 3</span><b>3%</b></div>
+<button class="act" onclick="msg('Link copied','success')">📋 Copy Referral Link</button>
+</div>
+<div class="card">
+<div class="card-title">📊 My Referrals</div>
+<div class="info-row"><span>Level 1</span><b>3</b></div>
+<div class="info-row"><span>Level 2</span><b>1</b></div>
+<div class="info-row"><span>Level 3</span><b>0</b></div>
+<div class="info-row"><span>Earned TG</span><b style="color:var(--green)">+0.45</b></div>
+<div class="info-row"><span>Earned TUSD</span><b style="color:var(--green)">+12.30</b></div>
+</div>
+</div>
+
+<!-- =============== ЗАРАБОТОК =============== -->
+<div id="s-earn" class="hide">
+<div class="card">
+<div class="card-title">🔥 Check-in</div>
+<div style="text-align:center;padding:10px 0">
+<div style="font-size:44px;font-weight:700;color:var(--gold)">12</div>
+<div style="color:var(--muted);font-size:11px">days in a row</div>
+</div>
+<button class="act" onclick="msg('🔥 Day 13 reward claimed (demo)','success')">🔥 CLAIM DAY 13</button>
+</div>
+
+<div class="card">
+<div class="card-title">📺 Watch Ad</div>
+<div class="hint">Watch a short video, get rewarded</div>
+<button class="act" onclick="msg('📺 Ad watched, +0.01 TUSD (demo)','success')">▶️ Watch</button>
+</div>
+
+<div class="card">
+<div class="card-title">📋 Tasks</div>
+<div class="row-tbl"><div class="lft">📢 Subscribe to channel</div><div class="rt price-b">+0.5 TUSD</div></div>
+<div class="row-tbl"><div class="lft">🤖 Subscribe to bot</div><div class="rt price-b">+1 TUSD</div></div>
+<button class="act" onclick="msg('✅ Task completed (demo)','success')">Complete</button>
+</div>
+</div>
+
+<!-- =============== АДМИН =============== -->
+<div id="s-admin" class="hide">
+<div class="card">
+<div class="card-title">👑 Admin Panel</div>
+<div class="row-tbl"><div class="lft">👥 Users</div><div class="rt"><b>124</b></div></div>
+<div class="row-tbl"><div class="lft">📦 Orders</div><div class="rt"><b>18</b></div></div>
+<div class="row-tbl"><div class="lft">💧 Pools</div><div class="rt"><b id="adminPools">3</b></div></div>
+<div class="row-tbl"><div class="lft">💰 Total TUSD</div><div class="rt"><b>19.03</b></div></div>
+</div>
+</div>
+
+</div>
+
+<!-- NAV -->
+<div class="nav">
+<button id="n-wallet" class="active" onclick="goMain('wallet')"><span class="ic">🏠</span>Wallet</button>
+<button id="n-exchange" onclick="goMain('exchange')"><span class="ic">💱</span>Exchange</button>
+<button id="n-friends" onclick="goMain('friends')"><span class="ic">👥</span>Friends</button>
+<button id="n-earn" onclick="goMain('earn')"><span class="ic">🎯</span>Earn</button>
+<button id="n-admin" onclick="goMain('admin')"><span class="ic">👑</span>Admin</button>
 </div>
 
 <div id="tokModal" class="modal" onclick="closeTokModal(event)">
 <div class="modal-in" onclick="event.stopPropagation()">
-<div class="card-title" style="margin-bottom:10px">Select Token</div>
+<div class="card-title">Select Token</div>
 <div id="tokList"></div>
 </div>
 </div>
 
 <script>
 const DEMO_TOKENS=[{symbol:'TG',name:'Telepat Gold',price:100},{symbol:'AI',name:'AI Token',price:0.01},{symbol:'TUSD',name:'Telepat Dollar',price:1},{symbol:'VKCOIN',name:'VK Coin',price:0.001},{symbol:'BBK',name:'Bbk Token',price:0.5}];
-const DEMO_POOLS=[{symbol:'TG',reserve_token:12.5,reserve_tusd:1250,total_lp:125,tvl:2500},{symbol:'AI',reserve_token:45000,reserve_tusd:450,total_lp:4500,tvl:900},{symbol:'VKCOIN',reserve_token:8500000,reserve_tusd:8500,total_lp:85000,tvl:17000}];
+const DEMO_POOLS=[{symbol:'TG',reserve_token:12.5,reserve_tusd:1250,total_lp:125,tvl:2500,apr:42.5},{symbol:'AI',reserve_token:45000,reserve_tusd:450,total_lp:4500,tvl:900,apr:18.2},{symbol:'VKCOIN',reserve_token:8500000,reserve_tusd:8500,total_lp:85000,tvl:17000,apr:64.8}];
 const DEMO_MY_LP=[{symbol:'TG',lp_tokens:25},{symbol:'AI',lp_tokens:500}];
-let FROM='TUSD',TO='TG',LIQ_TOK=null,MODAL_TARGET='from',SLIPPAGE=0.5,WALLET_CONNECTED=false;
+let FROM='TUSD',TO='TG',LIQ_TOK=null,MODAL_TARGET='from',SLIPPAGE=0.5,WALLET=false;
 let ALL_TOKENS=[...DEMO_TOKENS];
 let USER_BALANCES={TUSD:100000,TG:100,AI:1000000,VKCOIN:10000000,BBK:100000};
 let POOLS=[...DEMO_POOLS];
@@ -174,93 +320,70 @@ const ICONS={'TG':{e:'🥇',b:'#f5d477'},'AI':{e:'🤖',b:'#8b5cf6'},'TUSD':{e:'
 const n=v=>{const x=Number(v);return Number.isFinite(x)?x:0};
 const f=(v,m=6)=>n(v).toLocaleString('ru-RU',{maximumFractionDigits:m});
 const esc=v=>String(v??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
-function msg(t,ty='info'){const e=document.getElementById('msg');e.textContent=t;e.style.borderColor=ty==='error'?'#8b3f4c':ty==='success'?'#397b5b':'#4c5b70';e.classList.add('show');setTimeout(()=>e.classList.remove('show'),3500)}
+function msg(t,ty='info'){const e=document.getElementById('msg');e.textContent=t;e.style.borderColor=ty==='error'?'#8b3f4c':ty==='success'?'#397b5b':'#4c5b70';e.classList.add('show');setTimeout(()=>e.classList.remove('show'),3000)}
 function ticon(sym){return ICONS[sym]||ICONS.DEFAULT}
-function ticonHTML(sym,size){const ic=ticon(sym);const sz=size==='lg'?'width:36px;height:36px;font-size:16px':'';return `<span class="tlogo" style="background:${ic.b};${sz}">${ic.e}</span>`}
+function ticonHTML(sym,lg){const ic=ticon(sym);return `<span class="tlogo${lg?' lg':''}" style="background:${ic.b}">${ic.e}</span>`}
 function setIcon(id,sym){const ic=ticon(sym);const el=document.getElementById(id);el.style.background=ic.b;el.textContent=ic.e}
+function getBalance(sym){return n(USER_BALANCES[sym])}
 
 function toggleWallet(){
-  WALLET_CONNECTED=!WALLET_CONNECTED;
-  const btn=document.getElementById('btnSwap');
-  const btnLiq=document.getElementById('btnLiq');
-  const label=document.getElementById('walletLabel');
-  if(WALLET_CONNECTED){
-    label.textContent='UQ...7x9';
-    btn.disabled=false;btn.textContent='Swap';
-    btnLiq.disabled=false;btnLiq.textContent='Add Liquidity';
-    msg('✅ Wallet connected (demo)','success');
-  } else {
-    label.textContent='Connect Wallet';
-    btn.disabled=true;btn.textContent='Connect Wallet';
-    btnLiq.disabled=true;btnLiq.textContent='Connect Wallet';
-  }
+  WALLET=!WALLET;
+  document.getElementById('walletLabel').textContent=WALLET?'UQ...7x9':'Connect';
+  document.getElementById('dot').style.background=WALLET?'var(--green)':'var(--muted)';
+  if(WALLET)msg('✅ Wallet connected (demo)','success');
   calcSwap();
 }
 
-function switchTab(t){
-  ['swap','pools','liq'].forEach(x=>{
+function goMain(t){
+  ['wallet','exchange','friends','earn','admin'].forEach(x=>{
     document.getElementById('s-'+x).classList.toggle('hide',x!==t);
-    document.getElementById('tab-'+x).classList.toggle('active',x===t);
+    document.getElementById('n-'+x).classList.toggle('active',x===t);
+  });
+  if(t==='wallet'){renderBalances();renderHistory();updatePortfolio();}
+  if(t==='exchange'){renderPools();renderMyLp();calcSwap();renderChart();}
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function switchSub(t){
+  ['p2p','dex','pools','charts'].forEach(x=>{
+    document.getElementById('sub-s-'+x).classList.toggle('hide',x!==t);
+    document.getElementById('sub-'+x).classList.toggle('active',x===t);
   });
   if(t==='pools'){renderPools();renderMyLp();}
-  if(t==='liq'){if(LIQ_TOK)calcLiq();}
+  if(t==='dex')calcSwap();
+  if(t==='charts')renderChart();
 }
 
-function openTokModal(target){
-  MODAL_TARGET=target;
-  const box=document.getElementById('tokList');
-  let list=ALL_TOKENS;
-  if(target==='liq')list=list.filter(t=>t.symbol!=='TUSD');
-  box.innerHTML=list.map(t=>`<div class="tok-item" onclick="pickTok('${esc(t.symbol)}')">${ticonHTML(t.symbol,'lg')}<span class="nm">${esc(t.symbol)}</span><span style="color:var(--muted);font-size:12px">${f(t.price,4)} $</span></div>`).join('');
-  document.getElementById('tokModal').classList.add('show');
-}
-function closeTokModal(e){if(e&&e.target!==document.getElementById('tokModal'))return;document.getElementById('tokModal').classList.remove('show')}
-function pickTok(sym){
-  if(MODAL_TARGET==='from'){FROM=sym;if(TO===sym)TO=sym==='TUSD'?'TG':'TUSD'}
-  else if(MODAL_TARGET==='to'){TO=sym;if(FROM===sym)FROM=sym==='TUSD'?'TG':'TUSD'}
-  else if(MODAL_TARGET==='liq'){LIQ_TOK=sym}
-  document.getElementById('tokModal').classList.remove('show');
-  renderSwapTokens();
-  if(MODAL_TARGET==='liq'){document.getElementById('symLiq').textContent=sym;setIcon('icoLiq',sym);calcLiq();}
-  else calcSwap();
-}
-
+// SWAP
 function renderSwapTokens(){
   document.getElementById('symFrom').textContent=FROM;
   document.getElementById('symTo').textContent=TO;
   setIcon('icoFrom',FROM);setIcon('icoTo',TO);
 }
 function flipSwap(){const a=FROM;FROM=TO;TO=a;document.getElementById('amtFrom').value='';document.getElementById('amtTo').value='';renderSwapTokens();calcSwap()}
-function getBalance(sym){return n(USER_BALANCES[sym])}
 function updateBalances(){
-  document.getElementById('balFrom').textContent='Balance: '+f(getBalance(FROM),4);
-  document.getElementById('balTo').textContent='Balance: '+f(getBalance(TO),4);
+  const elF=document.getElementById('balFrom'),elT=document.getElementById('balTo');
+  if(elF)elF.textContent='Balance: '+f(getBalance(FROM),4);
+  if(elT)elT.textContent='Balance: '+f(getBalance(TO),4);
 }
 function calcSwap(){
   updateBalances();
   const amt=n(document.getElementById('amtFrom').value);
   const btn=document.getElementById('btnSwap');
-  if(!WALLET_CONNECTED){btn.disabled=true;btn.textContent='Connect Wallet';return}
+  if(!btn)return;
+  if(!WALLET){btn.disabled=true;btn.textContent='Connect Wallet';return}
   if(amt<=0){btn.disabled=true;btn.textContent='Enter amount';['rateInfo','impactInfo','feeInfo','minRecv'].forEach(id=>document.getElementById(id).textContent='—');return}
-  const isBuy=FROM==='TUSD'&&TO!=='TUSD';
-  const isSell=TO==='TUSD'&&FROM!=='TUSD';
+  const isBuy=FROM==='TUSD'&&TO!=='TUSD',isSell=TO==='TUSD'&&FROM!=='TUSD';
   if(!isBuy&&!isSell){btn.disabled=true;btn.textContent='Swap via TUSD only';document.getElementById('amtTo').value='';return}
-  const sym=isBuy?TO:FROM;
-  const pool=POOLS.find(p=>p.symbol===sym);
+  const sym=isBuy?TO:FROM,pool=POOLS.find(p=>p.symbol===sym);
   if(!pool||pool.reserve_token<=0||pool.reserve_tusd<=0){btn.disabled=true;btn.textContent='No pool for '+sym;return}
   if(getBalance(FROM)<amt){btn.disabled=true;btn.textContent='Insufficient '+FROM;return}
-  const rTok=pool.reserve_token,rTusd=pool.reserve_tusd,feeBps=30;
-  const amtAfter=amt*(1-feeBps/10000);
-  let out;
-  if(isBuy)out=(amtAfter*rTok)/(rTusd+amtAfter);
-  else out=(amtAfter*rTusd)/(rTok+amtAfter);
-  const priceBefore=rTusd/rTok;
-  const priceAfter=isBuy?((rTusd+amt)/(rTok-out)):((rTusd-out)/(rTok+amt));
-  const impact=Math.abs((priceAfter-priceBefore)/priceBefore)*100;
+  const rTok=pool.reserve_token,rTusd=pool.reserve_tusd,feeBps=30,amtAfter=amt*(1-feeBps/10000);
+  let out;if(isBuy)out=(amtAfter*rTok)/(rTusd+amtAfter);else out=(amtAfter*rTusd)/(rTok+amtAfter);
+  const pB=rTusd/rTok,pA=isBuy?((rTusd+amt)/(rTok-out)):((rTusd-out)/(rTok+amt));
+  const impact=Math.abs((pA-pB)/pB)*100;
   document.getElementById('amtTo').value=out.toFixed(8);
-  document.getElementById('rateInfo').textContent=`1 ${sym} = ${f(priceAfter,6)} TUSD`;
-  const impEl=document.getElementById('impactInfo');
-  impEl.textContent=impact.toFixed(2)+'%';
+  document.getElementById('rateInfo').textContent=`1 ${sym} = ${f(pA,6)} TUSD`;
+  const impEl=document.getElementById('impactInfo');impEl.textContent=impact.toFixed(2)+'%';
   impEl.style.color=impact<1?'var(--green)':impact<5?'var(--gold)':'var(--red)';
   document.getElementById('feeInfo').textContent=f(amt*0.003,6)+' '+FROM;
   document.getElementById('minRecv').textContent=f(out*(1-SLIPPAGE/100),6)+' '+TO;
@@ -269,107 +392,104 @@ function calcSwap(){
 function doSwap(){
   const amt=n(document.getElementById('amtFrom').value);
   if(amt<=0){msg('Enter amount','error');return}
-  const isBuy=FROM==='TUSD'&&TO!=='TUSD';
-  const isSell=TO==='TUSD'&&FROM!=='TUSD';
+  const isBuy=FROM==='TUSD'&&TO!=='TUSD',isSell=TO==='TUSD'&&FROM!=='TUSD';
   if(!isBuy&&!isSell){msg('Swap via TUSD only','error');return}
   if(getBalance(FROM)<amt){msg('Insufficient balance','error');return}
-  const sym=isBuy?TO:FROM;
-  const out=n(document.getElementById('amtTo').value);
-  const pool=POOLS.find(p=>p.symbol===sym);
-  USER_BALANCES[FROM]=getBalance(FROM)-amt;
-  USER_BALANCES[TO]=getBalance(TO)+out;
-  if(isBuy){pool.reserve_tusd+=amt;pool.reserve_token-=out}
-  else{pool.reserve_tusd-=out;pool.reserve_token+=amt}
+  const sym=isBuy?TO:FROM,out=n(document.getElementById('amtTo').value),pool=POOLS.find(p=>p.symbol===sym);
+  USER_BALANCES[FROM]=getBalance(FROM)-amt;USER_BALANCES[TO]=getBalance(TO)+out;
+  if(isBuy){pool.reserve_tusd+=amt;pool.reserve_token-=out}else{pool.reserve_tusd-=out;pool.reserve_token+=amt}
   pool.tvl=pool.reserve_tusd*2;
-  HISTORY.unshift({type:'Swap',detail:`${f(amt,4)} ${FROM} → ${f(out,4)} ${TO}`,time:new Date().toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})});
+  HISTORY.unshift({desc:`Swap ${FROM}→${TO}`,amt:`${f(out,4)} ${TO}`,time:new Date().toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})});
   if(HISTORY.length>10)HISTORY.pop();
   msg(`✅ Swapped: ${f(amt,4)} ${FROM} → ${f(out,4)} ${TO}`,'success');
   document.getElementById('amtFrom').value='';document.getElementById('amtTo').value='';
-  renderBalances();renderHistory();calcSwap();
+  renderBalances();renderHistory();updatePortfolio();calcSwap();
 }
-function changeSlippage(){const v=prompt('Slippage tolerance (%):',SLIPPAGE);if(v===null)return;const nv=n(v);if(nv<0||nv>50){msg('0-50 only','error');return}SLIPPAGE=nv;document.getElementById('slipVal').textContent=nv;calcSwap()}
+
+function openTokModal(target){
+  MODAL_TARGET=target;
+  const box=document.getElementById('tokList');let list=ALL_TOKENS;
+  if(target==='liq')list=list.filter(t=>t.symbol!=='TUSD');
+  box.innerHTML=list.map(t=>`<div class="tok-item" onclick="pickTok('${esc(t.symbol)}')">${ticonHTML(t.symbol,true)}<span class="nm">${esc(t.symbol)}</span><span style="color:var(--muted);font-size:12px">${f(t.price,4)} $</span></div>`).join('');
+  document.getElementById('tokModal').classList.add('show');
+}
+function closeTokModal(e){if(e&&e.target!==document.getElementById('tokModal'))return;document.getElementById('tokModal').classList.remove('show')}
+function pickTok(sym){
+  if(MODAL_TARGET==='from'){FROM=sym;if(TO===sym)TO=sym==='TUSD'?'TG':'TUSD'}
+  else if(MODAL_TARGET==='to'){TO=sym;if(FROM===sym)FROM=sym==='TUSD'?'TG':'TUSD'}
+  document.getElementById('tokModal').classList.remove('show');
+  renderSwapTokens();calcSwap();
+}
 
 function renderPools(){
-  const box=document.getElementById('poolsList');
+  const box=document.getElementById('poolsList');if(!box)return;
   if(!POOLS.length){box.innerHTML='<div class="hint">No pools</div>';return}
-  box.innerHTML=POOLS.map(p=>{const price=p.reserve_token>0?p.reserve_tusd/p.reserve_token:0;return `<div class="pool-row" onclick="quickLiq('${esc(p.symbol)}')">${ticonHTML(p.symbol,'lg')}<div class="info"><div class="name">${esc(p.symbol)} / TUSD</div><div class="meta">${f(p.reserve_token,2)} ${esc(p.symbol)} • ${f(p.reserve_tusd,2)} TUSD</div></div><div class="right"><div class="price">${f(price,4)} T</div><div class="tvl">TVL: ${f(p.tvl,2)}</div></div></div>`}).join('');
+  box.innerHTML=POOLS.map(p=>{const price=p.reserve_token>0?p.reserve_tusd/p.reserve_token:0;return `<div class="pool-row">${ticonHTML(p.symbol,true)}<div class="info"><div class="name">${esc(p.symbol)} / TUSD</div><div class="meta">${f(p.reserve_token,2)} ${esc(p.symbol)} • ${f(p.reserve_tusd,2)} TUSD</div></div><div class="right"><div class="apr">${p.apr}% APR</div><div class="tvl">TVL ${f(p.tvl,2)}</div></div></div>`}).join('');
 }
 function renderMyLp(){
-  const box=document.getElementById('myLpList');
+  const box=document.getElementById('myLpList');if(!box)return;
   if(!MY_LP.length){box.innerHTML='<div class="hint">No LP positions</div>';return}
-  box.innerHTML=MY_LP.map(x=>{const pool=POOLS.find(p=>p.symbol===x.symbol);if(!pool)return'';const tusdShare=(x.lp_tokens/pool.total_lp)*pool.reserve_tusd;const tokShare=(x.lp_tokens/pool.total_lp)*pool.reserve_token;return `<div class="pool-row">${ticonHTML(x.symbol,'lg')}<div class="info"><div class="name">${esc(x.symbol)} / TUSD</div><div class="meta">LP: ${f(x.lp_tokens,4)}</div><div class="meta" style="color:var(--green);margin-top:2px">≈ ${f(tusdShare,4)} TUSD + ${f(tokShare,4)} ${esc(x.symbol)}</div></div><div class="right"><button class="tok-btn" style="padding:6px 10px;font-size:11px" onclick="event.stopPropagation();removeLiq('${esc(x.symbol)}')">Withdraw</button></div></div>`}).join('');
-}
-function quickLiq(sym){LIQ_TOK=sym;document.getElementById('symLiq').textContent=sym;setIcon('icoLiq',sym);switchTab('liq');calcLiq()}
-
-function calcLiq(reverse){
-  if(!LIQ_TOK){document.getElementById('btnLiq').disabled=true;document.getElementById('btnLiq').textContent='Select token';return}
-  const tusdEl=document.getElementById('liqTusd'),tokEl=document.getElementById('liqToken');
-  const pool=POOLS.find(p=>p.symbol===LIQ_TOK);
-  let price;
-  if(pool&&pool.reserve_token>0&&pool.reserve_tusd>0){price=pool.reserve_tusd/pool.reserve_token;document.getElementById('liqRate').textContent=`1 ${LIQ_TOK} = ${f(price,6)} TUSD`}
-  else{const t=ALL_TOKENS.find(x=>x.symbol===LIQ_TOK);price=n(t?.price)||1;document.getElementById('liqRate').textContent=`1 ${LIQ_TOK} = ${f(price,6)} TUSD (new pool)`}
-  if(reverse){const tok=n(tokEl.value);if(tok>0)tusdEl.value=(tok*price).toFixed(6)}
-  else{const tusd=n(tusdEl.value);if(tusd>0)tokEl.value=(tusd/price).toFixed(6)}
-  const tusd=n(tusdEl.value),tok=n(tokEl.value);
-  if(tusd>0&&tok>0){let lpMinted,tlp,rTok,rTusd;if(pool&&pool.total_lp>0&&pool.reserve_token>0&&pool.reserve_tusd>0){tlp=pool.total_lp;rTok=pool.reserve_token;rTusd=pool.reserve_tusd;lpMinted=Math.min((tusd/rTusd)*tlp,(tok/rTok)*tlp)}else{tlp=0;lpMinted=Math.sqrt(tusd*tok)}
-    document.getElementById('liqLpPreview').textContent=f(lpMinted,6)+' LP';
-    const newTotal=tlp+lpMinted;const share=newTotal>0?(lpMinted/newTotal)*100:100;document.getElementById('liqSharePreview').textContent=share.toFixed(4)+'%'
-  } else{document.getElementById('liqLpPreview').textContent='—';document.getElementById('liqSharePreview').textContent='—'}
-  const btn=document.getElementById('btnLiq');
-  if(!WALLET_CONNECTED){btn.disabled=true;btn.textContent='Connect Wallet';return}
-  if(tusd<=0||tok<=0){btn.disabled=true;btn.textContent='Enter amounts';return}
-  if(getBalance('TUSD')<tusd){btn.disabled=true;btn.textContent='Insufficient TUSD';return}
-  if(getBalance(LIQ_TOK)<tok){btn.disabled=true;btn.textContent='Insufficient '+LIQ_TOK;return}
-  btn.disabled=false;btn.textContent='Add Liquidity';
-}
-function doAddLiq(){
-  if(!LIQ_TOK){msg('Select token','error');return}
-  const tusd=n(document.getElementById('liqTusd').value),tok=n(document.getElementById('liqToken').value);
-  if(tusd<=0||tok<=0){msg('Enter both amounts','error');return}
-  if(getBalance('TUSD')<tusd||getBalance(LIQ_TOK)<tok){msg('Insufficient balance','error');return}
-  USER_BALANCES.TUSD=getBalance('TUSD')-tusd;USER_BALANCES[LIQ_TOK]=getBalance(LIQ_TOK)-tok;
-  let pool=POOLS.find(p=>p.symbol===LIQ_TOK);let lpMinted;
-  if(!pool){lpMinted=Math.sqrt(tusd*tok);POOLS.push({symbol:LIQ_TOK,reserve_token:tok,reserve_tusd:tusd,total_lp:lpMinted,tvl:tusd*2});pool=POOLS[POOLS.length-1]}
-  else{lpMinted=Math.min((tusd/pool.reserve_tusd)*pool.total_lp,(tok/pool.reserve_token)*pool.total_lp);pool.reserve_token+=tok;pool.reserve_tusd+=tusd;pool.total_lp+=lpMinted;pool.tvl=pool.reserve_tusd*2}
-  const my=MY_LP.find(x=>x.symbol===LIQ_TOK);if(my)my.lp_tokens+=lpMinted;else MY_LP.push({symbol:LIQ_TOK,lp_tokens:lpMinted});
-  HISTORY.unshift({type:'Add Liquidity',detail:`${f(tusd,4)} TUSD + ${f(tok,4)} ${LIQ_TOK}`,time:new Date().toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})});
-  if(HISTORY.length>10)HISTORY.pop();
-  msg(`✅ Added: ${f(tusd,4)} TUSD + ${f(tok,4)} ${LIQ_TOK}`,'success');
-  document.getElementById('liqTusd').value='';document.getElementById('liqToken').value='';
-  renderBalances();renderHistory();calcLiq();
-}
-function removeLiq(sym){
-  const my=MY_LP.find(x=>x.symbol===sym);if(!my){msg('No position','error');return}
-  const v=prompt(`LP to withdraw (max: ${f(my.lp_tokens,4)})`,my.lp_tokens.toFixed(4));if(v===null)return;
-  const amt=n(v);if(amt<=0||my.lp_tokens<amt){msg('Invalid amount','error');return}
-  const pool=POOLS.find(p=>p.symbol===sym);if(!pool){msg('Pool not found','error');return}
-  const tusdOut=(amt/pool.total_lp)*pool.reserve_tusd;const tokOut=(amt/pool.total_lp)*pool.reserve_token;
-  pool.reserve_tusd-=tusdOut;pool.reserve_token-=tokOut;pool.total_lp-=amt;pool.tvl=pool.reserve_tusd*2;
-  my.lp_tokens-=amt;USER_BALANCES.TUSD=getBalance('TUSD')+tusdOut;USER_BALANCES[sym]=getBalance(sym)+tokOut;
-  if(my.lp_tokens<=0)MY_LP=MY_LP.filter(x=>x.symbol!==sym);
-  HISTORY.unshift({type:'Remove Liquidity',detail:`${f(tusdOut,4)} TUSD + ${f(tokOut,4)} ${sym}`,time:new Date().toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})});
-  if(HISTORY.length>10)HISTORY.pop();
-  msg(`✅ Withdrawn: ${f(tusdOut,4)} TUSD + ${f(tokOut,4)} ${sym}`,'success');
-  renderPools();renderMyLp();renderBalances();renderHistory();
+  box.innerHTML=MY_LP.map(x=>{const pool=POOLS.find(p=>p.symbol===x.symbol);if(!pool)return'';const ts=(x.lp_tokens/pool.total_lp)*pool.reserve_tusd,tk=(x.lp_tokens/pool.total_lp)*pool.reserve_token;return `<div class="pool-row">${ticonHTML(x.symbol,true)}<div class="info"><div class="name">${esc(x.symbol)} / TUSD</div><div class="meta">LP: ${f(x.lp_tokens,4)}</div><div class="meta" style="color:var(--green);margin-top:2px">≈ ${f(ts,4)} TUSD + ${f(tk,4)} ${esc(x.symbol)}</div></div></div>`}).join('');
 }
 
-function faucet(){
-  USER_BALANCES.TUSD=(USER_BALANCES.TUSD||0)+10000;USER_BALANCES.TG=(USER_BALANCES.TG||0)+10;USER_BALANCES.AI=(USER_BALANCES.AI||0)+100000;USER_BALANCES.VKCOIN=(USER_BALANCES.VKCOIN||0)+1000000;USER_BALANCES.BBK=(USER_BALANCES.BBK||0)+10000;
-  msg('🚰 +10 000 TUSD, +10 TG, +100 000 AI, +1 000 000 VKCOIN, +10 000 BBK','success');
-  renderBalances();if(LIQ_TOK)calcLiq();calcSwap();
-}
 function renderBalances(){
-  const box=document.getElementById('balList');
-  box.innerHTML=ALL_TOKENS.map(t=>{const b=n(USER_BALANCES[t.symbol]);return `<div class="row"><span class="k">${esc(t.symbol)}</span><span class="v">${f(b,4)}</span></div>`}).join('');
+  const box=document.getElementById('balList');if(!box)return;
+  box.innerHTML=ALL_TOKENS.map(t=>{const b=n(USER_BALANCES[t.symbol]);const v=b*n(t.price);return `<div class="row"><span class="k">${ticonHTML(t.symbol)} ${esc(t.symbol)}</span><span class="v">${f(b,4)} <span style="color:var(--muted);font-weight:400">≈$${f(v,2)}</span></span></div>`}).join('');
+}
+function updatePortfolio(){
+  let total=0;ALL_TOKENS.forEach(t=>{total+=n(USER_BALANCES[t.symbol])*n(t.price)});
+  const el=document.getElementById('portVal');if(el)el.textContent=f(total,2);
 }
 function renderHistory(){
-  const box=document.getElementById('historyList');
+  const box=document.getElementById('histList');if(!box)return;
   if(!HISTORY.length){box.innerHTML='<div class="hint">No transactions yet</div>';return}
-  box.innerHTML=HISTORY.map(h=>`<div class="history-item"><div class="left">${h.type}</div><div class="right">${h.detail}</div><div class="left">${h.time}</div></div>`).join('');
+  box.innerHTML=HISTORY.map(h=>`<div class="hist-item"><div class="desc">${esc(h.desc)} • ${h.time}</div><div class="amt">${esc(h.amt)}</div></div>`).join('');
+}
+function faucet(){
+  USER_BALANCES.TUSD+=10000;USER_BALANCES.TG+=10;USER_BALANCES.AI+=100000;USER_BALANCES.VKCOIN+=1000000;USER_BALANCES.BBK+=10000;
+  msg('🚰 +10 000 TUSD, +10 TG, +100 000 AI, +1 000 000 VKCOIN, +10 000 BBK','success');
+  renderBalances();updatePortfolio();calcSwap();
+}
+
+// CHARTS
+let CHART_SYM='TG';
+function renderChartTabs(){
+  const box=document.getElementById('chartTabs');if(!box)return;
+  box.innerHTML=ALL_TOKENS.filter(t=>t.symbol!=='TUSD').map(t=>`<button class="tok-btn" style="padding:6px 12px;font-size:12px;${CHART_SYM===t.symbol?'background:var(--blue);border-color:var(--blue)':''}" onclick="setChart('${esc(t.symbol)}')">${esc(t.symbol)}</button>`).join('');
+}
+function setChart(sym){CHART_SYM=sym;renderChart()}
+function renderChart(){
+  renderChartTabs();
+  const sym=CHART_SYM;const pool=POOLS.find(p=>p.symbol===sym);
+  if(!pool||pool.reserve_token<=0){document.getElementById('priceChart').innerHTML='';return}
+  const basePrice=pool.reserve_tusd/pool.reserve_token;
+  document.getElementById('chartSym').textContent=sym+'/TUSD';
+  // Генерим 24 точки вокруг цены
+  const points=[];
+  let p=basePrice*0.85;
+  for(let i=0;i<24;i++){p=p*(1+(Math.random()-0.48)*0.08);points.push(p)}
+  points[points.length-1]=basePrice;
+  const min=Math.min(...points),max=Math.max(...points),range=max-min||1;
+  const W=500,H=200,pad=20;
+  const path=points.map((v,i)=>{const x=pad+(i/(points.length-1))*(W-pad*2);const y=H-pad-((v-min)/range)*(H-pad*2);return `${i===0?'M':'L'}${x.toFixed(1)},${y.toFixed(1)}`}).join(' ');
+  const area=`${path} L${W-pad},${H-pad} L${pad},${H-pad} Z`;
+  const change=((points[points.length-1]-points[0])/points[0]*100);
+  document.getElementById('priceChart').innerHTML=`
+    <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="${change>=0?'#26a17b':'#f6465d'}" stop-opacity=".4"/>
+      <stop offset="100%" stop-color="${change>=0?'#26a17b':'#f6465d'}" stop-opacity="0"/>
+    </linearGradient></defs>
+    <path d="${area}" fill="url(#g)"/>
+    <path d="${path}" fill="none" stroke="${change>=0?'#26a17b':'#f6465d'}" stroke-width="2"/>
+  `;
+  document.getElementById('chartCurrent').textContent=f(basePrice,4)+' TUSD';
+  document.getElementById('chartCurrent').style.color=change>=0?'var(--green)':'var(--red)';
+  document.getElementById('chartChange').textContent=(change>=0?'+':'')+change.toFixed(2)+'%';
+  document.getElementById('chartChange').style.color=change>=0?'var(--green)':'var(--red)';
 }
 
 document.addEventListener('DOMContentLoaded',()=>{
-  renderSwapTokens();renderBalances();updateBalances();renderPools();renderMyLp();renderHistory();
+  renderSwapTokens();renderBalances();updateBalances();renderPools();renderMyLp();renderHistory();updatePortfolio();
   calcSwap();
 });
 </script>
