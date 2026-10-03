@@ -443,6 +443,7 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 <label style="margin-top:9px">Лимит на юзера</label><input id="ce_maxmsg" type="number" step="1">
 <label style="margin-top:9px">Мин. слов</label><input id="ce_minwords" type="number" step="1">
 <label style="margin-top:9px">Мин. симв.</label><input id="ce_minchars" type="number" step="1">
+<label style="margin-top:9px">Мин. букв</label><input id="ce_minletters" type="number" step="1" value="3">
 <label style="margin-top:9px">Искл. команды</label><select id="ce_exclcmd"><option value="true">Да</option><option value="false">Нет</option></select>
 <label style="margin-top:9px">Искл. эмодзи</label><select id="ce_exclemoji"><option value="true">Да</option><option value="false">Нет</option></select>
 <div class="row" style="margin-top:12px">
@@ -824,7 +825,6 @@ async function loadUser(){
     if(Object.keys(upd).length){ await sb.from('users').update(upd).eq('telegram_id', UID); Object.assign(CU, upd); }
   } catch(e){ console.warn('[user sync]', e); }
 
-  // Обработка start_param (реферальная ссылка)
   const startParam = tg?.initDataUnsafe?.start_param;
   if(startParam && !CU.referrer_id){
     const refId = Number(startParam);
@@ -836,7 +836,6 @@ async function loadUser(){
     }
   }
 
-  // Активируем "отложенного" реферала, если его @username был заранее сохранён админом
   if(tgu?.username){
     try{
       const r = await sb.rpc('activate_pending_referral', { p_user_id: UID, p_username: tgu.username });
@@ -856,13 +855,8 @@ function renderUser(){
   if(!CU)return;
   const name=[tgu?.first_name||'',tgu?.last_name||''].join(' ').trim()||CU.first_name||tgu?.username||CU.username||'User';
   document.getElementById('userName').textContent=name;
-
   const handleEl = document.getElementById('userHandle');
-  if(handleEl){
-    const uname = tgu?.username || CU.username;
-    handleEl.textContent = uname ? '@'+uname : 'без @username';
-  }
-
+  if(handleEl){ const uname = tgu?.username || CU.username; handleEl.textContent = uname ? '@'+uname : 'без @username'; }
   const avEl = document.getElementById('userAvatar');
   if(avEl){
     const photo = tgu?.photo_url || CU.photo_url || null;
@@ -872,11 +866,8 @@ function renderUser(){
       img.src = photo; img.alt = '';
       img.onerror = () => { avEl.innerHTML = `<span>${esc((name[0]||'👤').toUpperCase())}</span>`; };
       avEl.appendChild(img);
-    } else {
-      avEl.innerHTML = `<span>${esc((name[0]||'👤').toUpperCase())}</span>`;
-    }
+    } else { avEl.innerHTML = `<span>${esc((name[0]||'👤').toUpperCase())}</span>`; }
   }
-
   const rl=Number(CU.rank_level||1);
   const rn=CU.rank_name||RANKS[rl-1]?.[1]||'Крестьянин';
   document.getElementById('rankName').textContent='👑 '+rn;
@@ -1064,7 +1055,7 @@ async function loadMyReferrals(){
   box.innerHTML=html;
 }
 
-// ============ ПОИСК ПО ID ИЛИ @username (через RPC, обход RLS) ============
+// ============ ПОИСК ПО ID ИЛИ @username ============
 async function resolveUserIds(input){
   const parts = String(input||'').split(/[,\s]+/).map(s=>s.trim()).filter(Boolean);
   const ids = [];
@@ -1096,7 +1087,6 @@ async function resolveUserIds(input){
   return { ids, usernames, notFound };
 }
 
-// ============ ПЕРЕВОД РЕФЕРАЛОВ (АДМИН) ============
 async function adminTransferReferrals(){
   const st = document.getElementById('ref_transfer_status');
   const targetRaw = document.getElementById('ref_transfer_target').value.trim();
@@ -1105,7 +1095,6 @@ async function adminTransferReferrals(){
 
   if(st){ st.className='info'; st.textContent='Поиск...'; }
 
-  // 1. Реферер
   const targetParts = String(targetRaw).split(/[,\s]+/).map(s=>s.trim()).filter(Boolean);
   let targetId = null;
   for(const p of targetParts){
@@ -1120,7 +1109,6 @@ async function adminTransferReferrals(){
   }
   if(!targetId){ if(st){ st.className='er'; st.textContent='✗ Реферер не найден в базе'; } return; }
 
-  // 2. Кого перевести
   const refParts = String(raw).split(/[,\s]+/).map(s=>s.trim()).filter(Boolean);
   const directIds = [];
   const pendingUsernames = [];
@@ -1400,35 +1388,24 @@ async function clearAdminLogo(id, sym){
   if(prev){ const base = TOKEN_ICONS[sym] || TOKEN_ICONS.DEFAULT; prev.innerHTML = `<span>${base.emoji}</span>`; prev.classList.remove('on'); }
 }
 
-// ============ ПОИСК ЮЗЕРА (АДМИН) — по ID или @username ============
 async function adminLoadUser(){
   const raw = document.getElementById('userSearchId').value.trim();
   if(!raw){msg('Введите ID или @username','error');return}
   const box=document.getElementById('adminUserCard');
   box.classList.remove('hide'); box.innerHTML='<div class="info">Поиск...</div>';
-
   let targetId = null;
   const clean = raw.replace(/^@/, '');
-
   if(/^\d+$/.test(clean)){ targetId = clean; }
   else {
     try{
       const r = await sb.rpc('admin_resolve_usernames', { p_list: [clean] });
-      if(r.data && r.data.ok && r.data.resolved && r.data.resolved[clean] != null){
-        targetId = String(r.data.resolved[clean]);
-      }
+      if(r.data && r.data.ok && r.data.resolved && r.data.resolved[clean] != null){ targetId = String(r.data.resolved[clean]); }
     }catch(e){ console.warn('[resolve]', e); }
-
-    if(!targetId){
-      box.innerHTML = `<div class="er">@${esc(clean)} не найден в базе.<br><span style="font-size:11px">Возможно, он ещё не заходил в бота.</span></div>`;
-      return;
-    }
+    if(!targetId){ box.innerHTML = `<div class="er">@${esc(clean)} не найден в базе.<br><span style="font-size:11px">Возможно, он ещё не заходил в бота.</span></div>`; return; }
   }
-
   const{data,error}=await sb.rpc('admin_get_user',{p_telegram_id:targetId});
   if(error||!data||data.ok===false){ box.innerHTML=`<div class="er">${esc(error?.message||data?.error||'Ошибка')}</div>`; return; }
-  ADMIN_USER=data;
-  renderAdminUser();
+  ADMIN_USER=data; renderAdminUser();
 }
 function renderAdminUser(){
   const box=document.getElementById('adminUserCard');if(!box||!ADMIN_USER)return;
@@ -1733,6 +1710,7 @@ async function openAdminChatEdit(cid){
   document.getElementById('ce_maxmsg').value=c.max_messages_per_user_day??0;
   document.getElementById('ce_minwords').value=c.min_words??1;
   document.getElementById('ce_minchars').value=c.min_chars??1;
+  document.getElementById('ce_minletters').value=c.min_letters??3;
   document.getElementById('ce_exclcmd').value=c.exclude_commands===false?'false':'true';
   document.getElementById('ce_exclemoji').value=c.exclude_emoji_only===false?'false':'true';
   const s=document.getElementById('ce_token');
@@ -1748,7 +1726,19 @@ async function saveAdminChatReward(){
   const s=document.getElementById('adminChatEditStatus');
   s.className='info';s.textContent='Сохранение...';
   const tv=document.getElementById('ce_token').value;
-  const p={p_chat_telegram_id:Number(ACC.chat_telegram_id),p_enabled:document.getElementById('ce_enabled').value==='true',p_token_id:tv||null,p_reward_per_message:n(document.getElementById('ce_reward').value),p_budget:n(document.getElementById('ce_budget').value),p_cooldown_seconds:Math.floor(n(document.getElementById('ce_cooldown').value)),p_daily_message_limit:Math.floor(n(document.getElementById('ce_daily').value)),p_max_messages_per_user_day:Math.floor(n(document.getElementById('ce_maxmsg').value)),p_min_words:Math.floor(n(document.getElementById('ce_minwords').value)||1),p_min_chars:Math.floor(n(document.getElementById('ce_minchars').value)||1),p_exclude_commands:document.getElementById('ce_exclcmd').value==='true',p_exclude_emoji_only:document.getElementById('ce_exclemoji').value==='true'};
+  const p={p_chat_telegram_id:Number(ACC.chat_telegram_id),
+    p_enabled:document.getElementById('ce_enabled').value==='true',
+    p_token_id:tv||null,
+    p_reward_per_message:n(document.getElementById('ce_reward').value),
+    p_budget:n(document.getElementById('ce_budget').value),
+    p_cooldown_seconds:Math.floor(n(document.getElementById('ce_cooldown').value)),
+    p_daily_message_limit:Math.floor(n(document.getElementById('ce_daily').value)),
+    p_max_messages_per_user_day:Math.floor(n(document.getElementById('ce_maxmsg').value)),
+    p_min_words:Math.floor(n(document.getElementById('ce_minwords').value)||1),
+    p_min_chars:Math.floor(n(document.getElementById('ce_minchars').value)||1),
+    p_min_letters:Math.floor(n(document.getElementById('ce_minletters').value)||3),
+    p_exclude_commands:document.getElementById('ce_exclcmd').value==='true',
+    p_exclude_emoji_only:document.getElementById('ce_exclemoji').value==='true'};
   const{data,error}=await sb.rpc('telepat_admin_update_chat_reward',p);
   if(error){s.className='er';s.textContent='Ошибка: '+error.message;return}
   if(data?.ok){s.className='ok';s.textContent='✅';await loadAdminChats();setTimeout(closeAdminChatEdit,900)}
