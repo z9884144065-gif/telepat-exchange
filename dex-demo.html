@@ -1,0 +1,504 @@
+<!DOCTYPE html><html lang="ru"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>TELEPAT DEX — Демо</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{--bg:#0b1018;--card:#141c28;--line:#39475b;--gold:#f4cf70;--text:#fff;--muted:#9da9b9;--green:#39d98a;--red:#ff647c;--blue:#4f8cff}
+*{box-sizing:border-box}html,body{margin:0;background:radial-gradient(circle at 50% -10%,#26334a 0,#0b1018 42%),#0b1018;color:var(--text);font-family:Arial,sans-serif;min-height:100vh}
+.app{max-width:520px;margin:auto;padding:16px 14px 40px}
+h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
+.sub{text-align:center;color:var(--muted);font-size:12px;margin-bottom:16px}
+.demo-badge{text-align:center;background:linear-gradient(135deg,#3a2818,#1a1308);border:1px solid #f4cf70;color:#f4cf70;padding:8px;border-radius:10px;font-size:11px;margin-bottom:14px;font-weight:bold}
+.tabs{display:flex;gap:6px;margin-bottom:14px}
+.tabs button{flex:1;padding:12px 8px;margin:0;background:#1b2635;color:#d9e0e8;border:1px solid #303d4f;font-size:13px;font-weight:bold;cursor:pointer;border-radius:12px}
+.tabs button.active{background:linear-gradient(135deg,#f5d477,#c99629);color:#17120a;border-color:#a37a1e}
+.card{background:linear-gradient(145deg,#1b2636,#111925);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:12px;box-shadow:0 12px 30px #0007}
+.card.gold{border-color:#80652b}
+.title{color:var(--gold);font-size:13px;font-weight:bold;letter-spacing:.6px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+.tbox{background:#0d1520;border:1px solid #303d50;border-radius:14px;padding:13px;margin-bottom:8px}
+.tbox .lbl{color:#8f9bab;font-size:11px;margin-bottom:6px;display:flex;justify-content:space-between}
+.tbox .row{display:flex;align-items:center;gap:8px}
+.tbox input[type=number]{flex:1;background:transparent;border:0;color:#fff;font-size:22px;font-weight:bold;padding:0;outline:none;min-width:0;font-family:Arial}
+.tbox input[type=number]::-webkit-outer-spin-button,.tbox input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.tok-btn{display:flex;align-items:center;gap:8px;background:#1b2635;border:1px solid #45536a;border-radius:12px;padding:8px 12px;cursor:pointer;white-space:nowrap;font-weight:bold;font-size:14px;color:#fff}
+.tok-btn:active{background:#26334a}
+.tlogo{width:28px;height:28px;flex:0 0 28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;overflow:hidden;background:linear-gradient(135deg,#7f8c9f,#4a596d);position:relative}
+.tlogo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%}
+.tlogo.lg{width:40px;height:40px;flex:0 0 40px;font-size:18px}
+.swap-arrow{display:flex;justify-content:center;margin:-4px 0}
+.swap-arrow button{width:44px;height:44px;padding:0;margin:0;border-radius:50%;background:#1b2635;border:3px solid #0b1018;color:#f4cf70;font-size:20px;cursor:pointer;box-shadow:0 4px 12px #0008}
+.swap-arrow button:active{transform:scale(0.95)}
+.info-row{display:flex;justify-content:space-between;font-size:12px;color:#9da9b9;padding:5px 0}
+.info-row b{color:#fff;font-weight:normal}
+.info-row.warn b{color:#f4cf70}
+.info-row.bad b{color:#ff647c}
+button.act{width:100%;padding:15px;margin:8px 0 0;border:0;border-radius:14px;background:linear-gradient(135deg,#f5d477,#c99629);color:#17120a;font-weight:bold;font-size:15px;cursor:pointer}
+button.act:disabled{opacity:.5;cursor:not-allowed}
+button.sec{background:#263345;color:#fff;border:1px solid #4a596d}
+.pool-row{display:flex;align-items:center;gap:10px;padding:12px;background:#0d1520;border:1px solid #2d3a4c;border-radius:14px;margin-top:8px;cursor:pointer}
+.pool-row:active{background:#1a2434}
+.pool-row .info{flex:1;min-width:0}
+.pool-row .name{font-weight:bold;color:#fff;font-size:15px}
+.pool-row .meta{color:#8f9bab;font-size:11px;margin-top:2px}
+.pool-row .right{text-align:right}
+.pool-row .price{color:#39d98a;font-weight:bold;font-size:14px}
+.pool-row .tvl{color:#8f9bab;font-size:11px;margin-top:2px}
+.modal{position:fixed;z-index:5000;inset:0;background:#0009;display:none;align-items:flex-end;justify-content:center;padding:12px}
+.modal.show{display:flex}
+.modal-in{width:100%;max-width:520px;max-height:75vh;overflow-y:auto;background:linear-gradient(145deg,#1d2939,#101721);border:1px solid #68562a;border-radius:22px;padding:16px}
+.modal-in .tok-item{display:flex;align-items:center;gap:12px;padding:12px;border-radius:12px;cursor:pointer;margin-top:6px;background:#0d1520;border:1px solid #2d3a4c}
+.modal-in .tok-item:active{background:#1a2434}
+.modal-in .tok-item .nm{flex:1;color:#fff;font-weight:bold;font-size:15px}
+.msg{position:fixed;z-index:8000;left:12px;right:12px;top:12px;padding:13px;border-radius:14px;background:#1b2737;border:1px solid #4c5b70;display:none;text-align:center;font-size:13px}
+.msg.show{display:block;animation:fadeIn .2s}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.hint{color:#8f9bab;font-size:11px;text-align:center;margin-top:8px;line-height:1.4}
+.bal{color:#7fc97f;font-size:11px;text-align:right;margin-top:4px}
+.impact-low{color:#39d98a}.impact-mid{color:#f4cf70}.impact-high{color:#ff647c}
+.label{display:block;color:#aeb8c6;font-size:12px;margin:12px 0 6px}
+.input-full{width:100%;background:#0d1520;color:#fff;padding:12px;border:1px solid #303d50;border-radius:12px;font-size:15px;outline:none}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.stat{background:#0d1520;border:1px solid #2d3a4c;border-radius:12px;padding:10px}
+.stat .v{color:#fff;font-size:16px;font-weight:bold}
+.stat .k{color:#8f9bab;font-size:10px;margin-top:2px}
+</style></head><body>
+<div id="msg" class="msg"></div>
+<div class="app">
+<h1>💎 TELEPAT DEX</h1>
+<div class="sub">Децентрализованный обмен на пулах ликвидности</div>
+<div class="demo-badge">🎨 ДЕМО-ВЕРСИЯ • данные для примера, реальных транзакций нет</div>
+
+<div class="tabs">
+<button id="tab-swap" class="active" onclick="switchTab('swap')">🔁 Swap</button>
+<button id="tab-pools" onclick="switchTab('pools')">💧 Пулы</button>
+<button id="tab-liq" onclick="switchTab('liq')">➕ Ликвидность</button>
+</div>
+
+<!-- ============ SWAP ============ -->
+<div id="s-swap">
+<div class="card gold">
+<div class="title">🔁 ОБМЕН <span style="color:#8f9bab;font-size:11px;cursor:pointer;font-weight:normal" onclick="changeSlippage()">Slippage: <span id="slipVal">0.5</span>% ⚙️</span></div>
+
+<div class="tbox">
+<div class="lbl"><span>Отдаю</span><span id="balFrom">Баланс: 1 250,00 TUSD</span></div>
+<div class="row">
+<input type="number" id="amtFrom" placeholder="0.0" min="0" step="any" oninput="calcSwap()">
+<button class="tok-btn" onclick="openTokModal('from')"><span class="tlogo" id="icoFrom">💵</span><span id="symFrom">TUSD</span><span style="color:#8f9bab">▼</span></button>
+</div>
+</div>
+
+<div class="swap-arrow"><button onclick="flipSwap()">⇅</button></div>
+
+<div class="tbox">
+<div class="lbl"><span>Получаю</span><span id="balTo">Баланс: 0,00 TG</span></div>
+<div class="row">
+<input type="number" id="amtTo" placeholder="0.0" readonly>
+<button class="tok-btn" onclick="openTokModal('to')"><span class="tlogo" id="icoTo">🥇</span><span id="symTo">TG</span><span style="color:#8f9bab">▼</span></button>
+</div>
+</div>
+
+<div style="margin-top:10px">
+<div class="info-row"><span>Курс</span><b id="rateInfo">—</b></div>
+<div class="info-row"><span>Price Impact</span><b id="impactInfo" class="impact-low">—</b></div>
+<div class="info-row"><span>Комиссия (0.3%)</span><b id="feeInfo">—</b></div>
+<div class="info-row warn"><span>Мин. получите</span><b id="minRecv">—</b></div>
+</div>
+
+<button class="act" id="btnSwap" onclick="doSwap()">🔁 ОБМЕНЯТЬ (демо)</button>
+</div>
+</div>
+
+<!-- ============ POOLS ============ -->
+<div id="s-pools" class="hide">
+<div class="card gold">
+<div class="title">💧 ПУЛЫ ЛИКВИДНОСТИ</div>
+<div id="poolsList"></div>
+</div>
+
+<div class="card gold">
+<div class="title">📊 МОИ LP-ПОЗИЦИИ</div>
+<div id="myLpList"></div>
+</div>
+</div>
+
+<!-- ============ LIQUIDITY ============ -->
+<div id="s-liq" class="hide">
+<div class="card gold">
+<div class="title">➕ ДОБАВИТЬ ЛИКВИДНОСТЬ</div>
+<button class="tok-btn" style="width:100%;justify-content:space-between;padding:12px" onclick="openTokModal('liq')">
+<span style="display:flex;align-items:center;gap:8px"><span class="tlogo" id="icoLiq">🪙</span><span id="symLiq">Выберите токен</span></span>
+<span style="color:#8f9bab">▼</span>
+</button>
+
+<label class="label">Сумма TUSD</label>
+<input type="number" id="liqTusd" placeholder="0.0" step="any" min="0" oninput="calcLiq()" class="input-full">
+
+<label class="label">Количество <span id="liqTokSym">токена</span></label>
+<input type="number" id="liqToken" placeholder="0.0" step="any" min="0" oninput="calcLiq(true)" class="input-full">
+
+<div style="margin-top:10px">
+<div class="info-row"><span>Курс пула</span><b id="liqRate">—</b></div>
+<div class="info-row"><span>Вы получите LP</span><b id="liqLpPreview">—</b></div>
+<div class="info-row"><span>Ваша доля в пуле</span><b id="liqSharePreview">—</b></div>
+</div>
+
+<div class="bal" id="liqBalInfo"></div>
+<button class="act" id="btnLiq" onclick="doAddLiq()">➕ ВНЕСТИ ЛИКВИДНОСТЬ (демо)</button>
+<div class="hint">Если пула нет — он создастся. Первый внос задаёт цену.</div>
+</div>
+</div>
+
+</div>
+
+<!-- Модалка выбора токена -->
+<div id="tokModal" class="modal" onclick="closeTokModal(event)">
+<div class="modal-in" onclick="event.stopPropagation()">
+<div class="title" style="margin-bottom:10px">ВЫБЕРИТЕ ТОКЕН</div>
+<div id="tokList"></div>
+</div>
+</div>
+
+<script>
+// ==================== DEMO DATA ====================
+const DEMO_TOKENS = [
+  {symbol:'TG', name:'Telepat Gold', price:100, logo:null, bal:0},
+  {symbol:'AI', name:'AI Token', price:0.01, logo:null, bal:1500},
+  {symbol:'TUSD', name:'Telepat Dollar', price:1, logo:null, bal:1250},
+  {symbol:'VKCOIN', name:'VK Coin', price:0.001, logo:null, bal:50000},
+  {symbol:'BBK', name:'Bbk Token', price:0.5, logo:null, bal:0},
+];
+
+const DEMO_POOLS = [
+  {symbol:'TG', reserve_token:12.5, reserve_tusd:1250, total_lp:125, tvl:2500},
+  {symbol:'AI', reserve_token:45000, reserve_tusd:450, total_lp:4500, tvl:900},
+  {symbol:'VKCOIN', reserve_token:8500000, reserve_tusd:8500, total_lp:85000, tvl:17000},
+];
+
+const DEMO_MY_LP = [
+  {symbol:'TG', lp_tokens:25, tusd_share:250, token_share:2.5},
+  {symbol:'AI', lp_tokens:500, tusd_share:50, token_share:5000},
+];
+
+let FROM='TUSD', TO='TG', LIQ_TOK=null, MODAL_TARGET='from', SLIPPAGE=0.5;
+let ALL_TOKENS=[...DEMO_TOKENS];
+let USER_BALANCES={TUSD:1250, TG:0, AI:1500, VKCOIN:50000, BBK:0};
+let POOLS=[...DEMO_POOLS];
+let MY_LP=[...DEMO_MY_LP];
+
+const ICONS={'TG':{e:'🥇',b:'linear-gradient(135deg,#f5d477,#c99629)'},'AI':{e:'🤖',b:'linear-gradient(135deg,#8b5cf6,#6d28d9)'},'TUSD':{e:'💵',b:'linear-gradient(135deg,#39d98a,#2ba86a)'},'VKCOIN':{e:'🎮',b:'linear-gradient(135deg,#4f8cff,#2563eb)'},'BBK':{e:'🪙',b:'linear-gradient(135deg,#c99629,#80652b)'},'DEFAULT':{e:'🪙',b:'linear-gradient(135deg,#7f8c9f,#4a596d)'}};
+const n=v=>{const x=Number(v);return Number.isFinite(x)?x:0};
+const f=(v,m=6)=>n(v).toLocaleString('ru-RU',{maximumFractionDigits:m});
+const esc=v=>String(v??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
+function msg(t,ty='info'){const e=document.getElementById('msg');e.textContent=t;e.style.borderColor=ty==='error'?'#8b3f4c':ty==='success'?'#397b5b':'#4c5b70';e.classList.add('show');setTimeout(()=>e.classList.remove('show'),3500)}
+function ticon(sym){return ICONS[sym]||ICONS.DEFAULT}
+function ticonHTML(sym,size){
+  const ic=ticon(sym);const cls='tlogo'+(size==='lg'?' lg':'');
+  return `<span class="${cls}" style="background:${ic.b}">${ic.e}</span>`;
+}
+function setIcon(id,sym){
+  const ic=ticon(sym);const el=document.getElementById(id);
+  el.style.background=ic.b;el.textContent=ic.e;
+}
+
+// ==================== TABS ====================
+function switchTab(t){
+  ['swap','pools','liq'].forEach(x=>{
+    document.getElementById('s-'+x).classList.toggle('hide',x!==t);
+    document.getElementById('tab-'+x).classList.toggle('active',x===t);
+  });
+  if(t==='pools')renderPools();
+  if(t==='liq')renderMyLp();
+}
+
+// ==================== TOKEN MODAL ====================
+function openTokModal(target){
+  MODAL_TARGET=target;
+  const box=document.getElementById('tokList');
+  let list=ALL_TOKENS;
+  if(target==='liq')list=list.filter(t=>t.symbol!=='TUSD');
+  box.innerHTML=list.map(t=>`
+    <div class="tok-item" onclick="pickTok('${esc(t.symbol)}')">
+      ${ticonHTML(t.symbol,'lg')}
+      <span class="nm">${esc(t.symbol)}</span>
+      <span style="color:#8f9bab;font-size:12px">${f(t.price,4)} $</span>
+    </div>
+  `).join('');
+  document.getElementById('tokModal').classList.add('show');
+}
+function closeTokModal(e){if(e&&e.target!==document.getElementById('tokModal'))return;document.getElementById('tokModal').classList.remove('show')}
+function pickTok(sym){
+  if(MODAL_TARGET==='from'){FROM=sym;if(TO===sym)TO=sym==='TUSD'?'TG':'TUSD'}
+  else if(MODAL_TARGET==='to'){TO=sym;if(FROM===sym)FROM=sym==='TUSD'?'TG':'TUSD'}
+  else if(MODAL_TARGET==='liq'){LIQ_TOK=sym}
+  document.getElementById('tokModal').classList.remove('show');
+  renderSwapTokens();
+  if(MODAL_TARGET==='liq'){
+    document.getElementById('symLiq').textContent=sym;
+    setIcon('icoLiq',sym);
+    document.getElementById('liqTokSym').textContent=sym;
+    calcLiq();
+  } else calcSwap();
+}
+
+// ==================== SWAP ====================
+function renderSwapTokens(){
+  document.getElementById('symFrom').textContent=FROM;
+  document.getElementById('symTo').textContent=TO;
+  setIcon('icoFrom',FROM);
+  setIcon('icoTo',TO);
+}
+function flipSwap(){
+  const a=FROM;FROM=TO;TO=a;
+  document.getElementById('amtFrom').value='';
+  document.getElementById('amtTo').value='';
+  renderSwapTokens();calcSwap();
+}
+function getBalance(sym){return n(USER_BALANCES[sym])}
+function updateBalances(){
+  document.getElementById('balFrom').textContent='Баланс: '+f(getBalance(FROM),4)+' '+FROM;
+  document.getElementById('balTo').textContent='Баланс: '+f(getBalance(TO),4)+' '+TO;
+}
+function calcSwap(){
+  updateBalances();
+  const amt=n(document.getElementById('amtFrom').value);
+  if(amt<=0){
+    document.getElementById('amtTo').value='';
+    ['rateInfo','impactInfo','feeInfo','minRecv'].forEach(id=>document.getElementById(id).textContent='—');
+    return;
+  }
+  const isBuy=FROM==='TUSD'&&TO!=='TUSD';
+  const isSell=TO==='TUSD'&&FROM!=='TUSD';
+  if(!isBuy&&!isSell){
+    document.getElementById('rateInfo').textContent='Только через TUSD';
+    document.getElementById('amtTo').value='';
+    return;
+  }
+  const sym=isBuy?TO:FROM;
+  const pool=POOLS.find(p=>p.symbol===sym);
+  if(!pool||pool.reserve_token<=0||pool.reserve_tusd<=0){
+    document.getElementById('rateInfo').textContent='Пул не найден';
+    document.getElementById('amtTo').value='';
+    return;
+  }
+  const rTok=pool.reserve_token, rTusd=pool.reserve_tusd, feeBps=30;
+  const amtAfter=amt*(1-feeBps/10000);
+  let out;
+  if(isBuy)out=(amtAfter*rTok)/(rTusd+amtAfter);
+  else out=(amtAfter*rTusd)/(rTok+amtAfter);
+
+  const priceBefore=rTusd/rTok;
+  const priceAfter=isBuy?((rTusd+amt)/(rTok-out)):((rTusd-out)/(rTok+amt));
+  const impact=Math.abs((priceAfter-priceBefore)/priceBefore)*100;
+
+  document.getElementById('amtTo').value=out.toFixed(8);
+  document.getElementById('rateInfo').textContent=`1 ${sym} = ${f(priceAfter,6)} TUSD`;
+  const impEl=document.getElementById('impactInfo');
+  impEl.textContent=impact.toFixed(2)+'%';
+  impEl.className=impact<1?'impact-low':impact<5?'impact-mid':'impact-high';
+  document.getElementById('feeInfo').textContent=f(amt*0.003,6)+' '+FROM;
+  document.getElementById('minRecv').textContent=f(out*(1-SLIPPAGE/100),6)+' '+TO;
+}
+function doSwap(){
+  const amt=n(document.getElementById('amtFrom').value);
+  if(amt<=0){msg('Введите сумму','error');return}
+  const isBuy=FROM==='TUSD'&&TO!=='TUSD';
+  const isSell=TO==='TUSD'&&FROM!=='TUSD';
+  if(!isBuy&&!isSell){msg('Только через TUSD','error');return}
+  if(getBalance(FROM)<amt){msg('Недостаточно средств','error');return}
+
+  const sym=isBuy?TO:FROM;
+  const out=n(document.getElementById('amtTo').value);
+  const pool=POOLS.find(p=>p.symbol===sym);
+
+  // Обновляем mock-балансы и пул
+  USER_BALANCES[FROM]=getBalance(FROM)-amt;
+  USER_BALANCES[TO]=getBalance(TO)+out;
+  if(isBuy){
+    pool.reserve_tusd+=amt;
+    pool.reserve_token-=out;
+  } else {
+    pool.reserve_tusd-=out;
+    pool.reserve_token+=amt;
+  }
+  pool.tvl=pool.reserve_tusd*2;
+
+  msg(`✅ Обменяно (демо): ${f(amt,6)} ${FROM} → ${f(out,6)} ${TO}`,'success');
+  document.getElementById('amtFrom').value='';
+  document.getElementById('amtTo').value='';
+  calcSwap();
+}
+function changeSlippage(){
+  const v=prompt('Допустимое проскальзывание (%):',SLIPPAGE);
+  if(v===null)return;
+  const nv=n(v);
+  if(nv<0||nv>50){msg('0-50','error');return}
+  SLIPPAGE=nv;
+  document.getElementById('slipVal').textContent=nv;
+  calcSwap();
+}
+
+// ==================== POOLS ====================
+function renderPools(){
+  const box=document.getElementById('poolsList');
+  if(!POOLS.length){box.innerHTML='<div class="hint">Нет пулов</div>';return}
+  box.innerHTML=POOLS.map(p=>{
+    const price=p.reserve_token>0?p.reserve_tusd/p.reserve_token:0;
+    return `<div class="pool-row" onclick="quickLiq('${esc(p.symbol)}')">
+      ${ticonHTML(p.symbol,'lg')}
+      <div class="info">
+        <div class="name">${esc(p.symbol)} / TUSD</div>
+        <div class="meta">${f(p.reserve_token,2)} ${esc(p.symbol)} • ${f(p.reserve_tusd,2)} TUSD</div>
+      </div>
+      <div class="right">
+        <div class="price">${f(price,4)} T</div>
+        <div class="tvl">TVL: ${f(p.tvl,2)}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function renderMyLp(){
+  const box=document.getElementById('myLpList');
+  if(!MY_LP.length){box.innerHTML='<div class="hint">У вас нет LP-позиций</div>';return}
+  box.innerHTML=MY_LP.map(x=>`
+    <div class="pool-row">
+      ${ticonHTML(x.symbol,'lg')}
+      <div class="info">
+        <div class="name">${esc(x.symbol)} / TUSD</div>
+        <div class="meta">LP: ${f(x.lp_tokens,4)}</div>
+        <div class="meta" style="color:#39d98a;margin-top:2px">≈ ${f(x.tusd_share,4)} TUSD + ${f(x.token_share,4)} ${esc(x.symbol)}</div>
+      </div>
+      <div class="right">
+        <button class="tok-btn" style="padding:6px 10px;font-size:12px" onclick="event.stopPropagation();removeLiq('${esc(x.symbol)}')">Вывести</button>
+      </div>
+    </div>
+  `).join('');
+}
+function quickLiq(sym){
+  LIQ_TOK=sym;
+  document.getElementById('symLiq').textContent=sym;
+  setIcon('icoLiq',sym);
+  document.getElementById('liqTokSym').textContent=sym;
+  switchTab('liq');
+  calcLiq();
+}
+
+// ==================== LIQUIDITY ====================
+function calcLiq(reverse){
+  if(!LIQ_TOK)return;
+  const tusdEl=document.getElementById('liqTusd');
+  const tokEl=document.getElementById('liqToken');
+
+  const pool=POOLS.find(p=>p.symbol===LIQ_TOK);
+  let price;
+  if(pool&&pool.reserve_token>0&&pool.reserve_tusd>0){
+    price=pool.reserve_tusd/pool.reserve_token;
+    document.getElementById('liqRate').textContent=`1 ${LIQ_TOK} = ${f(price,6)} TUSD`;
+  } else {
+    const t=ALL_TOKENS.find(x=>x.symbol===LIQ_TOK);
+    price=n(t?.price)||1;
+    document.getElementById('liqRate').textContent=`1 ${LIQ_TOK} = ${f(price,6)} TUSD (новая цена)`;
+  }
+
+  if(reverse){
+    const tok=n(tokEl.value);
+    if(tok>0)tusdEl.value=(tok*price).toFixed(6);
+  } else {
+    const tusd=n(tusdEl.value);
+    if(tusd>0)tokEl.value=(tusd/price).toFixed(6);
+  }
+
+  const tusd=n(tusdEl.value), tok=n(tokEl.value);
+  if(tusd>0&&tok>0){
+    let lpMinted, tlp, rTok, rTusd;
+    if(pool&&pool.total_lp>0&&pool.reserve_token>0&&pool.reserve_tusd>0){
+      tlp=pool.total_lp;rTok=pool.reserve_token;rTusd=pool.reserve_tusd;
+      lpMinted=Math.min((tusd/rTusd)*tlp,(tok/rTok)*tlp);
+    } else {
+      tlp=0;lpMinted=Math.sqrt(tusd*tok);
+    }
+    document.getElementById('liqLpPreview').textContent=f(lpMinted,6)+' LP';
+    const newTotal=tlp+lpMinted;
+    const share=newTotal>0?(lpMinted/newTotal)*100:100;
+    document.getElementById('liqSharePreview').textContent=share.toFixed(4)+'%';
+  } else {
+    document.getElementById('liqLpPreview').textContent='—';
+    document.getElementById('liqSharePreview').textContent='—';
+  }
+
+  document.getElementById('liqBalInfo').textContent=`Ваш баланс: ${f(getBalance('TUSD'),4)} TUSD • ${f(getBalance(LIQ_TOK),4)} ${LIQ_TOK}`;
+}
+function doAddLiq(){
+  if(!LIQ_TOK){msg('Выберите токен','error');return}
+  const tusd=n(document.getElementById('liqTusd').value);
+  const tok=n(document.getElementById('liqToken').value);
+  if(tusd<=0||tok<=0){msg('Введите обе суммы','error');return}
+  if(getBalance('TUSD')<tusd||getBalance(LIQ_TOK)<tok){msg('Недостаточно средств','error');return}
+
+  USER_BALANCES.TUSD=getBalance('TUSD')-tusd;
+  USER_BALANCES[LIQ_TOK]=getBalance(LIQ_TOK)-tok;
+
+  let pool=POOLS.find(p=>p.symbol===LIQ_TOK);
+  let lpMinted;
+  if(!pool){
+    lpMinted=Math.sqrt(tusd*tok);
+    POOLS.push({symbol:LIQ_TOK,reserve_token:tok,reserve_tusd:tusd,total_lp:lpMinted,tvl:tusd*2});
+  } else {
+    lpMinted=Math.min((tusd/pool.reserve_tusd)*pool.total_lp,(tok/pool.reserve_token)*pool.total_lp);
+    pool.reserve_token+=tok;
+    pool.reserve_tusd+=tusd;
+    pool.total_lp+=lpMinted;
+    pool.tvl=pool.reserve_tusd*2;
+  }
+  const my=MY_LP.find(x=>x.symbol===LIQ_TOK);
+  if(my){
+    my.lp_tokens+=lpMinted;
+    my.tusd_share=(my.lp_tokens/pool.total_lp)*pool.reserve_tusd;
+    my.token_share=(my.lp_tokens/pool.total_lp)*pool.reserve_token;
+  } else {
+    MY_LP.push({symbol:LIQ_TOK,lp_tokens:lpMinted,tusd_share:tusd,token_share:tok});
+  }
+
+  msg(`✅ Добавлено (демо): ${f(tusd,4)} TUSD + ${f(tok,4)} ${LIQ_TOK}`,'success');
+  document.getElementById('liqTusd').value='';
+  document.getElementById('liqToken').value='';
+  calcLiq();
+}
+function removeLiq(sym){
+  const v=prompt(`Сколько LP вывести для ${sym}/TUSD?`);
+  if(v===null)return;
+  const amt=n(v);
+  if(amt<=0){msg('Некорректно','error');return}
+  const my=MY_LP.find(x=>x.symbol===sym);
+  if(!my||my.lp_tokens<amt){msg('Недостаточно LP','error');return}
+  const pool=POOLS.find(p=>p.symbol===sym);
+  if(!pool){msg('Пул не найден','error');return}
+
+  const tusdOut=(amt/pool.total_lp)*pool.reserve_tusd;
+  const tokOut=(amt/pool.total_lp)*pool.reserve_token;
+
+  pool.reserve_tusd-=tusdOut;
+  pool.reserve_token-=tokOut;
+  pool.total_lp-=amt;
+  pool.tvl=pool.reserve_tusd*2;
+
+  my.lp_tokens-=amt;
+  my.tusd_share=(my.lp_tokens/pool.total_lp)*pool.reserve_tusd;
+  my.token_share=(my.lp_tokens/pool.total_lp)*pool.reserve_token;
+
+  USER_BALANCES.TUSD=getBalance('TUSD')+tusdOut;
+  USER_BALANCES[sym]=getBalance(sym)+tokOut;
+
+  if(my.lp_tokens<=0)MY_LP=MY_LP.filter(x=>x.symbol!==sym);
+  msg(`✅ Выведено (демо): ${f(tusdOut,4)} TUSD + ${f(tokOut,4)} ${sym}`,'success');
+  renderPools();renderMyLp();
+}
+
+// ==================== INIT ====================
+document.addEventListener('DOMContentLoaded',()=>{
+  renderSwapTokens();
+  updateBalances();
+  renderPools();
+  renderMyLp();
+});
+</script>
+</body></html>
