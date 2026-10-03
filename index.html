@@ -124,7 +124,6 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 .logo-thumb-preview{width:56px;height:56px;flex:0 0 56px;border-radius:50%;background:#0d1520;display:flex;align-items:center;justify-content:center;font-size:24px;overflow:hidden;position:relative;box-shadow:0 4px 14px rgba(0,0,0,.5),inset 0 0 0 1.5px rgba(255,255,255,.08);border:2px solid #4a596d}
 .logo-thumb-preview img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%}
 .logo-thumb-preview.on{border-color:#39d98a;box-shadow:0 4px 14px rgba(57,217,138,.35),inset 0 0 0 1.5px rgba(57,217,138,.3)}
-/* ===== АВАТАРКА ПОЛЬЗОВАТЕЛЯ ===== */
 .user-head{display:flex;align-items:center;gap:14px;padding:4px 0 12px}
 .user-avatar{width:64px;height:64px;flex:0 0 64px;border-radius:50%;overflow:hidden;background:linear-gradient(135deg,#80652d,#c99629);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:bold;color:#17120a;box-shadow:0 6px 18px rgba(0,0,0,.5),inset 0 0 0 2px rgba(244,207,112,.4);position:relative}
 .user-avatar img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%}
@@ -334,7 +333,7 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 
 <div class="card admin">
 <div class="title">🖼️ ЛОГОТИПЫ ТОКЕНОВ</div>
-<div class="info" style="margin-bottom:10px">Задай лого для любого токена — оно появится на главной, в ордерах, сделках, заданиях, чекине.</div>
+<div class="info" style="margin-bottom:10px">Задай лого для любого токена.</div>
 <button onclick="loadAllLogos()">🔄 Загрузить все токены</button>
 <div id="adminLogosList" style="margin-top:12px"><div class="info">Нажми «Загрузить все токены».</div></div>
 </div>
@@ -611,7 +610,7 @@ const esc=v=>String(v??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replac
 const n=v=>{const x=Number(v);return Number.isFinite(x)?x:0};
 const f=(v,m=8)=>n(v).toLocaleString('ru-RU',{maximumFractionDigits:m});
 const tb=t=>{if(!CU)return 0;if(t==='TG')return n(CU.tg_balance);if(t==='AI')return n(CU.ai_balance);if(t==='TUSD')return n(CU.tusd_balance);return n(CB[t])};
-function msg(t,ty='info'){const e=document.getElementById('message');e.textContent=t;e.style.borderColor=ty==='error'?'#8b3f4c':ty==='success'?'#397b5b':'#4c5b70';e.classList.add('show');setTimeout(()=>e.classList.remove('show'),3000)}
+function msg(t,ty='info'){const e=document.getElementById('message');e.textContent=t;e.style.borderColor=ty==='error'?'#8b3f4c':ty==='success'?'#397b5b':'#4c5b70';e.classList.add('show');setTimeout(()=>e.classList.remove('show'),3500)}
 
 function fmtAccum(v){
   const x = Number(v)||0;
@@ -824,6 +823,8 @@ async function loadUser(){
     if(tgu?.username   && CU.username   !== tgu.username)   upd.username   = tgu.username;
     if(Object.keys(upd).length){ await sb.from('users').update(upd).eq('telegram_id', UID); Object.assign(CU, upd); }
   } catch(e){ console.warn('[user sync]', e); }
+
+  // Обработка start_param (реферальная ссылка)
   const startParam = tg?.initDataUnsafe?.start_param;
   if(startParam && !CU.referrer_id){
     const refId = Number(startParam);
@@ -834,6 +835,18 @@ async function loadUser(){
       } catch(e){ console.error('[loadUser] set_referrer error:', e); }
     }
   }
+
+  // Активируем "отложенного" реферала, если его @username был заранее сохранён админом
+  if(tgu?.username){
+    try{
+      const r = await sb.rpc('activate_pending_referral', { p_user_id: UID, p_username: tgu.username });
+      if(r.data && r.data.activated > 0){
+        const r3 = await sb.from('users').select('*').eq('telegram_id', UID).maybeSingle();
+        if(r3.data) { CU = r3.data; }
+      }
+    }catch(e){ console.warn('[activate pending]', e); }
+  }
+
   renderUser();
   if(UID === AID) document.getElementById('n-admin').classList.remove('hide');
   loadReferral(); updateOrderForm();
@@ -844,25 +857,20 @@ function renderUser(){
   const name=[tgu?.first_name||'',tgu?.last_name||''].join(' ').trim()||CU.first_name||tgu?.username||CU.username||'User';
   document.getElementById('userName').textContent=name;
 
-  // @username (или заглушка)
   const handleEl = document.getElementById('userHandle');
   if(handleEl){
     const uname = tgu?.username || CU.username;
     handleEl.textContent = uname ? '@'+uname : 'без @username';
   }
 
-  // Аватарка
   const avEl = document.getElementById('userAvatar');
   if(avEl){
     const photo = tgu?.photo_url || CU.photo_url || null;
     avEl.innerHTML = '';
     if(photo){
       const img = document.createElement('img');
-      img.src = photo;
-      img.alt = '';
-      img.onerror = () => {
-        avEl.innerHTML = `<span>${esc((name[0]||'👤').toUpperCase())}</span>`;
-      };
+      img.src = photo; img.alt = '';
+      img.onerror = () => { avEl.innerHTML = `<span>${esc((name[0]||'👤').toUpperCase())}</span>`; };
       avEl.appendChild(img);
     } else {
       avEl.innerHTML = `<span>${esc((name[0]||'👤').toUpperCase())}</span>`;
@@ -1056,51 +1064,119 @@ async function loadMyReferrals(){
   box.innerHTML=html;
 }
 
-// ============ ПОИСК ЮЗЕРА ПО ID ИЛИ @username ============
+// ============ ПОИСК ПО ID ИЛИ @username (через RPC, обход RLS) ============
 async function resolveUserIds(input){
   const parts = String(input||'').split(/[,\s]+/).map(s=>s.trim()).filter(Boolean);
   const ids = [];
+  const usernames = [];
   const notFound = [];
+  if(!parts.length) return { ids, usernames, notFound };
+
+  const numeric = [];
+  const alpha = [];
   for(const p of parts){
     const clean = p.replace(/^@/, '');
-    if(/^\d+$/.test(clean)){
-      ids.push(Number(clean));
-    } else {
-      try{
-        const {data, error} = await sb.from('users').select('telegram_id, username, first_name').ilike('username', clean).maybeSingle();
-        if(!error && data && data.telegram_id){ ids.push(Number(data.telegram_id)); }
-        else { notFound.push(p); }
-      }catch(e){ notFound.push(p); }
-    }
+    if(/^\d+$/.test(clean)) numeric.push(Number(clean));
+    else alpha.push(clean);
   }
-  return { ids, notFound };
+  numeric.forEach(x => ids.push(x));
+
+  if(alpha.length){
+    try{
+      const {data, error} = await sb.rpc('admin_resolve_usernames', { p_list: alpha });
+      if(!error && data && data.ok){
+        const resolved = data.resolved || {};
+        for(const u of alpha){
+          if(resolved[u] != null) ids.push(Number(resolved[u]));
+          else usernames.push(u);
+        }
+      } else { alpha.forEach(u => usernames.push(u)); }
+    }catch(e){ alpha.forEach(u => usernames.push(u)); }
+  }
+  return { ids, usernames, notFound };
 }
 
+// ============ ПЕРЕВОД РЕФЕРАЛОВ (АДМИН) ============
 async function adminTransferReferrals(){
   const st = document.getElementById('ref_transfer_status');
   const targetRaw = document.getElementById('ref_transfer_target').value.trim();
   const raw = document.getElementById('ref_transfer_ids').value.trim();
   if(!targetRaw || !raw){ if(st){st.className='er';st.textContent='Заполните оба поля';} return; }
 
-  if(st){ st.className='info'; st.textContent='Поиск пользователей...'; }
-  const targetRes = await resolveUserIds(targetRaw);
-  if(!targetRes.ids.length){ if(st){ st.className='er'; st.textContent='✗ Реферер не найден: '+targetRaw; } return; }
-  const targetId = targetRes.ids[0];
+  if(st){ st.className='info'; st.textContent='Поиск...'; }
 
-  const refRes = await resolveUserIds(raw);
-  if(!refRes.ids.length){ if(st){ st.className='er'; st.textContent='✗ Ни один реферал не найден'; } return; }
+  // 1. Реферер
+  const targetParts = String(targetRaw).split(/[,\s]+/).map(s=>s.trim()).filter(Boolean);
+  let targetId = null;
+  for(const p of targetParts){
+    const clean = p.replace(/^@/, '');
+    if(/^\d+$/.test(clean)){ targetId = Number(clean); break; }
+    try{
+      const r = await sb.rpc('admin_resolve_usernames', { p_list: [clean] });
+      if(r.data && r.data.ok && r.data.resolved && r.data.resolved[clean] != null){
+        targetId = Number(r.data.resolved[clean]); break;
+      }
+    }catch(e){}
+  }
+  if(!targetId){ if(st){ st.className='er'; st.textContent='✗ Реферер не найден в базе'; } return; }
 
-  let confirmMsg = `Перевести ${refRes.ids.length} рефералов к ${targetId}?`;
-  if(refRes.notFound.length) confirmMsg += `\n\nНе найдены: ${refRes.notFound.join(', ')}`;
+  // 2. Кого перевести
+  const refParts = String(raw).split(/[,\s]+/).map(s=>s.trim()).filter(Boolean);
+  const directIds = [];
+  const pendingUsernames = [];
+  const numericIds = [];
+  const alphaUsernames = [];
+
+  for(const p of refParts){
+    const clean = p.replace(/^@/, '');
+    if(/^\d+$/.test(clean)) numericIds.push(Number(clean));
+    else alphaUsernames.push(clean);
+  }
+  numericIds.forEach(x => directIds.push(x));
+
+  if(alphaUsernames.length){
+    try{
+      const r = await sb.rpc('admin_resolve_usernames', { p_list: alphaUsernames });
+      if(r.data && r.data.ok){
+        const resolved = r.data.resolved || {};
+        for(const u of alphaUsernames){
+          if(resolved[u] != null) directIds.push(Number(resolved[u]));
+          else pendingUsernames.push(u);
+        }
+      } else {
+        alphaUsernames.forEach(u => pendingUsernames.push(u));
+      }
+    }catch(e){ alphaUsernames.forEach(u => pendingUsernames.push(u)); }
+  }
+
+  if(!directIds.length && !pendingUsernames.length){
+    if(st){ st.className='er'; st.textContent='✗ Нечего переводить'; } return;
+  }
+
+  let confirmMsg = `Перевести ${directIds.length} юзеров к ${targetId}`;
+  if(pendingUsernames.length){
+    confirmMsg += `\n\n➕ В "отложенные" (${pendingUsernames.length}):\n@${pendingUsernames.join('\n@')}\n\nОни автоматически станут рефералами, когда зайдут в бота.`;
+  }
+  confirmMsg += `\n\nПродолжить?`;
   if(!confirm(confirmMsg)) return;
 
   if(st){ st.className='info'; st.textContent='Перевод...'; }
-  const {data, error} = await sb.rpc('admin_transfer_referrals', { p_new_referrer_id: targetId, p_referral_ids: refRes.ids });
-  if(error || (data && data.ok === false)){ if(st){ st.className='er'; st.textContent='✗ '+((data&&data.error)||error.message); } return; }
+
+  const {data, error} = await sb.rpc('admin_transfer_referrals', {
+    p_new_referrer_id: targetId,
+    p_referral_ids: directIds,
+    p_pending_usernames: pendingUsernames
+  });
+
+  if(error || (data && data.ok === false)){
+    if(st){ st.className='er'; st.textContent='✗ '+((data&&data.error)||error.message); }
+    return;
+  }
+
   let resultMsg = `✅ Переведено: ${data.updated}`;
-  if(refRes.notFound.length) resultMsg += ` • Не найдены: ${refRes.notFound.join(', ')}`;
+  if(data.pending_saved) resultMsg += ` • В ожидании: ${data.pending_saved}`;
   if(st){ st.className='ok'; st.textContent=resultMsg; }
-  msg(`🔀 Переведено рефералов: ${data.updated}`, 'success');
+  msg(`🔀 ${resultMsg}`, 'success');
   document.getElementById('ref_transfer_ids').value='';
 }
 
@@ -1324,22 +1400,35 @@ async function clearAdminLogo(id, sym){
   if(prev){ const base = TOKEN_ICONS[sym] || TOKEN_ICONS.DEFAULT; prev.innerHTML = `<span>${base.emoji}</span>`; prev.classList.remove('on'); }
 }
 
+// ============ ПОИСК ЮЗЕРА (АДМИН) — по ID или @username ============
 async function adminLoadUser(){
   const raw = document.getElementById('userSearchId').value.trim();
   if(!raw){msg('Введите ID или @username','error');return}
   const box=document.getElementById('adminUserCard');
   box.classList.remove('hide'); box.innerHTML='<div class="info">Поиск...</div>';
+
   let targetId = null;
   const clean = raw.replace(/^@/, '');
+
   if(/^\d+$/.test(clean)){ targetId = clean; }
   else {
-    const {data, error} = await sb.from('users').select('telegram_id').ilike('username', clean).maybeSingle();
-    if(error || !data){ box.innerHTML = `<div class="er">Пользователь @${esc(clean)} не найден в базе</div>`; return; }
-    targetId = String(data.telegram_id);
+    try{
+      const r = await sb.rpc('admin_resolve_usernames', { p_list: [clean] });
+      if(r.data && r.data.ok && r.data.resolved && r.data.resolved[clean] != null){
+        targetId = String(r.data.resolved[clean]);
+      }
+    }catch(e){ console.warn('[resolve]', e); }
+
+    if(!targetId){
+      box.innerHTML = `<div class="er">@${esc(clean)} не найден в базе.<br><span style="font-size:11px">Возможно, он ещё не заходил в бота.</span></div>`;
+      return;
+    }
   }
+
   const{data,error}=await sb.rpc('admin_get_user',{p_telegram_id:targetId});
   if(error||!data||data.ok===false){ box.innerHTML=`<div class="er">${esc(error?.message||data?.error||'Ошибка')}</div>`; return; }
-  ADMIN_USER=data; renderAdminUser();
+  ADMIN_USER=data;
+  renderAdminUser();
 }
 function renderAdminUser(){
   const box=document.getElementById('adminUserCard');if(!box||!ADMIN_USER)return;
@@ -1815,7 +1904,8 @@ function orderCard(o){
   const p=CP[String(o.from_token).toUpperCase()];
   let pl='';
   if(p){let tx=`${f(p.reserve_amount,6)} ${esc(o.from_token)}`;if(p.reserve_tusd>0)tx+=` + ${f(p.reserve_tusd,2)} TUSD`;pl=`<div class="dt"><span>💧 Резерв</span><span>${tx}</span></div>`}
-  return `<div class="order" id="order-${esc(o.id)}" style="--rc:${c};--rg:${g}"><div class="oh" onclick="toggleOrder('${esc(o.id)}')"><div class="ol"><div class="om" style="display:flex;align-items:center;gap:6px">${tokenIconHTML(o.from_token,'xs')} ${f(o.from_amount)} ${esc(o.from_token)} → ${f(o.to_amount)} ${esc(o.to_token)}</div><div class="rb">👑 ${esc(o.creator_rank_name)}</div></div><div class="op">1 ${esc(o.from_token)} = ${f(rt,12)} ${esc(o.to_token)}</div><div class="os"><span>👍 ${n(o.likes)}</span><span>👎 ${n(o.dislikes)}</span><span>🤝 ${n(o.completed_trades)}</span></div></div><div class="oe"><div class="dt"><span>Владелец</span><span class="pl" onclick="openProfile(${Number(o.creator_id)});event.stopPropagation()">👤 @${esc(o.creator_username||'')||Number(o.creator_id)}</span></div><div class="dt"><span>Отдаёт</span><span>${f(o.from_amount)} ${esc(o.from_token)}</span></div><div class="dt"><span>Получает</span><span>${f(o.to_amount)} ${esc(o.to_token)}</span></div><div class="dt"><span>Курс</span><span>1 ${esc(o.from_token)} = ${f(rt,12)} ${esc(o.to_token)}</span></div><div class="dt"><span>Титул</span><span style="color:${c};font-weight:bold">👑 ${esc(o.creator_rank_name)}</span></div>${pl}<div class="dt"><span>Дата</span><span>${esc(dt)}</span></div><div class="oa"><button class="sec" onclick="openProfile(${Number(o.creator_id)});event.stopPropagation()">👤</button>${isMine?`<button class="dng" onclick="cancelP2POrder('${esc(o.id)}');event.stopPropagation()">❌</button>`:`<button onclick="acceptP2POrder('${esc(o.id)}');event.stopPropagation()">🤝</button>`}</div></div></div>`;
+  const ownerLabel = o.creator_username ? '@'+esc(o.creator_username) : ('ID '+Number(o.creator_id));
+  return `<div class="order" id="order-${esc(o.id)}" style="--rc:${c};--rg:${g}"><div class="oh" onclick="toggleOrder('${esc(o.id)}')"><div class="ol"><div class="om" style="display:flex;align-items:center;gap:6px">${tokenIconHTML(o.from_token,'xs')} ${f(o.from_amount)} ${esc(o.from_token)} → ${f(o.to_amount)} ${esc(o.to_token)}</div><div class="rb">👑 ${esc(o.creator_rank_name)}</div></div><div class="op">1 ${esc(o.from_token)} = ${f(rt,12)} ${esc(o.to_token)}</div><div class="os"><span>👍 ${n(o.likes)}</span><span>👎 ${n(o.dislikes)}</span><span>🤝 ${n(o.completed_trades)}</span></div></div><div class="oe"><div class="dt"><span>Владелец</span><span class="pl" onclick="openProfile(${Number(o.creator_id)});event.stopPropagation()">👤 ${ownerLabel}</span></div><div class="dt"><span>Отдаёт</span><span>${f(o.from_amount)} ${esc(o.from_token)}</span></div><div class="dt"><span>Получает</span><span>${f(o.to_amount)} ${esc(o.to_token)}</span></div><div class="dt"><span>Курс</span><span>1 ${esc(o.from_token)} = ${f(rt,12)} ${esc(o.to_token)}</span></div><div class="dt"><span>Титул</span><span style="color:${c};font-weight:bold">👑 ${esc(o.creator_rank_name)}</span></div>${pl}<div class="dt"><span>Дата</span><span>${esc(dt)}</span></div><div class="oa"><button class="sec" onclick="openProfile(${Number(o.creator_id)});event.stopPropagation()">👤</button>${isMine?`<button class="dng" onclick="cancelP2POrder('${esc(o.id)}');event.stopPropagation()">❌</button>`:`<button onclick="acceptP2POrder('${esc(o.id)}');event.stopPropagation()">🤝</button>`}</div></div></div>`;
 }
 function toggleOrder(id){document.getElementById('order-'+id)?.classList.toggle('opened')}
 async function acceptP2POrder(id){
