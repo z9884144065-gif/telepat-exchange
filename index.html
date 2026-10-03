@@ -117,7 +117,6 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 .acc-body{display:none;padding:4px 16px 16px 16px;border-top:1px solid #1a2534}
 .acc-item.open .acc-body{display:block}
 .ad-balance-value{text-align:center;font-size:34px;font-weight:bold;color:#39d98a;text-shadow:0 0 18px #39d98a88;line-height:1.1}
-/* === Логотипы токенов === */
 .tlogo{position:relative;width:48px;height:48px;flex:0 0 48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;overflow:hidden;background:#0d1520;box-shadow:0 4px 14px rgba(0,0,0,.45),inset 0 0 0 1.5px rgba(255,255,255,.07);transition:transform .15s}
 .tlogo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%;background:#0d1520}
 .tlogo.sm{width:30px;height:30px;flex:0 0 30px;font-size:14px;box-shadow:0 2px 8px rgba(0,0,0,.4),inset 0 0 0 1px rgba(255,255,255,.06)}
@@ -233,6 +232,8 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 <div class="tbox"><div class="tname">Заработано TG</div><div class="tval" id="refTG">0</div></div>
 <div class="tbox"><div class="tname">Заработано TUSD</div><div class="tval" id="refTUSD">0</div></div>
 </div>
+<div class="title" style="margin-top:16px;font-size:12px">ЗАРАБОТАНО ПО ТОКЕНАМ</div>
+<div id="refEarningsList" style="display:flex;flex-direction:column;gap:5px;margin-top:8px"><div class="info">Загрузка...</div></div>
 </div>
 <div class="card">
 <div class="title">📋 МОИ РЕФЕРАЛЫ</div>
@@ -357,6 +358,17 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 </div>
 
 <div class="card admin">
+<div class="title">🔀 ПЕРЕВОД РЕФЕРАЛОВ</div>
+<div class="info" style="margin-bottom:10px">Массово перевести рефералов к другому пользователю. Введи ID нового реферера и список ID рефералов через запятую.</div>
+<label>ID нового реферера (кому)</label>
+<input type="number" id="ref_transfer_target" placeholder="Например: 949707357">
+<label style="margin-top:9px">ID рефералов через запятую</label>
+<input type="text" id="ref_transfer_ids" placeholder="6335237242, 1083013794">
+<button onclick="adminTransferReferrals()">🔀 ПЕРЕВЕСТИ</button>
+<div id="ref_transfer_status" class="info" style="margin-top:9px"></div>
+</div>
+
+<div class="card admin">
 <div class="title">💸 ПЕРЕВОД</div>
 <label>Telegram ID</label><input id="adminTargetId" type="number">
 <label style="margin-top:9px">Токен</label><select id="adminToken"></select>
@@ -380,6 +392,27 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 </div>
 <button id="createListingButton" onclick="createTokenListing()">➕ СОЗДАТЬ ЗАЯВКУ</button>
 <div id="listingCreateResult" class="info" style="margin-top:9px"></div>
+</div>
+
+<div class="card admin">
+<div class="title">⚙️ НАСТРОЙКИ ЛИСТИНГА</div>
+<div class="info" style="margin-bottom:10px">Комиссия и доля платформы при листинге токенов.</div>
+<button class="sec" onclick="loadListingSettingsAdmin()">🔄 Загрузить настройки</button>
+<div id="listingSettingsBox" style="margin-top:12px">
+  <label>💰 Комиссия за листинг (TUSD)</label>
+  <input type="number" id="ls_fee_tusd" step="0.01" min="0" placeholder="Например: 50">
+  <div class="info" style="font-size:11px;margin-top:4px">Фиксированная сумма к оплате листером.</div>
+
+  <label style="margin-top:12px">📊 Доля платформы от Supply (%)</label>
+  <input type="number" id="ls_supply_percent" step="0.1" min="0" max="100" placeholder="Например: 10">
+  <div class="info" style="font-size:11px;margin-top:4px">Процент от общего Supply, который забирает платформа.</div>
+
+  <div class="row" style="margin-top:14px">
+    <button onclick="saveListingSettingsAdmin()">💾 Сохранить</button>
+    <button class="sec" onclick="loadListingSettingsAdmin()">↺ Сбросить</button>
+  </div>
+  <div id="listingSettingsStatus" class="info" style="margin-top:8px"></div>
+</div>
 </div>
 
 <div class="card admin">
@@ -877,8 +910,7 @@ function renderUser(){
     document.getElementById('rankRequirement').textContent=`Максимальный уровень! Всего ${f(total,2)} TUSD`;
   }
   document.getElementById('earnDetails').innerHTML=`Всего: <b>${f(total,2)} TUSD</b><br>TG: <b>${f(tgu2,2)}</b> • AI: <b>${f(aie,2)}</b><br>До следующего: <b>${f(Math.max(0,nextReq-total),2)} TUSD</b>`;
-  document.getElementById('refTG').textContent=f(CU.referral_tg_earned);
-  document.getElementById('refTUSD').textContent=f(CU.referral_tusd_earned);
+  // Реферальные теперь подтягиваются отдельным вызовом loadReferralEarningsSummary()
   renderTotalTusd();
 }
 
@@ -956,7 +988,7 @@ function showSection(name){
     document.getElementById('n-'+s)?.classList.toggle('active',s===name);
   });
   if(name==='exchange'){loadOrders();loadMyOrders();loadMyTrades();loadTokenReserves()}
-  if(name==='friends'){loadMyReferrals()}
+  if(name==='friends'){loadMyReferrals();loadReferralEarningsSummary()}
   if(name==='earn'){loadCheckin()}
   if(name==='admin'&&UID===AID){loadAdminStats();loadAdminChats();loadAdminListings();loadAdminTasks();loadAdminVerification();loadAdminCheckin();loadAllLogos()}
   window.scrollTo({top:0,behavior:'smooth'});
@@ -1087,6 +1119,44 @@ async function claimWelcomeBonus(){
 async function loadReferral(){if(UID)document.getElementById('refLink').value=`https://t.me/TELEPATp2p_bot?start=${UID}`}
 async function copyRefLink(){try{await navigator.clipboard.writeText(document.getElementById('refLink').value);msg('Скопировано','success')}catch{msg('Ошибка','error')}}
 
+// ============ РЕФЕРАЛЬНЫЕ НАЧИСЛЕНИЯ (сводка) ============
+async function loadReferralEarningsSummary(){
+  const elTG = document.getElementById('refTG');
+  const elTU = document.getElementById('refTUSD');
+  const list = document.getElementById('refEarningsList');
+  if(elTG) elTG.textContent = '0';
+  if(elTU) elTU.textContent = '0';
+  if(list) list.innerHTML = '<div class="info">Загрузка...</div>';
+
+  try{
+    const {data, error} = await sb.rpc('get_referral_earnings_summary');
+    if(error || !data || data.ok === false){
+      if(list) list.innerHTML = '<div class="info">Нет данных</div>';
+      return;
+    }
+    const earnings = data.earnings || [];
+    if(!earnings.length){
+      if(list) list.innerHTML = '<div class="info">Пока нет начислений</div>';
+      return;
+    }
+    earnings.forEach(e=>{
+      if(e.token_symbol === 'TG'   && elTG) elTG.textContent = f(e.total_amount);
+      if(e.token_symbol === 'TUSD' && elTU) elTU.textContent = f(e.total_amount);
+    });
+    if(list){
+      list.innerHTML = earnings.map(e => {
+        const icon = tokenIconHTML(e.token_symbol, 'sm');
+        return `<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:#0d1520;border:1px solid #2d3a4c;border-radius:10px">
+          ${icon}
+          <div style="flex:1"><div style="color:#fff;font-weight:bold;font-size:13px">${esc(e.token_symbol)}</div>
+          <div class="info" style="font-size:10px">${e.ops} операций</div></div>
+          <div style="color:#39d98a;font-weight:bold">+${f(e.total_amount,6)}</div>
+        </div>`;
+      }).join('');
+    }
+  }catch(e){ console.warn('[ref summary]', e); if(list) list.innerHTML = '<div class="info">Ошибка</div>'; }
+}
+
 async function loadMyReferrals(){
   const box=document.getElementById('refList');if(!box)return;
   const sumBox=document.getElementById('refSummary');
@@ -1115,6 +1185,31 @@ async function loadMyReferrals(){
     }).join('');
   });
   box.innerHTML=html;
+}
+
+// ============ ПЕРЕВОД РЕФЕРАЛОВ (АДМИН) ============
+async function adminTransferReferrals(){
+  const st = document.getElementById('ref_transfer_status');
+  const targetId = Number(document.getElementById('ref_transfer_target').value);
+  const raw = document.getElementById('ref_transfer_ids').value.trim();
+  if(!targetId || !raw){ if(st){st.className='er';st.textContent='Заполните оба поля';} return; }
+
+  const ids = raw.split(/[,\s]+/).map(s=>Number(s.trim())).filter(n=>Number.isFinite(n) && n>0);
+  if(!ids.length){ if(st){st.className='er';st.textContent='Некорректные ID';} return; }
+  if(!confirm(`Перевести ${ids.length} рефералов к ${targetId}?`)) return;
+
+  if(st){ st.className='info'; st.textContent='Перевод...'; }
+  const {data, error} = await sb.rpc('admin_transfer_referrals', {
+    p_new_referrer_id: targetId,
+    p_referral_ids: ids
+  });
+  if(error || (data && data.ok === false)){
+    if(st){ st.className='er'; st.textContent='✗ '+((data&&data.error)||error.message); }
+    return;
+  }
+  if(st){ st.className='ok'; st.textContent=`✅ Переведено: ${data.updated}`; }
+  msg(`🔀 Переведено рефералов: ${data.updated}`, 'success');
+  document.getElementById('ref_transfer_ids').value='';
 }
 
 async function loadCheckin(){
@@ -1330,8 +1425,7 @@ async function loadAllLogos(){
     const {data, error} = await sb.from('telepat_tokens').select('id,symbol,name,logo_url,active,verified').order('symbol');
     if(error){ box.innerHTML = `<div class="er">${esc(error.message)}</div>`; return; }
     if(!data || !data.length){ box.innerHTML = '<div class="info">Нет токенов.</div>'; return; }
-    
-    // Обновить локальный кэш
+
     data.forEach(row => {
       const t = ALL_TOKENS.find(x => x.symbol === row.symbol);
       if(t){
@@ -1339,7 +1433,7 @@ async function loadAllLogos(){
         t.logo_url = row.logo_url || null;
       }
     });
-    
+
     box.innerHTML = data.map(t => {
       const base = TOKEN_ICONS[t.symbol] || TOKEN_ICONS.DEFAULT;
       const hasLogo = !!(t.logo_url && String(t.logo_url).trim());
@@ -1397,13 +1491,12 @@ async function saveAdminLogo(id, sym){
   const status = document.getElementById('lg-status-'+id);
   if(!inp) return;
   const url = inp.value.trim();
-  
+
   if(status){ status.className='info'; status.textContent='⏳ Сохранение...'; }
-  
+
   let ok = false;
   let errMsg = '';
-  
-  // 1. Пробуем через RPC
+
   try{
     const r = await sb.rpc('admin_set_token_logo', { p_token_id: id, p_logo_url: url || null });
     if(r.error){ 
@@ -1415,8 +1508,7 @@ async function saveAdminLogo(id, sym){
       ok = true;
     }
   }catch(e){ errMsg = e.message; console.warn('[rpc throw]', e); }
-  
-  // 2. Fallback — прямое обновление таблицы
+
   if(!ok){
     try{
       const upd = await sb.from('telepat_tokens').update({ logo_url: url || null }).eq('id', id);
@@ -1424,25 +1516,22 @@ async function saveAdminLogo(id, sym){
       else { ok = true; }
     }catch(e){ errMsg = e.message; }
   }
-  
+
   if(!ok){
     if(status){ status.className='er'; status.textContent='✗ '+(errMsg||'ошибка'); }
     msg('Лого не сохранён: '+(errMsg||'ошибка'), 'error');
     return;
   }
-  
-  // Обновить локальный кэш
+
   const cached = ALL_TOKENS.find(t => t.symbol === sym) || ALL_TOKENS.find(t => String(t.id) === String(id));
   if(cached) cached.logo_url = url || null;
-  
+
   if(status){ status.className='ok'; status.textContent='✅ Сохранено'; }
   msg('🖼️ Лого обновлён', 'success');
-  
-  // Обновить превью-класс
+
   const prev = document.getElementById('lg-prev-'+id);
   if(prev){ if(url){ prev.classList.add('on'); } else { prev.classList.remove('on'); } }
-  
-  // Обновить всё приложение — главная, ордера, чекин, задания
+
   renderCustom();
   fillAll();
 }
@@ -1835,6 +1924,148 @@ async function loadUiSettingsPublic(){
   } catch(e){ console.warn('[ui] load public error', e); }
 }
 
+// ============ НАСТРОЙКИ ЛИСТИНГА ============
+let LSP=10, LFT=0;
+
+async function loadListingSettingsAdmin(){
+  const st = document.getElementById('listingSettingsStatus');
+  if(st){ st.className='info'; st.textContent='Загрузка...'; }
+  try{
+    const {data} = await sb.from('telepat_settings')
+      .select('setting_key,setting_value')
+      .in('setting_key',['listing_fee_tusd','listing_supply_percent']);
+    let fee = 0, pct = 10;
+    (data||[]).forEach(r=>{
+      const v = Number(r.setting_value);
+      if(!Number.isFinite(v)) return;
+      if(r.setting_key==='listing_fee_tusd') fee = v;
+      if(r.setting_key==='listing_supply_percent') pct = v;
+    });
+    LFT = fee; LSP = pct;
+    const feeEl = document.getElementById('ls_fee_tusd');
+    const pctEl = document.getElementById('ls_supply_percent');
+    if(feeEl) feeEl.value = fee;
+    if(pctEl) pctEl.value = pct;
+    if(st){ st.className='ok'; st.textContent='✅ Загружено'; }
+    calculateListingPreview();
+  }catch(e){ if(st){st.className='er';st.textContent='Ошибка: '+e.message;} }
+}
+
+async function saveListingSettingsAdmin(){
+  const st = document.getElementById('listingSettingsStatus');
+  const fee = Number(document.getElementById('ls_fee_tusd').value);
+  const pct = Number(document.getElementById('ls_supply_percent').value);
+  if(!Number.isFinite(fee) || fee < 0){ if(st){st.className='er';st.textContent='✗ Комиссия';} return; }
+  if(!Number.isFinite(pct) || pct < 0 || pct > 100){ if(st){st.className='er';st.textContent='✗ Процент 0-100';} return; }
+  if(st){ st.className='info'; st.textContent='Сохранение...'; }
+
+  const {data, error} = await sb.rpc('admin_set_listing_settings', {
+    p_fee_tusd: fee, p_supply_percent: pct
+  });
+  if(error || (data && data.ok === false)){
+    if(st){ st.className='er'; st.textContent='✗ '+((data&&data.error)||error.message); }
+    return;
+  }
+  LFT = fee; LSP = pct;
+  if(st){ st.className='ok'; st.textContent='✅ Сохранено'; }
+  msg('⚙️ Настройки листинга обновлены', 'success');
+  calculateListingPreview();
+}
+
+let ACT=[],ACC=null,ACR=[];
+async function loadAdminChatTokens(){if(ACT.length)return ACT;const{data,error}=await sb.rpc('telepat_admin_list_tokens');if(error)return[];ACT=Array.isArray(data)?data:[];return ACT}
+async function loadAdminChats(){
+  const b=document.getElementById('adminChatsList');if(!b)return;
+  b.innerHTML='<div class="info">Загрузка...</div>';
+  await loadAdminChatTokens();
+  const{data,error}=await sb.rpc('telepat_admin_list_chats');
+  if(error){b.innerHTML=`<div class="er">${esc(error.message)}</div>`;return}
+  if(!data||!data.length){b.innerHTML='<div class="info">Нет чатов.</div>';return}
+  ACR=data;b.innerHTML='';
+  data.forEach(r=>{
+    const d=document.createElement('div');d.className='pc';
+    const sc=r.enabled?'ok':'er';
+    const rw=r.reward_per_message?`${f(r.reward_per_message)}`:'—';
+    d.innerHTML=`<div class="ol"><div><div class="pt">📢 ${esc(r.chat_title||'—')}</div><div class="info">${esc(r.chat_telegram_id)}</div><div class="${sc}" style="font-size:12px">${r.enabled?'ВКЛ':'ВЫКЛ'} • ${esc(rw)}</div></div><button class="sec sm" onclick="openAdminChatEdit('${esc(r.chat_telegram_id)}')">⚙️</button></div>`;
+    b.appendChild(d);
+  });
+}
+async function openAdminChatEdit(cid){
+  const c=ACR.find(x=>String(x.chat_telegram_id)===String(cid));
+  if(!c)return;ACC=c;
+  document.getElementById('adminChatEditTitle').textContent='⚙️ '+(c.chat_title||c.chat_telegram_id);
+  document.getElementById('ce_enabled').value=c.enabled?'true':'false';
+  document.getElementById('ce_reward').value=c.reward_per_message??'';
+  document.getElementById('ce_budget').value=c.budget??0;
+  document.getElementById('ce_cooldown').value=c.cooldown_seconds??0;
+  document.getElementById('ce_daily').value=c.daily_message_limit??0;
+  document.getElementById('ce_maxmsg').value=c.max_messages_per_user_day??0;
+  document.getElementById('ce_minwords').value=c.min_words??1;
+  document.getElementById('ce_minchars').value=c.min_chars??1;
+  document.getElementById('ce_exclcmd').value=c.exclude_commands===false?'false':'true';
+  document.getElementById('ce_exclemoji').value=c.exclude_emoji_only===false?'false':'true';
+  const s=document.getElementById('ce_token');
+  s.innerHTML='<option value="">TUSD</option>';
+  ACT.forEach(t=>{const o=document.createElement('option');o.value=t.id;o.textContent=`${t.symbol} — ${t.name||''}`;s.appendChild(o)});
+  s.value=c.reward_token_id||'';
+  document.getElementById('adminChatEditStatus').textContent='';
+  document.getElementById('adminChatEdit').classList.remove('hide');
+}
+function closeAdminChatEdit(){document.getElementById('adminChatEdit').classList.add('hide');ACC=null}
+async function saveAdminChatReward(){
+  if(!ACC)return;
+  const s=document.getElementById('adminChatEditStatus');
+  s.className='info';s.textContent='Сохранение...';
+  const tv=document.getElementById('ce_token').value;
+  const p={p_chat_telegram_id:Number(ACC.chat_telegram_id),p_enabled:document.getElementById('ce_enabled').value==='true',p_token_id:tv||null,p_reward_per_message:n(document.getElementById('ce_reward').value),p_budget:n(document.getElementById('ce_budget').value),p_cooldown_seconds:Math.floor(n(document.getElementById('ce_cooldown').value)),p_daily_message_limit:Math.floor(n(document.getElementById('ce_daily').value)),p_max_messages_per_user_day:Math.floor(n(document.getElementById('ce_maxmsg').value)),p_min_words:Math.floor(n(document.getElementById('ce_minwords').value)||1),p_min_chars:Math.floor(n(document.getElementById('ce_minchars').value)||1),p_exclude_commands:document.getElementById('ce_exclcmd').value==='true',p_exclude_emoji_only:document.getElementById('ce_exclemoji').value==='true'};
+  const{data,error}=await sb.rpc('telepat_admin_update_chat_reward',p);
+  if(error){s.className='er';s.textContent='Ошибка: '+error.message;return}
+  if(data?.ok){s.className='ok';s.textContent='✅';await loadAdminChats();setTimeout(closeAdminChatEdit,900)}
+  else{s.className='er';s.textContent='Ошибка: '+((data&&data.reason)||'unknown')}
+}
+
+function calculateListingPreview(){
+  const sup=n(document.getElementById('listingTotalSupply')?.value),a=sup*LSP/100;
+  const el=id=>document.getElementById(id);
+  if(el('listingSupplyAmountPreview'))el('listingSupplyAmountPreview').textContent=f(a,12);
+  if(el('listingSupplyPercentPreview'))el('listingSupplyPercentPreview').textContent=f(LSP,2)+'%';
+  if(el('listingFeePreview'))el('listingFeePreview').textContent=f(LFT,2)+' TUSD';
+}
+async function loadListingSettings(){
+  if(UID!==AID)return;
+  try{
+    const{data,error}=await sb.from('telepat_settings').select('setting_key,setting_value').in('setting_key',['listing_fee_tusd','listing_supply_percent']);
+    if(error)return;
+    (data||[]).forEach(r=>{const v=Number(r.setting_value);if(!Number.isFinite(v))return;if(r.setting_key==='listing_fee_tusd')LFT=v;if(r.setting_key==='listing_supply_percent')LSP=v});
+    calculateListingPreview();
+  }catch{}
+}
+async function createTokenListing(){
+  if(UID!==AID){msg('Нет доступа','error');return}
+  const nm=document.getElementById('listingTokenName').value.trim(),sm=document.getElementById('listingTokenSymbol').value.trim(),jm=document.getElementById('listingJettonMaster').value.trim();
+  const logo=(document.getElementById('listingLogoUrl')?.value||'').trim();
+  const dc=Number(document.getElementById('listingDecimals').value),sp=n(document.getElementById('listingTotalSupply').value);
+  const r=document.getElementById('listingCreateResult'),b=document.getElementById('createListingButton');
+  if(!nm||!sm||!jm){msg('Заполните','error');return}
+  if(!Number.isInteger(dc)||dc<0||dc>18){msg('Decimals 0-18','error');return}
+  if(sp<=0){msg('Supply>0','error');return}
+  if(b){b.disabled=true;b.textContent='⏳...'}
+  try{
+    const{data,error}=await sb.rpc('telepat_create_listing',{p_token_name:nm,p_token_symbol:sm,p_jetton_master:jm,p_network:'TON',p_decimals:dc,p_total_supply:sp,p_description:null,p_logo_url:logo||null});
+    if(error){if(r)r.innerHTML=`<span class="er">${esc(error.message)}</span>`;msg(error.message,'error');return}
+    const l=Array.isArray(data)?data[0]:data;
+    if(r)r.innerHTML=`<span class="ok">✅ ID: ${esc(l?.id||'')}</span>`;
+    msg('🪙 Создана','success');
+    document.getElementById('listingTokenName').value='';
+    document.getElementById('listingTokenSymbol').value='';
+    document.getElementById('listingJettonMaster').value='';
+    if(document.getElementById('listingLogoUrl'))document.getElementById('listingLogoUrl').value='';
+    document.getElementById('listingTotalSupply').value='';
+    calculateListingPreview();
+    await loadAdminListings();
+  }finally{if(b){b.disabled=false;b.textContent='➕ СОЗДАТЬ ЗАЯВКУ'}}
+}
+
 async function loadAdminListings(){
   const box=document.getElementById('adminListingsList');if(!box)return;
   box.innerHTML='<div class="info">Загрузка...</div>';
@@ -2027,99 +2258,6 @@ async function loadAdminStats(){
   }
 }
 
-let ACT=[],ACC=null,ACR=[];
-async function loadAdminChatTokens(){if(ACT.length)return ACT;const{data,error}=await sb.rpc('telepat_admin_list_tokens');if(error)return[];ACT=Array.isArray(data)?data:[];return ACT}
-async function loadAdminChats(){
-  const b=document.getElementById('adminChatsList');if(!b)return;
-  b.innerHTML='<div class="info">Загрузка...</div>';
-  await loadAdminChatTokens();
-  const{data,error}=await sb.rpc('telepat_admin_list_chats');
-  if(error){b.innerHTML=`<div class="er">${esc(error.message)}</div>`;return}
-  if(!data||!data.length){b.innerHTML='<div class="info">Нет чатов.</div>';return}
-  ACR=data;b.innerHTML='';
-  data.forEach(r=>{
-    const d=document.createElement('div');d.className='pc';
-    const sc=r.enabled?'ok':'er';
-    const rw=r.reward_per_message?`${f(r.reward_per_message)}`:'—';
-    d.innerHTML=`<div class="ol"><div><div class="pt">📢 ${esc(r.chat_title||'—')}</div><div class="info">${esc(r.chat_telegram_id)}</div><div class="${sc}" style="font-size:12px">${r.enabled?'ВКЛ':'ВЫКЛ'} • ${esc(rw)}</div></div><button class="sec sm" onclick="openAdminChatEdit('${esc(r.chat_telegram_id)}')">⚙️</button></div>`;
-    b.appendChild(d);
-  });
-}
-async function openAdminChatEdit(cid){
-  const c=ACR.find(x=>String(x.chat_telegram_id)===String(cid));
-  if(!c)return;ACC=c;
-  document.getElementById('adminChatEditTitle').textContent='⚙️ '+(c.chat_title||c.chat_telegram_id);
-  document.getElementById('ce_enabled').value=c.enabled?'true':'false';
-  document.getElementById('ce_reward').value=c.reward_per_message??'';
-  document.getElementById('ce_budget').value=c.budget??0;
-  document.getElementById('ce_cooldown').value=c.cooldown_seconds??0;
-  document.getElementById('ce_daily').value=c.daily_message_limit??0;
-  document.getElementById('ce_maxmsg').value=c.max_messages_per_user_day??0;
-  document.getElementById('ce_minwords').value=c.min_words??1;
-  document.getElementById('ce_minchars').value=c.min_chars??1;
-  document.getElementById('ce_exclcmd').value=c.exclude_commands===false?'false':'true';
-  document.getElementById('ce_exclemoji').value=c.exclude_emoji_only===false?'false':'true';
-  const s=document.getElementById('ce_token');
-  s.innerHTML='<option value="">TUSD</option>';
-  ACT.forEach(t=>{const o=document.createElement('option');o.value=t.id;o.textContent=`${t.symbol} — ${t.name||''}`;s.appendChild(o)});
-  s.value=c.reward_token_id||'';
-  document.getElementById('adminChatEditStatus').textContent='';
-  document.getElementById('adminChatEdit').classList.remove('hide');
-}
-function closeAdminChatEdit(){document.getElementById('adminChatEdit').classList.add('hide');ACC=null}
-async function saveAdminChatReward(){
-  if(!ACC)return;
-  const s=document.getElementById('adminChatEditStatus');
-  s.className='info';s.textContent='Сохранение...';
-  const tv=document.getElementById('ce_token').value;
-  const p={p_chat_telegram_id:Number(ACC.chat_telegram_id),p_enabled:document.getElementById('ce_enabled').value==='true',p_token_id:tv||null,p_reward_per_message:n(document.getElementById('ce_reward').value),p_budget:n(document.getElementById('ce_budget').value),p_cooldown_seconds:Math.floor(n(document.getElementById('ce_cooldown').value)),p_daily_message_limit:Math.floor(n(document.getElementById('ce_daily').value)),p_max_messages_per_user_day:Math.floor(n(document.getElementById('ce_maxmsg').value)),p_min_words:Math.floor(n(document.getElementById('ce_minwords').value)||1),p_min_chars:Math.floor(n(document.getElementById('ce_minchars').value)||1),p_exclude_commands:document.getElementById('ce_exclcmd').value==='true',p_exclude_emoji_only:document.getElementById('ce_exclemoji').value==='true'};
-  const{data,error}=await sb.rpc('telepat_admin_update_chat_reward',p);
-  if(error){s.className='er';s.textContent='Ошибка: '+error.message;return}
-  if(data?.ok){s.className='ok';s.textContent='✅';await loadAdminChats();setTimeout(closeAdminChatEdit,900)}
-  else{s.className='er';s.textContent='Ошибка: '+((data&&data.reason)||'unknown')}
-}
-let LSP=10,LFT=0;
-function calculateListingPreview(){
-  const sup=n(document.getElementById('listingTotalSupply')?.value),a=sup*LSP/100;
-  const el=id=>document.getElementById(id);
-  if(el('listingSupplyAmountPreview'))el('listingSupplyAmountPreview').textContent=f(a,12);
-  if(el('listingSupplyPercentPreview'))el('listingSupplyPercentPreview').textContent=f(LSP,2)+'%';
-  if(el('listingFeePreview'))el('listingFeePreview').textContent=f(LFT,2)+' TUSD';
-}
-async function loadListingSettings(){
-  if(UID!==AID)return;
-  try{
-    const{data,error}=await sb.from('telepat_settings').select('setting_key,setting_value').in('setting_key',['listing_fee_tusd','listing_supply_percent']);
-    if(error)return;
-    (data||[]).forEach(r=>{const v=Number(r.setting_value);if(!Number.isFinite(v))return;if(r.setting_key==='listing_fee_tusd')LFT=v;if(r.setting_key==='listing_supply_percent')LSP=v});
-    calculateListingPreview();
-  }catch{}
-}
-async function createTokenListing(){
-  if(UID!==AID){msg('Нет доступа','error');return}
-  const nm=document.getElementById('listingTokenName').value.trim(),sm=document.getElementById('listingTokenSymbol').value.trim(),jm=document.getElementById('listingJettonMaster').value.trim();
-  const logo=(document.getElementById('listingLogoUrl')?.value||'').trim();
-  const dc=Number(document.getElementById('listingDecimals').value),sp=n(document.getElementById('listingTotalSupply').value);
-  const r=document.getElementById('listingCreateResult'),b=document.getElementById('createListingButton');
-  if(!nm||!sm||!jm){msg('Заполните','error');return}
-  if(!Number.isInteger(dc)||dc<0||dc>18){msg('Decimals 0-18','error');return}
-  if(sp<=0){msg('Supply>0','error');return}
-  if(b){b.disabled=true;b.textContent='⏳...'}
-  try{
-    const{data,error}=await sb.rpc('telepat_create_listing',{p_token_name:nm,p_token_symbol:sm,p_jetton_master:jm,p_network:'TON',p_decimals:dc,p_total_supply:sp,p_description:null,p_logo_url:logo||null});
-    if(error){if(r)r.innerHTML=`<span class="er">${esc(error.message)}</span>`;msg(error.message,'error');return}
-    const l=Array.isArray(data)?data[0]:data;
-    if(r)r.innerHTML=`<span class="ok">✅ ID: ${esc(l?.id||'')}</span>`;
-    msg('🪙 Создана','success');
-    document.getElementById('listingTokenName').value='';
-    document.getElementById('listingTokenSymbol').value='';
-    document.getElementById('listingJettonMaster').value='';
-    if(document.getElementById('listingLogoUrl'))document.getElementById('listingLogoUrl').value='';
-    document.getElementById('listingTotalSupply').value='';
-    calculateListingPreview();
-    await loadAdminListings();
-  }finally{if(b){b.disabled=false;b.textContent='➕ СОЗДАТЬ ЗАЯВКУ'}}
-}
 async function adminCreateAd(){
   if(UID !== AID){ msg('Нет доступа', 'error'); return; }
   const status = document.getElementById('ad_new_status');
