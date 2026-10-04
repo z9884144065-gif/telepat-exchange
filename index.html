@@ -130,9 +130,44 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 .user-meta{flex:1;min-width:0}
 .user-meta .uname{color:#fff;font-size:17px;font-weight:bold;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .user-meta .uhandle{color:var(--gold);font-size:13px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ad-banner{position:relative;border-radius:14px;overflow:hidden;margin-bottom:14px;min-height:70px;display:none;cursor:pointer;border:1px solid #2a3242;background:linear-gradient(135deg,#1a1f2e,#12161f)}
+.ad-banner.show{display:block}
+.ad-banner-bg{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.55}
+.ad-banner-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,13,18,.85) 0%,rgba(10,13,18,.4) 100%)}
+.ad-banner-body{position:relative;z-index:2;padding:12px 40px 12px 14px;display:flex;flex-direction:column;justify-content:center;min-height:70px}
+.ad-banner-title{color:#fff;font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ad-banner-sub{color:#cfd8e4;font-size:12px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ad-banner-cta{display:inline-block;margin-top:6px;color:#4f8cff;font-size:11px;font-weight:700}
+.ad-banner-label{position:absolute;top:6px;right:34px;background:rgba(0,0,0,.55);color:#9da9b9;font-size:9px;padding:2px 6px;border-radius:4px;letter-spacing:.5px;text-transform:uppercase;z-index:3}
+.ad-banner-close{position:absolute;top:6px;right:6px;width:24px;height:24px;padding:0;margin:0;border:0;background:rgba(0,0,0,.4);color:#fff;border-radius:50%;font-size:12px;cursor:pointer;z-index:3;line-height:1}
+.ad-banner-close:active{background:rgba(0,0,0,.7)}
+.bn-row{display:flex;gap:10px;padding:10px;background:#0d1520;border:1px solid #2d3a4c;border-radius:12px;margin-top:8px;align-items:center}
+.bn-thumb{width:70px;height:44px;flex:0 0 70px;border-radius:8px;background:#1e2530;background-size:cover;background-position:center;border:1px solid #2d3a4c}
+.bn-info{flex:1;min-width:0}
+.bn-info .bn-title{color:#fff;font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bn-info .bn-meta{color:#8f9bab;font-size:11px;margin-top:2px}
+.bn-status{font-size:10px;padding:2px 6px;border-radius:4px;font-weight:700;text-transform:uppercase}
+.bn-status.pending{background:#3a2818;color:#f4cf70}
+.bn-status.active{background:#1f4a1f;color:#39d98a}
+.bn-status.paused{background:#2a2a2a;color:#9da9b9}
+.bn-status.expired{background:#2a1a1a;color:#8a6a6a}
+.bn-status.rejected{background:#3a1a1a;color:#ff647c}
+.bn-status.completed{background:#1a3a3a;color:#4f8cff}
+.bn-status.refunded{background:#2a1a3a;color:#9b59b6}
 </style></head><body>
 <div id="message" class="msg"></div>
 <div class="app">
+<div class="ad-banner" id="topBanner">
+  <div class="ad-banner-bg" id="topBannerBg"></div>
+  <div class="ad-banner-overlay"></div>
+  <span class="ad-banner-label">Реклама</span>
+  <button class="ad-banner-close" onclick="closeTopBanner(event)">✕</button>
+  <div class="ad-banner-body" id="topBannerBody">
+    <div class="ad-banner-title" id="topBannerTitle"></div>
+    <div class="ad-banner-sub" id="topBannerSub"></div>
+    <span class="ad-banner-cta">Подробнее →</span>
+  </div>
+</div>
 <h1>👑 ТЕЛЕПАТ</h1><div class="sub">Виртуальный P2P-обменник</div>
 
 <section id="s-wallet">
@@ -267,6 +302,16 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 </div></div>
 
 <div class="card gold">
+<div class="title">📢 ЗАКАЗАТЬ РЕКЛАМУ</div>
+<div class="info" style="margin-bottom:10px">Продвигай свой канал, бота, сайт или продукт внутри TELEPAT.</div>
+<div class="qa">
+<button class="qb" onclick="openAdMenu()"><span class="qi">📢</span>ЗАКАЗАТЬ<br>РЕКЛАМУ</button>
+<button class="qb" onclick="openMyAds()"><span class="qi">📋</span>МОИ<br>ЗАКАЗЫ</button>
+</div>
+<div id="adBalanceInfo" class="info" style="margin-top:10px;text-align:center">Загрузка...</div>
+</div>
+
+<div class="card gold">
 <div class="title">💎 ЗАРАБОТОК</div>
 <div class="rbox">
 <div class="rname" id="earnRank">Крестьянин</div>
@@ -308,6 +353,18 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 <div class="title" style="margin-top:16px;font-size:12px;color:#9da9b9">ПОЛНЫЙ РАСКЛАД ПО ВСЕМ ТОКЕНАМ</div>
 <div class="sgrid" id="adminCustomTokens" style="margin-top:8px"></div>
 <button class="sec" onclick="loadAdminStats()">🔄 Обновить</button>
+</div>
+
+<div class="card admin">
+<div class="title">📢 ЗАЯВКИ НА РЕКЛАМУ (ВСЕ ТИПЫ)</div>
+<div class="info" style="margin-bottom:10px">Модерация всей рекламы: баннеры, видео, задания, ссылки.</div>
+<button class="sec" onclick="adminAdLoad()">🔄 ЗАГРУЗИТЬ ВСЕ</button>
+<div class="row" style="margin-top:8px">
+<button class="sm" onclick="adminAdLoad('pending')">⏳ На модерации</button>
+<button class="sm" onclick="adminAdLoad('active')">✅ Активные</button>
+<button class="sm" onclick="adminAdLoad('paused')">⏸ Пауза</button>
+</div>
+<div id="adminAdsList" style="margin-top:12px"><div class="info">Нажми «Загрузить все».</div></div>
 </div>
 
 <div class="card admin">
@@ -564,6 +621,36 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 <button class="sec" onclick="closeTasks()">Закрыть</button>
 </div></div>
 
+<div id="adMenuModal" class="mo" onclick="closeAdMenu(event)">
+<div class="mb" style="width:min(480px,100%)" onclick="event.stopPropagation()">
+<div class="title">📢 ЗАКАЗАТЬ РЕКЛАМУ</div>
+<div class="qa" style="margin-top:6px">
+<button class="qb gold" onclick="openAdForm('banner')"><span class="qi">🖼️</span>БАННЕР<br><small style="font-size:9px;opacity:.8">вверху бота</small></button>
+<button class="qb gold" onclick="openAdForm('video')"><span class="qi">🎬</span>ВИДЕО<br><small style="font-size:9px;opacity:.8">за просмотр</small></button>
+<button class="qb gold" onclick="openAdForm('task')"><span class="qi">📋</span>ЗАДАНИЕ<br><small style="font-size:9px;opacity:.8">подписка/канал</small></button>
+<button class="qb gold" onclick="openAdForm('link')"><span class="qi">🔗</span>ССЫЛКА<br><small style="font-size:9px;opacity:.8">переход на сайт</small></button>
+</div>
+<button class="sec" style="margin-top:14px" onclick="closeAdMenu()">Закрыть</button>
+</div>
+</div>
+
+<div id="adFormModal" class="mo" onclick="closeAdForm(event)">
+<div class="mb" style="width:min(500px,100%);max-height:85vh;overflow-y:auto" onclick="event.stopPropagation()">
+<div class="title" id="adFormTitle">СОЗДАТЬ ОБЪЯВЛЕНИЕ</div>
+<div id="adFormBody"></div>
+<button class="sec" style="margin-top:12px" onclick="closeAdForm()">Отмена</button>
+<div id="adFormStatus" class="info" style="margin-top:8px;text-align:center"></div>
+</div>
+</div>
+
+<div id="myAdsModal" class="mo" onclick="closeMyAds(event)">
+<div class="mb" style="width:min(500px,100%);max-height:80vh;overflow-y:auto" onclick="event.stopPropagation()">
+<div class="title">📋 МОИ ЗАКАЗЫ РЕКЛАМЫ</div>
+<div id="myAdsList"><div class="info">Загрузка...</div></div>
+<button class="sec" style="margin-top:12px" onclick="closeMyAds()">Закрыть</button>
+</div>
+</div>
+
 <div class="nav">
 <button id="n-wallet" class="active" onclick="showSection('wallet')">🏠 Кошелёк</button>
 <button id="n-exchange" onclick="showSection('exchange')">🔄 Обмен</button>
@@ -586,6 +673,8 @@ let __PENDING_TASK=null,__RETURN_TIMER=null;
 let ADMIN_USER=null;
 let STAKE_STATE=null,STAKE_TIMER=null,STAKE_SOUND_ON=false,STAKE_LAST_TS=0,STAKE_RATE_SEC=0,STAKE_ACCUM=0,STAKE_BALANCE_USD=0;
 let _adModalMode = 'topup';
+let AD_PRICES = {banner_price_per_day:10, video_price_per_view:0.001, task_price_per_sub:0.5, link_price_per_click:0.3};
+let AD_CURRENT_TYPE = null;
 
 async function refreshJwt(){
   const id=window.Telegram?.WebApp?.initData;
@@ -933,8 +1022,8 @@ function showSection(name){
   });
   if(name==='exchange'){loadOrders();loadMyOrders();loadMyTrades();loadTokenReserves()}
   if(name==='friends'){loadMyReferrals();loadReferralEarningsSummary()}
-  if(name==='earn'){loadCheckin()}
-  if(name==='admin'&&UID===AID){loadAdminStats();loadAdminChats();loadAdminListings();loadAdminTasks();loadAdminVerification();loadAdminCheckin();loadAllLogos()}
+  if(name==='earn'){loadCheckin();loadAdPrices().then(()=>updateAdBalanceInfo())}
+  if(name==='admin'&&UID===AID){loadAdminStats();loadAdminChats();loadAdminListings();loadAdminTasks();loadAdminVerification();loadAdminCheckin();loadAllLogos();adminAdLoad()}
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -1055,34 +1144,350 @@ async function loadMyReferrals(){
   box.innerHTML=html;
 }
 
-// ============ ПОИСК ПО ID ИЛИ @username ============
+// ============ РЕКЛАМНЫЕ БАННЕРЫ + КАБИНЕТ ============
+
+async function loadTopBanner(){
+  if(sessionStorage.getItem('bannerClosed') === '1'){ return; }
+  try{
+    const {data, error} = await sb.rpc('banner_get_active');
+    if(error || !data || data.ok === false) return;
+    const b = data.banner;
+    if(!b) return;
+    document.getElementById('topBannerTitle').textContent = b.title || '';
+    document.getElementById('topBannerSub').textContent = b.subtitle || '';
+    if(b.image_url){ document.getElementById('topBannerBg').style.backgroundImage = `url("${b.image_url}")`; }
+    const banner = document.getElementById('topBanner');
+    banner.classList.add('show');
+    banner.onclick = (e)=>{
+      if(e.target.classList.contains('ad-banner-close')) return;
+      try{ sb.rpc('banner_track_click', { p_id: b.id }); }catch{}
+      const url = b.link_url || '';
+      if(!url) return;
+      try{ if(window.Telegram?.WebApp?.openLink) window.Telegram.WebApp.openLink(url); else window.open(url, '_blank'); }catch{ window.open(url, '_blank'); }
+    };
+    try{ sb.rpc('banner_track_view', { p_id: b.id }); }catch{}
+  }catch(e){ console.warn('[banner]', e); }
+}
+function closeTopBanner(e){
+  if(e) e.stopPropagation();
+  const b = document.getElementById('topBanner');
+  if(b) b.classList.remove('show');
+  try{ sessionStorage.setItem('bannerClosed','1'); }catch{}
+}
+
+async function loadAdPrices(){
+  try{
+    const {data, error} = await sb.rpc('ad_get_prices');
+    if(!error && data && data.ok){
+      AD_PRICES = {
+        banner_price_per_day: Number(data.banner_price_per_day) || 10,
+        video_price_per_view: Number(data.video_price_per_view) || 0.001,
+        task_price_per_sub: Number(data.task_price_per_sub) || 0.5,
+        link_price_per_click: Number(data.link_price_per_click) || 0.3
+      };
+    }
+  }catch(e){ console.warn('[adPrices]', e); }
+}
+
+function updateAdBalanceInfo(){
+  const el = document.getElementById('adBalanceInfo');
+  if(!el) return;
+  const bal = CU ? n(CU.tusd_balance) : 0;
+  el.innerHTML = `Ваш баланс: <b style="color:#7fc97f">${f(bal,2)} TUSD</b>`;
+}
+
+function openAdMenu(){ document.getElementById('adMenuModal').classList.add('show'); }
+function closeAdMenu(e){ if(e && e.target !== document.getElementById('adMenuModal')) return; document.getElementById('adMenuModal').classList.remove('show'); }
+
+function openAdForm(type){
+  AD_CURRENT_TYPE = type;
+  closeAdMenu();
+  const tEl = document.getElementById('adFormTitle');
+  const body = document.getElementById('adFormBody');
+  document.getElementById('adFormStatus').textContent = '';
+  const balance = CU ? n(CU.tusd_balance) : 0;
+  const balLine = `<div class="info" style="text-align:center;margin-bottom:10px;color:#7fc97f">💰 Доступно: <b>${f(balance,2)} TUSD</b></div>`;
+
+  if(type === 'banner'){
+    tEl.textContent = '🖼️ БАННЕР В БОТЕ';
+    body.innerHTML = balLine + `
+      <div class="info" style="text-align:center;margin-bottom:10px">Цена: <b>${AD_PRICES.banner_price_per_day} TUSD/день</b></div>
+      <label>Заголовок (макс. 40)</label>
+      <input id="af_title" type="text" maxlength="40" placeholder="Например: Игра XYZ — старт">
+      <label style="margin-top:9px">Подзаголовок (макс. 60)</label>
+      <input id="af_subtitle" type="text" maxlength="60" placeholder="Получи 1000 монет бесплатно">
+      <label style="margin-top:9px">Картинка (URL)</label>
+      <input id="af_image" type="text" placeholder="https://example.com/banner.jpg">
+      <label style="margin-top:9px">Ссылка при клике</label>
+      <input id="af_link" type="text" placeholder="https://t.me/твой_канал">
+      <label style="margin-top:9px">Дней показа (1-30)</label>
+      <input id="af_days" type="number" value="1" min="1" max="30" oninput="adRecalc()">
+      <div class="prev" style="margin-top:10px">
+        <div class="dt"><span>Цена за день</span><span id="af_costRate">${AD_PRICES.banner_price_per_day} TUSD</span></div>
+        <div class="dt"><span>Итого</span><span id="af_costTotal" style="color:#f4cf70;font-weight:bold">${AD_PRICES.banner_price_per_day} TUSD</span></div>
+      </div>
+      <button onclick="adSubmit()">📢 ОПЛАТИТЬ И ОТПРАВИТЬ НА МОДЕРАЦИЮ</button>`;
+  } else if(type === 'video'){
+    tEl.textContent = '🎬 ВИДЕО-РЕКЛАМА';
+    body.innerHTML = balLine + `
+      <div class="info" style="text-align:center;margin-bottom:10px">Цена: <b>${AD_PRICES.video_price_per_view} TUSD/просмотр</b> • Комиссия 20%</div>
+      <label>Заголовок (макс. 40)</label>
+      <input id="af_title" type="text" maxlength="40" placeholder="Игра XYZ">
+      <label style="margin-top:9px">Описание</label>
+      <input id="af_description" type="text" maxlength="120" placeholder="Короткое описание">
+      <label style="margin-top:9px">Ссылка на видео (mp4)</label>
+      <input id="af_video" type="text" placeholder="https://example.com/video.mp4">
+      <div class="info" style="font-size:10px;margin-top:2px">Пока только по прямой ссылке.</div>
+      <label style="margin-top:9px">Куда ведёт кнопка</label>
+      <input id="af_link" type="text" placeholder="https://t.me/твой_канал">
+      <label style="margin-top:9px">Длительность (сек, 5-120)</label>
+      <input id="af_duration" type="number" value="15" min="5" max="120">
+      <label style="margin-top:9px">Просмотров купить (100-100000)</label>
+      <input id="af_views" type="number" value="1000" min="100" max="100000" oninput="adRecalc()">
+      <label style="margin-top:9px">Награда за просмотр (TUSD)</label>
+      <input id="af_reward" type="number" value="${AD_PRICES.video_price_per_view}" step="0.0001" min="0.0001" oninput="adRecalc()">
+      <div class="prev" style="margin-top:10px">
+        <div class="dt"><span>Бюджет</span><span id="af_costBudget">0</span></div>
+        <div class="dt"><span>Комиссия 20%</span><span id="af_costFee">0</span></div>
+        <div class="dt"><span>Итого</span><span id="af_costTotal" style="color:#f4cf70;font-weight:bold">0</span></div>
+      </div>
+      <button onclick="adSubmit()">🎬 ОПЛАТИТЬ И ОТПРАВИТЬ НА МОДЕРАЦИЮ</button>`;
+  } else if(type === 'task'){
+    tEl.textContent = '📋 ЗАДАНИЕ (ПОДПИСКА)';
+    body.innerHTML = balLine + `
+      <div class="info" style="text-align:center;margin-bottom:10px">Цена: <b>${AD_PRICES.task_price_per_sub} TUSD/подписка</b> • Комиссия 15%</div>
+      <label>Заголовок</label>
+      <input id="af_title" type="text" maxlength="60" placeholder="Подпишись на канал">
+      <label style="margin-top:9px">Ссылка на канал/чат/бот</label>
+      <input id="af_link" type="text" placeholder="https://t.me/my_channel">
+      <label style="margin-top:9px">Тип</label>
+      <select id="af_task_type"><option value="channel">📢 Канал</option><option value="chat">💬 Чат</option><option value="bot">🤖 Бот</option></select>
+      <label style="margin-top:9px">Подписчиков купить (10-50000)</label>
+      <input id="af_subs" type="number" value="100" min="10" max="50000" oninput="adRecalc()">
+      <label style="margin-top:9px">Награда за подписку (TUSD)</label>
+      <input id="af_reward" type="number" value="${AD_PRICES.task_price_per_sub}" step="0.01" min="0.01" oninput="adRecalc()">
+      <div class="prev" style="margin-top:10px">
+        <div class="dt"><span>Бюджет</span><span id="af_costBudget">0</span></div>
+        <div class="dt"><span>Комиссия 15%</span><span id="af_costFee">0</span></div>
+        <div class="dt"><span>Итого</span><span id="af_costTotal" style="color:#f4cf70;font-weight:bold">0</span></div>
+      </div>
+      <button onclick="adSubmit()">📋 ОПЛАТИТЬ И ОТПРАВИТЬ НА МОДЕРАЦИЮ</button>`;
+  } else if(type === 'link'){
+    tEl.textContent = '🔗 ПЕРЕХОД ПО ССЫЛКЕ';
+    body.innerHTML = balLine + `
+      <div class="info" style="text-align:center;margin-bottom:10px">Цена: <b>${AD_PRICES.link_price_per_click} TUSD/переход</b> • Комиссия 15%</div>
+      <label>Заголовок</label>
+      <input id="af_title" type="text" maxlength="60" placeholder="Посети наш сайт">
+      <label style="margin-top:9px">Описание</label>
+      <input id="af_description" type="text" maxlength="120" placeholder="Короткое описание">
+      <label style="margin-top:9px">URL сайта</label>
+      <input id="af_url" type="text" placeholder="https://example.com">
+      <label style="margin-top:9px">Секунд на сайте (5-120)</label>
+      <input id="af_stay" type="number" value="10" min="5" max="120">
+      <label style="margin-top:9px">Переходов купить (10-50000)</label>
+      <input id="af_clicks" type="number" value="100" min="10" max="50000" oninput="adRecalc()">
+      <label style="margin-top:9px">Награда за переход (TUSD)</label>
+      <input id="af_reward" type="number" value="${AD_PRICES.link_price_per_click}" step="0.01" min="0.01" oninput="adRecalc()">
+      <div class="prev" style="margin-top:10px">
+        <div class="dt"><span>Бюджет</span><span id="af_costBudget">0</span></div>
+        <div class="dt"><span>Комиссия 15%</span><span id="af_costFee">0</span></div>
+        <div class="dt"><span>Итого</span><span id="af_costTotal" style="color:#f4cf70;font-weight:bold">0</span></div>
+      </div>
+      <button onclick="adSubmit()">🔗 ОПЛАТИТЬ И ОТПРАВИТЬ НА МОДЕРАЦИЮ</button>`;
+  }
+  document.getElementById('adFormModal').classList.add('show');
+  adRecalc();
+}
+function closeAdForm(e){ if(e && e.target !== document.getElementById('adFormModal')) return; document.getElementById('adFormModal').classList.remove('show'); }
+
+function adRecalc(){
+  const type = AD_CURRENT_TYPE; const g = id => document.getElementById(id);
+  const setTxt = (id, v) => { const e = g(id); if(e) e.textContent = v; };
+  if(type === 'banner'){
+    const days = Math.max(1, Math.min(30, Number(g('af_days')?.value) || 1));
+    setTxt('af_costTotal', f(AD_PRICES.banner_price_per_day * days, 2) + ' TUSD');
+  } else if(type === 'video'){
+    const v = Number(g('af_views')?.value) || 0; const r = Number(g('af_reward')?.value) || 0;
+    const budget = v * r, fee = budget * 0.20;
+    setTxt('af_costBudget', f(budget, 4) + ' TUSD'); setTxt('af_costFee', f(fee, 4) + ' TUSD');
+    setTxt('af_costTotal', f(budget + fee, 4) + ' TUSD');
+  } else if(type === 'task'){
+    const v = Number(g('af_subs')?.value) || 0; const r = Number(g('af_reward')?.value) || 0;
+    const budget = v * r, fee = budget * 0.15;
+    setTxt('af_costBudget', f(budget, 4) + ' TUSD'); setTxt('af_costFee', f(fee, 4) + ' TUSD');
+    setTxt('af_costTotal', f(budget + fee, 4) + ' TUSD');
+  } else if(type === 'link'){
+    const v = Number(g('af_clicks')?.value) || 0; const r = Number(g('af_reward')?.value) || 0;
+    const budget = v * r, fee = budget * 0.15;
+    setTxt('af_costBudget', f(budget, 4) + ' TUSD'); setTxt('af_costFee', f(fee, 4) + ' TUSD');
+    setTxt('af_costTotal', f(budget + fee, 4) + ' TUSD');
+  }
+}
+
+async function adSubmit(){
+  if(!UID){ msg('Открой в Telegram','error'); return; }
+  const type = AD_CURRENT_TYPE;
+  const g = id => document.getElementById(id)?.value?.trim() || '';
+  const st = document.getElementById('adFormStatus');
+  if(st){ st.className='info'; st.textContent='Отправка...'; }
+  try{
+    let rpcName, params, confirmMsg;
+    if(type === 'banner'){
+      const days = Math.max(1, Math.min(30, Number(g('af_days')) || 1));
+      const total = AD_PRICES.banner_price_per_day * days;
+      if(!g('af_title') || !g('af_link')){ if(st){st.className='er';st.textContent='Заполните заголовок и ссылку';} return; }
+      confirmMsg = `Баннер на ${days} дн.\nК оплате: ${f(total,2)} TUSD`;
+      rpcName = 'ad_create_banner';
+      params = { p_user_id: UID, p_title: g('af_title'), p_subtitle: g('af_subtitle'), p_image_url: g('af_image') || null, p_link_url: g('af_link'), p_duration_days: days };
+    } else if(type === 'video'){
+      const views = Number(g('af_views')) || 0; const reward = Number(g('af_reward')) || 0;
+      const total = views * reward * 1.20;
+      if(!g('af_title') || !g('af_video') || !g('af_link')){ if(st){st.className='er';st.textContent='Заполните все поля';} return; }
+      confirmMsg = `Видео на ${views} просмотров.\nК оплате: ${f(total,4)} TUSD`;
+      rpcName = 'ad_create_video';
+      params = { p_user_id: UID, p_title: g('af_title'), p_description: g('af_description'), p_video_url: g('af_video'), p_target_url: g('af_link'), p_duration: Number(g('af_duration'))||15, p_views: views, p_reward_per_view: reward };
+    } else if(type === 'task'){
+      const subs = Number(g('af_subs')) || 0; const reward = Number(g('af_reward')) || 0;
+      const total = subs * reward * 1.15;
+      if(!g('af_title') || !g('af_link')){ if(st){st.className='er';st.textContent='Заполните все поля';} return; }
+      confirmMsg = `Задание на ${subs} подписок.\nК оплате: ${f(total,4)} TUSD`;
+      rpcName = 'ad_create_task';
+      params = { p_user_id: UID, p_title: g('af_title'), p_task_link: g('af_link'), p_task_type: g('af_task_type')||'channel', p_subs: subs, p_reward_per_sub: reward };
+    } else if(type === 'link'){
+      const clicks = Number(g('af_clicks')) || 0; const reward = Number(g('af_reward')) || 0;
+      const total = clicks * reward * 1.15;
+      if(!g('af_title') || !g('af_url')){ if(st){st.className='er';st.textContent='Заполните все поля';} return; }
+      confirmMsg = `Ссылка на ${clicks} переходов.\nК оплате: ${f(total,4)} TUSD`;
+      rpcName = 'ad_create_link';
+      params = { p_user_id: UID, p_title: g('af_title'), p_description: g('af_description'), p_target_url: g('af_url'), p_stay_seconds: Number(g('af_stay'))||10, p_clicks: clicks, p_reward_per_click: reward };
+    }
+    if(!confirm(confirmMsg + '\n\nПродолжить?')){ if(st){st.className='info';st.textContent='';} return; }
+    const {data, error} = await sb.rpc(rpcName, params);
+    if(error || !data || data.ok === false){
+      const err = data?.error || error?.message || 'Ошибка';
+      const msgMap = {
+        insufficient_balance: `Недостаточно TUSD. Нужно ${f(data?.need,2)}, у вас ${f(data?.have,2)}`,
+        title_and_link_required: 'Заполните заголовок и ссылку',
+        duration_1_30: 'Длительность 1-30 дней',
+        views_100_100000: 'Просмотров от 100 до 100000',
+        duration_5_120: 'Длительность видео 5-120 сек',
+        reward_invalid: 'Некорректная награда',
+        subs_10_50000: 'Подписок от 10 до 50000',
+        clicks_10_50000: 'Переходов от 10 до 50000',
+        stay_5_120: 'Время на сайте 5-120 сек',
+        title_and_video_required: 'Заполните заголовок и ссылку на видео',
+        title_and_url_required: 'Заполните заголовок и URL',
+        invalid_task_type: 'Неверный тип задания'
+      };
+      if(st){ st.className='er'; st.textContent = msgMap[err] || err; }
+      return;
+    }
+    if(st){ st.className='ok'; st.textContent = `✅ Оплачено ${f(data.paid,4)} TUSD. Заявка на модерации.`; }
+    msg('✅ Заявка на модерации','success');
+    await loadUser();
+    updateAdBalanceInfo();
+    setTimeout(()=>{ closeAdForm(); }, 1500);
+  }catch(e){ if(st){ st.className='er'; st.textContent = 'Ошибка: '+e.message; } }
+}
+
+function openMyAds(){ document.getElementById('myAdsModal').classList.add('show'); loadMyAds(); }
+function closeMyAds(e){ if(e && e.target !== document.getElementById('myAdsModal')) return; document.getElementById('myAdsModal').classList.remove('show'); }
+
+const AD_STATUS_LABEL = { pending:'НА МОДЕРАЦИИ', active:'АКТИВЕН', paused:'ПАУЗА', rejected:'ОТКЛОНЁН', completed:'ЗАВЕРШЁН', refunded:'ВОЗВРАТ' };
+const AD_TYPE_LABEL = { banner:'🖼️ Баннер', video:'🎬 Видео', task:'📋 Задание', link:'🔗 Ссылка' };
+
+async function loadMyAds(){
+  const box = document.getElementById('myAdsList');
+  box.innerHTML = '<div class="info">Загрузка...</div>';
+  try{
+    const {data, error} = await sb.rpc('ad_my', { p_user_id: UID });
+    if(error || !data || data.ok === false){ box.innerHTML = '<div class="info">Ошибка загрузки</div>'; return; }
+    const ads = data.ads || [];
+    if(!ads.length){ box.innerHTML = '<div class="info">У вас пока нет заказов рекламы.</div>'; return; }
+    box.innerHTML = ads.map(a=>{
+      const refund = (a.budget || 0) - (a.spent || 0);
+      return `<div class="pc" style="margin-top:8px">
+        <div class="pt">${AD_TYPE_LABEL[a.ad_type]||a.ad_type} — ${esc(a.title)}</div>
+        <div class="info" style="margin-top:4px">Статус: <b style="color:${a.status==='active'?'#39d98a':a.status==='rejected'?'#ff647c':'#f4cf70'}">${AD_STATUS_LABEL[a.status]||a.status}</b></div>
+        <div class="info">Оплачено: ${f(a.budget,4)} TUSD • Потрачено: ${f(a.spent,4)} TUSD</div>
+        <div class="info">Выполнено: ${a.actions_done||0} / ${a.actions_target||0}</div>
+        ${refund > 0 ? `<div class="info" style="color:#7fc97f">Остаток к возврату: ${f(refund,4)} TUSD</div>` : ''}
+        ${a.admin_comment ? `<div class="info" style="color:#f4cf70">💬 ${esc(a.admin_comment)}</div>` : ''}
+        ${a.status === 'paused' && refund > 0 ? `<button class="sm" style="margin-top:8px" onclick="adRequestRefund('${a.id}')">↩️ Вернуть остаток</button>` : ''}
+      </div>`;
+    }).join('');
+  }catch(e){ box.innerHTML = `<div class="er">Ошибка: ${esc(e.message)}</div>`; }
+}
+
+async function adRequestRefund(id){
+  if(!confirm('Вернуть остаток бюджета на основной баланс?')) return;
+  const {data, error} = await sb.rpc('ad_request_refund', { p_id: id, p_user_id: UID });
+  if(error || !data || data.ok === false){ msg(data?.error || error?.message || 'Ошибка','error'); return; }
+  msg(`✅ Возвращено ${f(data.refunded,4)} TUSD`,'success');
+  await loadUser(); await loadMyAds();
+}
+
+// ============ АДМИН: РЕКЛАМА ============
+async function adminAdLoad(status){
+  const box = document.getElementById('adminAdsList');
+  if(!box) return;
+  box.innerHTML = '<div class="info">Загрузка...</div>';
+  try{
+    const {data, error} = await sb.rpc('admin_ad_list', { p_status: status || null });
+    if(error || !data || data.ok === false){ box.innerHTML = '<div class="er">Ошибка загрузки</div>'; return; }
+    const ads = data.ads || [];
+    if(!ads.length){ box.innerHTML = '<div class="info">Нет заявок.</div>'; return; }
+    box.innerHTML = ads.map(a=>{
+      const remaining = (a.budget||0) - (a.spent||0);
+      const label = AD_STATUS_LABEL[a.status]||a.status;
+      const stColor = a.status==='active'?'#39d98a':(a.status==='pending'?'#f4cf70':(a.status==='rejected'?'#ff647c':'#9da9b9'));
+      let body = '';
+      if(a.ad_type === 'banner'){ body = `🖼️ Баннер • ${a.actions_target||0} дн • Картинка: ${a.image_url?'✅':'❌'}<br>🔗 ${esc(a.target_url||'')}`; }
+      else if(a.ad_type === 'video'){ body = `🎬 Видео • ${a.actions_target||0} просмотров × ${f(a.reward_per_action,4)} TUSD<br>⏱ ${a.duration_seconds||15} сек • 🔗 ${esc(a.target_url||'')}<br>📹 ${esc((a.video_url||'').slice(0,60))}`; }
+      else if(a.ad_type === 'task'){ body = `📋 Задание (${a.task_type||'channel'}) • ${a.actions_target||0} подписок × ${f(a.reward_per_action,4)} TUSD<br>🔗 ${esc(a.task_link||'')}`; }
+      else if(a.ad_type === 'link'){ body = `🔗 Ссылка • ${a.actions_target||0} переходов × ${f(a.reward_per_action,4)} TUSD • ${a.stay_seconds||10} сек<br>🌐 ${esc(a.target_url||'')}`; }
+      return `<div class="pc">
+        <div class="pt">${AD_TYPE_LABEL[a.ad_type]||a.ad_type} — ${esc(a.title)}</div>
+        <div class="info" style="color:${stColor};font-weight:bold">${label}</div>
+        <div class="info" style="margin-top:4px">${body}</div>
+        <div class="info" style="margin-top:6px">👤 ${a.advertiser_id}</div>
+        <div class="info">💰 Оплачено: ${f(a.budget,4)} TUSD • Потрачено: ${f(a.spent,4)} • Остаток: ${f(remaining,4)}</div>
+        <div class="info">Выполнено: ${a.actions_done||0}/${a.actions_target||0}</div>
+        ${a.admin_comment?`<div class="info" style="color:#f4cf70">💬 ${esc(a.admin_comment)}</div>`:''}
+        <div class="row" style="margin-top:10px;flex-wrap:wrap">
+          ${a.status==='pending'?`<button class="sm" onclick="adminAdStatus('${a.id}','active')">✅ Одобрить</button><button class="sm dng" onclick="adminAdStatus('${a.id}','rejected')">❌ Отклонить</button>`:''}
+          ${a.status==='active'?`<button class="sm sec" onclick="adminAdStatus('${a.id}','paused')">⏸ Пауза</button>`:''}
+          ${a.status==='paused'?`<button class="sm" onclick="adminAdStatus('${a.id}','active')">▶ Возобновить</button>`:''}
+          ${a.status!=='completed'&&a.status!=='rejected'?`<button class="sm sec" onclick="adminAdStatus('${a.id}','completed')">🏁 Завершить</button>`:''}
+        </div>
+      </div>`;
+    }).join('');
+  }catch(e){ box.innerHTML = `<div class="er">Ошибка: ${esc(e.message)}</div>`; }
+}
+
+async function adminAdStatus(id, status){
+  let comment = null;
+  if(status === 'rejected'){ comment = prompt('Причина отклонения (необязательно):') || null; }
+  if(status === 'completed' && !confirm('Завершить рекламу и вернуть остаток?')) return;
+  if(status === 'rejected' && !confirm('Отклонить заявку? Остаток вернётся автоматически.')) return;
+  if(status === 'active' && !confirm('Активировать рекламу?')) return;
+  const {data, error} = await sb.rpc('admin_ad_set_status', { p_id: id, p_status: status, p_comment: comment });
+  if(error || (data && data.ok === false)){ msg('Ошибка','error'); return; }
+  let m = '✅ Статус обновлён';
+  if(data?.refunded > 0) m += ` • возвращено ${f(data.refunded,4)} TUSD`;
+  msg(m,'success');
+  adminAdLoad();
+}
+
 async function resolveUserIds(input){
   const parts = String(input||'').split(/[,\s]+/).map(s=>s.trim()).filter(Boolean);
-  const ids = [];
-  const usernames = [];
-  const notFound = [];
+  const ids = []; const usernames = []; const notFound = [];
   if(!parts.length) return { ids, usernames, notFound };
-
-  const numeric = [];
-  const alpha = [];
-  for(const p of parts){
-    const clean = p.replace(/^@/, '');
-    if(/^\d+$/.test(clean)) numeric.push(Number(clean));
-    else alpha.push(clean);
-  }
+  const numeric = []; const alpha = [];
+  for(const p of parts){ const clean = p.replace(/^@/, ''); if(/^\d+$/.test(clean)) numeric.push(Number(clean)); else alpha.push(clean); }
   numeric.forEach(x => ids.push(x));
-
   if(alpha.length){
-    try{
-      const {data, error} = await sb.rpc('admin_resolve_usernames', { p_list: alpha });
-      if(!error && data && data.ok){
-        const resolved = data.resolved || {};
-        for(const u of alpha){
-          if(resolved[u] != null) ids.push(Number(resolved[u]));
-          else usernames.push(u);
-        }
-      } else { alpha.forEach(u => usernames.push(u)); }
-    }catch(e){ alpha.forEach(u => usernames.push(u)); }
+    try{ const {data, error} = await sb.rpc('admin_resolve_usernames', { p_list: alpha }); if(!error && data && data.ok){ const resolved = data.resolved || {}; for(const u of alpha){ if(resolved[u] != null) ids.push(Number(resolved[u])); else usernames.push(u); } } else { alpha.forEach(u => usernames.push(u)); } }catch(e){ alpha.forEach(u => usernames.push(u)); }
   }
   return { ids, usernames, notFound };
 }
@@ -1092,75 +1497,30 @@ async function adminTransferReferrals(){
   const targetRaw = document.getElementById('ref_transfer_target').value.trim();
   const raw = document.getElementById('ref_transfer_ids').value.trim();
   if(!targetRaw || !raw){ if(st){st.className='er';st.textContent='Заполните оба поля';} return; }
-
   if(st){ st.className='info'; st.textContent='Поиск...'; }
-
   const targetParts = String(targetRaw).split(/[,\s]+/).map(s=>s.trim()).filter(Boolean);
   let targetId = null;
   for(const p of targetParts){
     const clean = p.replace(/^@/, '');
     if(/^\d+$/.test(clean)){ targetId = Number(clean); break; }
-    try{
-      const r = await sb.rpc('admin_resolve_usernames', { p_list: [clean] });
-      if(r.data && r.data.ok && r.data.resolved && r.data.resolved[clean] != null){
-        targetId = Number(r.data.resolved[clean]); break;
-      }
-    }catch(e){}
+    try{ const r = await sb.rpc('admin_resolve_usernames', { p_list: [clean] }); if(r.data && r.data.ok && r.data.resolved && r.data.resolved[clean] != null){ targetId = Number(r.data.resolved[clean]); break; } }catch(e){}
   }
   if(!targetId){ if(st){ st.className='er'; st.textContent='✗ Реферер не найден в базе'; } return; }
-
   const refParts = String(raw).split(/[,\s]+/).map(s=>s.trim()).filter(Boolean);
-  const directIds = [];
-  const pendingUsernames = [];
-  const numericIds = [];
-  const alphaUsernames = [];
-
-  for(const p of refParts){
-    const clean = p.replace(/^@/, '');
-    if(/^\d+$/.test(clean)) numericIds.push(Number(clean));
-    else alphaUsernames.push(clean);
-  }
+  const directIds = []; const pendingUsernames = []; const numericIds = []; const alphaUsernames = [];
+  for(const p of refParts){ const clean = p.replace(/^@/, ''); if(/^\d+$/.test(clean)) numericIds.push(Number(clean)); else alphaUsernames.push(clean); }
   numericIds.forEach(x => directIds.push(x));
-
   if(alphaUsernames.length){
-    try{
-      const r = await sb.rpc('admin_resolve_usernames', { p_list: alphaUsernames });
-      if(r.data && r.data.ok){
-        const resolved = r.data.resolved || {};
-        for(const u of alphaUsernames){
-          if(resolved[u] != null) directIds.push(Number(resolved[u]));
-          else pendingUsernames.push(u);
-        }
-      } else {
-        alphaUsernames.forEach(u => pendingUsernames.push(u));
-      }
-    }catch(e){ alphaUsernames.forEach(u => pendingUsernames.push(u)); }
+    try{ const r = await sb.rpc('admin_resolve_usernames', { p_list: alphaUsernames }); if(r.data && r.data.ok){ const resolved = r.data.resolved || {}; for(const u of alphaUsernames){ if(resolved[u] != null) directIds.push(Number(resolved[u])); else pendingUsernames.push(u); } } else { alphaUsernames.forEach(u => pendingUsernames.push(u)); } }catch(e){ alphaUsernames.forEach(u => pendingUsernames.push(u)); }
   }
-
-  if(!directIds.length && !pendingUsernames.length){
-    if(st){ st.className='er'; st.textContent='✗ Нечего переводить'; } return;
-  }
-
+  if(!directIds.length && !pendingUsernames.length){ if(st){ st.className='er'; st.textContent='✗ Нечего переводить'; } return; }
   let confirmMsg = `Перевести ${directIds.length} юзеров к ${targetId}`;
-  if(pendingUsernames.length){
-    confirmMsg += `\n\n➕ В "отложенные" (${pendingUsernames.length}):\n@${pendingUsernames.join('\n@')}\n\nОни автоматически станут рефералами, когда зайдут в бота.`;
-  }
+  if(pendingUsernames.length){ confirmMsg += `\n\n➕ В "отложенные" (${pendingUsernames.length}):\n@${pendingUsernames.join('\n@')}\n\nОни автоматически станут рефералами, когда зайдут в бота.`; }
   confirmMsg += `\n\nПродолжить?`;
   if(!confirm(confirmMsg)) return;
-
   if(st){ st.className='info'; st.textContent='Перевод...'; }
-
-  const {data, error} = await sb.rpc('admin_transfer_referrals', {
-    p_new_referrer_id: targetId,
-    p_referral_ids: directIds,
-    p_pending_usernames: pendingUsernames
-  });
-
-  if(error || (data && data.ok === false)){
-    if(st){ st.className='er'; st.textContent='✗ '+((data&&data.error)||error.message); }
-    return;
-  }
-
+  const {data, error} = await sb.rpc('admin_transfer_referrals', { p_new_referrer_id: targetId, p_referral_ids: directIds, p_pending_usernames: pendingUsernames });
+  if(error || (data && data.ok === false)){ if(st){ st.className='er'; st.textContent='✗ '+((data&&data.error)||error.message); } return; }
   let resultMsg = `✅ Переведено: ${data.updated}`;
   if(data.pending_saved) resultMsg += ` • В ожидании: ${data.pending_saved}`;
   if(st){ st.className='ok'; st.textContent=resultMsg; }
@@ -1365,13 +1725,8 @@ async function saveAdminLogo(id, sym){
   const url = inp.value.trim();
   if(status){ status.className='info'; status.textContent='⏳ Сохранение...'; }
   let ok = false; let errMsg = '';
-  try{
-    const r = await sb.rpc('admin_set_token_logo', { p_token_id: id, p_logo_url: url || null });
-    if(r.error){ errMsg = r.error.message; } else if(r.data && r.data.ok === false){ errMsg = (r.data && r.data.error) || 'ошибка'; } else { ok = true; }
-  }catch(e){ errMsg = e.message; }
-  if(!ok){
-    try{ const upd = await sb.from('telepat_tokens').update({ logo_url: url || null }).eq('id', id); if(upd.error){ errMsg = upd.error.message; } else { ok = true; } }catch(e){ errMsg = e.message; }
-  }
+  try{ const r = await sb.rpc('admin_set_token_logo', { p_token_id: id, p_logo_url: url || null }); if(r.error){ errMsg = r.error.message; } else if(r.data && r.data.ok === false){ errMsg = (r.data && r.data.error) || 'ошибка'; } else { ok = true; } }catch(e){ errMsg = e.message; }
+  if(!ok){ try{ const upd = await sb.from('telepat_tokens').update({ logo_url: url || null }).eq('id', id); if(upd.error){ errMsg = upd.error.message; } else { ok = true; } }catch(e){ errMsg = e.message; } }
   if(!ok){ if(status){ status.className='er'; status.textContent='✗ '+(errMsg||'ошибка'); } msg('Лого не сохранён: '+(errMsg||'ошибка'), 'error'); return; }
   const cached = ALL_TOKENS.find(t => t.symbol === sym) || ALL_TOKENS.find(t => String(t.id) === String(id));
   if(cached) cached.logo_url = url || null;
@@ -1397,10 +1752,7 @@ async function adminLoadUser(){
   const clean = raw.replace(/^@/, '');
   if(/^\d+$/.test(clean)){ targetId = clean; }
   else {
-    try{
-      const r = await sb.rpc('admin_resolve_usernames', { p_list: [clean] });
-      if(r.data && r.data.ok && r.data.resolved && r.data.resolved[clean] != null){ targetId = String(r.data.resolved[clean]); }
-    }catch(e){ console.warn('[resolve]', e); }
+    try{ const r = await sb.rpc('admin_resolve_usernames', { p_list: [clean] }); if(r.data && r.data.ok && r.data.resolved && r.data.resolved[clean] != null){ targetId = String(r.data.resolved[clean]); } }catch(e){ console.warn('[resolve]', e); }
     if(!targetId){ box.innerHTML = `<div class="er">@${esc(clean)} не найден в базе.<br><span style="font-size:11px">Возможно, он ещё не заходил в бота.</span></div>`; return; }
   }
   const{data,error}=await sb.rpc('admin_get_user',{p_telegram_id:targetId});
@@ -1652,7 +2004,6 @@ async function loadUiSettingsPublic(){
 }
 
 let LSP=10, LFT=0;
-
 async function loadListingSettingsAdmin(){
   const st = document.getElementById('listingSettingsStatus');
   if(st){ st.className='info'; st.textContent='Загрузка...'; }
@@ -1726,19 +2077,7 @@ async function saveAdminChatReward(){
   const s=document.getElementById('adminChatEditStatus');
   s.className='info';s.textContent='Сохранение...';
   const tv=document.getElementById('ce_token').value;
-  const p={p_chat_telegram_id:Number(ACC.chat_telegram_id),
-    p_enabled:document.getElementById('ce_enabled').value==='true',
-    p_token_id:tv||null,
-    p_reward_per_message:n(document.getElementById('ce_reward').value),
-    p_budget:n(document.getElementById('ce_budget').value),
-    p_cooldown_seconds:Math.floor(n(document.getElementById('ce_cooldown').value)),
-    p_daily_message_limit:Math.floor(n(document.getElementById('ce_daily').value)),
-    p_max_messages_per_user_day:Math.floor(n(document.getElementById('ce_maxmsg').value)),
-    p_min_words:Math.floor(n(document.getElementById('ce_minwords').value)||1),
-    p_min_chars:Math.floor(n(document.getElementById('ce_minchars').value)||1),
-    p_min_letters:Math.floor(n(document.getElementById('ce_minletters').value)||3),
-    p_exclude_commands:document.getElementById('ce_exclcmd').value==='true',
-    p_exclude_emoji_only:document.getElementById('ce_exclemoji').value==='true'};
+  const p={p_chat_telegram_id:Number(ACC.chat_telegram_id),p_enabled:document.getElementById('ce_enabled').value==='true',p_token_id:tv||null,p_reward_per_message:n(document.getElementById('ce_reward').value),p_budget:n(document.getElementById('ce_budget').value),p_cooldown_seconds:Math.floor(n(document.getElementById('ce_cooldown').value)),p_daily_message_limit:Math.floor(n(document.getElementById('ce_daily').value)),p_max_messages_per_user_day:Math.floor(n(document.getElementById('ce_maxmsg').value)),p_min_words:Math.floor(n(document.getElementById('ce_minwords').value)||1),p_min_chars:Math.floor(n(document.getElementById('ce_minchars').value)||1),p_min_letters:Math.floor(n(document.getElementById('ce_minletters').value)||3),p_exclude_commands:document.getElementById('ce_exclcmd').value==='true',p_exclude_emoji_only:document.getElementById('ce_exclemoji').value==='true'};
   const{data,error}=await sb.rpc('telepat_admin_update_chat_reward',p);
   if(error){s.className='er';s.textContent='Ошибка: '+error.message;return}
   if(data?.ok){s.className='ok';s.textContent='✅';await loadAdminChats();setTimeout(closeAdminChatEdit,900)}
@@ -2036,6 +2375,8 @@ document.addEventListener('DOMContentLoaded',async()=>{
     calculateListingPreview();
   }
   await loadStakeState();
+  await loadTopBanner();
+  await loadAdPrices();
 });
 </script>
 </body></html>
