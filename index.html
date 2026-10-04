@@ -1210,7 +1210,7 @@ async function saveBannerSettings(){
     banner_count: document.getElementById('bnCount').value
   };
   for(const [k,v] of Object.entries(vals)){
-    const {data, error} = await sb.rpc('admin_set_ui_setting', { p_key: k, p_value: String(v) });
+    const {data, error} = await sb.rpc('admin_set_app_setting', { p_key: k, p_value: String(v) });
     if(error || !data || data.ok === false){
       if(st){ st.className='er'; st.textContent = 'Ошибка: ' + (error?.message || data?.error || 'unknown'); }
       return;
