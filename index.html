@@ -213,10 +213,10 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 <div id="totalUsdBalance" style="text-align:center;font-size:42px;font-weight:bold;color:#fff;line-height:1;letter-spacing:-1.5px">0<span style="color:#8f9bab;font-size:22px">,00 TUSD</span></div>
 <div style="text-align:center;margin-top:14px">
 <div style="color:#7fc97f;font-size:11px;letter-spacing:1px;margin-bottom:2px">⛏️ НАКОПЛЕНО</div>
-<div id="stakeAccum" style="color:#39d98a;font-size:30px;font-weight:bold;font-family:'Courier New',monospace;line-height:1.1;text-shadow:0 0 18px #39d98a88;word-break:break-all">0.00000000 <span style="font-size:16px;color:#7fc97f;font-weight:normal">TUSD</span></div>
-<div id="stakeTick" style="color:#39d98a;font-size:16px;font-weight:bold;font-family:'Courier New',monospace;margin-top:8px">+0.0000 <span style="font-size:12px;color:#7fc97f;font-weight:normal">TUSD/день</span></div>
-<div id="stakeMonth" style="color:#7fc97f;font-size:13px;font-weight:bold;font-family:'Courier New',monospace;margin-top:2px">≈ 0.0000 <span style="font-size:11px;color:#7fc97f;font-weight:normal">TUSD/месяц</span></div>
-<div id="stakeRate" style="color:#8f9bab;font-size:11px;margin-top:6px">Загрузка...</div>
+<div id="stakeAccum" style="color:#39d98a;font-size:26px;font-weight:bold;font-family:'Courier New',monospace;line-height:1.1;text-shadow:0 0 18px #39d98a88;word-break:break-all">0.000000000000 <span style="font-size:14px;color:#7fc97f;font-weight:normal">TUSD</span></div>
+<div id="stakeTick" style="color:#39d98a;font-size:14px;font-weight:bold;font-family:'Courier New',monospace;margin-top:8px">+0.00000000 <span style="font-size:11px;color:#7fc97f;font-weight:normal">TUSD/день из фондов</span></div>
+<div id="stakeMonth" style="color:#7fc97f;font-size:12px;font-weight:bold;font-family:'Courier New',monospace;margin-top:2px">≈ 0.000000 <span style="font-size:10px;color:#7fc97f;font-weight:normal">TUSD/месяц</span></div>
+<div id="stakeRate" style="color:#8f9bab;font-size:10px;margin-top:6px">⏳ Начисляется раз в 5 минут из фондов наград</div>
 </div>
 <div style="display:flex;gap:8px;margin-top:12px">
 <button class="stake-collect" style="flex:1;margin:0;padding:11px;font-size:14px" onclick="claimStaking()">💵 СОБРАТЬ В TUSD</button>
@@ -768,7 +768,7 @@ let ALL_TOKENS=[],CU=null,CP={},CB={},AL=null;
 let VERIFIED_SYMBOLS=new Set(BASE_VERIFIED);
 let __PENDING_TASK=null,__RETURN_TIMER=null;
 let ADMIN_USER=null;
-let STAKE_STATE=null,STAKE_TIMER=null,STAKE_LAST_TS=0,STAKE_RATE_SEC=0,STAKE_ACCUM=0,STAKE_BALANCE_USD=0;
+let STAKE_STATE=null,STAKE_TIMER=null,STAKE_LAST_TS=0,STAKE_RATE_SEC=0,STAKE_ACCUM=0,STAKE_BALANCE_USD=0,STAKE_DISPLAY=0;
 let _adModalMode = 'topup';
 let AD_PRICES = {banner_price_per_day:10, video_price_per_view:0.001, task_price_per_sub:0.5, link_price_per_click:0.3};
 let AD_CURRENT_TYPE = null;
@@ -820,6 +820,12 @@ function fmtAccum(v, rateSec){
     }
   }
   return x.toFixed(decimals);
+}
+
+function fmtAccumBig(v){
+  const x = Number(v) || 0;
+  if(x === 0) return '0.000000000000';
+  return x.toFixed(12);
 }
 
 const PRICE_CACHE = {};
@@ -916,44 +922,73 @@ async function loadCustomBalances(){
 }
 function renderCustom(){ renderTotalTusd(); }
 
+// ============ СТЕЙКИНГ: счётчик из фондов ============
 async function loadStakeState(){
   if(!UID) return;
   try {
     const {data, error} = await sb.rpc('get_staking_state', {p_user_id: String(UID)});
     if(error || !data || data.ok === false){ console.warn('stake error', error, data); return; }
     STAKE_STATE = data;
-    STAKE_RATE_SEC = Number(data.rate_sec) || 0;
     STAKE_ACCUM = Number(data.accumulated) || 0;
+    STAKE_DISPLAY = STAKE_ACCUM;
     STAKE_BALANCE_USD = Number(data.base_usd) || 0;
-    STAKE_LAST_TS = performance.now();
-    const rateMonth = (Number(data.rate_month) * 100).toFixed(2);
-    const level = data.level || 1;
-    const rateEl = document.getElementById('stakeRate');
-    if(rateEl) rateEl.textContent = `Уровень ${level} • ${rateMonth}% в месяц • База ${f(STAKE_BALANCE_USD,2)} TUSD`;
     renderStake();
-    startStakeTimer();
+    recalcStakeRate();
   } catch(e){ console.warn('loadStakeState', e); }
 }
+
+function recalcStakeRate(){
+  let totalPerHour = 0;
+  (REWARD_FUNDS || []).forEach(fd => {
+    totalPerHour += Number(fd.my_per_hour) || 0;
+  });
+  STAKE_RATE_SEC = totalPerHour / 3600;
+  startStakeTimer();
+}
+
 function startStakeTimer(){
   if(STAKE_TIMER) clearInterval(STAKE_TIMER);
+  STAKE_LAST_TS = performance.now();
   STAKE_TIMER = setInterval(() => {
     const now = performance.now();
     const dt = (now - STAKE_LAST_TS) / 1000;
     STAKE_LAST_TS = now;
-    STAKE_ACCUM += STAKE_BALANCE_USD * STAKE_RATE_SEC * dt;
+    STAKE_DISPLAY += STAKE_RATE_SEC * dt;
     renderStake();
-  }, 100);
+  }, 50);
 }
+
 function renderStake(){
-  const perDay = STAKE_BALANCE_USD * STAKE_RATE_SEC * 86400;
-  const perMonth = perDay * 30;
   const elA = document.getElementById('stakeAccum');
-  if(elA) elA.innerHTML = `${fmtAccum(STAKE_ACCUM, STAKE_RATE_SEC)} <span style="font-size:16px;color:#7fc97f;font-weight:normal">TUSD</span>`;
+  if(elA) elA.innerHTML = `${fmtAccumBig(STAKE_DISPLAY)} <span style="font-size:14px;color:#7fc97f;font-weight:normal">TUSD</span>`;
+
+  let totalPerDay = 0;
+  const parts = [];
+  (REWARD_FUNDS || []).forEach(fd => {
+    const d = Number(fd.my_per_day) || 0;
+    if(d > 0){
+      totalPerDay += d;
+      parts.push(`${fd.token_symbol}: +${d.toFixed(8)}`);
+    }
+  });
+
   const el = document.getElementById('stakeTick');
-  if(el) el.innerHTML = `<span style="color:#39d98a;font-weight:bold">+${fmtAccum(perDay)}</span> <span style="font-size:12px;color:#7fc97f;font-weight:normal">TUSD/день</span>`;
+  if(el) el.innerHTML = `<span style="color:#39d98a;font-weight:bold">+${totalPerDay.toFixed(8)}</span> <span style="font-size:11px;color:#7fc97f;font-weight:normal">TUSD/день из фондов</span>`;
+
   const elM = document.getElementById('stakeMonth');
-  if(elM) elM.innerHTML = `≈ <b>${perMonth < 0.01 ? fmtAccum(perMonth) : perMonth.toFixed(4)}</b> <span style="font-size:11px;color:#7fc97f;font-weight:normal">TUSD/месяц</span>`;
+  const perMonth = totalPerDay * 30;
+  if(elM) elM.innerHTML = `≈ <b>${perMonth.toFixed(6)}</b> <span style="font-size:10px;color:#7fc97f;font-weight:normal">TUSD/месяц</span>`;
+
+  const elR = document.getElementById('stakeRate');
+  if(elR){
+    if(parts.length > 0){
+      elR.innerHTML = `📊 ${parts.join(' • ')}`;
+    } else {
+      elR.textContent = '⏳ Начисляется раз в 5 минут из фондов наград';
+    }
+  }
 }
+
 async function claimStaking(){
   if(!UID) return;
   try {
@@ -965,6 +1000,7 @@ async function claimStaking(){
     const claimed = Number(data.claimed) || 0;
     showAdRewardPopup(claimed, 'TUSD', '💵 СТЕЙКИНГ СОБРАН');
     STAKE_ACCUM = 0;
+    STAKE_DISPLAY = 0;
     await loadUser();
     await loadCustomBalances();
     await loadStakeState();
@@ -1186,6 +1222,7 @@ async function loadRewardFunds(){
   }));
   REWARD_FUNDS = results.filter(Boolean);
   renderRewardFunds();
+  recalcStakeRate();
 }
 function renderRewardFunds(){
   const box = document.getElementById('rewardFundsList');
@@ -1220,8 +1257,8 @@ function renderRewardFunds(){
         <span>Мой баланс: <b>${f(fd.my_balance,4)}</b> (${f(fd.my_share_pct,3)}%)</span>
       </div>
       ${myDaily > 0 ? `<div class="reward-fund-mine">
-        Мне капает: <b>+${fmtAccum(myDaily, myDaily/86400)} ${esc(fd.token_symbol)}/день</b>
-        ≈ <b>${myDailyTusd.toFixed(4)} TUSD</b>
+        Мне капает: <b>+${fmtAccumBig(myDaily)} ${esc(fd.token_symbol)}/день</b>
+        ≈ <b>${myDailyTusd.toFixed(6)} TUSD</b>
         <br>Накоплено: <b>${fmtAccum(fd.my_accumulated, myDaily/86400)} TUSD</b>
       </div>` : ''}
       <div class="reward-fund-actions">
@@ -1312,11 +1349,12 @@ async function runAccrue(symbol){
 }
 async function adminRefreshRewardFunds(){
   if(UID !== AID) return;
-  const {data, error} = await sb.rpc('accrue_reward_fund_all');
+  const {data, error} = await sb.rpc('run_all_reward_funds');
   if(error){ msg(error.message,'error'); return; }
   msg('✅ Раздача по всем токенам завершена','success');
   await loadAdminRewardTokens();
   await loadRewardFunds();
+  await loadStakeState();
 }
 function openAdminRewardConfig(symbol){
   ADMIN_REWARD_TOKEN = symbol;
@@ -1363,6 +1401,7 @@ async function saveAdminRewardConfig(){
   st.className = 'ok'; st.textContent = '✅ Сохранено';
   msg('✅ Настройки фонда обновлены','success');
   await loadRewardFunds();
+  await loadAdminRewardTokens();
 }
 
 // ============ ИСТОРИЯ ============
@@ -1765,7 +1804,6 @@ function updateAdBalanceInfo(){
 }
 function openAdMenu(){ document.getElementById('adMenuModal').classList.add('show'); }
 function closeAdMenu(e){ if(e && e.target !== document.getElementById('adMenuModal')) return; document.getElementById('adMenuModal').classList.remove('show'); }
-
 function openAdForm(type){
   AD_CURRENT_TYPE = type;
   closeAdMenu();
