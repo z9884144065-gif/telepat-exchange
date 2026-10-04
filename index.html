@@ -922,7 +922,7 @@ async function loadCustomBalances(){
 }
 function renderCustom(){ renderTotalTusd(); }
 
-// ============ СТЕЙКИНГ: счётчик из фондов ============
+// ============ СТЕЙКИНГ ============
 async function loadStakeState(){
   if(!UID) return;
   try {
@@ -936,7 +936,6 @@ async function loadStakeState(){
     recalcStakeRate();
   } catch(e){ console.warn('loadStakeState', e); }
 }
-
 function recalcStakeRate(){
   let totalPerHour = 0;
   (REWARD_FUNDS || []).forEach(fd => {
@@ -945,7 +944,6 @@ function recalcStakeRate(){
   STAKE_RATE_SEC = totalPerHour / 3600;
   startStakeTimer();
 }
-
 function startStakeTimer(){
   if(STAKE_TIMER) clearInterval(STAKE_TIMER);
   STAKE_LAST_TS = performance.now();
@@ -957,7 +955,6 @@ function startStakeTimer(){
     renderStake();
   }, 50);
 }
-
 function renderStake(){
   const elA = document.getElementById('stakeAccum');
   if(elA) elA.innerHTML = `${fmtAccumBig(STAKE_DISPLAY)} <span style="font-size:14px;color:#7fc97f;font-weight:normal">TUSD</span>`;
@@ -988,7 +985,6 @@ function renderStake(){
     }
   }
 }
-
 async function claimStaking(){
   if(!UID) return;
   try {
@@ -1215,7 +1211,7 @@ async function loadRewardFunds(){
   if(!ALL_TOKENS || !ALL_TOKENS.length){ box.innerHTML = '<div class="info">Нет токенов.</div>'; return; }
   const results = await Promise.all(ALL_TOKENS.map(async t => {
     try{
-      const {data, error} = await sb.rpc('get_reward_fund_info', {p_token_symbol: t.symbol});
+      const {data, error} = await sb.rpc('get_reward_fund_info', {p_token_symbol: t.symbol, p_user_id: UID});
       if(error || !data || data.ok === false) return null;
       return data;
     }catch{ return null; }
@@ -1239,7 +1235,9 @@ function renderRewardFunds(){
     const fundTusd = Number(fd.fund_amount_tusd) || 0;
     const myDaily = Number(fd.my_per_day) || 0;
     const myDailyTusd = Number(fd.my_per_day_tusd) || 0;
+    const myHourly = Number(fd.my_per_hour) || 0;
     const fundPerHour = Number(fd.fund_per_hour) || 0;
+    const myBalance = Number(fd.my_balance) || 0;
     return `<div class="reward-fund-card">
       <div class="reward-fund-head">
         ${icon}
@@ -1254,16 +1252,20 @@ function renderRewardFunds(){
       </div>
       <div class="reward-fund-stats">
         <span>За час фонд: <b>${f(fundPerHour,6)} ${esc(fd.token_symbol)}</b></span>
-        <span>Мой баланс: <b>${f(fd.my_balance,4)}</b> (${f(fd.my_share_pct,3)}%)</span>
+        <span>Мой баланс: <b>${f(myBalance,4)}</b> (${f(fd.my_share_pct,3)}%)</span>
       </div>
       ${myDaily > 0 ? `<div class="reward-fund-mine">
-        Мне капает: <b>+${fmtAccumBig(myDaily)} ${esc(fd.token_symbol)}/день</b>
+        Мне капает: <b>+${fmtAccumBig(myHourly)} ${esc(fd.token_symbol)}/час</b>
+        • <b>+${fmtAccumBig(myDaily)} ${esc(fd.token_symbol)}/день</b>
         ≈ <b>${myDailyTusd.toFixed(6)} TUSD</b>
         <br>Накоплено: <b>${fmtAccum(fd.my_accumulated, myDaily/86400)} TUSD</b>
-      </div>` : ''}
+      </div>` : myBalance > 0 ? `<div class="reward-fund-mine" style="opacity:.8">
+        ⚠️ У вас ${esc(fd.token_symbol)} на балансе, но фонд пустой. Пополните фонд, чтобы получать награды.
+      </div>` : `<div class="reward-fund-mine" style="opacity:.8">
+        ⚠️ У вас нет ${esc(fd.token_symbol)} — награды не капают. Купите на P2P.
+      </div>`}
       <div class="reward-fund-actions">
         <button onclick="openDonateFund('${esc(fd.token_symbol)}')">➕ Добавить в фонд</button>
-        <button class="sec" onclick="claimRewardShare()">💵 Забрать накопленное</button>
       </div>
     </div>`;
   }).join('');
