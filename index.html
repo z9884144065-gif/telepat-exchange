@@ -22,6 +22,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
 select,input{background:#0d1520;color:#fff;padding:12px;outline:none}
 input[type="color"]{padding:4px;height:46px;cursor:pointer}
 input[type="range"]{padding:0;background:transparent;border:0;height:26px}
+input[type="checkbox"]{width:auto;margin:0}
 label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 .tbox{background:#0d1520;border:1px solid #303d50;border-radius:14px;padding:12px}
 .tname{color:var(--muted);font-size:12px}.tval{color:#fff;font-size:20px;font-weight:bold;margin-top:4px}
@@ -214,8 +215,8 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 <div style="text-align:center;margin-top:14px">
 <div style="color:#7fc97f;font-size:11px;letter-spacing:1px;margin-bottom:2px">⛏️ НАКОПЛЕНО</div>
 <div id="stakeAccum" style="color:#39d98a;font-size:26px;font-weight:bold;font-family:'Courier New',monospace;line-height:1.1;text-shadow:0 0 18px #39d98a88;word-break:break-all">0.000000000000 <span style="font-size:14px;color:#7fc97f;font-weight:normal">TUSD</span></div>
-<div id="stakeTick" style="color:#39d98a;font-size:14px;font-weight:bold;font-family:'Courier New',monospace;margin-top:8px">+0.00000000 <span style="font-size:11px;color:#7fc97f;font-weight:normal">TUSD/день из фондов</span></div>
-<div id="stakeMonth" style="color:#7fc97f;font-size:12px;font-weight:bold;font-family:'Courier New',monospace;margin-top:2px">≈ 0.000000 <span style="font-size:10px;color:#7fc97f;font-weight:normal">TUSD/месяц</span></div>
+<div id="stakeTick" style="color:#39d98a;font-size:14px;font-weight:bold;font-family:'Courier New',monospace;margin-top:8px">+$0.0000 <span style="font-size:11px;color:#7fc97f;font-weight:normal">в день из фондов</span></div>
+<div id="stakeMonth" style="color:#7fc97f;font-size:12px;font-weight:bold;font-family:'Courier New',monospace;margin-top:2px">≈ $0.00 <span style="font-size:10px;color:#7fc97f;font-weight:normal">в месяц</span></div>
 <div id="stakeRate" style="color:#8f9bab;font-size:10px;margin-top:6px">⏳ Начисляется раз в 5 минут из фондов наград</div>
 </div>
 <div style="display:flex;gap:8px;margin-top:12px">
@@ -834,6 +835,7 @@ const TOKEN_ICONS = {
   'AI':     { emoji: '🤖', bg: 'linear-gradient(135deg,#8b5cf6,#6d28d9)' },
   'TUSD':   { emoji: '💵', bg: 'linear-gradient(135deg,#39d98a,#2ba86a)' },
   'VKCOIN': { emoji: '🎮', bg: 'linear-gradient(135deg,#4f8cff,#2563eb)' },
+  'RUB':    { emoji: '₽',  bg: 'linear-gradient(135deg,#4caf50,#2e7d32)' },
   'DEFAULT':{ emoji: '🪙', bg: 'linear-gradient(135deg,#7f8c9f,#4a596d)' }
 };
 function tokenIcon(sym){
@@ -869,19 +871,19 @@ async function loadAllTokens(){
   try{
     const{data,error}=await sb.rpc('list_tokens_public');
     if(!error&&data&&data.length){
-      ALL_TOKENS=data.map(t=>({id:t.id, symbol:t.symbol, name:t.name, price_tusd:Number(t.price_tusd)||0, min_withdrawal:Number(t.min_withdrawal)||0, decimals:t.decimals, logo_url: pickLogo(t)}));
+      ALL_TOKENS=data.map(t=>({id:t.id, symbol:t.symbol, name:t.name, price_tusd:Number(t.price_tusd)||0, min_withdrawal:Number(t.min_withdrawal)||0, decimals:t.decimals, logo_url: pickLogo(t), is_system_token: !!t.is_system_token}));
     } else {
-      ALL_TOKENS=[{symbol:'TG',name:'Telepat Gold',price_tusd:100,min_withdrawal:10,logo_url:null},{symbol:'AI',name:'AI Token',price_tusd:0.01,min_withdrawal:100,logo_url:null},{symbol:'TUSD',name:'Telepat Dollar',price_tusd:1,min_withdrawal:5,logo_url:null}];
+      ALL_TOKENS=[{symbol:'TG',name:'Telepat Gold',price_tusd:100,min_withdrawal:10,logo_url:null,is_system_token:false},{symbol:'AI',name:'AI Token',price_tusd:0.01,min_withdrawal:100,logo_url:null,is_system_token:false},{symbol:'TUSD',name:'Telepat Dollar',price_tusd:1,min_withdrawal:5,logo_url:null,is_system_token:false}];
     }
   }catch{
-    ALL_TOKENS=[{symbol:'TG',name:'Telepat Gold',price_tusd:100,min_withdrawal:10,logo_url:null},{symbol:'AI',name:'AI Token',price_tusd:0.01,min_withdrawal:100,logo_url:null},{symbol:'TUSD',name:'Telepat Dollar',price_tusd:1,min_withdrawal:5,logo_url:null}];
+    ALL_TOKENS=[{symbol:'TG',name:'Telepat Gold',price_tusd:100,min_withdrawal:10,logo_url:null,is_system_token:false},{symbol:'AI',name:'AI Token',price_tusd:0.01,min_withdrawal:100,logo_url:null,is_system_token:false},{symbol:'TUSD',name:'Telepat Dollar',price_tusd:1,min_withdrawal:5,logo_url:null,is_system_token:false}];
   }
   Object.keys(PRICE_CACHE).forEach(k=>delete PRICE_CACHE[k]);
   try{
     const {data: full} = await sb.from('telepat_tokens').select('*');
     if(full && full.length){
       const byS = {}; full.forEach(t => { byS[t.symbol] = t; });
-      ALL_TOKENS.forEach(t => { const row = byS[t.symbol]; if(row){ if(!t.logo_url) t.logo_url = pickLogo(row); if(row.id) t.id = row.id; } });
+      ALL_TOKENS.forEach(t => { const row = byS[t.symbol]; if(row){ if(!t.logo_url) t.logo_url = pickLogo(row); if(row.id) t.id = row.id; if(row.is_system_token !== undefined) t.is_system_token = !!row.is_system_token; } });
     }
   }catch(e){}
   fillAll();
@@ -959,22 +961,23 @@ function renderStake(){
   const elA = document.getElementById('stakeAccum');
   if(elA) elA.innerHTML = `${fmtAccumBig(STAKE_DISPLAY)} <span style="font-size:14px;color:#7fc97f;font-weight:normal">TUSD</span>`;
 
-  let totalPerDay = 0;
+  let totalPerDayTusd = 0;
   const parts = [];
   (REWARD_FUNDS || []).forEach(fd => {
-    const d = Number(fd.my_per_day) || 0;
-    if(d > 0){
-      totalPerDay += d;
-      parts.push(`${fd.token_symbol}: +${d.toFixed(8)}`);
+    const dTusd = Number(fd.my_per_day_tusd) || 0;
+    const dTok  = Number(fd.my_per_day) || 0;
+    if(dTok > 0){
+      totalPerDayTusd += dTusd;
+      parts.push(`${fd.token_symbol}: +${dTok.toFixed(6)} (≈$${dTusd.toFixed(6)})`);
     }
   });
 
   const el = document.getElementById('stakeTick');
-  if(el) el.innerHTML = `<span style="color:#39d98a;font-weight:bold">+${totalPerDay.toFixed(8)}</span> <span style="font-size:11px;color:#7fc97f;font-weight:normal">TUSD/день из фондов</span>`;
+  if(el) el.innerHTML = `<span style="color:#39d98a;font-weight:bold">+$${totalPerDayTusd.toFixed(4)}</span> <span style="font-size:11px;color:#7fc97f;font-weight:normal">в день из фондов</span>`;
 
   const elM = document.getElementById('stakeMonth');
-  const perMonth = totalPerDay * 30;
-  if(elM) elM.innerHTML = `≈ <b>${perMonth.toFixed(6)}</b> <span style="font-size:10px;color:#7fc97f;font-weight:normal">TUSD/месяц</span>`;
+  const perMonth = totalPerDayTusd * 30;
+  if(elM) elM.innerHTML = `≈ <b>$${perMonth.toFixed(2)}</b> <span style="font-size:10px;color:#7fc97f;font-weight:normal">в месяц</span>`;
 
   const elR = document.getElementById('stakeRate');
   if(elR){
@@ -1111,6 +1114,8 @@ function renderTotalTusd(){
   tokens.push({sym:'TUSD', amt:tusd, tusd:tokenToTusd('TUSD',tusd)});
   Object.keys(CB).forEach(sym=>{
     if(['TG','AI','TUSD'].includes(sym)) return;
+    const tkInfo = (ALL_TOKENS || []).find(x => x.symbol === sym);
+    if(tkInfo && tkInfo.is_system_token) return;
     const amt = n(CB[sym]);
     const tusdVal = tokenToTusd(sym, amt);
     total += tusdVal;
@@ -1209,7 +1214,7 @@ async function loadRewardFunds(){
   if(!box) return;
   box.innerHTML = '<div class="info">Загрузка...</div>';
   if(!ALL_TOKENS || !ALL_TOKENS.length){ box.innerHTML = '<div class="info">Нет токенов.</div>'; return; }
-  const results = await Promise.all(ALL_TOKENS.map(async t => {
+  const results = await Promise.all(ALL_TOKENS.filter(t => !t.is_system_token).map(async t => {
     try{
       const {data, error} = await sb.rpc('get_reward_fund_info', {p_token_symbol: t.symbol, p_user_id: UID});
       if(error || !data || data.ok === false) return null;
@@ -1257,7 +1262,7 @@ function renderRewardFunds(){
       ${myDaily > 0 ? `<div class="reward-fund-mine">
         Мне капает: <b>+${fmtAccumBig(myHourly)} ${esc(fd.token_symbol)}/час</b>
         • <b>+${fmtAccumBig(myDaily)} ${esc(fd.token_symbol)}/день</b>
-        ≈ <b>${myDailyTusd.toFixed(6)} TUSD</b>
+        ≈ <b>$${myDailyTusd.toFixed(6)}</b>
         <br>Накоплено: <b>${fmtAccum(fd.my_accumulated, myDaily/86400)} TUSD</b>
       </div>` : myBalance > 0 ? `<div class="reward-fund-mine" style="opacity:.8">
         ⚠️ У вас ${esc(fd.token_symbol)} на балансе, но фонд пустой. Пополните фонд, чтобы получать награды.
@@ -2399,7 +2404,7 @@ async function loadAdminCheckin(){
   if(error||!data||data.ok===false){ box.innerHTML=`<div class="er">${esc(error?.message||data?.error||'Ошибка')}</div>`;return; }
   const s=data.settings||{}; const tokens=data.tokens||[];
   let html=`<div class="title" style="font-size:12px">ОБЩИЕ НАСТРОЙКИ</div><label>Максимум дней серии</label><input id="ci_max_days" type="number" value="${s.max_days||30}"><label style="margin-top:8px">Прирост в день (%)</label><input id="ci_growth" type="number" step="0.1" value="${s.growth_percent||5}"><label style="margin-top:8px">Бонусный множитель</label><input id="ci_bonus_mult" type="number" step="0.1" value="${s.bonus_multiplier||2}"><label style="margin-top:8px">Бонус каждые N дней</label><input id="ci_bonus_every" type="number" value="${s.bonus_every_days||7}"><button class="sm" style="margin-top:8px" onclick="saveAdminCheckinSettings()">💾 Сохранить настройки</button><div class="title" style="margin-top:16px;font-size:12px">ТОКЕНЫ В ЧЕКИНЕ</div>`;
-  tokens.forEach(t=>{ html+=`<div class="pc" style="margin-top:6px"><div class="ol"><div style="flex:1"><div class="pt">${tokenIconHTML(t.token_symbol,'xs')} ${esc(t.token_symbol)}</div><input id="ci_tok_${esc(t.token_symbol)}" type="number" step="0.00000001" value="${t.base_amount}" style="margin-top:4px"></div><div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end"><label style="margin:0;font-size:11px"><input type="checkbox" id="ci_act_${esc(t.token_symbol)}" ${t.active?'checked':''} style="width:auto"> Активен</label><button class="sm" onclick="saveAdminCheckinToken('${esc(t.token_symbol)}')">💾</button><button class="sm dng" onclick="removeAdminCheckinToken('${esc(t.token_symbol)}')">🗑</button></div></div></div>`; });
+  tokens.forEach(t=>{ html+=`<div class="pc" style="margin-top:6px"><div class="ol"><div style="flex:1"><div class="pt">${tokenIconHTML(t.token_symbol,'xs')} ${esc(t.token_symbol)}</div><input id="ci_tok_${esc(t.token_symbol)}" type="number" step="0.00000001" value="${t.base_amount}" style="margin-top:4px"></div><div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end"><label style="margin:0;font-size:11px"><input type="checkbox" id="ci_act_${esc(t.token_symbol)}" ${t.active?'checked':''}> Активен</label><button class="sm" onclick="saveAdminCheckinToken('${esc(t.token_symbol)}')">💾</button><button class="sm dng" onclick="removeAdminCheckinToken('${esc(t.token_symbol)}')">🗑</button></div></div></div>`; });
   html+=`<div class="title" style="margin-top:16px;font-size:12px">ДОБАВИТЬ ТОКЕН</div><label>Токен</label><select id="ci_new_symbol"></select><label style="margin-top:8px">Базовая награда</label><input id="ci_new_amount" type="number" step="0.00000001" placeholder="Например: 1"><button class="sm" style="margin-top:8px" onclick="addAdminCheckinToken()">➕ Добавить токен</button>`;
   box.innerHTML=html;
   const sel=document.getElementById('ci_new_symbol');
@@ -2499,33 +2504,144 @@ async function setTokenVerified(id,v){
   await loadAllTokens(); await loadAdminVerification();
 }
 
+// ============ АДМИНКА: РЕДАКТИРОВАНИЕ ТОКЕНОВ ============
 async function loadAdminTokenPrices(){
   const box = document.getElementById('adminTokenPricesList'); if(!box) return;
   box.innerHTML = '<div class="info">Загрузка...</div>';
   const { data, error } = await sb.rpc('admin_list_tokens_with_prices');
   if(error){ box.innerHTML = `<div class="er">${esc(error.message)}</div>`; return; }
   if(!data || !data.length){ box.innerHTML = '<div class="info">Нет токенов.</div>'; return; }
-  box.innerHTML = data.map(t => `<div class="pc" style="margin-top:8px"><div class="pt" style="display:flex;align-items:center">${tokenIconHTML(t.symbol,'sm')} <span style="margin-left:8px">${esc(t.symbol)} — ${esc(t.name||'')}</span></div><label style="margin-top:8px">🔗 Лого (URL)</label><input type="text" id="tp-logo-${esc(t.id)}" value="${esc(t.logo_url||'')}" placeholder="https://..."><label style="margin-top:8px">💰 Курс в TUSD</label><input type="number" id="tp-price-${esc(t.id)}" step="0.00000001" min="0" value="${t.price_tusd}"><label style="margin-top:8px">⬇️ Минимум вывода</label><input type="number" id="tp-min-${esc(t.id)}" step="0.00000001" min="0" value="${t.min_withdrawal}"><div class="row" style="margin-top:10px"><button onclick="saveAdminTokenParams('${esc(t.id)}')">💾 Сохранить</button></div><div id="tp-status-${esc(t.id)}" class="info" style="margin-top:6px;text-align:center"></div></div>`).join('');
+  box.innerHTML = data.map(t => {
+    const isBase = ['TG','AI','TUSD'].includes(t.symbol);
+    const isActive = t.active !== false;
+    const statusBadge = isActive ? '' : '<span style="color:#ff647c;font-size:11px;margin-left:8px">🔴 СКРЫТ</span>';
+    const sysBadge = t.is_system_token ? '<span style="color:#8b5cf6;font-size:11px;margin-left:8px">🏦 СИСТЕМНЫЙ</span>' : '';
+    const delistBtn = isBase ? '' : (isActive
+      ? `<button class="sm dng" onclick="delistToken('${esc(t.id)}','${esc(t.symbol)}')">🔒 Делистить</button>`
+      : `<button class="sm" onclick="relistToken('${esc(t.id)}','${esc(t.symbol)}')">👁 Вернуть</button>
+         <button class="sm dng" onclick="hardDeleteToken('${esc(t.id)}','${esc(t.symbol)}')">🗑 Удалить навсегда</button>`);
+    const holders = Number(t.holders) || 0;
+    return `<div class="pc" style="margin-top:8px">
+      <div class="pt" style="display:flex;align-items:center;flex-wrap:wrap;gap:6px">
+        ${tokenIconHTML(t.symbol,'sm')}
+        <span>${esc(t.symbol)}${statusBadge}${sysBadge}</span>
+        <span style="color:#8f9bab;font-size:11px;margin-left:auto">${holders} 👤</span>
+      </div>
+
+      <label style="margin-top:8px">📝 Название</label>
+      <input type="text" id="tp-name-${esc(t.id)}" value="${esc(t.name||'')}" placeholder="Telepat Gold">
+
+      <label style="margin-top:8px">📄 Описание</label>
+      <input type="text" id="tp-desc-${esc(t.id)}" value="${esc(t.description||'')}" placeholder="Что это за токен">
+
+      <label style="margin-top:8px">🔗 Лого (URL)</label>
+      <input type="text" id="tp-logo-${esc(t.id)}" value="${esc(t.logo_url||'')}" placeholder="https://...">
+
+      <label style="margin-top:8px">💎 Jetton Master (TON)</label>
+      <input type="text" id="tp-jetton-${esc(t.id)}" value="${esc(t.jetton_master||'')}" placeholder="EQC... или пусто">
+
+      <label style="margin-top:8px">💰 Курс в TUSD</label>
+      <input type="number" id="tp-price-${esc(t.id)}" step="0.00000001" min="0" value="${t.price_tusd}">
+
+      <label style="margin-top:8px">⬇️ Минимум вывода</label>
+      <input type="number" id="tp-min-${esc(t.id)}" step="0.00000001" min="0" value="${t.min_withdrawal}">
+
+      <label style="margin-top:10px;display:flex;align-items:center;gap:8px;cursor:pointer">
+        <input type="checkbox" id="tp-sys-${esc(t.id)}" ${t.is_system_token ? 'checked' : ''}>
+        <span>🏦 Системный (виртуальный) — не виден в кошельке, работает только внутри</span>
+      </label>
+
+      <div class="row" style="margin-top:10px;flex-wrap:wrap;gap:6px">
+        <button class="sm" onclick="saveAdminTokenParams('${esc(t.id)}')">💾 Сохранить</button>
+        ${delistBtn}
+      </div>
+      <div id="tp-status-${esc(t.id)}" class="info" style="margin-top:6px;text-align:center"></div>
+    </div>`;
+  }).join('');
 }
+
+async function delistToken(id, symbol){
+  if(!confirm(`Делистить ${symbol}?\n\nТокен скроется из всех списков, но данные останутся.\nМожно вернуть в любой момент.`)) return;
+  const {data, error} = await sb.rpc('admin_delist_token', {p_token_id: id});
+  if(error || !data || data.ok === false){ msg(data?.error || error?.message || 'Ошибка','error'); return; }
+  msg(`✅ ${symbol} делистингован`,'success');
+  await loadAdminTokenPrices();
+  await loadAllTokens();
+}
+
+async function relistToken(id, symbol){
+  if(!confirm(`Вернуть ${symbol} в списки?`)) return;
+  const {data, error} = await sb.rpc('admin_relist_token', {p_token_id: id});
+  if(error || !data || data.ok === false){ msg(data?.error || error?.message || 'Ошибка','error'); return; }
+  msg(`✅ ${symbol} вернулся`,'success');
+  await loadAdminTokenPrices();
+  await loadAllTokens();
+}
+
+async function hardDeleteToken(id, symbol){
+  if(!confirm(`⚠️ УДАЛИТЬ ${symbol} НАВСЕГДА?\n\nЭто необратимо.\nРаботает только если у токена нет:\n- держателей\n- открытых ордеров\n- фонда наград`)) return;
+  const {data, error} = await sb.rpc('admin_hard_delete_token', {p_token_id: id});
+  if(error || !data || data.ok === false){
+    const err = data?.error || error?.message || 'Ошибка';
+    const msgMap = {
+      has_holders: `Нельзя удалить: ${data?.holders} держателей имеют ${symbol} на балансе`,
+      has_open_orders: `Нельзя удалить: есть ${data?.orders} открытых P2P-ордеров с ${symbol}`,
+      has_reward_fund: `Нельзя удалить: в фонде наград осталось ${data?.fund} ${symbol}`,
+      base_tokens_cannot_be_deleted: 'Базовые токены нельзя удалить'
+    };
+    msg(msgMap[err] || err, 'error');
+    return;
+  }
+  msg(`🗑 ${symbol} удалён навсегда`,'success');
+  await loadAdminTokenPrices();
+  await loadAllTokens();
+}
+
 async function saveAdminTokenParams(id){
-  const priceEl = document.getElementById('tp-price-' + id); const minEl = document.getElementById('tp-min-' + id);
-  const logoEl = document.getElementById('tp-logo-' + id); const statusEl = document.getElementById('tp-status-' + id);
+  const statusEl = document.getElementById('tp-status-' + id);
+  const nameEl = document.getElementById('tp-name-' + id);
+  const descEl = document.getElementById('tp-desc-' + id);
+  const logoEl = document.getElementById('tp-logo-' + id);
+  const jettonEl = document.getElementById('tp-jetton-' + id);
+  const priceEl = document.getElementById('tp-price-' + id);
+  const minEl = document.getElementById('tp-min-' + id);
+  const sysEl = document.getElementById('tp-sys-' + id);
   if(!priceEl || !minEl) return;
   if(statusEl){ statusEl.className='info'; statusEl.textContent='⏳ Сохранение...'; }
-  const price = Number(priceEl.value); const minW = Number(minEl.value); const logo = logoEl ? logoEl.value.trim() : '';
+
+  const price = Number(priceEl.value);
+  const minW = Number(minEl.value);
+  const name = nameEl ? nameEl.value.trim() : null;
+  const description = descEl ? descEl.value.trim() : null;
+  const logo = logoEl ? logoEl.value.trim() : null;
+  const jetton = jettonEl ? jettonEl.value.trim() : null;
+  const isSystem = sysEl ? sysEl.checked : null;
+
   if(!Number.isFinite(price) || price < 0){ msg('Некорректный курс','error'); if(statusEl){statusEl.className='er';statusEl.textContent='✗ Курс';} return; }
   if(!Number.isFinite(minW) || minW < 0){ msg('Некорректный минимум','error'); if(statusEl){statusEl.className='er';statusEl.textContent='✗ Минимум';} return; }
-  const { data, error } = await sb.rpc('admin_set_token_params', { p_token_id: id, p_price_tusd: price, p_min_withdrawal: minW });
+
+  const { data, error } = await sb.rpc('admin_set_token_params', {
+    p_token_id: id,
+    p_price_tusd: price,
+    p_min_withdrawal: minW,
+    p_name: name,
+    p_description: description,
+    p_jetton_master: jetton,
+    p_logo_url: logo,
+    p_is_system_token: isSystem
+  });
+
   if(error){ msg(error.message,'error'); if(statusEl){statusEl.className='er';statusEl.textContent='✗ '+error.message;} return; }
   if(!data || data.ok === false){ msg((data && data.error) || 'Ошибка','error'); if(statusEl){statusEl.className='er';statusEl.textContent='✗ '+((data&&data.error)||'');} return; }
-  if(logoEl){
-    let ok = false;
-    try { const r = await sb.rpc('admin_set_token_logo', { p_token_id: id, p_logo_url: logo || null }); if(r.error){ console.warn('[logo rpc]', r.error); } else if(r.data && r.data.ok === false){ console.warn('[logo rpc reason]', r.data.error); } else ok = true; } catch(e){ console.warn('[logo rpc throw]', e); }
-    if(!ok){ try { const upd = await sb.from('telepat_tokens').update({ logo_url: logo || null }).eq('id', id); if(upd.error){ msg('Лого: '+upd.error.message, 'error'); if(statusEl){statusEl.className='er';statusEl.textContent='✗ Лого: '+upd.error.message;} return; } } catch(e){ msg('Лого: '+e.message, 'error'); if(statusEl){statusEl.className='er';statusEl.textContent='✗ Лого';} return; } }
-  }
-  msg('✅ Сохранено','success'); if(statusEl){ statusEl.className='ok'; statusEl.textContent='✅ Сохранено'; }
-  const cached = (ALL_TOKENS||[]).find(t => String(t.id) === String(id)); if(cached) cached.logo_url = logo || null;
-  await loadAllTokens(); await loadUser(); await loadCustomBalances(); await loadStakeState(); renderCustom(); fillAll();
+
+  msg('✅ Сохранено','success');
+  if(statusEl){ statusEl.className='ok'; statusEl.textContent='✅ Сохранено'; }
+  await loadAllTokens();
+  await loadUser();
+  await loadCustomBalances();
+  await loadStakeState();
+  renderCustom();
+  fillAll();
 }
 
 async function loadAdminBonusConfig(){
