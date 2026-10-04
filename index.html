@@ -105,7 +105,6 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 @keyframes adPopIn{0%{transform:scale(.3);opacity:0}100%{transform:scale(1);opacity:1}}
 @keyframes adBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 .stake-collect{background:linear-gradient(135deg,#39d98a,#2ba86a);color:#0d280d;font-weight:bold}
-.stake-sound{background:#1b2635;color:#fff;border:1px solid #4a596d;font-size:16px}
 .acc-item{margin-top:8px;background:#0d1520;border:1px solid #2d3a4c;border-radius:14px;overflow:hidden;transition:border-color .2s}
 .acc-item.open{border-color:#68562a}
 .acc-header{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;cursor:pointer;font-weight:bold;color:var(--gold);font-size:14px;user-select:none;transition:background .2s}
@@ -131,8 +130,6 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 .user-meta{flex:1;min-width:0}
 .user-meta .uname{color:#fff;font-size:17px;font-weight:bold;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .user-meta .uhandle{color:var(--gold);font-size:13px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-
-/* ===== STICKY BANNER ===== */
 #topBannersList{position:sticky;top:0;z-index:200;margin:0 -14px 12px -14px;padding:10px 14px 6px 14px;background:linear-gradient(180deg,#0b1018 0%,#0b1018 75%,rgba(11,16,24,.92) 100%);backdrop-filter:blur(10px)}
 #topBannersList:empty{display:none}
 .ad-banner{position:relative;border-radius:var(--bn-r,14px);overflow:hidden;margin-bottom:10px;min-height:var(--bn-h,110px);cursor:pointer;border:1px solid #2a3242;background:linear-gradient(135deg,#1a1f2e,#12161f)}
@@ -196,9 +193,12 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 <div id="stakeMonth" style="color:#7fc97f;font-size:13px;font-weight:bold;font-family:'Courier New',monospace;margin-top:2px">≈ 0.0000 <span style="font-size:11px;color:#7fc97f;font-weight:normal">TUSD/месяц</span></div>
 <div id="stakeRate" style="color:#8f9bab;font-size:11px;margin-top:6px">Загрузка...</div>
 </div>
-<div style="display:flex;gap:8px;margin-top:12px;align-items:center">
+<div style="display:flex;gap:8px;margin-top:12px">
 <button class="stake-collect" style="flex:1;margin:0;padding:11px;font-size:14px" onclick="claimStaking()">💵 СОБРАТЬ В TUSD</button>
-<button class="stake-sound" id="stakeSoundBtn" style="width:44px;flex:0 0 44px;margin:0;padding:11px;font-size:16px" onclick="toggleStakeSound()">🔇</button>
+</div>
+<div style="display:flex;gap:8px;margin-top:10px">
+  <button onclick="openHistory()" class="sec" style="flex:1;margin:0;padding:11px;font-size:13px">📜 История</button>
+  <button onclick="openOwnerEarnings()" id="ownerEarningsBtn" class="hide" style="flex:1;margin:0;padding:11px;font-size:13px">💰 Мои доходы</button>
 </div>
 <div class="title" style="font-size:12px;color:#9da9b9;margin-top:18px;margin-bottom:8px">МОИ ТОКЕНЫ</div>
 <div id="tokensList" style="display:flex;flex-direction:column;gap:7px"></div>
@@ -214,7 +214,6 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 </div>
 </div>
 </section>
-
 <section id="s-exchange" class="hide">
 <div class="card gold">
 <div class="title">🔄 СОЗДАТЬ P2P-ОРДЕР</div>
@@ -607,6 +606,34 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 <button class="sec" onclick="closeAddLiq()">Отмена</button>
 </div></div>
 
+<div id="historyModal" class="mo" onclick="closeHistory(event)">
+<div class="mb" style="width:min(520px,100%);max-height:85vh;overflow-y:auto" onclick="event.stopPropagation()">
+<div class="title">📜 ИСТОРИЯ ОПЕРАЦИЙ</div>
+<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px" id="historyFilters">
+  <button class="sm sec" data-wt="" onclick="setHistoryFilter('')">Все</button>
+  <button class="sm sec" data-wt="rewards" onclick="setHistoryFilter('rewards')">💎 Награды</button>
+  <button class="sm sec" data-wt="main" onclick="setHistoryFilter('main')">👤 Основной</button>
+  <button class="sm sec" data-wt="owner" onclick="setHistoryFilter('owner')">👑 Мои</button>
+</div>
+<div id="historyList"><div class="info">Загрузка...</div></div>
+<button class="sec" style="margin-top:12px" onclick="closeHistory()">Закрыть</button>
+</div>
+</div>
+
+<div id="ownerEarningsModal" class="mo" onclick="closeOwnerEarnings(event)">
+<div class="mb" style="width:min(520px,100%);max-height:85vh;overflow-y:auto" onclick="event.stopPropagation()">
+<div class="title">💰 МОИ ДОХОДЫ</div>
+<div style="display:flex;gap:6px;margin-bottom:12px">
+  <button class="sm sec" data-period="today" onclick="loadOwnerEarnings('today')">Сегодня</button>
+  <button class="sm sec" data-period="week" onclick="loadOwnerEarnings('week')">7 дней</button>
+  <button class="sm sec" data-period="month" onclick="loadOwnerEarnings('month')">30 дней</button>
+  <button class="sm sec" data-period="all" onclick="loadOwnerEarnings('all')">Всё</button>
+</div>
+<div id="ownerEarningsBox"><div class="info">Загрузка...</div></div>
+<button class="sec" style="margin-top:12px" onclick="closeOwnerEarnings()">Закрыть</button>
+</div>
+</div>
+
 <div id="adBalanceModal" class="mo" onclick="closeAdBalanceModal(event)">
 <div class="mb" onclick="event.stopPropagation()">
 <div class="title" id="adBalanceModalTitle">📢 РЕКЛАМНЫЙ БАЛАНС</div>
@@ -674,7 +701,6 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 <button id="n-earn" onclick="showSection('earn')">💎 Заработок</button>
 <button id="n-admin" class="hide" onclick="showSection('admin')">👑 Админ</button>
 </div>
-
 <script>
 const SU='https://jutszxuzjzyfxarceydw.supabase.co';
 const SK='sb_publishable_geRczpRc3faUHRGto2ue7A_eFFiJDwO';
@@ -687,11 +713,15 @@ let ALL_TOKENS=[],CU=null,CP={},CB={},AL=null;
 let VERIFIED_SYMBOLS=new Set(BASE_VERIFIED);
 let __PENDING_TASK=null,__RETURN_TIMER=null;
 let ADMIN_USER=null;
-let STAKE_STATE=null,STAKE_TIMER=null,STAKE_SOUND_ON=false,STAKE_LAST_TS=0,STAKE_RATE_SEC=0,STAKE_ACCUM=0,STAKE_BALANCE_USD=0;
+let STAKE_STATE=null,STAKE_TIMER=null,STAKE_LAST_TS=0,STAKE_RATE_SEC=0,STAKE_ACCUM=0,STAKE_BALANCE_USD=0;
 let _adModalMode = 'topup';
 let AD_PRICES = {banner_price_per_day:10, video_price_per_view:0.001, task_price_per_sub:0.5, link_price_per_click:0.3};
 let AD_CURRENT_TYPE = null;
 let BANNER_SETTINGS = {height:110, radius:14, title_size:17, sub_size:13, padding:16, count:1};
+let HISTORY_WALLET = '';
+let HISTORY_OFFSET = 0;
+const HISTORY_LIMIT = 20;
+let HISTORY_ITEMS = [];
 
 async function refreshJwt(){
   const id=window.Telegram?.WebApp?.initData;
@@ -719,19 +749,19 @@ const f=(v,m=8)=>n(v).toLocaleString('ru-RU',{maximumFractionDigits:m});
 const tb=t=>{if(!CU)return 0;if(t==='TG')return n(CU.tg_balance);if(t==='AI')return n(CU.ai_balance);if(t==='TUSD')return n(CU.tusd_balance);return n(CB[t])};
 function msg(t,ty='info'){const e=document.getElementById('message');e.textContent=t;e.style.borderColor=ty==='error'?'#8b3f4c':ty==='success'?'#397b5b':'#4c5b70';e.classList.add('show');setTimeout(()=>e.classList.remove('show'),3500)}
 
-function fmtAccum(v){
-  const x = Number(v)||0;
-  if(x === 0) return '0.00000000';
-  if(x >= 0.01) return x.toFixed(8);
-  if(x >= 0.0001) return x.toFixed(10);
-  if(x >= 0.000001) return x.toFixed(12);
-  const s = x.toFixed(20);
-  const match = s.match(/^0\.(0*)(\d+)/);
-  if(!match) return x.toFixed(8);
-  const zeros = match[1].length;
-  const digits = match[2].slice(0, 4);
-  const totalDigits = Math.min(zeros + 4, 20);
-  return x.toFixed(totalDigits).replace(/0+$/,'');
+function fmtAccum(v, rateSec){
+  const x = Number(v) || 0;
+  if (x === 0) return '0.00000000';
+  let decimals = 8;
+  if (rateSec && rateSec > 0) {
+    const perTick = rateSec * 0.1;
+    if (perTick > 0) {
+      const needed = Math.ceil(-Math.log10(perTick)) + 1;
+      decimals = Math.max(8, Math.min(12, needed));
+    }
+  }
+  if (x >= 1) return x.toFixed(decimals);
+  return x.toFixed(decimals);
 }
 
 const PRICE_CACHE = {};
@@ -854,49 +884,35 @@ function startStakeTimer(){
     STAKE_LAST_TS = now;
     STAKE_ACCUM += STAKE_BALANCE_USD * STAKE_RATE_SEC * dt;
     renderStake();
-  }, 1000);
+  }, 100);
 }
 function renderStake(){
   const perDay = STAKE_BALANCE_USD * STAKE_RATE_SEC * 86400;
   const perMonth = perDay * 30;
   const elA = document.getElementById('stakeAccum');
-  if(elA) elA.innerHTML = `${fmtAccum(STAKE_ACCUM)} <span style="font-size:16px;color:#7fc97f;font-weight:normal">TUSD</span>`;
+  if(elA) elA.innerHTML = `${fmtAccum(STAKE_ACCUM, STAKE_RATE_SEC)} <span style="font-size:16px;color:#7fc97f;font-weight:normal">TUSD</span>`;
   const el = document.getElementById('stakeTick');
   if(el) el.innerHTML = `<span style="color:#39d98a;font-weight:bold">+${fmtAccum(perDay)}</span> <span style="font-size:12px;color:#7fc97f;font-weight:normal">TUSD/день</span>`;
   const elM = document.getElementById('stakeMonth');
   if(elM) elM.innerHTML = `≈ <b>${perMonth < 0.01 ? fmtAccum(perMonth) : perMonth.toFixed(4)}</b> <span style="font-size:11px;color:#7fc97f;font-weight:normal">TUSD/месяц</span>`;
-  if(STAKE_SOUND_ON && Math.floor(Date.now()/1000) % 5 === 0) playCoinSound();
-}
-function playCoinSound(){
-  try{
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const osc = ctx.createOscillator(); const gain = ctx.createGain();
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(1400, ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(2200, ctx.currentTime + 0.06);
-    osc.frequency.exponentialRampToValueAtTime(1600, ctx.currentTime + 0.12);
-    gain.gain.setValueAtTime(0.08, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
-    osc.connect(gain); gain.connect(ctx.destination);
-    osc.start(); osc.stop(ctx.currentTime + 0.15);
-  }catch(e){}
-}
-function toggleStakeSound(){
-  STAKE_SOUND_ON = !STAKE_SOUND_ON;
-  const btn = document.getElementById('stakeSoundBtn');
-  if(btn) btn.textContent = STAKE_SOUND_ON ? '🔊' : '🔇';
-  if(STAKE_SOUND_ON) playCoinSound();
 }
 async function claimStaking(){
   if(!UID) return;
   try {
     const {data, error} = await sb.rpc('claim_staking', {p_user_id: String(UID)});
-    if(error || !data || data.ok === false){ msg(data?.error || error?.message || 'Нечего собирать', 'error'); return; }
+    if(error || !data || data.ok === false){
+      msg(data?.error || error?.message || 'Нечего собирать', 'error');
+      return;
+    }
     const claimed = Number(data.claimed) || 0;
     showAdRewardPopup(claimed, 'TUSD', '💵 СТЕЙКИНГ СОБРАН');
     STAKE_ACCUM = 0;
-    await loadUser(); await loadCustomBalances(); await loadStakeState();
-  } catch(e){ msg('Ошибка', 'error'); }
+    await loadUser();
+    await loadCustomBalances();
+    await loadStakeState();
+  } catch(e){
+    msg('Ошибка', 'error');
+  }
 }
 
 function openTelegramProfile(){
@@ -954,6 +970,7 @@ async function loadUser(){
 
   renderUser();
   if(UID === AID) document.getElementById('n-admin').classList.remove('hide');
+  if(UID === AID) document.getElementById('ownerEarningsBtn')?.classList.remove('hide');
   loadReferral(); updateOrderForm();
 }
 
@@ -1042,6 +1059,177 @@ function showSection(name){
   if(name==='earn'){loadCheckin();loadAdPrices().then(()=>updateAdBalanceInfo())}
   if(name==='admin'&&UID===AID){loadAdminStats();loadAdminChats();loadAdminListings();loadAdminTasks();loadAdminVerification();loadAdminCheckin();loadAllLogos();adminAdLoad();loadBannerSettings()}
   window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ============ ИСТОРИЯ ============
+const OP_ICONS = {
+  ad_view:'📺', checkin:'🔥', task_reward:'📋', task_commission:'👑',
+  staking_claim:'💧', welcome_bonus:'🎁',
+  transfer_in:'⬇️', transfer_out:'⬆️', transfer_fee:'💸',
+  p2p_trade:'🤝', p2p_buy:'🛒', p2p_sell:'💰', test:'🧪'
+};
+const OP_LABELS = {
+  ad_view:'Реклама', checkin:'Чекин', task_reward:'Задание',
+  task_commission:'Комиссия', staking_claim:'Стейкинг', welcome_bonus:'Бонус',
+  transfer_in:'Входящий перевод', transfer_out:'Исходящий перевод',
+  transfer_fee:'Комиссия перевода', p2p_trade:'P2P сделка',
+  test:'Тест'
+};
+
+function openHistory(){
+  document.getElementById('historyModal').classList.add('show');
+  HISTORY_OFFSET = 0;
+  HISTORY_ITEMS = [];
+  loadHistory();
+}
+function closeHistory(e){
+  if(e && e.target !== document.getElementById('historyModal')) return;
+  document.getElementById('historyModal').classList.remove('show');
+}
+function setHistoryFilter(wt){
+  HISTORY_WALLET = wt;
+  HISTORY_OFFSET = 0;
+  HISTORY_ITEMS = [];
+  document.querySelectorAll('#historyFilters button').forEach(b=>{
+    b.style.background = b.dataset.wt === wt ? '#80652d' : '';
+    b.style.color = b.dataset.wt === wt ? '#fff' : '';
+  });
+  loadHistory();
+}
+async function loadHistory(){
+  const box = document.getElementById('historyList');
+  if(!box) return;
+  box.innerHTML = '<div class="info">Загрузка...</div>';
+  const {data, error} = await sb.rpc('get_wallet_history', {
+    p_wallet_type: HISTORY_WALLET || null,
+    p_limit: HISTORY_LIMIT,
+    p_offset: HISTORY_OFFSET
+  });
+  if(error || !data || data.ok === false){
+    box.innerHTML = `<div class="er">${esc(error?.message || data?.error || 'Ошибка')}</div>`;
+    return;
+  }
+  const items = data.items || [];
+  if(!items.length && HISTORY_OFFSET === 0){
+    box.innerHTML = '<div class="info">Операций пока нет.</div>';
+    return;
+  }
+  HISTORY_ITEMS = HISTORY_ITEMS.concat(items);
+  renderHistory(box, data.has_more);
+}
+function renderHistory(box, hasMore){
+  const groups = {};
+  HISTORY_ITEMS.forEach(it=>{
+    const d = new Date(it.created_at);
+    const key = d.toDateString();
+    if(!groups[key]) groups[key] = {date: d, items: []};
+    groups[key].items.push(it);
+  });
+  const today = new Date(); today.setHours(0,0,0,0);
+  const yest = new Date(today); yest.setDate(yest.getDate() - 1);
+
+  let html = '';
+  Object.values(groups).forEach(g=>{
+    const d = g.date;
+    let label;
+    const dc = new Date(d); dc.setHours(0,0,0,0);
+    if(dc.getTime() === today.getTime()) label = 'Сегодня';
+    else if(dc.getTime() === yest.getTime()) label = 'Вчера';
+    else label = d.toLocaleDateString('ru-RU', {day:'numeric', month:'long'});
+    html += `<div class="title" style="font-size:12px;color:#9da9b9;margin-top:14px;margin-bottom:6px">${esc(label)}</div>`;
+    html += g.items.map(it=>{
+      const icon = OP_ICONS[it.operation_type] || '•';
+      const label = OP_LABELS[it.operation_type] || it.operation_type;
+      const amt = Number(it.amount);
+      const sign = amt >= 0 ? '+' : '';
+      const color = amt >= 0 ? '#39d98a' : '#ff647c';
+      const time = new Date(it.created_at).toLocaleTimeString('ru-RU', {hour:'2-digit', minute:'2-digit'});
+      return `<div class="ti" style="display:flex;align-items:center;gap:10px;padding:10px;background:#0d1520;border:1px solid #2d3a4c;border-radius:12px;margin-top:6px">
+        <div style="font-size:22px;flex:0 0 30px;text-align:center">${icon}</div>
+        <div style="flex:1;min-width:0">
+          <div style="color:#fff;font-weight:bold;font-size:13px">${esc(label)}</div>
+          <div class="info" style="font-size:11px;margin-top:2px">${esc(it.description || '')}</div>
+          <div class="info" style="font-size:10px;margin-top:2px;color:#6a768a">${time}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="color:${color};font-weight:bold;font-size:14px">${sign}${f(amt, 6)}</div>
+          <div class="info" style="font-size:11px">${esc(it.token)}</div>
+        </div>
+      </div>`;
+    }).join('');
+  });
+
+  if(hasMore){
+    html += `<button class="sec" style="margin-top:12px" onclick="loadMoreHistory()">Загрузить ещё</button>`;
+  }
+  box.innerHTML = html;
+}
+async function loadMoreHistory(){
+  HISTORY_OFFSET += HISTORY_LIMIT;
+  await loadHistory();
+}
+
+// ============ МОИ ДОХОДЫ ============
+function openOwnerEarnings(){
+  document.getElementById('ownerEarningsModal').classList.add('show');
+  loadOwnerEarnings('all');
+}
+function closeOwnerEarnings(e){
+  if(e && e.target !== document.getElementById('ownerEarningsModal')) return;
+  document.getElementById('ownerEarningsModal').classList.remove('show');
+}
+async function loadOwnerEarnings(period){
+  document.querySelectorAll('#ownerEarningsModal [data-period]').forEach(b=>{
+    b.style.background = b.dataset.period === period ? '#80652d' : '';
+    b.style.color = b.dataset.period === period ? '#fff' : '';
+  });
+  const box = document.getElementById('ownerEarningsBox');
+  box.innerHTML = '<div class="info">Загрузка...</div>';
+  const {data, error} = await sb.rpc('get_owner_earnings', {p_period: period});
+  if(error || !data || data.ok === false){
+    box.innerHTML = `<div class="er">${esc(error?.message || data?.error || 'Ошибка')}</div>`;
+    return;
+  }
+  const total = Number(data.total) || 0;
+  const bySource = data.by_source || [];
+  const byToken = data.by_token || [];
+  const byDay = data.by_day || [];
+
+  let html = `<div style="text-align:center;padding:14px;background:linear-gradient(145deg,#1f4a1f,#0d280d);border:2px solid #39d98a;border-radius:16px;margin-bottom:14px">
+    <div class="info" style="font-size:11px">ИТОГО</div>
+    <div style="font-size:32px;font-weight:bold;color:#39d98a;text-shadow:0 0 18px #39d98a88">${f(total, 4)}</div>
+    <div class="info" style="font-size:12px">TUSD</div>
+  </div>`;
+
+  if(bySource.length){
+    html += `<div class="title" style="font-size:12px;color:#9da9b9;margin-bottom:6px">ПО ИСТОЧНИКАМ</div>`;
+    html += bySource.map(s=>{
+      const icon = OP_ICONS[s.source] || '•';
+      const label = OP_LABELS[s.source] || s.source;
+      return `<div class="dt"><span>${icon} ${esc(label)} <span style="color:#6a768a">(${s.ops})</span></span><span style="color:#f4cf70;font-weight:bold">${f(s.total, 4)}</span></div>`;
+    }).join('');
+  }
+
+  if(byToken.length){
+    html += `<div class="title" style="font-size:12px;color:#9da9b9;margin-top:14px;margin-bottom:6px">ПО ТОКЕНАМ</div>`;
+    html += byToken.map(t=>`<div class="dt"><span>${esc(t.token)}</span><span style="color:#f4cf70;font-weight:bold">${f(t.total, 6)}</span></div>`).join('');
+  }
+
+  if(byDay.length){
+    const max = Math.max(...byDay.map(d=>Number(d.total)));
+    html += `<div class="title" style="font-size:12px;color:#9da9b9;margin-top:14px;margin-bottom:8px">ПО ДНЯМ (30)</div>`;
+    html += `<div style="display:flex;align-items:flex-end;gap:2px;height:80px;padding:6px;background:#0d1520;border-radius:12px;border:1px solid #2d3a4c">`;
+    html += byDay.map(d=>{
+      const h = max > 0 ? (Number(d.total) / max) * 70 : 0;
+      const dt = new Date(d.day).toLocaleDateString('ru-RU', {day:'numeric', month:'numeric'});
+      return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%" title="${dt}: ${f(d.total, 4)}">
+        <div style="width:100%;height:${h}px;background:linear-gradient(0deg,#b98b27,#ffe38a);border-radius:2px 2px 0 0"></div>
+      </div>`;
+    }).join('');
+    html += `</div>`;
+  }
+
+  box.innerHTML = html;
 }
 
 async function loadAdBalance(){
@@ -1161,8 +1349,7 @@ async function loadMyReferrals(){
   box.innerHTML=html;
 }
 
-// ============ РЕКЛАМНЫЕ БАННЕРЫ + КАБИНЕТ ============
-
+// ============ РЕКЛАМНЫЕ БАННЕРЫ ============
 function applyBannerSettings(){
   const root = document.documentElement;
   root.style.setProperty('--bn-h', BANNER_SETTINGS.height + 'px');
@@ -2459,12 +2646,14 @@ document.addEventListener('DOMContentLoaded',async()=>{
   updateOrderForm();
   if(UID===AID){
     document.getElementById('n-admin').classList.remove('hide');
+    document.getElementById('ownerEarningsBtn')?.classList.remove('hide');
     await loadListingSettings();
     calculateListingPreview();
   }
   await loadStakeState();
   await loadTopBanner();
   await loadAdPrices();
+  setInterval(refreshJwt, 30 * 60 * 1000);
 });
 </script>
 </body></html>
