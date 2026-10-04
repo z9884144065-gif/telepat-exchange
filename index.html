@@ -55,7 +55,7 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 .rat{display:flex;gap:8px}.rat button{margin:0}
 .ti{background:#0d1520;border:1px solid #2e3a4c;border-radius:14px;padding:11px;margin-top:8px}
 .nav{position:fixed;z-index:900;bottom:0;left:0;right:0;background:#0e151fef;backdrop-filter:blur(12px);border-top:1px solid #303d4f;padding:8px 6px calc(8px + env(safe-area-inset-bottom));display:flex;justify-content:center;gap:5px}
-.nav button{width:auto;flex:1;max-width:120px;padding:10px 6px;margin:0;background:#1b2635;color:#d9e0e8;font-size:11px}
+.nav button{width:auto;flex:1;max-width:120px;padding:9px 4px;margin:0;background:#1b2635;color:#d9e0e8;font-size:10px}
 .nav button.active{background:#80652d;color:#fff}
 .hide{display:none!important}
 .msg{position:fixed;z-index:4000;left:12px;right:12px;top:12px;padding:13px;border-radius:14px;background:#1b2737;border:1px solid #4c5b70;display:none;text-align:center;font-size:13px}.msg.show{display:block}
@@ -142,6 +142,31 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 .ad-banner-close{position:absolute;top:8px;right:8px;width:26px;height:26px;padding:0;margin:0;border:0;background:rgba(0,0,0,.55);color:#fff;border-radius:50%;font-size:13px;cursor:pointer;z-index:4;line-height:1}
 .ad-banner-close:active{background:rgba(0,0,0,.85)}
 .ad-banner-mark{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.72);color:#cbd5e1;font-size:11px;font-weight:800;letter-spacing:3px;text-align:center;padding:5px 0;text-transform:uppercase;z-index:3;text-shadow:0 1px 2px #000}
+.reward-fund-card{background:linear-gradient(145deg,#12201a,#0a1610);border:1px solid #2d5a3d;border-radius:16px;padding:14px;margin-top:8px}
+.reward-fund-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.reward-fund-symbol{font-size:16px;font-weight:bold;color:#fff}
+.reward-fund-fund{margin-left:auto;text-align:right}
+.reward-fund-val{font-size:20px;font-weight:bold;color:#39d98a;line-height:1}
+.reward-fund-delta{font-size:11px;margin-top:3px}
+.reward-fund-delta.up{color:#39d98a}
+.reward-fund-delta.down{color:#ff647c}
+.reward-fund-stats{display:flex;gap:10px;font-size:11px;color:#8f9bab;margin-top:6px;flex-wrap:wrap}
+.reward-fund-stats b{color:#fff}
+.reward-fund-actions{display:flex;gap:8px;margin-top:10px}
+.reward-fund-actions button{margin:0;padding:9px;font-size:12px}
+.reward-fund-mine{background:#0006;border:1px solid #2d5a3d;border-radius:10px;padding:8px 10px;margin-top:8px;font-size:11px}
+.reward-fund-mine b{color:#39d98a}
+.lead-row{display:flex;align-items:center;gap:12px;padding:12px 14px;background:linear-gradient(145deg,#101a28,#0c121c);border:1px solid #2d3a4c;border-radius:14px;margin-top:8px}
+.lead-place{flex:0 0 40px;font-size:18px;font-weight:bold;text-align:center;color:#f4cf70;text-shadow:0 0 10px #f4cf7066}
+.lead-place.gold{color:#ffd700;text-shadow:0 0 14px #ffd70099}
+.lead-place.silver{color:#c0c0c0;text-shadow:0 0 12px #c0c0c088}
+.lead-place.bronze{color:#cd7f32;text-shadow:0 0 12px #cd7f3288}
+.lead-info{flex:1;min-width:0}
+.lead-name{color:#fff;font-weight:bold;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lead-rank{color:#8f9bab;font-size:11px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lead-value{text-align:right}
+.lead-value b{display:block;font-size:16px;font-weight:bold}
+.lead-value span{color:#8f9bab;font-size:10px}
 </style></head><body>
 <div id="message" class="msg"></div>
 <div class="app">
@@ -200,6 +225,8 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
   <button onclick="openHistory()" class="sec" style="flex:1;margin:0;padding:11px;font-size:13px">📜 История</button>
   <button onclick="openOwnerEarnings()" id="ownerEarningsBtn" class="hide" style="flex:1;margin:0;padding:11px;font-size:13px">💰 Мои доходы</button>
 </div>
+<div class="title" style="font-size:12px;color:#9da9b9;margin-top:18px;margin-bottom:8px">🎁 ФОНДЫ НАГРАД</div>
+<div id="rewardFundsList"><div class="info">Загрузка...</div></div>
 <div class="title" style="font-size:12px;color:#9da9b9;margin-top:18px;margin-bottom:8px">МОИ ТОКЕНЫ</div>
 <div id="tokensList" style="display:flex;flex-direction:column;gap:7px"></div>
 </div>
@@ -266,6 +293,18 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 <div id="refSummary" class="info" style="margin-bottom:10px">Загрузка...</div>
 <div id="refList" class="info">Загрузка...</div>
 <button class="sec" onclick="loadMyReferrals()">🔄 Обновить</button>
+</div>
+</section>
+
+<section id="s-top" class="hide">
+<div class="card gold">
+<div class="title">🏆 ТОП-100</div>
+<div style="display:flex;gap:6px;margin-bottom:12px">
+<button id="lb-tab-profit" class="sec" style="margin:0;font-size:12px;padding:9px" onclick="showLbTab('profit')">💰 По прибыли</button>
+<button id="lb-tab-refs" class="sec" style="margin:0;font-size:12px;padding:9px" onclick="showLbTab('refs')">👥 По рефералам</button>
+</div>
+<div id="leaderboardList"><div class="info">Загрузка...</div></div>
+<button class="sec" style="margin-top:12px" onclick="loadLeaderboard()">🔄 Обновить</button>
 </div>
 </section>
 
@@ -338,6 +377,14 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 </div>
 
 <div class="card admin">
+<div class="title">🎁 НАСТРОЙКА ФОНДОВ НАГРАД</div>
+<div class="info" style="margin-bottom:10px">Управление фондами по каждому токену.</div>
+<button class="sec" onclick="loadAdminRewardTokens()">🔄 Загрузить токены</button>
+<button class="sec" onclick="adminRefreshRewardFunds()">🎁 РАЗДАТЬ ФОНДЫ СЕЙЧАС</button>
+<div id="adminRewardTokensList" style="margin-top:12px"><div class="info">Нажми «Загрузить токены».</div></div>
+</div>
+
+<div class="card admin">
 <div class="title">📢 ЗАЯВКИ НА РЕКЛАМУ (ВСЕ ТИПЫ)</div>
 <div class="info" style="margin-bottom:10px">Модерация всей рекламы: баннеры, видео, задания, ссылки.</div>
 <button class="sec" onclick="adminAdLoad()">🔄 ЗАГРУЗИТЬ ВСЕ</button>
@@ -351,40 +398,27 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 
 <div class="card admin">
 <div class="title">🖼️ НАСТРОЙКИ БАННЕРА</div>
-<div class="info" style="margin-bottom:10px">Размеры баннера вверху приложения. Применяется ко всем пользователям.</div>
-
 <label>Высота (px) — <span id="bnHS">110</span></label>
 <input type="range" id="bnH" min="60" max="260" value="110" oninput="document.getElementById('bnHS').textContent=this.value">
-
 <label style="margin-top:10px">Радиус углов (px) — <span id="bnRS">14</span></label>
 <input type="range" id="bnR" min="0" max="40" value="14" oninput="document.getElementById('bnRS').textContent=this.value">
-
 <label style="margin-top:10px">Размер заголовка (px) — <span id="bnTS">17</span></label>
 <input type="range" id="bnT" min="12" max="32" value="17" oninput="document.getElementById('bnTS').textContent=this.value">
-
 <label style="margin-top:10px">Размер подзаголовка (px) — <span id="bnSS">13</span></label>
 <input type="range" id="bnS" min="10" max="24" value="13" oninput="document.getElementById('bnSS').textContent=this.value">
-
 <label style="margin-top:10px">Отступ внутри (px) — <span id="bnPS">16</span></label>
 <input type="range" id="bnP" min="6" max="36" value="16" oninput="document.getElementById('bnPS').textContent=this.value">
-
 <label style="margin-top:10px">Сколько баннеров показывать</label>
-<select id="bnCount">
-  <option value="1">1 баннер</option>
-  <option value="2">2 баннера</option>
-  <option value="3">3 баннера</option>
-</select>
-
+<select id="bnCount"><option value="1">1 баннер</option><option value="2">2 баннера</option><option value="3">3 баннера</option></select>
 <div class="row" style="margin-top:12px">
-  <button onclick="saveBannerSettings()">💾 Сохранить</button>
-  <button class="sec" onclick="loadBannerSettings()">↺ Загрузить</button>
+<button onclick="saveBannerSettings()">💾 Сохранить</button>
+<button class="sec" onclick="loadBannerSettings()">↺ Загрузить</button>
 </div>
 <div id="bnSetStatus" class="info" style="margin-top:8px"></div>
 </div>
 
 <div class="card admin">
 <div class="title">🎨 UI НАСТРОЙКИ</div>
-<div class="info" style="margin-bottom:10px">Цвета интерфейса. Применяются сразу после сохранения.</div>
 <button class="sec" onclick="loadUiSettings()">🔄 Загрузить настройки</button>
 <div id="uiSettingsBox" style="margin-top:12px">
   <label style="margin-top:8px">Основной фон приложения</label>
@@ -405,21 +439,18 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 
 <div class="card admin">
 <div class="title">🖼️ ЛОГОТИПЫ ТОКЕНОВ</div>
-<div class="info" style="margin-bottom:10px">Задай лого для любого токена.</div>
 <button onclick="loadAllLogos()">🔄 Загрузить все токены</button>
 <div id="adminLogosList" style="margin-top:12px"><div class="info">Нажми «Загрузить все токены».</div></div>
 </div>
 
 <div class="card admin">
 <div class="title">💱 КУРСЫ И МИНИМУМЫ ТОКЕНОВ</div>
-<div class="info" style="margin-bottom:10px">Курс токена в TUSD и минимальная сумма вывода.</div>
 <button class="sec" onclick="loadAdminTokenPrices()">🔄 Загрузить курсы</button>
 <div id="adminTokenPricesList" style="margin-top:12px"><div class="info">Нажми «Загрузить курсы».</div></div>
 </div>
 
 <div class="card admin">
 <div class="title">🎁 БОНУС НОВИЧКА — НАСТРОЙКИ</div>
-<div class="info" style="margin-bottom:10px">Сумма приветственного бонуса и количество участников.</div>
 <button class="sec" onclick="loadAdminBonusConfig()">🔄 Загрузить</button>
 <div id="adminBonusBox" style="margin-top:12px"><div class="info">Нажми «Загрузить».</div></div>
 </div>
@@ -440,11 +471,10 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 
 <div class="card admin">
 <div class="title">🔀 ПЕРЕВОД РЕФЕРАЛОВ</div>
-<div class="info" style="margin-bottom:10px">Можно вводить Telegram ID (число) или @username. Разделяй запятыми или пробелами.</div>
 <label>Кому перевести (новый реферер)</label>
 <input type="text" id="ref_transfer_target" placeholder="949707357 или @Vladimir_G17">
 <label style="margin-top:9px">Кого перевести (список)</label>
-<input type="text" id="ref_transfer_ids" placeholder="6335237242, @BellaDonnaSignorina, 1083013794">
+<input type="text" id="ref_transfer_ids" placeholder="6335237242, @BellaDonnaSignorina">
 <button onclick="adminTransferReferrals()">🔀 ПЕРЕВЕСТИ</button>
 <div id="ref_transfer_status" class="info" style="margin-top:9px"></div>
 </div>
@@ -477,15 +507,12 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 
 <div class="card admin">
 <div class="title">⚙️ НАСТРОЙКИ ЛИСТИНГА</div>
-<div class="info" style="margin-bottom:10px">Комиссия и доля платформы при листинге токенов.</div>
 <button class="sec" onclick="loadListingSettingsAdmin()">🔄 Загрузить настройки</button>
 <div id="listingSettingsBox" style="margin-top:12px">
   <label>💰 Комиссия за листинг (TUSD)</label>
   <input type="number" id="ls_fee_tusd" step="0.01" min="0" placeholder="Например: 50">
-  <div class="info" style="font-size:11px;margin-top:4px">Фиксированная сумма к оплате листером.</div>
   <label style="margin-top:12px">📊 Доля платформы от Supply (%)</label>
   <input type="number" id="ls_supply_percent" step="0.1" min="0" max="100" placeholder="Например: 10">
-  <div class="info" style="font-size:11px;margin-top:4px">Процент от общего Supply, который забирает платформа.</div>
   <div class="row" style="margin-top:14px">
     <button onclick="saveListingSettingsAdmin()">💾 Сохранить</button>
     <button class="sec" onclick="loadListingSettingsAdmin()">↺ Сбросить</button>
@@ -527,34 +554,25 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 
 <div class="card admin">
 <div class="title">🛡️ ВЕРИФИКАЦИЯ ТОКЕНОВ</div>
-<div class="info" style="margin-bottom:10px">Пул ≥ $1000, возраст ≥ 30 дней, владелец ≥ Барон, ≥ 10 держателей.</div>
 <button class="sec" onclick="loadAdminVerification()">🔄 ЗАГРУЗИТЬ</button>
 <div id="adminVerifyList" style="margin-top:12px"><div class="info">Нажми «Загрузить».</div></div>
 </div>
 
 <div class="card admin">
 <div class="title">📺 ДОБАВИТЬ РЕКЛАМУ</div>
-<label>Название</label>
-<input id="ad_new_title" type="text" placeholder="Например: Игра XYZ">
-<label style="margin-top:9px">Описание</label>
-<input id="ad_new_desc" type="text">
+<label>Название</label><input id="ad_new_title" type="text" placeholder="Например: Игра XYZ">
+<label style="margin-top:9px">Описание</label><input id="ad_new_desc" type="text">
 <label style="margin-top:9px">Видео (MP4, макс. 50 МБ)</label>
 <input id="ad_new_video" type="file" accept="video/mp4">
 <label style="margin-top:9px">Ссылка (куда ведёт кнопка)</label>
 <input id="ad_new_url" type="text" placeholder="https://t.me/канал">
-<label style="margin-top:9px">Текст кнопки</label>
-<input id="ad_new_cta" type="text" value="🚀 ПЕРЕЙТИ">
-<label style="margin-top:9px">Длительность видео (сек)</label>
-<input id="ad_new_duration" type="number" value="15">
-<label style="margin-top:9px">Буфер после видео (сек)</label>
-<input id="ad_new_buffer" type="number" value="10">
-<label style="margin-top:9px">Награда за просмотр</label>
-<input id="ad_new_reward" type="number" step="0.000001" value="0.0005">
-<label style="margin-top:9px">Токен награды</label>
-<select id="ad_new_token"><option value="">TUSD (по умолчанию)</option></select>
-<label style="margin-top:9px">Сколько просмотров купить</label>
-<input id="ad_new_target" type="number" value="10000">
-<button id="ad_new_submit" onclick="adminCreateAd()">📤 ЗАГРУЗИТЬ И СОЗДАТЬ РЕКЛАМУ</button>
+<label style="margin-top:9px">Текст кнопки</label><input id="ad_new_cta" type="text" value="🚀 ПЕРЕЙТИ">
+<label style="margin-top:9px">Длительность (сек)</label><input id="ad_new_duration" type="number" value="15">
+<label style="margin-top:9px">Буфер (сек)</label><input id="ad_new_buffer" type="number" value="10">
+<label style="margin-top:9px">Награда</label><input id="ad_new_reward" type="number" step="0.000001" value="0.0005">
+<label style="margin-top:9px">Токен награды</label><select id="ad_new_token"><option value="">TUSD (по умолчанию)</option></select>
+<label style="margin-top:9px">Просмотров купить</label><input id="ad_new_target" type="number" value="10000">
+<button id="ad_new_submit" onclick="adminCreateAd()">📤 ЗАГРУЗИТЬ И СОЗДАТЬ</button>
 <div id="ad_new_status" class="info" style="margin-top:9px"></div>
 </div>
 
@@ -605,6 +623,42 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 <button onclick="confirmAddLiquidity()">✅ ВНЕСТИ</button>
 <button class="sec" onclick="closeAddLiq()">Отмена</button>
 </div></div>
+
+<div id="donateFundModal" class="mo" onclick="closeDonateFund(event)">
+<div class="mb" onclick="event.stopPropagation()">
+<div class="title" id="donateFundTitle">➕ В ФОНД НАГРАД</div>
+<div class="info" style="margin:8px 0 14px">Сумма в TUSD переводится в фонд токена по текущему курсу.</div>
+<label>Сумма TUSD</label>
+<input id="donateFundAmount" type="number" min="0.01" step="0.01" placeholder="Например: 100">
+<div class="info" style="margin-top:8px" id="donateFundAvail">Доступно: 0 TUSD</div>
+<button onclick="confirmDonateFund()">✅ ВНЕСТИ В ФОНД</button>
+<button class="sec" onclick="closeDonateFund()">Отмена</button>
+</div></div>
+
+<div id="adminRewardConfigModal" class="mo" onclick="closeAdminRewardConfig(event)">
+<div class="mb" style="width:min(520px,100%);max-height:85vh;overflow-y:auto" onclick="event.stopPropagation()">
+<div class="title">🎁 НАСТРОЙКА ФОНДА</div>
+<div class="info" id="adminRewardTokenName" style="margin-bottom:10px">—</div>
+<label>💰 Комиссия с обмена (%)</label>
+<input id="arc_fee_swap" type="number" step="0.01" min="0" max="99">
+<label style="margin-top:9px">🎁 Из неё в фонд наград (%)</label>
+<input id="arc_fee_fund" type="number" step="0.01" min="0" max="100">
+<label style="margin-top:9px">👑 Из неё тебе (%)</label>
+<input id="arc_fee_owner" type="number" step="0.01" min="0" max="100">
+<label style="margin-top:9px">⏱ Ставка раздачи в час (%)</label>
+<input id="arc_rate" type="number" step="0.0001" min="0" max="10">
+<label style="margin-top:9px">🎯 Кому раздавать</label>
+<select id="arc_target">
+  <option value="holders">Всем держателям</option>
+  <option value="stakers">Только стейкерам</option>
+</select>
+<label style="margin-top:9px">💵 В чём раздавать (пусто = в самом токене)</label>
+<input id="arc_token_sym" type="text" placeholder="TUSD / TG / ...">
+<button onclick="saveAdminRewardConfig()">💾 СОХРАНИТЬ</button>
+<button class="sec" onclick="closeAdminRewardConfig()">Отмена</button>
+<div id="adminRewardStatus" class="info" style="margin-top:9px;text-align:center"></div>
+</div>
+</div>
 
 <div id="historyModal" class="mo" onclick="closeHistory(event)">
 <div class="mb" style="width:min(520px,100%);max-height:85vh;overflow-y:auto" onclick="event.stopPropagation()">
@@ -698,7 +752,8 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 <button id="n-wallet" class="active" onclick="showSection('wallet')">🏠 Кошелёк</button>
 <button id="n-exchange" onclick="showSection('exchange')">🔄 Обмен</button>
 <button id="n-friends" onclick="showSection('friends')">👥 Друзья</button>
-<button id="n-earn" onclick="showSection('earn')">💎 Заработок</button>
+<button id="n-top" onclick="showSection('top')">🏆 Топ</button>
+<button id="n-earn" onclick="showSection('earn')">💎 Доход</button>
 <button id="n-admin" class="hide" onclick="showSection('admin')">👑 Админ</button>
 </div>
 <script>
@@ -722,6 +777,10 @@ let HISTORY_WALLET = '';
 let HISTORY_OFFSET = 0;
 const HISTORY_LIMIT = 20;
 let HISTORY_ITEMS = [];
+let REWARD_FUNDS = [];
+let DONATE_TOKEN = null;
+let ADMIN_REWARD_TOKEN = null;
+let LB_TAB = 'profit';
 
 async function refreshJwt(){
   const id=window.Telegram?.WebApp?.initData;
@@ -760,7 +819,6 @@ function fmtAccum(v, rateSec){
       decimals = Math.max(8, Math.min(12, needed));
     }
   }
-  if (x >= 1) return x.toFixed(decimals);
   return x.toFixed(decimals);
 }
 
@@ -1050,15 +1108,261 @@ function openWithdraw(symbol, amount, minW){
 function openTokenDeposit(symbol){ msg(`Пополнение ${symbol}: подключите TON-кошелёк (скоро)`, 'info'); }
 
 function showSection(name){
-  ['wallet','exchange','friends','earn','admin'].forEach(s=>{
+  ['wallet','exchange','friends','top','earn','admin'].forEach(s=>{
     document.getElementById('s-'+s).classList.toggle('hide',s!==name);
     document.getElementById('n-'+s)?.classList.toggle('active',s===name);
   });
   if(name==='exchange'){loadOrders();loadMyOrders();loadMyTrades();loadTokenReserves()}
   if(name==='friends'){loadMyReferrals();loadReferralEarningsSummary()}
+  if(name==='top'){loadLeaderboard()}
   if(name==='earn'){loadCheckin();loadAdPrices().then(()=>updateAdBalanceInfo())}
   if(name==='admin'&&UID===AID){loadAdminStats();loadAdminChats();loadAdminListings();loadAdminTasks();loadAdminVerification();loadAdminCheckin();loadAllLogos();adminAdLoad();loadBannerSettings()}
   window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ============ ЛИДЕРБОРД ============
+function showLbTab(tab){
+  LB_TAB = tab;
+  const pBtn = document.getElementById('lb-tab-profit');
+  const rBtn = document.getElementById('lb-tab-refs');
+  if(pBtn){ pBtn.style.background = tab==='profit' ? '#80652d' : ''; pBtn.style.color = tab==='profit' ? '#fff' : ''; }
+  if(rBtn){ rBtn.style.background = tab==='refs' ? '#80652d' : ''; rBtn.style.color = tab==='refs' ? '#fff' : ''; }
+  loadLeaderboard();
+}
+async function loadLeaderboard(){
+  const box = document.getElementById('leaderboardList');
+  if(!box) return;
+  box.innerHTML = '<div class="info">Загрузка...</div>';
+  const rpc = LB_TAB === 'refs' ? 'get_leaderboard_referrals' : 'get_leaderboard_profit';
+  const {data, error} = await sb.rpc(rpc, {p_limit: 100});
+  if(error || !data || data.ok === false){
+    box.innerHTML = `<div class="er">${esc(error?.message || data?.error || 'Ошибка')}</div>`;
+    return;
+  }
+  const items = data.items || [];
+  if(!items.length){
+    box.innerHTML = '<div class="info">Пока никого нет.</div>';
+    return;
+  }
+  box.innerHTML = items.map(it => {
+    const place = Number(it.place) || 0;
+    let placeCls = 'lead-place';
+    let placeText = '#' + place;
+    if(place === 1){ placeCls += ' gold'; placeText = '🥇'; }
+    else if(place === 2){ placeCls += ' silver'; placeText = '🥈'; }
+    else if(place === 3){ placeCls += ' bronze'; placeText = '🥉'; }
+    const name = it.first_name || it.username || ('ID ' + it.telegram_id);
+    const handle = it.username ? '@' + it.username : '';
+    const isMe = Number(it.telegram_id) === UID;
+    let valueHtml = '';
+    if(LB_TAB === 'refs'){
+      valueHtml = `<b style="color:#4f8cff">${Number(it.refs_count)||0}</b><span>рефералов</span>`;
+    } else {
+      valueHtml = `<b style="color:#39d98a">${f(it.total_earned, 4)}</b><span>TUSD заработано</span>`;
+    }
+    return `<div class="lead-row" style="${isMe ? 'border-color:#80652d;box-shadow:0 0 12px #80652d55' : ''}">
+      <div class="${placeCls}">${placeText}</div>
+      <div class="lead-info">
+        <div class="lead-name">${esc(name)}${isMe ? ' <span style="color:#f4cf70;font-size:11px">(ты)</span>' : ''}</div>
+        <div class="lead-rank">👑 ${esc(it.rank_name || '—')} ${handle ? '• ' + esc(handle) : ''}</div>
+      </div>
+      <div class="lead-value">${valueHtml}</div>
+    </div>`;
+  }).join('');
+}
+
+// ============ ФОНДЫ НАГРАД ============
+async function loadRewardFunds(){
+  const box = document.getElementById('rewardFundsList');
+  if(!box) return;
+  box.innerHTML = '<div class="info">Загрузка...</div>';
+  if(!ALL_TOKENS || !ALL_TOKENS.length){ box.innerHTML = '<div class="info">Нет токенов.</div>'; return; }
+  const results = await Promise.all(ALL_TOKENS.map(async t => {
+    try{
+      const {data, error} = await sb.rpc('get_reward_fund_info', {p_token_symbol: t.symbol});
+      if(error || !data || data.ok === false) return null;
+      return data;
+    }catch{ return null; }
+  }));
+  REWARD_FUNDS = results.filter(Boolean);
+  renderRewardFunds();
+}
+function renderRewardFunds(){
+  const box = document.getElementById('rewardFundsList');
+  if(!box) return;
+  if(!REWARD_FUNDS.length){ box.innerHTML = '<div class="info">Фондов пока нет.</div>'; return; }
+  box.innerHTML = REWARD_FUNDS.map(fd => {
+    const delta = Number(fd.delta_24h) || 0;
+    const deltaCls = delta >= 0 ? 'up' : 'down';
+    const deltaSign = delta >= 0 ? '+' : '';
+    const icon = tokenIconHTML(fd.token_symbol, 'sm');
+    const fundDisplay = fd.fund_amount < 1
+      ? Number(fd.fund_amount).toFixed(8)
+      : Number(fd.fund_amount).toLocaleString('ru-RU', {maximumFractionDigits: 4});
+    const fundTusd = Number(fd.fund_amount_tusd) || 0;
+    const myDaily = Number(fd.my_per_day) || 0;
+    const myDailyTusd = Number(fd.my_per_day_tusd) || 0;
+    const fundPerHour = Number(fd.fund_per_hour) || 0;
+    return `<div class="reward-fund-card">
+      <div class="reward-fund-head">
+        ${icon}
+        <div>
+          <div class="reward-fund-symbol">${esc(fd.token_symbol)}</div>
+          <div class="info" style="font-size:10px">Ставка ${fd.hourly_rate_pct}%/час</div>
+        </div>
+        <div class="reward-fund-fund">
+          <div class="reward-fund-val">${fundDisplay} ${esc(fd.token_symbol)}</div>
+          <div class="reward-fund-delta ${deltaCls}">${deltaSign}${f(delta,6)} за 24ч • ${esc(fundTusd.toFixed(2))} TUSD</div>
+        </div>
+      </div>
+      <div class="reward-fund-stats">
+        <span>За час фонд: <b>${f(fundPerHour,6)} ${esc(fd.token_symbol)}</b></span>
+        <span>Мой баланс: <b>${f(fd.my_balance,4)}</b> (${f(fd.my_share_pct,3)}%)</span>
+      </div>
+      ${myDaily > 0 ? `<div class="reward-fund-mine">
+        Мне капает: <b>+${fmtAccum(myDaily, myDaily/86400)} ${esc(fd.token_symbol)}/день</b>
+        ≈ <b>${myDailyTusd.toFixed(4)} TUSD</b>
+        <br>Накоплено: <b>${fmtAccum(fd.my_accumulated, myDaily/86400)} TUSD</b>
+      </div>` : ''}
+      <div class="reward-fund-actions">
+        <button onclick="openDonateFund('${esc(fd.token_symbol)}')">➕ Добавить в фонд</button>
+        <button class="sec" onclick="claimRewardShare()">💵 Забрать накопленное</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function openDonateFund(symbol){
+  DONATE_TOKEN = symbol;
+  const modal = document.getElementById('donateFundModal');
+  document.getElementById('donateFundTitle').textContent = '➕ В ФОНД НАГРАД ' + symbol;
+  document.getElementById('donateFundAmount').value = '';
+  const avail = CU ? n(CU.tusd_balance) : 0;
+  document.getElementById('donateFundAvail').textContent = `Доступно: ${f(avail, 4)} TUSD`;
+  modal.classList.add('show');
+}
+function closeDonateFund(e){
+  if(e && e.target !== document.getElementById('donateFundModal')) return;
+  document.getElementById('donateFundModal').classList.remove('show');
+  DONATE_TOKEN = null;
+}
+async function confirmDonateFund(){
+  if(!DONATE_TOKEN) return;
+  const amt = n(document.getElementById('donateFundAmount').value);
+  if(amt <= 0){ msg('Введите сумму больше 0','error'); return; }
+  const {data, error} = await sb.rpc('donate_to_fund', {p_token_symbol: DONATE_TOKEN, p_amount: amt});
+  if(error || !data || data.ok === false){
+    msg(data?.error || error?.message || 'Ошибка','error');
+    return;
+  }
+  msg(`✅ Фонд ${DONATE_TOKEN} пополнен на ${f(amt,2)} TUSD`,'success');
+  closeDonateFund();
+  await loadUser();
+  await loadRewardFunds();
+}
+async function claimRewardShare(){
+  const {data, error} = await sb.rpc('claim_reward_share');
+  if(error || !data || data.ok === false){
+    msg(data?.error || error?.message || 'Нечего забирать','error');
+    return;
+  }
+  const claimed = Number(data.claimed) || 0;
+  showAdRewardPopup(claimed, 'TUSD', '💵 НАГРАДЫ СОБРАНЫ');
+  await loadUser();
+  await loadRewardFunds();
+}
+
+// ============ АДМИНКА: ФОНДЫ ============
+async function loadAdminRewardTokens(){
+  const box = document.getElementById('adminRewardTokensList');
+  if(!box) return;
+  box.innerHTML = '<div class="info">Загрузка...</div>';
+  if(!ALL_TOKENS.length){ box.innerHTML = '<div class="info">Нет токенов.</div>'; return; }
+  const results = await Promise.all(ALL_TOKENS.map(async t => {
+    try{
+      const {data, error} = await sb.rpc('admin_get_reward_config', {p_token_symbol: t.symbol});
+      if(error || !data || data.ok === false) return null;
+      return data;
+    }catch{ return null; }
+  }));
+  const configs = results.filter(Boolean);
+  if(!configs.length){ box.innerHTML = '<div class="info">Не удалось загрузить.</div>'; return; }
+  box.innerHTML = configs.map(c => {
+    const icon = tokenIconHTML(c.symbol, 'sm');
+    return `<div class="pc" style="margin-top:8px">
+      <div style="display:flex;align-items:center;gap:10px">
+        ${icon}
+        <div style="flex:1;min-width:0">
+          <div class="pt">${esc(c.symbol)} — ${esc(c.name || '')}</div>
+          <div class="info" style="font-size:11px;margin-top:3px">Комиссия ${c.fee_swap_pct}% • Фонд: ${f(c.reward_fund,4)} • Ставка ${c.hourly_rate}%/час</div>
+        </div>
+      </div>
+      <div class="row" style="margin-top:8px">
+        <button class="sm" onclick="openAdminRewardConfig('${esc(c.symbol)}')">⚙️ Настроить</button>
+        <button class="sm sec" onclick="runAccrue('${esc(c.symbol)}')">🎁 Раздать</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+async function runAccrue(symbol){
+  const {data, error} = await sb.rpc('accrue_reward_fund', {p_token_symbol: symbol});
+  if(error || !data || data.ok === false){ msg('Ошибка','error'); return; }
+  msg(`✅ ${symbol}: раздано ${f(data.distributed,6)} (${data.holders||0} чел.)`,'success');
+  await loadAdminRewardTokens();
+  await loadRewardFunds();
+}
+async function adminRefreshRewardFunds(){
+  if(UID !== AID) return;
+  const {data, error} = await sb.rpc('accrue_reward_fund_all');
+  if(error){ msg(error.message,'error'); return; }
+  msg('✅ Раздача по всем токенам завершена','success');
+  await loadAdminRewardTokens();
+  await loadRewardFunds();
+}
+function openAdminRewardConfig(symbol){
+  ADMIN_REWARD_TOKEN = symbol;
+  const modal = document.getElementById('adminRewardConfigModal');
+  document.getElementById('adminRewardTokenName').textContent = 'Загрузка...';
+  modal.classList.add('show');
+  sb.rpc('admin_get_reward_config', {p_token_symbol: symbol}).then(({data, error}) => {
+    if(error || !data || data.ok === false){
+      document.getElementById('adminRewardTokenName').textContent = 'Ошибка: ' + (data?.error || error?.message);
+      return;
+    }
+    document.getElementById('adminRewardTokenName').textContent = data.symbol + ' — ' + (data.name || '');
+    document.getElementById('arc_fee_swap').value = data.fee_swap_pct;
+    document.getElementById('arc_fee_fund').value = data.fee_to_fund_pct;
+    document.getElementById('arc_fee_owner').value = data.fee_to_owner_pct;
+    document.getElementById('arc_rate').value = data.hourly_rate;
+    document.getElementById('arc_target').value = data.reward_target || 'holders';
+    document.getElementById('arc_token_sym').value = data.reward_token_symbol || '';
+  });
+}
+function closeAdminRewardConfig(e){
+  if(e && e.target !== document.getElementById('adminRewardConfigModal')) return;
+  document.getElementById('adminRewardConfigModal').classList.remove('show');
+  ADMIN_REWARD_TOKEN = null;
+}
+async function saveAdminRewardConfig(){
+  if(!ADMIN_REWARD_TOKEN) return;
+  const st = document.getElementById('adminRewardStatus');
+  st.className = 'info'; st.textContent = 'Сохранение...';
+  const p = {
+    p_token_symbol:     ADMIN_REWARD_TOKEN,
+    p_fee_swap_pct:     n(document.getElementById('arc_fee_swap').value),
+    p_fee_to_fund_pct:  n(document.getElementById('arc_fee_fund').value),
+    p_fee_to_owner_pct: n(document.getElementById('arc_fee_owner').value),
+    p_hourly_rate:      n(document.getElementById('arc_rate').value),
+    p_reward_target:    document.getElementById('arc_target').value,
+    p_reward_token_sym: document.getElementById('arc_token_sym').value.trim() || null
+  };
+  const {data, error} = await sb.rpc('admin_set_reward_config', p);
+  if(error || !data || data.ok === false){
+    st.className = 'er'; st.textContent = '✗ ' + (data?.error || error?.message);
+    return;
+  }
+  st.className = 'ok'; st.textContent = '✅ Сохранено';
+  msg('✅ Настройки фонда обновлены','success');
+  await loadRewardFunds();
 }
 
 // ============ ИСТОРИЯ ============
@@ -1066,14 +1370,16 @@ const OP_ICONS = {
   ad_view:'📺', checkin:'🔥', task_reward:'📋', task_commission:'👑',
   staking_claim:'💧', welcome_bonus:'🎁',
   transfer_in:'⬇️', transfer_out:'⬆️', transfer_fee:'💸',
-  p2p_trade:'🤝', p2p_buy:'🛒', p2p_sell:'💰', test:'🧪'
+  p2p_trade:'🤝', p2p_buy:'🛒', p2p_sell:'💰', test:'🧪',
+  fund_deposit:'➕', reward_share_claim:'💵', reward_fund_share:'🎁'
 };
 const OP_LABELS = {
   ad_view:'Реклама', checkin:'Чекин', task_reward:'Задание',
   task_commission:'Комиссия', staking_claim:'Стейкинг', welcome_bonus:'Бонус',
   transfer_in:'Входящий перевод', transfer_out:'Исходящий перевод',
   transfer_fee:'Комиссия перевода', p2p_trade:'P2P сделка',
-  test:'Тест'
+  test:'Тест', fund_deposit:'Взнос в фонд', reward_share_claim:'Сбор награды',
+  reward_fund_share:'Награда из фонда'
 };
 
 function openHistory(){
@@ -1127,7 +1433,6 @@ function renderHistory(box, hasMore){
   });
   const today = new Date(); today.setHours(0,0,0,0);
   const yest = new Date(today); yest.setDate(yest.getDate() - 1);
-
   let html = '';
   Object.values(groups).forEach(g=>{
     const d = g.date;
@@ -1158,7 +1463,6 @@ function renderHistory(box, hasMore){
       </div>`;
     }).join('');
   });
-
   if(hasMore){
     html += `<button class="sec" style="margin-top:12px" onclick="loadMoreHistory()">Загрузить ещё</button>`;
   }
@@ -1194,13 +1498,11 @@ async function loadOwnerEarnings(period){
   const bySource = data.by_source || [];
   const byToken = data.by_token || [];
   const byDay = data.by_day || [];
-
   let html = `<div style="text-align:center;padding:14px;background:linear-gradient(145deg,#1f4a1f,#0d280d);border:2px solid #39d98a;border-radius:16px;margin-bottom:14px">
     <div class="info" style="font-size:11px">ИТОГО</div>
     <div style="font-size:32px;font-weight:bold;color:#39d98a;text-shadow:0 0 18px #39d98a88">${f(total, 4)}</div>
     <div class="info" style="font-size:12px">TUSD</div>
   </div>`;
-
   if(bySource.length){
     html += `<div class="title" style="font-size:12px;color:#9da9b9;margin-bottom:6px">ПО ИСТОЧНИКАМ</div>`;
     html += bySource.map(s=>{
@@ -1209,12 +1511,10 @@ async function loadOwnerEarnings(period){
       return `<div class="dt"><span>${icon} ${esc(label)} <span style="color:#6a768a">(${s.ops})</span></span><span style="color:#f4cf70;font-weight:bold">${f(s.total, 4)}</span></div>`;
     }).join('');
   }
-
   if(byToken.length){
     html += `<div class="title" style="font-size:12px;color:#9da9b9;margin-top:14px;margin-bottom:6px">ПО ТОКЕНАМ</div>`;
     html += byToken.map(t=>`<div class="dt"><span>${esc(t.token)}</span><span style="color:#f4cf70;font-weight:bold">${f(t.total, 6)}</span></div>`).join('');
   }
-
   if(byDay.length){
     const max = Math.max(...byDay.map(d=>Number(d.total)));
     html += `<div class="title" style="font-size:12px;color:#9da9b9;margin-top:14px;margin-bottom:8px">ПО ДНЯМ (30)</div>`;
@@ -1228,7 +1528,6 @@ async function loadOwnerEarnings(period){
     }).join('');
     html += `</div>`;
   }
-
   box.innerHTML = html;
 }
 
@@ -1349,7 +1648,7 @@ async function loadMyReferrals(){
   box.innerHTML=html;
 }
 
-// ============ РЕКЛАМНЫЕ БАННЕРЫ ============
+// ============ БАННЕРЫ ============
 function applyBannerSettings(){
   const root = document.documentElement;
   root.style.setProperty('--bn-h', BANNER_SETTINGS.height + 'px');
@@ -1358,7 +1657,6 @@ function applyBannerSettings(){
   root.style.setProperty('--bn-ss', BANNER_SETTINGS.sub_size + 'px');
   root.style.setProperty('--bn-p', BANNER_SETTINGS.padding + 'px');
 }
-
 async function loadBannerSettings(){
   try{
     const {data} = await sb.from('telepat_settings')
@@ -1384,7 +1682,6 @@ async function loadBannerSettings(){
   if(g('bnP')){ g('bnP').value = BANNER_SETTINGS.padding; g('bnPS').textContent = BANNER_SETTINGS.padding; }
   if(g('bnCount')){ g('bnCount').value = String(BANNER_SETTINGS.count); }
 }
-
 async function saveBannerSettings(){
   const st = document.getElementById('bnSetStatus');
   if(st){ st.className='info'; st.textContent='Сохранение...'; }
@@ -1408,7 +1705,6 @@ async function saveBannerSettings(){
   if(st){ st.className='ok'; st.textContent = '✅ Сохранено'; }
   msg('🖼️ Настройки баннера обновлены', 'success');
 }
-
 async function loadTopBanner(){
   const container = document.getElementById('topBannersList');
   if(!container) return;
@@ -1418,7 +1714,6 @@ async function loadTopBanner(){
     if(error || !data || data.ok === false) return;
     const list = data.banners || [];
     if(!list.length) return;
-
     list.forEach(b=>{
       const el = document.createElement('div');
       el.className = 'ad-banner';
@@ -1462,14 +1757,12 @@ async function loadAdPrices(){
     }
   }catch(e){ console.warn('[adPrices]', e); }
 }
-
 function updateAdBalanceInfo(){
   const el = document.getElementById('adBalanceInfo');
   if(!el) return;
   const bal = CU ? n(CU.tusd_balance) : 0;
   el.innerHTML = `Ваш баланс: <b style="color:#7fc97f">${f(bal,2)} TUSD</b>`;
 }
-
 function openAdMenu(){ document.getElementById('adMenuModal').classList.add('show'); }
 function closeAdMenu(e){ if(e && e.target !== document.getElementById('adMenuModal')) return; document.getElementById('adMenuModal').classList.remove('show'); }
 
@@ -1481,7 +1774,6 @@ function openAdForm(type){
   document.getElementById('adFormStatus').textContent = '';
   const balance = CU ? n(CU.tusd_balance) : 0;
   const balLine = `<div class="info" style="text-align:center;margin-bottom:10px;color:#7fc97f">💰 Доступно: <b>${f(balance,2)} TUSD</b></div>`;
-
   if(type === 'banner'){
     tEl.textContent = '🖼️ БАННЕР В БОТЕ';
     body.innerHTML = balLine + `
@@ -1511,7 +1803,6 @@ function openAdForm(type){
       <input id="af_description" type="text" maxlength="120" placeholder="Короткое описание">
       <label style="margin-top:9px">Ссылка на видео (mp4)</label>
       <input id="af_video" type="text" placeholder="https://example.com/video.mp4">
-      <div class="info" style="font-size:10px;margin-top:2px">Пока только по прямой ссылке.</div>
       <label style="margin-top:9px">Куда ведёт кнопка</label>
       <input id="af_link" type="text" placeholder="https://t.me/твой_канал">
       <label style="margin-top:9px">Длительность (сек, 5-120)</label>
@@ -1573,7 +1864,6 @@ function openAdForm(type){
   adRecalc();
 }
 function closeAdForm(e){ if(e && e.target !== document.getElementById('adFormModal')) return; document.getElementById('adFormModal').classList.remove('show'); }
-
 function adRecalc(){
   const type = AD_CURRENT_TYPE; const g = id => document.getElementById(id);
   const setTxt = (id, v) => { const e = g(id); if(e) e.textContent = v; };
@@ -1597,7 +1887,6 @@ function adRecalc(){
     setTxt('af_costTotal', f(budget + fee, 4) + ' TUSD');
   }
 }
-
 async function adSubmit(){
   if(!UID){ msg('Открой в Telegram','error'); return; }
   const type = AD_CURRENT_TYPE;
@@ -1663,7 +1952,6 @@ async function adSubmit(){
     setTimeout(()=>{ closeAdForm(); }, 1500);
   }catch(e){ if(st){ st.className='er'; st.textContent = 'Ошибка: '+e.message; } }
 }
-
 function openMyAds(){ document.getElementById('myAdsModal').classList.add('show'); loadMyAds(); }
 function closeMyAds(e){ if(e && e.target !== document.getElementById('myAdsModal')) return; document.getElementById('myAdsModal').classList.remove('show'); }
 
@@ -1692,7 +1980,6 @@ async function loadMyAds(){
     }).join('');
   }catch(e){ box.innerHTML = `<div class="er">Ошибка: ${esc(e.message)}</div>`; }
 }
-
 async function adRequestRefund(id){
   if(!confirm('Вернуть остаток бюджета на рекламный счёт?')) return;
   const {data, error} = await sb.rpc('ad_request_refund', { p_id: id, p_user_id: UID });
@@ -1701,7 +1988,6 @@ async function adRequestRefund(id){
   await loadUser(); await loadMyAds();
 }
 
-// ============ АДМИН: РЕКЛАМА ============
 async function adminAdLoad(status){
   const box = document.getElementById('adminAdsList');
   if(!box) return;
@@ -1717,7 +2003,7 @@ async function adminAdLoad(status){
       const stColor = a.status==='active'?'#39d98a':(a.status==='pending'?'#f4cf70':(a.status==='rejected'?'#ff647c':'#9da9b9'));
       let body = '';
       if(a.ad_type === 'banner'){ body = `🖼️ Баннер • ${a.actions_target||0} дн • Картинка: ${a.image_url?'✅':'❌'}<br>🔗 ${esc(a.target_url||'')}`; }
-      else if(a.ad_type === 'video'){ body = `🎬 Видео • ${a.actions_target||0} просмотров × ${f(a.reward_per_action,4)} TUSD<br>⏱ ${a.duration_seconds||15} сек • 🔗 ${esc(a.target_url||'')}<br>📹 ${esc((a.video_url||'').slice(0,60))}`; }
+      else if(a.ad_type === 'video'){ body = `🎬 Видео • ${a.actions_target||0} просмотров × ${f(a.reward_per_action,4)} TUSD<br>⏱ ${a.duration_seconds||15} сек • 🔗 ${esc(a.target_url||'')}`; }
       else if(a.ad_type === 'task'){ body = `📋 Задание (${a.task_type||'channel'}) • ${a.actions_target||0} подписок × ${f(a.reward_per_action,4)} TUSD<br>🔗 ${esc(a.task_link||'')}`; }
       else if(a.ad_type === 'link'){ body = `🔗 Ссылка • ${a.actions_target||0} переходов × ${f(a.reward_per_action,4)} TUSD • ${a.stay_seconds||10} сек<br>🌐 ${esc(a.target_url||'')}`; }
       return `<div class="pc">
@@ -1738,7 +2024,6 @@ async function adminAdLoad(status){
     }).join('');
   }catch(e){ box.innerHTML = `<div class="er">Ошибка: ${esc(e.message)}</div>`; }
 }
-
 async function adminAdStatus(id, status){
   let comment = null;
   if(status === 'rejected'){ comment = prompt('Причина отклонения (необязательно):') || null; }
@@ -1765,7 +2050,6 @@ async function resolveUserIds(input){
   }
   return { ids, usernames, notFound };
 }
-
 async function adminTransferReferrals(){
   const st = document.getElementById('ref_transfer_status');
   const targetRaw = document.getElementById('ref_transfer_target').value.trim();
@@ -1979,7 +2263,6 @@ async function loadAllLogos(){
     }).join('');
   }catch(e){ box.innerHTML = `<div class="er">${esc(e.message)}</div>`; }
 }
-
 function previewAdminLogo(id, sym){
   const inp = document.getElementById('lg-url-'+id); const box = document.getElementById('lg-prev-'+id);
   if(!inp || !box) return;
@@ -1992,7 +2275,6 @@ function previewAdminLogo(id, sym){
     box.appendChild(img);
   } else { box.classList.remove('on'); }
 }
-
 async function saveAdminLogo(id, sym){
   const inp = document.getElementById('lg-url-'+id); const status = document.getElementById('lg-status-'+id);
   if(!inp) return;
@@ -2009,7 +2291,6 @@ async function saveAdminLogo(id, sym){
   const prev = document.getElementById('lg-prev-'+id); if(prev){ if(url){ prev.classList.add('on'); } else { prev.classList.remove('on'); } }
   renderCustom(); fillAll();
 }
-
 async function clearAdminLogo(id, sym){
   const inp = document.getElementById('lg-url-'+id); if(inp) inp.value = '';
   await saveAdminLogo(id, sym);
@@ -2398,7 +2679,6 @@ async function createTokenListing(){
     calculateListingPreview(); await loadAdminListings();
   }finally{if(b){b.disabled=false;b.textContent='➕ СОЗДАТЬ ЗАЯВКУ'}}
 }
-
 async function loadAdminListings(){
   const box=document.getElementById('adminListingsList');if(!box)return;
   box.innerHTML='<div class="info">Загрузка...</div>';
@@ -2651,9 +2931,11 @@ document.addEventListener('DOMContentLoaded',async()=>{
     calculateListingPreview();
   }
   await loadStakeState();
+  await loadRewardFunds();
   await loadTopBanner();
   await loadAdPrices();
   setInterval(refreshJwt, 30 * 60 * 1000);
+  setInterval(loadRewardFunds, 60 * 1000);
 });
 </script>
 </body></html>
