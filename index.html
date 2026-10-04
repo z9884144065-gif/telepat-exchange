@@ -1147,7 +1147,6 @@ async function loadMyReferrals(){
 // ============ РЕКЛАМНЫЕ БАННЕРЫ + КАБИНЕТ ============
 
 async function loadTopBanner(){
-  if(sessionStorage.getItem('bannerClosed') === '1'){ return; }
   try{
     const {data, error} = await sb.rpc('banner_get_active');
     if(error || !data || data.ok === false) return;
@@ -1172,7 +1171,6 @@ function closeTopBanner(e){
   if(e) e.stopPropagation();
   const b = document.getElementById('topBanner');
   if(b) b.classList.remove('show');
-  try{ sessionStorage.setItem('bannerClosed','1'); }catch{}
 }
 
 async function loadAdPrices(){
@@ -1420,7 +1418,7 @@ async function loadMyAds(){
 }
 
 async function adRequestRefund(id){
-  if(!confirm('Вернуть остаток бюджета на основной баланс?')) return;
+  if(!confirm('Вернуть остаток бюджета на рекламный счёт?')) return;
   const {data, error} = await sb.rpc('ad_request_refund', { p_id: id, p_user_id: UID });
   if(error || !data || data.ok === false){ msg(data?.error || error?.message || 'Ошибка','error'); return; }
   msg(`✅ Возвращено ${f(data.refunded,4)} TUSD`,'success');
