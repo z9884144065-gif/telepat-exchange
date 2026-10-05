@@ -782,6 +782,7 @@ let REWARD_FUNDS = [];
 let DONATE_TOKEN = null;
 let ADMIN_REWARD_TOKEN = null;
 let LB_TAB = 'profit';
+let __START_ORDER_ID = null;
 
 async function refreshJwt(){
   const id=window.Telegram?.WebApp?.initData;
@@ -803,7 +804,7 @@ const UID=Number(tgu?.id||0);
 const RANKS=[[1,'Крестьянин',.2],[2,'Вольный',.4],[3,'Гражданин',.8],[4,'Оруженосец',1.6],[5,'Мечник',3.2],[6,'Десятник',6.4],[7,'Сотник',12.8],[8,'Тысячник',25.6],[9,'Рыцарь',51.2],[10,'Железный рыцарь',102.4],[11,'Бронзовый рыцарь',204.8],[12,'Серебряный рыцарь',409.6],[13,'Золотой рыцарь',819.2],[14,'Барон',1638.4],[15,'Виконт',3276.8],[16,'Граф',6553.6],[17,'Маркиз',13107.2],[18,'Герцог',26214.4],[19,'Князь',52428.8],[20,'Король',104857.6],[21,'Император',209715.2]];
 const RC=['#fff','#d8d8d8','#b9c5b9','#75c99a','#58b5e9','#4f8cff','#3974d9','#6673e8','#4169e1','#7389bd','#b87333','#bfc2c9','#e0bd45','#9b59b6','#8e44ad','#e0b72f','#e68a27','#24c8aa','#f5cf3d','#f7b83f','#ffd700'];
 const rk=l=>RC[Math.max(0,Math.min(20,Number(l||1)-1))];
-const esc=v=>String(v??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'","&#039;");
+const esc=v=>String(v??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');
 const n=v=>{const x=Number(v);return Number.isFinite(x)?x:0};
 const f=(v,m=8)=>n(v).toLocaleString('ru-RU',{maximumFractionDigits:m});
 const tb=t=>{if(!CU)return 0;if(t==='TG')return n(CU.tg_balance);if(t==='AI')return n(CU.ai_balance);if(t==='TUSD')return n(CU.tusd_balance);return n(CB[t])};
@@ -1041,13 +1042,19 @@ async function loadUser(){
   } catch(e){ console.warn('[user sync]', e); }
 
   const startParam = tg?.initDataUnsafe?.start_param;
-  if(startParam && !CU.referrer_id){
-    const refId = Number(startParam);
-    if(Number.isFinite(refId) && refId > 0 && refId !== UID){
-      try {
-        const r = await sb.rpc('set_referrer', { p_user_id: UID, p_referrer_id: refId });
-        if(r.data && r.data.ok){ const r3 = await sb.from('users').select('*').eq('telegram_id', UID).maybeSingle(); if(r3.data) CU = r3.data; }
-      } catch(e){ console.error('[loadUser] set_referrer error:', e); }
+  if(startParam){
+    if(String(startParam).startsWith('order_')){
+      const oid = String(startParam).replace('order_', '');
+      if(oid){ __START_ORDER_ID = oid; console.log('[start] order param:', oid); }
+    }
+    else if(!CU.referrer_id){
+      const refId = Number(startParam);
+      if(Number.isFinite(refId) && refId > 0 && refId !== UID){
+        try {
+          const r = await sb.rpc('set_referrer', { p_user_id: UID, p_referrer_id: refId });
+          if(r.data && r.data.ok){ const r3 = await sb.from('users').select('*').eq('telegram_id', UID).maybeSingle(); if(r3.data) CU = r3.data; }
+        } catch(e){ console.error('[loadUser] set_referrer error:', e); }
+      }
     }
   }
 
@@ -3069,6 +3076,43 @@ async function adminTransfer(){
   msg('💰 Готово','success');document.getElementById('adminAmount').value='';await loadAdminStats();await loadCustomBalances();
 }
 
+// ============ ПЕРЕХОД НА КОНКРЕТНЫЙ ОРДЕР ИЗ БОТА ============
+async function openOrderFromBot(orderId){
+  try {
+    console.log('[openOrderFromBot] открываю ордер:', orderId);
+    const {data: order, error} = await sb.from('p2p_orders')
+      .select('id, from_token, to_token')
+      .eq('id', orderId)
+      .maybeSingle();
+    if(error || !order){ msg('Ордер не найден', 'error'); return; }
+
+    // В списке ордеров "Отдаю" = to_token, "Получаю" = from_token (логика как в loadOrders)
+    showSection('exchange');
+    const fE = document.getElementById('fromToken');
+    const tE = document.getElementById('toToken');
+    if(fE) fE.value = order.to_token;
+    if(tE) tE.value = order.from_token;
+    updateOrderForm();
+
+    await loadOrders();
+    setTimeout(() => {
+      const el = document.getElementById('order-' + orderId);
+      if(el){
+        el.classList.add('opened');
+        el.scrollIntoView({behavior:'smooth', block:'center'});
+        el.style.boxShadow = '0 0 24px #f4cf7088';
+        setTimeout(()=>{ el.style.boxShadow=''; }, 2500);
+        msg('✅ Ордер открыт', 'success');
+      } else {
+        msg('Ордер не найден в списке', 'error');
+      }
+    }, 800);
+  } catch(e){
+    console.error('[openOrderFromBot]', e);
+    msg('Ошибка перехода к ордеру', 'error');
+  }
+}
+
 document.addEventListener('DOMContentLoaded',async()=>{
   await refreshJwt();
   await loadUiSettingsPublic();
@@ -3090,6 +3134,12 @@ document.addEventListener('DOMContentLoaded',async()=>{
   await loadRewardFunds();
   await loadTopBanner();
   await loadAdPrices();
+
+  // 🆕 Если пришли по кнопке "КУПИТЬ СЕЙЧАС" из бота — переходим на ордер
+  if(__START_ORDER_ID){
+    setTimeout(()=>openOrderFromBot(__START_ORDER_ID), 500);
+  }
+
   setInterval(refreshJwt, 30 * 60 * 1000);
   setInterval(loadRewardFunds, 60 * 1000);
 });
