@@ -207,8 +207,8 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 <div class="info" id="rankLevel" style="margin-top:4px;font-size:12px;color:#9da9b9">Уровень 1 из 21</div>
 <div class="prg"><div id="rankProgress" style="width:0%"></div></div>
 <div class="info" id="rankRequirement" style="margin-top:6px"></div>
+<div class="info" id="rankStats" style="margin-top:8px;font-size:12px;line-height:1.6"></div>
 </div></div>
-
 <div class="card" id="walletCard" style="padding:22px 18px">
 <div class="title" style="text-align:center;margin-bottom:6px">💰 МОЙ КОШЕЛЁК</div>
 <div style="text-align:center;color:#8f9bab;font-size:12px;margin-bottom:6px">Общий баланс</div>
@@ -1093,8 +1093,7 @@ async function loadUser(){
   if(UID === AID) document.getElementById('ownerEarningsBtn')?.classList.remove('hide');
   loadReferral(); updateOrderForm();
 }
-
-function renderUser(){
+  function renderUser(){
   if(!CU)return;
   const name=[tgu?.first_name||'',tgu?.last_name||''].join(' ').trim()||CU.first_name||tgu?.username||CU.username||'User';
   document.getElementById('userName').textContent=name;
@@ -1117,16 +1116,39 @@ function renderUser(){
   const levelEl=document.getElementById('rankLevel');
   if(levelEl)levelEl.textContent=`Уровень ${rl} из 21`;
   document.getElementById('earnRank').textContent=rn;
+
+  // === НОВОЕ: берём прогресс из базы (recalc_rank уже всё посчитал) ===
+  const progress   = Number(CU.rank_progress_pct ?? 0);
+  const ordersLeft = Number(CU.orders_to_next ?? 0);
+  const refsLeft   = Number(CU.refs_to_next ?? 0);
+  const weight     = Number(CU.rank_weight ?? 0);
+  const nextThr    = Number(CU.rank_next_threshold ?? 0);
+  const isMax      = rl >= 21;
+
+  document.getElementById('rankProgress').style.width = (isMax ? 100 : progress) + '%';
+
+  const reqEl = document.getElementById('rankRequirement');
+  if(reqEl){
+    reqEl.textContent = isMax ? 'Максимальный уровень! 👑' : `${progress}% до следующего уровня`;
+  }
+  const statsEl = document.getElementById('rankStats');
+  if(statsEl){
+    if(!isMax){
+      statsEl.innerHTML =
+        `📦 Ещё обменов: <b style="color:#f4cf70">${ordersLeft}</b>` +
+        ` &nbsp;•&nbsp; 👥 Ещё рефералов: <b style="color:#f4cf70">${refsLeft}</b><br>` +
+        `<span style="font-size:11px;color:#8f9bab">Вес: ${weight.toFixed(2)} / ${nextThr.toFixed(2)}</span>`;
+    } else {
+      statsEl.innerHTML = `<span style="font-size:11px;color:#8f9bab">Вес: ${weight.toFixed(2)}</span>`;
+    }
+  }
+
   const tgu2=n(CU.tg_balance)*priceOf('TG'),aie=n(CU.ai_balance)*priceOf('AI');
   const total=tgu2+aie;
-  const currentRank=RANKS[rl-1]||RANKS[0];
-  const nextRank=RANKS[rl]||null;
-  const nextReq=nextRank?nextRank[2]:currentRank[2];
-  const p=nextRank?Math.min(100,(total/nextReq)*100):100;
-  document.getElementById('rankProgress').style.width=p+'%';
-  if(nextRank){ document.getElementById('rankRequirement').textContent=`${p.toFixed(1)}% • до «${nextRank[1]}» осталось ${f(Math.max(0,nextReq-total),2)} TUSD`; }
-  else{ document.getElementById('rankRequirement').textContent=`Максимальный уровень! Всего ${f(total,2)} TUSD`; }
-  document.getElementById('earnDetails').innerHTML=`Всего: <b>${f(total,2)} TUSD</b><br>TG: <b>${f(tgu2,2)}</b> • AI: <b>${f(aie,2)}</b><br>До следующего: <b>${f(Math.max(0,nextReq-total),2)} TUSD</b>`;
+  document.getElementById('earnDetails').innerHTML=
+    `Всего: <b>${f(total,2)} TUSD</b><br>` +
+    `TG: <b>${f(tgu2,2)}</b> • AI: <b>${f(aie,2)}</b><br>` +
+    `Вес: <b>${weight.toFixed(2)}</b> / ${nextThr.toFixed(2)}`;
   renderTotalTusd();
 }
 
@@ -3022,7 +3044,6 @@ async function adminTransfer(){
   msg('💰 Готово','success');document.getElementById('adminAmount').value='';await loadAdminStats();await loadCustomBalances();
 }
 
-// ============ ВЫКУП ОРДЕРА: полный / частичный ============
 function buyErrText(data, error){
   if(error && error.message) return error.message;
   if(!data) return 'Неизвестная ошибка';
