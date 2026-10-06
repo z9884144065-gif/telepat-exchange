@@ -168,6 +168,9 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 .lead-value{text-align:right}
 .lead-value b{display:block;font-size:16px;font-weight:bold}
 .lead-value span{color:#8f9bab;font-size:10px}
+/* ===== Buy modal ===== */
+.buy-pct-row{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}
+.buy-pct-row button{margin:0;padding:10px 4px;font-size:12px}
 </style></head><body>
 <div id="message" class="msg"></div>
 <div class="app">
@@ -712,6 +715,34 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 <div id="adResult" class="info" style="text-align:center"></div>
 </div></div></div>
 
+<!-- ================= МОДАЛКА ВЫКУПА ОРДЕРА ================= -->
+<div id="buyModal" class="mo" onclick="closeBuyModal(event)">
+  <div class="mb" onclick="event.stopPropagation()">
+    <div class="title">🛒 ВЫКУП ОРДЕРА</div>
+    <div id="buyOrderInfo" class="info" style="margin-bottom:10px"></div>
+
+    <label>Сколько получить (в <span id="buyFromSym">—</span>)</label>
+    <input id="buyAmount" type="number" step="any" placeholder="0" oninput="updateBuyPreview()">
+
+    <div class="buy-pct-row">
+      <button class="sm sec" type="button" onclick="setBuyPct(25)">25%</button>
+      <button class="sm sec" type="button" onclick="setBuyPct(50)">50%</button>
+      <button class="sm sec" type="button" onclick="setBuyPct(75)">75%</button>
+      <button class="sm sec" type="button" onclick="setBuyPct(100)">100%</button>
+    </div>
+
+    <div class="prev" style="margin-top:12px">
+      <div class="dt"><span>Заплатите</span><span id="buyPay">—</span></div>
+      <div class="dt"><span>Остаток в ордере</span><span id="buyRemaining">—</span></div>
+      <div class="dt"><span>Доступно у вас</span><span id="buyAvail">—</span></div>
+    </div>
+
+    <button id="buyConfirmBtn" onclick="confirmBuyOrder()" disabled>✅ ВЫКУПИТЬ</button>
+    <button class="sec" type="button" onclick="closeBuyModal()">Отмена</button>
+    <div id="buyStatus" class="info" style="margin-top:8px;text-align:center"></div>
+  </div>
+</div>
+
 <div id="tasksModal" class="mo" onclick="closeTasks(event)">
 <div class="mb" style="width:min(500px,100%)" onclick="event.stopPropagation()">
 <div class="title">📋 ЗАДАНИЯ</div>
@@ -783,6 +814,9 @@ let DONATE_TOKEN = null;
 let ADMIN_REWARD_TOKEN = null;
 let LB_TAB = 'profit';
 let __START_ORDER_ID = null;
+// === КЭШ ОРДЕРОВ для кнопок выкупа ===
+const ORDER_CACHE = {};
+let __BUY_ORDER = null;
 
 async function refreshJwt(){
   const id=window.Telegram?.WebApp?.initData;
@@ -823,7 +857,6 @@ function fmtAccum(v, rateSec){
   }
   return x.toFixed(decimals);
 }
-
 function fmtAccumBig(v){
   const x = Number(v) || 0;
   if(x === 0) return '0.000000000000';
@@ -853,7 +886,6 @@ function tokenIconHTML(sym, size){
   const img = ic.logo ? `<img src="${esc(ic.logo)}" alt="${esc(sym)}" loading="lazy" onerror="this.remove()">` : '';
   return `<div class="${cls}" style="background:${bg}"><span>${emoji}</span>${img}</div>`;
 }
-
 function priceOf(sym){
   if(PRICE_CACHE[sym] != null) return PRICE_CACHE[sym];
   const t = (ALL_TOKENS || []).find(x => x.symbol === sym);
@@ -1144,7 +1176,6 @@ function renderTotalTusd(){
     return `<div class="wallet-token-row">${icon}<div style="flex:1;min-width:0"><div style="color:#fff;font-weight:bold;font-size:15px;display:flex;align-items:center;gap:5px">${esc(t.sym)}${verified ? '<span title="Верифицирован" style="color:#39d98a;font-size:13px">✅</span>' : ''}</div><div style="color:#8f9bab;font-size:11px;margin-top:2px">Мин. вывод: ${minW > 0 ? f(minW, 6) : '—'}</div></div><div style="text-align:right;margin-right:6px"><div style="color:#fff;font-weight:bold;font-size:15px">${f(t.amt, 6)}</div><div style="color:#8f9bab;font-size:11px">≈ ${f(t.tusd, 2)} TUSD</div></div><div style="display:flex;flex-direction:column;gap:4px;margin-left:4px"><button onclick="openTokenDeposit('${esc(t.sym)}')" style="width:auto;padding:6px 10px;margin:0;font-size:11px">➕</button><button onclick="openWithdraw('${esc(t.sym)}', ${t.amt}, ${minW})" style="width:auto;padding:6px 10px;margin:0;font-size:11px;${canWithdraw ? '' : 'opacity:.4;'}" ${canWithdraw ? '' : 'disabled'}>↩️</button></div></div>`;
   }).join('');
 }
-
 function openWithdraw(symbol, amount, minW){
   if(amount < minW){ msg(`Минимум для вывода ${symbol}: ${f(minW,6)}`, 'error'); return; }
   msg(`Вывод ${f(amount,6)} ${symbol} — подключите TON-кошелёк (скоро)`, 'info');
@@ -2945,13 +2976,28 @@ async function loadMyOrders(){
   l.innerHTML=mine.length?mine.map(orderCard).join(''):'<div class="info">Нет ордеров.</div>';
 }
 function orderCard(o){
+  // Кэш для кнопок выкупа
+  ORDER_CACHE[String(o.id)] = o;
+
   const isMine=String(o.creator_id)===String(UID),c=rk(o.creator_rank_level),g=c+'55';
   const rt=n(o.rate),rev=rt>0?1/rt:0,dt=new Date(o.created_at).toLocaleString('ru-RU');
   const p=CP[String(o.from_token).toUpperCase()];
   let pl='';
   if(p){let tx=`${f(p.reserve_amount,6)} ${esc(o.from_token)}`;if(p.reserve_tusd>0)tx+=` + ${f(p.reserve_tusd,2)} TUSD`;pl=`<div class="dt"><span>💧 Резерв</span><span>${tx}</span></div>`}
   const ownerLabel = o.creator_username ? '@'+esc(o.creator_username) : ('ID '+Number(o.creator_id));
-  return `<div class="order" id="order-${esc(o.id)}" style="--rc:${c};--rg:${g}"><div class="oh" onclick="toggleOrder('${esc(o.id)}')"><div class="ol"><div class="om" style="display:flex;align-items:center;gap:6px">${tokenIconHTML(o.from_token,'xs')} ${f(o.from_amount)} ${esc(o.from_token)} → ${f(o.to_amount)} ${esc(o.to_token)}</div><div class="rb">👑 ${esc(o.creator_rank_name)}</div></div><div class="op">1 ${esc(o.from_token)} = ${f(rt,12)} ${esc(o.to_token)}</div><div class="os"><span>👍 ${n(o.likes)}</span><span>👎 ${n(o.dislikes)}</span><span>🤝 ${n(o.completed_trades)}</span></div></div><div class="oe"><div class="dt"><span>Владелец</span><span class="pl" onclick="openProfile(${Number(o.creator_id)});event.stopPropagation()">👤 ${ownerLabel}</span></div><div class="dt"><span>Отдаёт</span><span>${f(o.from_amount)} ${esc(o.from_token)}</span></div><div class="dt"><span>Получает</span><span>${f(o.to_amount)} ${esc(o.to_token)}</span></div><div class="dt"><span>Курс</span><span>1 ${esc(o.from_token)} = ${f(rt,12)} ${esc(o.to_token)}</span></div><div class="dt"><span>Титул</span><span style="color:${c};font-weight:bold">👑 ${esc(o.creator_rank_name)}</span></div>${pl}<div class="dt"><span>Дата</span><span>${esc(dt)}</span></div><div class="oa"><button class="sec" onclick="openProfile(${Number(o.creator_id)});event.stopPropagation()">👤</button>${isMine?`<button class="dng" onclick="cancelP2POrder('${esc(o.id)}');event.stopPropagation()">❌</button>`:`<button onclick="acceptP2POrder('${esc(o.id)}');event.stopPropagation()">🤝</button>`}</div></div></div>`;
+
+  const actionsHtml = isMine
+    ? `<div class="oa">
+         <button class="sec" onclick="openProfile(${Number(o.creator_id)});event.stopPropagation()">👤</button>
+         <button class="dng" onclick="cancelP2POrder('${esc(o.id)}');event.stopPropagation()">❌ ОТМЕНИТЬ</button>
+       </div>`
+    : `<div class="oa">
+         <button class="sec" onclick="openProfile(${Number(o.creator_id)});event.stopPropagation()" style="flex:0 0 46px">👤</button>
+         <button class="sec" onclick="quickBuyOrder('${esc(o.id)}');event.stopPropagation()">⚡ БЫСТРО</button>
+         <button onclick="openBuyModal('${esc(o.id)}');event.stopPropagation()">🛒 КУПИТЬ</button>
+       </div>`;
+
+  return `<div class="order" id="order-${esc(o.id)}" style="--rc:${c};--rg:${g}"><div class="oh" onclick="toggleOrder('${esc(o.id)}')"><div class="ol"><div class="om" style="display:flex;align-items:center;gap:6px">${tokenIconHTML(o.from_token,'xs')} ${f(o.from_amount)} ${esc(o.from_token)} → ${f(o.to_amount)} ${esc(o.to_token)}</div><div class="rb">👑 ${esc(o.creator_rank_name)}</div></div><div class="op">1 ${esc(o.from_token)} = ${f(rt,12)} ${esc(o.to_token)}</div><div class="os"><span>👍 ${n(o.likes)}</span><span>👎 ${n(o.dislikes)}</span><span>🤝 ${n(o.completed_trades)}</span></div></div><div class="oe"><div class="dt"><span>Владелец</span><span class="pl" onclick="openProfile(${Number(o.creator_id)});event.stopPropagation()">👤 ${ownerLabel}</span></div><div class="dt"><span>Отдаёт</span><span>${f(o.from_amount)} ${esc(o.from_token)}</span></div><div class="dt"><span>Получает</span><span>${f(o.to_amount)} ${esc(o.to_token)}</span></div><div class="dt"><span>Курс</span><span>1 ${esc(o.from_token)} = ${f(rt,12)} ${esc(o.to_token)}</span></div><div class="dt"><span>Титул</span><span style="color:${c};font-weight:bold">👑 ${esc(o.creator_rank_name)}</span></div>${pl}<div class="dt"><span>Дата</span><span>${esc(dt)}</span></div>${actionsHtml}</div></div>`;
 }
 function toggleOrder(id){document.getElementById('order-'+id)?.classList.toggle('opened')}
 async function acceptP2POrder(id){
@@ -3076,6 +3122,161 @@ async function adminTransfer(){
   msg('💰 Готово','success');document.getElementById('adminAmount').value='';await loadAdminStats();await loadCustomBalances();
 }
 
+// ============ ВЫКУП ОРДЕРА: полный / частичный ============
+function openBuyModal(orderId){
+  const o = ORDER_CACHE[String(orderId)];
+  if(!o){ msg('Ордер не найден. Обнови список.', 'error'); return; }
+  __BUY_ORDER = o;
+
+  const fromTotal = n(o.from_amount);
+  const toTotal   = n(o.to_amount);
+  const rate      = fromTotal > 0 ? toTotal / fromTotal : 0;
+
+  document.getElementById('buyOrderInfo').innerHTML =
+    `<b>${f(o.from_amount)} ${esc(o.from_token)} → ${f(o.to_amount)} ${esc(o.to_token)}</b><br>` +
+    `<span style="color:#8f9bab">1 ${esc(o.from_token)} = ${f(rate,12)} ${esc(o.to_token)}</span>`;
+  document.getElementById('buyFromSym').textContent = o.from_token;
+
+  const inp = document.getElementById('buyAmount');
+  inp.value = '';
+  const st = document.getElementById('buyStatus');
+  st.className = 'info'; st.textContent = '';
+  updateBuyPreview();
+  document.getElementById('buyModal').classList.add('show');
+}
+function closeBuyModal(e){
+  if(e && e.target !== document.getElementById('buyModal')) return;
+  document.getElementById('buyModal').classList.remove('show');
+  __BUY_ORDER = null;
+}
+function setBuyPct(pct){
+  if(!__BUY_ORDER) return;
+  const max = n(__BUY_ORDER.from_amount);
+  const v = (max * pct) / 100;
+  document.getElementById('buyAmount').value = String(v);
+  updateBuyPreview();
+}
+function updateBuyPreview(){
+  if(!__BUY_ORDER) return;
+  const o = __BUY_ORDER;
+  const fromTotal = n(o.from_amount);
+  const toTotal   = n(o.to_amount);
+  const rate      = fromTotal > 0 ? toTotal / fromTotal : 0;
+  const getAmtRaw = n(document.getElementById('buyAmount').value);
+  const getAmt    = Math.max(0, Math.min(fromTotal, getAmtRaw));
+  const payAmt    = getAmt * rate;
+  const remaining = Math.max(0, fromTotal - getAmt);
+  const myAvail   = tb(o.to_token);
+
+  document.getElementById('buyPay').textContent =
+    `${f(payAmt, 8)} ${o.to_token}`;
+  document.getElementById('buyRemaining').textContent =
+    `${f(remaining, 8)} ${o.from_token}`;
+  document.getElementById('buyAvail').textContent =
+    `${f(myAvail, 8)} ${o.to_token}`;
+
+  const btn = document.getElementById('buyConfirmBtn');
+  if(getAmt <= 0){
+    btn.disabled = true;
+    btn.textContent = '✅ ВЫКУПИТЬ';
+  } else if(getAmt >= fromTotal - 1e-12){
+    btn.disabled = false;
+    btn.textContent = '✅ ВЫКУПИТЬ ПОЛНОСТЬЮ';
+  } else {
+    btn.disabled = false;
+    btn.textContent = '✅ ВЫКУПИТЬ ЧАСТЬ';
+  }
+}
+async function confirmBuyOrder(){
+  if(!__BUY_ORDER || !UID) return;
+  const o = __BUY_ORDER;
+  const fromTotal = n(o.from_amount);
+  const toTotal   = n(o.to_amount);
+  const rate      = fromTotal > 0 ? toTotal / fromTotal : 0;
+  const getAmt    = n(document.getElementById('buyAmount').value);
+  const status    = document.getElementById('buyStatus');
+  const btn       = document.getElementById('buyConfirmBtn');
+
+  if(getAmt <= 0){ msg('Введите количество', 'error'); return; }
+  if(getAmt > fromTotal + 1e-9){ msg('Больше, чем есть в ордере', 'error'); return; }
+
+  const payAmt  = getAmt * rate;
+  const myAvail = tb(o.to_token);
+  if(payAmt > myAvail + 1e-9){
+    msg(`Недостаточно ${o.to_token}. Нужно ${f(payAmt, 8)}, у вас ${f(myAvail, 8)}`, 'error');
+    return;
+  }
+
+  btn.disabled = true;
+  status.className = 'info';
+  status.textContent = '⏳ Выкуп...';
+
+  const isFull = getAmt >= fromTotal - 1e-9;
+
+  try {
+    let data, error;
+    if(isFull){
+      const r = await sb.rpc('accept_p2p_order_v2', { p_order_id: String(o.id) });
+      data = r.data; error = r.error;
+    } else {
+      // p_get_amount — сколько taker ПОЛУЧАЕТ (в from_token ордера)
+      const r = await sb.rpc('accept_p2p_order_chat_partial', {
+        p_order_id:   String(o.id),
+        p_taker_id:   String(UID),
+        p_get_amount: getAmt
+      });
+      data = r.data; error = r.error;
+    }
+
+    if(error || (data && data.ok === false)){
+      const errMsg = error?.message || data?.error || 'Ошибка';
+      status.className = 'er';
+      status.textContent = '✗ ' + errMsg;
+      msg(errMsg, 'error');
+      btn.disabled = false;
+      return;
+    }
+
+    status.className = 'ok';
+    status.textContent = isFull
+      ? '✅ Выкуплено полностью'
+      : `✅ Выкуплено ${f(getAmt, 8)} ${o.from_token}`;
+    msg(status.textContent, 'success');
+
+    await loadUser();
+    await loadCustomBalances();
+    await loadOrders();
+    await loadMyOrders();
+    await loadMyTrades();
+    await loadTokenReserves();
+
+    setTimeout(closeBuyModal, 900);
+  } catch(e){
+    status.className = 'er';
+    status.textContent = '✗ ' + e.message;
+    msg(e.message, 'error');
+    btn.disabled = false;
+  }
+}
+async function quickBuyOrder(orderId){
+  if(!UID) return;
+  const o = ORDER_CACHE[String(orderId)];
+  if(!o){ msg('Ордер не найден. Обнови список.', 'error'); return; }
+  if(!confirm(`Купить полностью ${f(o.from_amount)} ${o.from_token} за ${f(o.to_amount)} ${o.to_token}?`)) return;
+
+  const {data, error} = await sb.rpc('accept_p2p_order_v2', { p_order_id: String(orderId) });
+  if(error){ msg(error.message, 'error'); return; }
+  if(data && data.ok === false){ msg(data.error || 'Ошибка', 'error'); return; }
+
+  msg('✅ Куплено', 'success');
+  await loadUser();
+  await loadCustomBalances();
+  await loadOrders();
+  await loadMyOrders();
+  await loadMyTrades();
+  await loadTokenReserves();
+}
+
 // ============ ПЕРЕХОД НА КОНКРЕТНЫЙ ОРДЕР ИЗ БОТА ============
 async function openOrderFromBot(orderId){
   try {
@@ -3086,7 +3287,6 @@ async function openOrderFromBot(orderId){
       .maybeSingle();
     if(error || !order){ msg('Ордер не найден', 'error'); return; }
 
-    // В списке ордеров "Отдаю" = to_token, "Получаю" = from_token (логика как в loadOrders)
     showSection('exchange');
     const fE = document.getElementById('fromToken');
     const tE = document.getElementById('toToken');
@@ -3135,7 +3335,6 @@ document.addEventListener('DOMContentLoaded',async()=>{
   await loadTopBanner();
   await loadAdPrices();
 
-  // 🆕 Если пришли по кнопке "КУПИТЬ СЕЙЧАС" из бота — переходим на ордер
   if(__START_ORDER_ID){
     setTimeout(()=>openOrderFromBot(__START_ORDER_ID), 500);
   }
