@@ -141,8 +141,7 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 .ad-banner-sub{color:#cfd8e4;font-size:var(--bn-ss,13px);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .ad-banner-cta{display:inline-block;margin-top:8px;color:#4f8cff;font-size:12px;font-weight:700}
 .ad-banner-close{position:absolute;top:8px;right:8px;width:26px;height:26px;padding:0;margin:0;border:0;background:rgba(0,0,0,.55);color:#fff;border-radius:50%;font-size:13px;cursor:pointer;z-index:4;line-height:1}
-.ad-banner-close:active{background:rgba(0,0,0,.85)}
-.ad-banner-mark{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.72);color:#cbd5e1;font-size:11px;font-weight:800;letter-spacing:3px;text-align:center;padding:5px 0;text-transform:uppercase;z-index:3;text-shadow:0 1px 2px #000}
+.ad-banner-mark{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.72);color:#cbd5e1;font-size:11px;font-weight:800;letter-spacing:3px;text-align:center;padding:5px 0;text-transform:uppercase;z-index:3}
 .reward-fund-card{background:linear-gradient(145deg,#12201a,#0a1610);border:1px solid #2d5a3d;border-radius:16px;padding:14px;margin-top:8px}
 .reward-fund-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
 .reward-fund-symbol{font-size:16px;font-weight:bold;color:#fff}
@@ -168,7 +167,6 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 .lead-value{text-align:right}
 .lead-value b{display:block;font-size:16px;font-weight:bold}
 .lead-value span{color:#8f9bab;font-size:10px}
-/* ===== Buy modal ===== */
 .buy-pct-row{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}
 .buy-pct-row button{margin:0;padding:10px 4px;font-size:12px}
 </style></head><body>
@@ -715,28 +713,23 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 <div id="adResult" class="info" style="text-align:center"></div>
 </div></div></div>
 
-<!-- ================= МОДАЛКА ВЫКУПА ОРДЕРА ================= -->
 <div id="buyModal" class="mo" onclick="closeBuyModal(event)">
   <div class="mb" onclick="event.stopPropagation()">
     <div class="title">🛒 ВЫКУП ОРДЕРА</div>
     <div id="buyOrderInfo" class="info" style="margin-bottom:10px"></div>
-
     <label>Сколько получить (в <span id="buyFromSym">—</span>)</label>
     <input id="buyAmount" type="number" step="any" placeholder="0" oninput="updateBuyPreview()">
-
     <div class="buy-pct-row">
       <button class="sm sec" type="button" onclick="setBuyPct(25)">25%</button>
       <button class="sm sec" type="button" onclick="setBuyPct(50)">50%</button>
       <button class="sm sec" type="button" onclick="setBuyPct(75)">75%</button>
       <button class="sm sec" type="button" onclick="setBuyPct(100)">100%</button>
     </div>
-
     <div class="prev" style="margin-top:12px">
       <div class="dt"><span>Заплатите</span><span id="buyPay">—</span></div>
       <div class="dt"><span>Остаток в ордере</span><span id="buyRemaining">—</span></div>
       <div class="dt"><span>Доступно у вас</span><span id="buyAvail">—</span></div>
     </div>
-
     <button id="buyConfirmBtn" onclick="confirmBuyOrder()" disabled>✅ ВЫКУПИТЬ</button>
     <button class="sec" type="button" onclick="closeBuyModal()">Отмена</button>
     <div id="buyStatus" class="info" style="margin-top:8px;text-align:center"></div>
@@ -814,9 +807,19 @@ let DONATE_TOKEN = null;
 let ADMIN_REWARD_TOKEN = null;
 let LB_TAB = 'profit';
 let __START_ORDER_ID = null;
-// === КЭШ ОРДЕРОВ для кнопок выкупа ===
 const ORDER_CACHE = {};
 let __BUY_ORDER = null;
+
+const BUY_ERR = {
+  not_found:            'Ордер не найден',
+  already_taken:        'Ордер уже выкуплен или закрыт',
+  own_order:            'Нельзя выкупить свой собственный ордер',
+  invalid_amount:       'Некорректная сумма',
+  too_much:             'Слишком большая сумма',
+  banned:               'Аккаунт заблокирован',
+  creator_insufficient: 'У продавца недостаточно средств в ордере',
+  taker_insufficient:   'Недостаточно средств на вашем балансе'
+};
 
 async function refreshJwt(){
   const id=window.Telegram?.WebApp?.initData;
@@ -957,7 +960,6 @@ async function loadCustomBalances(){
 }
 function renderCustom(){ renderTotalTusd(); }
 
-// ============ СТЕЙКИНГ ============
 async function loadStakeState(){
   if(!UID) return;
   try {
@@ -973,9 +975,7 @@ async function loadStakeState(){
 }
 function recalcStakeRate(){
   let totalPerHour = 0;
-  (REWARD_FUNDS || []).forEach(fd => {
-    totalPerHour += Number(fd.my_per_hour) || 0;
-  });
+  (REWARD_FUNDS || []).forEach(fd => { totalPerHour += Number(fd.my_per_hour) || 0; });
   STAKE_RATE_SEC = totalPerHour / 3600;
   startStakeTimer();
 }
@@ -993,7 +993,6 @@ function startStakeTimer(){
 function renderStake(){
   const elA = document.getElementById('stakeAccum');
   if(elA) elA.innerHTML = `${fmtAccumBig(STAKE_DISPLAY)} <span style="font-size:14px;color:#7fc97f;font-weight:normal">TUSD</span>`;
-
   let totalPerDayTusd = 0;
   const parts = [];
   (REWARD_FUNDS || []).forEach(fd => {
@@ -1004,21 +1003,15 @@ function renderStake(){
       parts.push(`${fd.token_symbol}: +${dTok.toFixed(6)} (≈$${dTusd.toFixed(6)})`);
     }
   });
-
   const el = document.getElementById('stakeTick');
   if(el) el.innerHTML = `<span style="color:#39d98a;font-weight:bold">+$${totalPerDayTusd.toFixed(4)}</span> <span style="font-size:11px;color:#7fc97f;font-weight:normal">в день из фондов</span>`;
-
   const elM = document.getElementById('stakeMonth');
   const perMonth = totalPerDayTusd * 30;
   if(elM) elM.innerHTML = `≈ <b>$${perMonth.toFixed(2)}</b> <span style="font-size:10px;color:#7fc97f;font-weight:normal">в месяц</span>`;
-
   const elR = document.getElementById('stakeRate');
   if(elR){
-    if(parts.length > 0){
-      elR.innerHTML = `📊 ${parts.join(' • ')}`;
-    } else {
-      elR.textContent = '⏳ Начисляется раз в 5 минут из фондов наград';
-    }
+    if(parts.length > 0){ elR.innerHTML = `📊 ${parts.join(' • ')}`; }
+    else { elR.textContent = '⏳ Начисляется раз в 5 минут из фондов наград'; }
   }
 }
 async function claimStaking(){
@@ -1036,9 +1029,7 @@ async function claimStaking(){
     await loadUser();
     await loadCustomBalances();
     await loadStakeState();
-  } catch(e){
-    msg('Ошибка', 'error');
-  }
+  } catch(e){ msg('Ошибка', 'error'); }
 }
 
 function openTelegramProfile(){
@@ -1072,7 +1063,6 @@ async function loadUser(){
     if(tgu?.username   && CU.username   !== tgu.username)   upd.username   = tgu.username;
     if(Object.keys(upd).length){ await sb.from('users').update(upd).eq('telegram_id', UID); Object.assign(CU, upd); }
   } catch(e){ console.warn('[user sync]', e); }
-
   const startParam = tg?.initDataUnsafe?.start_param;
   if(startParam){
     if(String(startParam).startsWith('order_')){
@@ -1089,7 +1079,6 @@ async function loadUser(){
       }
     }
   }
-
   if(tgu?.username){
     try{
       const r = await sb.rpc('activate_pending_referral', { p_user_id: UID, p_username: tgu.username });
@@ -1099,7 +1088,6 @@ async function loadUser(){
       }
     }catch(e){ console.warn('[activate pending]', e); }
   }
-
   renderUser();
   if(UID === AID) document.getElementById('n-admin').classList.remove('hide');
   if(UID === AID) document.getElementById('ownerEarningsBtn')?.classList.remove('hide');
@@ -1195,7 +1183,6 @@ function showSection(name){
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
-// ============ ЛИДЕРБОРД ============
 function showLbTab(tab){
   LB_TAB = tab;
   const pBtn = document.getElementById('lb-tab-profit');
@@ -1215,10 +1202,7 @@ async function loadLeaderboard(){
     return;
   }
   const items = data.items || [];
-  if(!items.length){
-    box.innerHTML = '<div class="info">Пока никого нет.</div>';
-    return;
-  }
+  if(!items.length){ box.innerHTML = '<div class="info">Пока никого нет.</div>'; return; }
   box.innerHTML = items.map(it => {
     const place = Number(it.place) || 0;
     let placeCls = 'lead-place';
@@ -1230,11 +1214,8 @@ async function loadLeaderboard(){
     const handle = it.username ? '@' + it.username : '';
     const isMe = Number(it.telegram_id) === UID;
     let valueHtml = '';
-    if(LB_TAB === 'refs'){
-      valueHtml = `<b style="color:#4f8cff">${Number(it.refs_count)||0}</b><span>рефералов</span>`;
-    } else {
-      valueHtml = `<b style="color:#39d98a">${f(it.total_earned, 4)}</b><span>TUSD заработано</span>`;
-    }
+    if(LB_TAB === 'refs'){ valueHtml = `<b style="color:#4f8cff">${Number(it.refs_count)||0}</b><span>рефералов</span>`; }
+    else { valueHtml = `<b style="color:#39d98a">${f(it.total_earned, 4)}</b><span>TUSD заработано</span>`; }
     return `<div class="lead-row" style="${isMe ? 'border-color:#80652d;box-shadow:0 0 12px #80652d55' : ''}">
       <div class="${placeCls}">${placeText}</div>
       <div class="lead-info">
@@ -1246,7 +1227,6 @@ async function loadLeaderboard(){
   }).join('');
 }
 
-// ============ ФОНДЫ НАГРАД ============
 async function loadRewardFunds(){
   const box = document.getElementById('rewardFundsList');
   if(!box) return;
@@ -1332,10 +1312,7 @@ async function confirmDonateFund(){
   const amt = n(document.getElementById('donateFundAmount').value);
   if(amt <= 0){ msg('Введите сумму больше 0','error'); return; }
   const {data, error} = await sb.rpc('donate_to_fund', {p_token_symbol: DONATE_TOKEN, p_amount: amt});
-  if(error || !data || data.ok === false){
-    msg(data?.error || error?.message || 'Ошибка','error');
-    return;
-  }
+  if(error || !data || data.ok === false){ msg(data?.error || error?.message || 'Ошибка','error'); return; }
   msg(`✅ Фонд ${DONATE_TOKEN} пополнен на ${f(amt,2)} TUSD`,'success');
   closeDonateFund();
   await loadUser();
@@ -1343,17 +1320,13 @@ async function confirmDonateFund(){
 }
 async function claimRewardShare(){
   const {data, error} = await sb.rpc('claim_reward_share');
-  if(error || !data || data.ok === false){
-    msg(data?.error || error?.message || 'Нечего забирать','error');
-    return;
-  }
+  if(error || !data || data.ok === false){ msg(data?.error || error?.message || 'Нечего забирать','error'); return; }
   const claimed = Number(data.claimed) || 0;
   showAdRewardPopup(claimed, 'TUSD', '💵 НАГРАДЫ СОБРАНЫ');
   await loadUser();
   await loadRewardFunds();
 }
 
-// ============ АДМИНКА: ФОНДЫ ============
 async function loadAdminRewardTokens(){
   const box = document.getElementById('adminRewardTokensList');
   if(!box) return;
@@ -1439,17 +1412,13 @@ async function saveAdminRewardConfig(){
     p_reward_token_sym: document.getElementById('arc_token_sym').value.trim() || null
   };
   const {data, error} = await sb.rpc('admin_set_reward_config', p);
-  if(error || !data || data.ok === false){
-    st.className = 'er'; st.textContent = '✗ ' + (data?.error || error?.message);
-    return;
-  }
+  if(error || !data || data.ok === false){ st.className = 'er'; st.textContent = '✗ ' + (data?.error || error?.message); return; }
   st.className = 'ok'; st.textContent = '✅ Сохранено';
   msg('✅ Настройки фонда обновлены','success');
   await loadRewardFunds();
   await loadAdminRewardTokens();
 }
 
-// ============ ИСТОРИЯ ============
 const OP_ICONS = {
   ad_view:'📺', checkin:'🔥', task_reward:'📋', task_commission:'👑',
   staking_claim:'💧', welcome_bonus:'🎁',
@@ -1472,10 +1441,7 @@ function openHistory(){
   HISTORY_ITEMS = [];
   loadHistory();
 }
-function closeHistory(e){
-  if(e && e.target !== document.getElementById('historyModal')) return;
-  document.getElementById('historyModal').classList.remove('show');
-}
+function closeHistory(e){ if(e && e.target !== document.getElementById('historyModal')) return; document.getElementById('historyModal').classList.remove('show'); }
 function setHistoryFilter(wt){
   HISTORY_WALLET = wt;
   HISTORY_OFFSET = 0;
@@ -1500,10 +1466,7 @@ async function loadHistory(){
     return;
   }
   const items = data.items || [];
-  if(!items.length && HISTORY_OFFSET === 0){
-    box.innerHTML = '<div class="info">Операций пока нет.</div>';
-    return;
-  }
+  if(!items.length && HISTORY_OFFSET === 0){ box.innerHTML = '<div class="info">Операций пока нет.</div>'; return; }
   HISTORY_ITEMS = HISTORY_ITEMS.concat(items);
   renderHistory(box, data.has_more);
 }
@@ -1547,25 +1510,13 @@ function renderHistory(box, hasMore){
       </div>`;
     }).join('');
   });
-  if(hasMore){
-    html += `<button class="sec" style="margin-top:12px" onclick="loadMoreHistory()">Загрузить ещё</button>`;
-  }
+  if(hasMore){ html += `<button class="sec" style="margin-top:12px" onclick="loadMoreHistory()">Загрузить ещё</button>`; }
   box.innerHTML = html;
 }
-async function loadMoreHistory(){
-  HISTORY_OFFSET += HISTORY_LIMIT;
-  await loadHistory();
-}
+async function loadMoreHistory(){ HISTORY_OFFSET += HISTORY_LIMIT; await loadHistory(); }
 
-// ============ МОИ ДОХОДЫ ============
-function openOwnerEarnings(){
-  document.getElementById('ownerEarningsModal').classList.add('show');
-  loadOwnerEarnings('all');
-}
-function closeOwnerEarnings(e){
-  if(e && e.target !== document.getElementById('ownerEarningsModal')) return;
-  document.getElementById('ownerEarningsModal').classList.remove('show');
-}
+function openOwnerEarnings(){ document.getElementById('ownerEarningsModal').classList.add('show'); loadOwnerEarnings('all'); }
+function closeOwnerEarnings(e){ if(e && e.target !== document.getElementById('ownerEarningsModal')) return; document.getElementById('ownerEarningsModal').classList.remove('show'); }
 async function loadOwnerEarnings(period){
   document.querySelectorAll('#ownerEarningsModal [data-period]').forEach(b=>{
     b.style.background = b.dataset.period === period ? '#80652d' : '';
@@ -1574,10 +1525,7 @@ async function loadOwnerEarnings(period){
   const box = document.getElementById('ownerEarningsBox');
   box.innerHTML = '<div class="info">Загрузка...</div>';
   const {data, error} = await sb.rpc('get_owner_earnings', {p_period: period});
-  if(error || !data || data.ok === false){
-    box.innerHTML = `<div class="er">${esc(error?.message || data?.error || 'Ошибка')}</div>`;
-    return;
-  }
+  if(error || !data || data.ok === false){ box.innerHTML = `<div class="er">${esc(error?.message || data?.error || 'Ошибка')}</div>`; return; }
   const total = Number(data.total) || 0;
   const bySource = data.by_source || [];
   const byToken = data.by_token || [];
@@ -1732,7 +1680,6 @@ async function loadMyReferrals(){
   box.innerHTML=html;
 }
 
-// ============ БАННЕРЫ ============
 function applyBannerSettings(){
   const root = document.documentElement;
   root.style.setProperty('--bn-h', BANNER_SETTINGS.height + 'px');
@@ -1779,10 +1726,7 @@ async function saveBannerSettings(){
   };
   for(const [k,v] of Object.entries(vals)){
     const {data, error} = await sb.rpc('admin_set_app_setting', { p_key: k, p_value: String(v) });
-    if(error || !data || data.ok === false){
-      if(st){ st.className='er'; st.textContent = 'Ошибка: ' + (error?.message || data?.error || 'unknown'); }
-      return;
-    }
+    if(error || !data || data.ok === false){ if(st){ st.className='er'; st.textContent = 'Ошибка: ' + (error?.message || data?.error || 'unknown'); } return; }
   }
   await loadBannerSettings();
   await loadTopBanner();
@@ -1812,11 +1756,7 @@ async function loadTopBanner(){
         </div>
         <div class="ad-banner-mark">Реклама</div>`;
       el.onclick = (e)=>{
-        if(e.target.dataset.close){
-          e.stopPropagation();
-          el.remove();
-          return;
-        }
+        if(e.target.dataset.close){ e.stopPropagation(); el.remove(); return; }
         try{ sb.rpc('banner_track_click', { p_id: b.id }); }catch{}
         const url = b.link_url || '';
         if(!url) return;
@@ -2121,18 +2061,6 @@ async function adminAdStatus(id, status){
   adminAdLoad();
 }
 
-async function resolveUserIds(input){
-  const parts = String(input||'').split(/[,\s]+/).map(s=>s.trim()).filter(Boolean);
-  const ids = []; const usernames = []; const notFound = [];
-  if(!parts.length) return { ids, usernames, notFound };
-  const numeric = []; const alpha = [];
-  for(const p of parts){ const clean = p.replace(/^@/, ''); if(/^\d+$/.test(clean)) numeric.push(Number(clean)); else alpha.push(clean); }
-  numeric.forEach(x => ids.push(x));
-  if(alpha.length){
-    try{ const {data, error} = await sb.rpc('admin_resolve_usernames', { p_list: alpha }); if(!error && data && data.ok){ const resolved = data.resolved || {}; for(const u of alpha){ if(resolved[u] != null) ids.push(Number(resolved[u])); else usernames.push(u); } } else { alpha.forEach(u => usernames.push(u)); } }catch(e){ alpha.forEach(u => usernames.push(u)); }
-  }
-  return { ids, usernames, notFound };
-}
 async function adminTransferReferrals(){
   const st = document.getElementById('ref_transfer_status');
   const targetRaw = document.getElementById('ref_transfer_target').value.trim();
@@ -2542,7 +2470,6 @@ async function setTokenVerified(id,v){
   await loadAllTokens(); await loadAdminVerification();
 }
 
-// ============ АДМИНКА: РЕДАКТИРОВАНИЕ ТОКЕНОВ ============
 async function loadAdminTokenPrices(){
   const box = document.getElementById('adminTokenPricesList'); if(!box) return;
   box.innerHTML = '<div class="info">Загрузка...</div>';
@@ -2565,30 +2492,22 @@ async function loadAdminTokenPrices(){
         <span>${esc(t.symbol)}${statusBadge}${sysBadge}</span>
         <span style="color:#8f9bab;font-size:11px;margin-left:auto">${holders} 👤</span>
       </div>
-
       <label style="margin-top:8px">📝 Название</label>
       <input type="text" id="tp-name-${esc(t.id)}" value="${esc(t.name||'')}" placeholder="Telepat Gold">
-
       <label style="margin-top:8px">📄 Описание</label>
       <input type="text" id="tp-desc-${esc(t.id)}" value="${esc(t.description||'')}" placeholder="Что это за токен">
-
       <label style="margin-top:8px">🔗 Лого (URL)</label>
       <input type="text" id="tp-logo-${esc(t.id)}" value="${esc(t.logo_url||'')}" placeholder="https://...">
-
       <label style="margin-top:8px">💎 Jetton Master (TON)</label>
       <input type="text" id="tp-jetton-${esc(t.id)}" value="${esc(t.jetton_master||'')}" placeholder="EQC... или пусто">
-
       <label style="margin-top:8px">💰 Курс в TUSD</label>
       <input type="number" id="tp-price-${esc(t.id)}" step="0.00000001" min="0" value="${t.price_tusd}">
-
       <label style="margin-top:8px">⬇️ Минимум вывода</label>
       <input type="number" id="tp-min-${esc(t.id)}" step="0.00000001" min="0" value="${t.min_withdrawal}">
-
       <label style="margin-top:10px;display:flex;align-items:center;gap:8px;cursor:pointer">
         <input type="checkbox" id="tp-sys-${esc(t.id)}" ${t.is_system_token ? 'checked' : ''}>
         <span>🏦 Системный (виртуальный) — не виден в кошельке, работает только внутри</span>
       </label>
-
       <div class="row" style="margin-top:10px;flex-wrap:wrap;gap:6px">
         <button class="sm" onclick="saveAdminTokenParams('${esc(t.id)}')">💾 Сохранить</button>
         ${delistBtn}
@@ -2646,7 +2565,6 @@ async function saveAdminTokenParams(id){
   const sysEl = document.getElementById('tp-sys-' + id);
   if(!priceEl || !minEl) return;
   if(statusEl){ statusEl.className='info'; statusEl.textContent='⏳ Сохранение...'; }
-
   const price = Number(priceEl.value);
   const minW = Number(minEl.value);
   const name = nameEl ? nameEl.value.trim() : null;
@@ -2654,32 +2572,18 @@ async function saveAdminTokenParams(id){
   const logo = logoEl ? logoEl.value.trim() : null;
   const jetton = jettonEl ? jettonEl.value.trim() : null;
   const isSystem = sysEl ? sysEl.checked : null;
-
   if(!Number.isFinite(price) || price < 0){ msg('Некорректный курс','error'); if(statusEl){statusEl.className='er';statusEl.textContent='✗ Курс';} return; }
   if(!Number.isFinite(minW) || minW < 0){ msg('Некорректный минимум','error'); if(statusEl){statusEl.className='er';statusEl.textContent='✗ Минимум';} return; }
-
   const { data, error } = await sb.rpc('admin_set_token_params', {
-    p_token_id: id,
-    p_price_tusd: price,
-    p_min_withdrawal: minW,
-    p_name: name,
-    p_description: description,
-    p_jetton_master: jetton,
-    p_logo_url: logo,
-    p_is_system_token: isSystem
+    p_token_id: id, p_price_tusd: price, p_min_withdrawal: minW,
+    p_name: name, p_description: description, p_jetton_master: jetton,
+    p_logo_url: logo, p_is_system_token: isSystem
   });
-
   if(error){ msg(error.message,'error'); if(statusEl){statusEl.className='er';statusEl.textContent='✗ '+error.message;} return; }
   if(!data || data.ok === false){ msg((data && data.error) || 'Ошибка','error'); if(statusEl){statusEl.className='er';statusEl.textContent='✗ '+((data&&data.error)||'');} return; }
-
   msg('✅ Сохранено','success');
   if(statusEl){ statusEl.className='ok'; statusEl.textContent='✅ Сохранено'; }
-  await loadAllTokens();
-  await loadUser();
-  await loadCustomBalances();
-  await loadStakeState();
-  renderCustom();
-  fillAll();
+  await loadAllTokens(); await loadUser(); await loadCustomBalances(); await loadStakeState(); renderCustom(); fillAll();
 }
 
 async function loadAdminBonusConfig(){
@@ -2976,16 +2880,13 @@ async function loadMyOrders(){
   l.innerHTML=mine.length?mine.map(orderCard).join(''):'<div class="info">Нет ордеров.</div>';
 }
 function orderCard(o){
-  // Кэш для кнопок выкупа
   ORDER_CACHE[String(o.id)] = o;
-
   const isMine=String(o.creator_id)===String(UID),c=rk(o.creator_rank_level),g=c+'55';
   const rt=n(o.rate),rev=rt>0?1/rt:0,dt=new Date(o.created_at).toLocaleString('ru-RU');
   const p=CP[String(o.from_token).toUpperCase()];
   let pl='';
   if(p){let tx=`${f(p.reserve_amount,6)} ${esc(o.from_token)}`;if(p.reserve_tusd>0)tx+=` + ${f(p.reserve_tusd,2)} TUSD`;pl=`<div class="dt"><span>💧 Резерв</span><span>${tx}</span></div>`}
   const ownerLabel = o.creator_username ? '@'+esc(o.creator_username) : ('ID '+Number(o.creator_id));
-
   const actionsHtml = isMine
     ? `<div class="oa">
          <button class="sec" onclick="openProfile(${Number(o.creator_id)});event.stopPropagation()">👤</button>
@@ -2996,7 +2897,6 @@ function orderCard(o){
          <button class="sec" onclick="quickBuyOrder('${esc(o.id)}');event.stopPropagation()">⚡ БЫСТРО</button>
          <button onclick="openBuyModal('${esc(o.id)}');event.stopPropagation()">🛒 КУПИТЬ</button>
        </div>`;
-
   return `<div class="order" id="order-${esc(o.id)}" style="--rc:${c};--rg:${g}"><div class="oh" onclick="toggleOrder('${esc(o.id)}')"><div class="ol"><div class="om" style="display:flex;align-items:center;gap:6px">${tokenIconHTML(o.from_token,'xs')} ${f(o.from_amount)} ${esc(o.from_token)} → ${f(o.to_amount)} ${esc(o.to_token)}</div><div class="rb">👑 ${esc(o.creator_rank_name)}</div></div><div class="op">1 ${esc(o.from_token)} = ${f(rt,12)} ${esc(o.to_token)}</div><div class="os"><span>👍 ${n(o.likes)}</span><span>👎 ${n(o.dislikes)}</span><span>🤝 ${n(o.completed_trades)}</span></div></div><div class="oe"><div class="dt"><span>Владелец</span><span class="pl" onclick="openProfile(${Number(o.creator_id)});event.stopPropagation()">👤 ${ownerLabel}</span></div><div class="dt"><span>Отдаёт</span><span>${f(o.from_amount)} ${esc(o.from_token)}</span></div><div class="dt"><span>Получает</span><span>${f(o.to_amount)} ${esc(o.to_token)}</span></div><div class="dt"><span>Курс</span><span>1 ${esc(o.from_token)} = ${f(rt,12)} ${esc(o.to_token)}</span></div><div class="dt"><span>Титул</span><span style="color:${c};font-weight:bold">👑 ${esc(o.creator_rank_name)}</span></div>${pl}<div class="dt"><span>Дата</span><span>${esc(dt)}</span></div>${actionsHtml}</div></div>`;
 }
 function toggleOrder(id){document.getElementById('order-'+id)?.classList.toggle('opened')}
@@ -3123,20 +3023,31 @@ async function adminTransfer(){
 }
 
 // ============ ВЫКУП ОРДЕРА: полный / частичный ============
+function buyErrText(data, error){
+  if(error && error.message) return error.message;
+  if(!data) return 'Неизвестная ошибка';
+  const code = data.error || '';
+  let base = BUY_ERR[code] || code || 'Ошибка';
+  if(code === 'too_much' && data.available != null){
+    base = `Максимум можно выкупить ${f(data.available, 8)}`;
+  } else if(code === 'taker_insufficient' && data.need != null){
+    const tk = data.need_token || '';
+    base = `Недостаточно средств. Нужно ${f(data.need, 8)} ${tk}`;
+  }
+  return base;
+}
+
 function openBuyModal(orderId){
   const o = ORDER_CACHE[String(orderId)];
   if(!o){ msg('Ордер не найден. Обнови список.', 'error'); return; }
   __BUY_ORDER = o;
-
   const fromTotal = n(o.from_amount);
   const toTotal   = n(o.to_amount);
   const rate      = fromTotal > 0 ? toTotal / fromTotal : 0;
-
   document.getElementById('buyOrderInfo').innerHTML =
     `<b>${f(o.from_amount)} ${esc(o.from_token)} → ${f(o.to_amount)} ${esc(o.to_token)}</b><br>` +
     `<span style="color:#8f9bab">1 ${esc(o.from_token)} = ${f(rate,12)} ${esc(o.to_token)}</span>`;
   document.getElementById('buyFromSym').textContent = o.from_token;
-
   const inp = document.getElementById('buyAmount');
   inp.value = '';
   const st = document.getElementById('buyStatus');
@@ -3152,8 +3063,7 @@ function closeBuyModal(e){
 function setBuyPct(pct){
   if(!__BUY_ORDER) return;
   const max = n(__BUY_ORDER.from_amount);
-  const v = (max * pct) / 100;
-  document.getElementById('buyAmount').value = String(v);
+  document.getElementById('buyAmount').value = String((max * pct) / 100);
   updateBuyPreview();
 }
 function updateBuyPreview(){
@@ -3162,30 +3072,17 @@ function updateBuyPreview(){
   const fromTotal = n(o.from_amount);
   const toTotal   = n(o.to_amount);
   const rate      = fromTotal > 0 ? toTotal / fromTotal : 0;
-  const getAmtRaw = n(document.getElementById('buyAmount').value);
-  const getAmt    = Math.max(0, Math.min(fromTotal, getAmtRaw));
+  const getAmt    = Math.max(0, Math.min(fromTotal, n(document.getElementById('buyAmount').value)));
   const payAmt    = getAmt * rate;
   const remaining = Math.max(0, fromTotal - getAmt);
   const myAvail   = tb(o.to_token);
-
-  document.getElementById('buyPay').textContent =
-    `${f(payAmt, 8)} ${o.to_token}`;
-  document.getElementById('buyRemaining').textContent =
-    `${f(remaining, 8)} ${o.from_token}`;
-  document.getElementById('buyAvail').textContent =
-    `${f(myAvail, 8)} ${o.to_token}`;
-
+  document.getElementById('buyPay').textContent = `${f(payAmt, 8)} ${o.to_token}`;
+  document.getElementById('buyRemaining').textContent = `${f(remaining, 8)} ${o.from_token}`;
+  document.getElementById('buyAvail').textContent = `${f(myAvail, 8)} ${o.to_token}`;
   const btn = document.getElementById('buyConfirmBtn');
-  if(getAmt <= 0){
-    btn.disabled = true;
-    btn.textContent = '✅ ВЫКУПИТЬ';
-  } else if(getAmt >= fromTotal - 1e-12){
-    btn.disabled = false;
-    btn.textContent = '✅ ВЫКУПИТЬ ПОЛНОСТЬЮ';
-  } else {
-    btn.disabled = false;
-    btn.textContent = '✅ ВЫКУПИТЬ ЧАСТЬ';
-  }
+  if(getAmt <= 0){ btn.disabled = true; btn.textContent = '✅ ВЫКУПИТЬ'; }
+  else if(getAmt >= fromTotal - 1e-12){ btn.disabled = false; btn.textContent = '✅ ВЫКУПИТЬ ПОЛНОСТЬЮ'; }
+  else { btn.disabled = false; btn.textContent = '✅ ВЫКУПИТЬ ЧАСТЬ'; }
 }
 async function confirmBuyOrder(){
   if(!__BUY_ORDER || !UID) return;
@@ -3196,60 +3093,52 @@ async function confirmBuyOrder(){
   const getAmt    = n(document.getElementById('buyAmount').value);
   const status    = document.getElementById('buyStatus');
   const btn       = document.getElementById('buyConfirmBtn');
-
   if(getAmt <= 0){ msg('Введите количество', 'error'); return; }
   if(getAmt > fromTotal + 1e-9){ msg('Больше, чем есть в ордере', 'error'); return; }
-
   const payAmt  = getAmt * rate;
   const myAvail = tb(o.to_token);
   if(payAmt > myAvail + 1e-9){
     msg(`Недостаточно ${o.to_token}. Нужно ${f(payAmt, 8)}, у вас ${f(myAvail, 8)}`, 'error');
     return;
   }
-
   btn.disabled = true;
   status.className = 'info';
   status.textContent = '⏳ Выкуп...';
-
   const isFull = getAmt >= fromTotal - 1e-9;
-
   try {
-    let data, error;
     if(isFull){
-      const r = await sb.rpc('accept_p2p_order_v2', { p_order_id: String(o.id) });
-      data = r.data; error = r.error;
+      const { error } = await sb.rpc('accept_p2p_order_v2', { p_order_id: String(o.id) });
+      if(error){
+        status.className = 'er'; status.textContent = '✗ ' + error.message;
+        msg(error.message, 'error'); btn.disabled = false; return;
+      }
+      status.className = 'ok'; status.textContent = '✅ Выкуплено полностью';
+      msg(status.textContent, 'success');
     } else {
-      // p_get_amount — сколько taker ПОЛУЧАЕТ (в from_token ордера)
-      const r = await sb.rpc('accept_p2p_order_chat_partial', {
+      const { data, error } = await sb.rpc('accept_p2p_order_chat_partial', {
         p_order_id:   String(o.id),
         p_taker_id:   String(UID),
         p_get_amount: getAmt
       });
-      data = r.data; error = r.error;
+      if(error){
+        status.className = 'er'; status.textContent = '✗ ' + error.message;
+        msg(error.message, 'error'); btn.disabled = false; return;
+      }
+      if(!data || data.ok === false){
+        const txt = buyErrText(data, null);
+        status.className = 'er'; status.textContent = '✗ ' + txt;
+        msg(txt, 'error'); btn.disabled = false; return;
+      }
+      status.className = 'ok';
+      status.textContent = `✅ Выкуплено ${f(getAmt, 8)} ${o.from_token}`;
+      msg(status.textContent, 'success');
     }
-
-    if(error || (data && data.ok === false)){
-      const errMsg = error?.message || data?.error || 'Ошибка';
-      status.className = 'er';
-      status.textContent = '✗ ' + errMsg;
-      msg(errMsg, 'error');
-      btn.disabled = false;
-      return;
-    }
-
-    status.className = 'ok';
-    status.textContent = isFull
-      ? '✅ Выкуплено полностью'
-      : `✅ Выкуплено ${f(getAmt, 8)} ${o.from_token}`;
-    msg(status.textContent, 'success');
-
     await loadUser();
     await loadCustomBalances();
     await loadOrders();
     await loadMyOrders();
     await loadMyTrades();
     await loadTokenReserves();
-
     setTimeout(closeBuyModal, 900);
   } catch(e){
     status.className = 'er';
@@ -3263,11 +3152,8 @@ async function quickBuyOrder(orderId){
   const o = ORDER_CACHE[String(orderId)];
   if(!o){ msg('Ордер не найден. Обнови список.', 'error'); return; }
   if(!confirm(`Купить полностью ${f(o.from_amount)} ${o.from_token} за ${f(o.to_amount)} ${o.to_token}?`)) return;
-
-  const {data, error} = await sb.rpc('accept_p2p_order_v2', { p_order_id: String(orderId) });
+  const {error} = await sb.rpc('accept_p2p_order_v2', { p_order_id: String(orderId) });
   if(error){ msg(error.message, 'error'); return; }
-  if(data && data.ok === false){ msg(data.error || 'Ошибка', 'error'); return; }
-
   msg('✅ Куплено', 'success');
   await loadUser();
   await loadCustomBalances();
@@ -3277,23 +3163,19 @@ async function quickBuyOrder(orderId){
   await loadTokenReserves();
 }
 
-// ============ ПЕРЕХОД НА КОНКРЕТНЫЙ ОРДЕР ИЗ БОТА ============
 async function openOrderFromBot(orderId){
   try {
-    console.log('[openOrderFromBot] открываю ордер:', orderId);
     const {data: order, error} = await sb.from('p2p_orders')
       .select('id, from_token, to_token')
       .eq('id', orderId)
       .maybeSingle();
     if(error || !order){ msg('Ордер не найден', 'error'); return; }
-
     showSection('exchange');
     const fE = document.getElementById('fromToken');
     const tE = document.getElementById('toToken');
     if(fE) fE.value = order.to_token;
     if(tE) tE.value = order.from_token;
     updateOrderForm();
-
     await loadOrders();
     setTimeout(() => {
       const el = document.getElementById('order-' + orderId);
@@ -3303,14 +3185,9 @@ async function openOrderFromBot(orderId){
         el.style.boxShadow = '0 0 24px #f4cf7088';
         setTimeout(()=>{ el.style.boxShadow=''; }, 2500);
         msg('✅ Ордер открыт', 'success');
-      } else {
-        msg('Ордер не найден в списке', 'error');
-      }
+      } else { msg('Ордер не найден в списке', 'error'); }
     }, 800);
-  } catch(e){
-    console.error('[openOrderFromBot]', e);
-    msg('Ошибка перехода к ордеру', 'error');
-  }
+  } catch(e){ console.error('[openOrderFromBot]', e); msg('Ошибка перехода к ордеру', 'error'); }
 }
 
 document.addEventListener('DOMContentLoaded',async()=>{
@@ -3334,11 +3211,7 @@ document.addEventListener('DOMContentLoaded',async()=>{
   await loadRewardFunds();
   await loadTopBanner();
   await loadAdPrices();
-
-  if(__START_ORDER_ID){
-    setTimeout(()=>openOrderFromBot(__START_ORDER_ID), 500);
-  }
-
+  if(__START_ORDER_ID){ setTimeout(()=>openOrderFromBot(__START_ORDER_ID), 500); }
   setInterval(refreshJwt, 30 * 60 * 1000);
   setInterval(loadRewardFunds, 60 * 1000);
 });
