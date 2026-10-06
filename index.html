@@ -205,9 +205,20 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 <div class="info">ТЕКУЩИЙ ТИТУЛ</div>
 <div class="rnn" id="rankName">Крестьянин</div>
 <div class="info" id="rankLevel" style="margin-top:4px;font-size:12px;color:#9da9b9">Уровень 1 из 21</div>
-<div class="prg"><div id="rankProgress" style="width:0%"></div></div>
-<div class="info" id="rankRequirement" style="margin-top:6px"></div>
-<div class="info" id="rankStats" style="margin-top:8px;font-size:12px;line-height:1.6"></div>
+
+<div class="info" style="margin-top:10px;font-size:11px;color:#f4cf70">💎 СТЕЙКИНГ (TG)</div>
+<div class="prg"><div id="rankProgressStake" style="width:0%"></div></div>
+<div class="info" id="rankStakeLabel" style="margin-top:4px;font-size:11px">Осталось вложить: $0</div>
+
+<div class="info" style="margin-top:12px;font-size:11px;color:#f4cf70">📦 СДЕЛКИ</div>
+<div class="prg"><div id="rankProgressTrades" style="width:0%"></div></div>
+<div class="info" id="rankTradesLabel" style="margin-top:4px;font-size:11px">Осталось сделок: 0</div>
+
+<div class="info" style="margin-top:12px;font-size:11px;color:#f4cf70">👥 РЕФЕРАЛЫ</div>
+<div class="prg"><div id="rankProgressRefs" style="width:0%"></div></div>
+<div class="info" id="rankRefsLabel" style="margin-top:4px;font-size:11px">Осталось рефералов: 0</div>
+
+<div class="info" id="rankLevelsBreakdown" style="margin-top:12px;font-size:11px;text-align:center;color:#8f9bab"></div>
 </div></div>
 <div class="card" id="walletCard" style="padding:22px 18px">
 <div class="title" style="text-align:center;margin-bottom:6px">💰 МОЙ КОШЕЛЁК</div>
@@ -227,10 +238,10 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
   <button onclick="openHistory()" class="sec" style="flex:1;margin:0;padding:11px;font-size:13px">📜 История</button>
   <button onclick="openOwnerEarnings()" id="ownerEarningsBtn" class="hide" style="flex:1;margin:0;padding:11px;font-size:13px">💰 Мои доходы</button>
 </div>
-<div class="title" style="font-size:12px;color:#9da9b9;margin-top:18px;margin-bottom:8px">🎁 ФОНДЫ НАГРАД</div>
-<div id="rewardFundsList"><div class="info">Загрузка...</div></div>
 <div class="title" style="font-size:12px;color:#9da9b9;margin-top:18px;margin-bottom:8px">МОИ ТОКЕНЫ</div>
 <div id="tokensList" style="display:flex;flex-direction:column;gap:7px"></div>
+<div class="title" style="font-size:12px;color:#9da9b9;margin-top:18px;margin-bottom:8px">🎁 ФОНДЫ НАГРАД</div>
+<div id="rewardFundsList"><div class="info">Загрузка...</div></div>
 </div>
 
 <div class="card gold" id="adBalanceCard">
@@ -1117,30 +1128,47 @@ async function loadUser(){
   if(levelEl)levelEl.textContent=`Уровень ${rl} из 21`;
   document.getElementById('earnRank').textContent=rn;
 
-  // === НОВОЕ: берём прогресс из базы (recalc_rank уже всё посчитал) ===
-  const progress   = Number(CU.rank_progress_pct ?? 0);
-  const ordersLeft = Number(CU.orders_to_next ?? 0);
-  const refsLeft   = Number(CU.refs_to_next ?? 0);
-  const weight     = Number(CU.rank_weight ?? 0);
-  const nextThr    = Number(CU.rank_next_threshold ?? 0);
-  const isMax      = rl >= 21;
+  // === ТРИ ПОЛЗУНКА: стейкинг (TG), сделки, рефералы ===
+  const stakeUsd       = Number(CU.rank_weight ?? 0);
+  const stakeNext      = Number(CU.rank_next_threshold ?? 0);
+  const stakeProgress  = Number(CU.rank_progress_pct ?? 0);
+  const tradesTotal    = Number(CU.trades_new ?? 0);
+  const refsTotal      = Number(CU.refs_new ?? 0);
+  const tradesProgress = Number(CU.progress_trades ?? 0);
+  const refsProgress   = Number(CU.progress_refs ?? 0);
+  const tradesLeft     = Number(CU.orders_to_next ?? 0);
+  const refsLeft       = Number(CU.refs_to_next ?? 0);
+  const isMax          = rl >= 21;
+  const tgPrice        = priceOf('TG') || 100;
 
-  document.getElementById('rankProgress').style.width = (isMax ? 100 : progress) + '%';
+  const elStakeP = document.getElementById('rankProgressStake');
+  if(elStakeP) elStakeP.style.width = (isMax ? 100 : stakeProgress) + '%';
+  const elTradesP = document.getElementById('rankProgressTrades');
+  if(elTradesP) elTradesP.style.width = (isMax ? 100 : tradesProgress) + '%';
+  const elRefsP = document.getElementById('rankProgressRefs');
+  if(elRefsP) elRefsP.style.width = (isMax ? 100 : refsProgress) + '%';
 
-  const reqEl = document.getElementById('rankRequirement');
-  if(reqEl){
-    reqEl.textContent = isMax ? 'Максимальный уровень! 👑' : `${progress}% до следующего уровня`;
-  }
-  const statsEl = document.getElementById('rankStats');
-  if(statsEl){
-    if(!isMax){
-      statsEl.innerHTML =
-        `📦 Ещё обменов: <b style="color:#f4cf70">${ordersLeft}</b>` +
-        ` &nbsp;•&nbsp; 👥 Ещё рефералов: <b style="color:#f4cf70">${refsLeft}</b><br>` +
-        `<span style="font-size:11px;color:#8f9bab">Вес: ${weight.toFixed(2)} / ${nextThr.toFixed(2)}</span>`;
-    } else {
-      statsEl.innerHTML = `<span style="font-size:11px;color:#8f9bab">Вес: ${weight.toFixed(2)}</span>`;
-    }
+  const leftStakeUsd = Math.max(0, stakeNext - stakeUsd);
+  const leftStakeTg  = tgPrice > 0 ? leftStakeUsd / tgPrice : 0;
+
+  const elStakeL = document.getElementById('rankStakeLabel');
+  if(elStakeL) elStakeL.textContent = isMax
+    ? '✅ Максимум'
+    : `Осталось вложить: $${leftStakeUsd.toFixed(2)} (TG ≈ ${leftStakeTg.toFixed(4)})`;
+  const elTradesL = document.getElementById('rankTradesLabel');
+  if(elTradesL) elTradesL.textContent = isMax
+    ? '✅ Максимум'
+    : `Осталось сделок: ${tradesLeft} (уже ${tradesTotal})`;
+  const elRefsL = document.getElementById('rankRefsLabel');
+  if(elRefsL) elRefsL.textContent = isMax
+    ? '✅ Максимум'
+    : `Осталось рефералов: ${refsLeft} (уже ${refsTotal})`;
+
+  const bk = document.getElementById('rankLevelsBreakdown');
+  if(bk){
+    bk.textContent = isMax
+      ? 'Максимальный уровень! 👑'
+      : `Вес: $${stakeUsd.toFixed(2)} / $${stakeNext.toFixed(2)}`;
   }
 
   const tgu2=n(CU.tg_balance)*priceOf('TG'),aie=n(CU.ai_balance)*priceOf('AI');
@@ -1148,7 +1176,7 @@ async function loadUser(){
   document.getElementById('earnDetails').innerHTML=
     `Всего: <b>${f(total,2)} TUSD</b><br>` +
     `TG: <b>${f(tgu2,2)}</b> • AI: <b>${f(aie,2)}</b><br>` +
-    `Вес: <b>${weight.toFixed(2)}</b> / ${nextThr.toFixed(2)}`;
+    `Вес: <b>$${stakeUsd.toFixed(2)}</b> / $${stakeNext.toFixed(2)}`;
   renderTotalTusd();
 }
 
@@ -1178,12 +1206,28 @@ function renderTotalTusd(){
   if(!list) return;
   const minMap = {};
   (ALL_TOKENS || []).forEach(t => { minMap[t.symbol] = n(t.min_withdrawal); });
+
+  // Карта фондов: сколько капает в день по каждому токену (в TUSD и в токене)
+  const fundMap = {};
+  (REWARD_FUNDS || []).forEach(fd => {
+    fundMap[fd.token_symbol] = {
+      perDayTok: Number(fd.my_per_day) || 0,
+      perDayTusd: Number(fd.my_per_day_tusd) || 0,
+      sharePct: Number(fd.my_share_pct) || 0
+    };
+  });
+
   list.innerHTML = tokens.map(t => {
     const minW = minMap[t.sym] || 0;
     const canWithdraw = minW > 0 && t.amt >= minW;
     const icon = tokenIconHTML(t.sym, 'lg');
     const verified = VERIFIED_SYMBOLS.has(t.sym);
-    return `<div class="wallet-token-row">${icon}<div style="flex:1;min-width:0"><div style="color:#fff;font-weight:bold;font-size:15px;display:flex;align-items:center;gap:5px">${esc(t.sym)}${verified ? '<span title="Верифицирован" style="color:#39d98a;font-size:13px">✅</span>' : ''}</div><div style="color:#8f9bab;font-size:11px;margin-top:2px">Мин. вывод: ${minW > 0 ? f(minW, 6) : '—'}</div></div><div style="text-align:right;margin-right:6px"><div style="color:#fff;font-weight:bold;font-size:15px">${f(t.amt, 6)}</div><div style="color:#8f9bab;font-size:11px">≈ ${f(t.tusd, 2)} TUSD</div></div><div style="display:flex;flex-direction:column;gap:4px;margin-left:4px"><button onclick="openTokenDeposit('${esc(t.sym)}')" style="width:auto;padding:6px 10px;margin:0;font-size:11px">➕</button><button onclick="openWithdraw('${esc(t.sym)}', ${t.amt}, ${minW})" style="width:auto;padding:6px 10px;margin:0;font-size:11px;${canWithdraw ? '' : 'opacity:.4;'}" ${canWithdraw ? '' : 'disabled'}>↩️</button></div></div>`;
+    const fd = fundMap[t.sym];
+    let fundLine = '';
+    if(fd && (fd.perDayTok > 0 || fd.perDayTusd > 0)){
+      fundLine = `<div style="color:#39d98a;font-size:11px;margin-top:2px">⛏️ +${fmtAccumBig(fd.perDayTok)} ${esc(t.sym)}/день ≈ $${fd.perDayTusd.toFixed(4)}</div>`;
+    }
+    return `<div class="wallet-token-row">${icon}<div style="flex:1;min-width:0"><div style="color:#fff;font-weight:bold;font-size:15px;display:flex;align-items:center;gap:5px">${esc(t.sym)}${verified ? '<span title="Верифицирован" style="color:#39d98a;font-size:13px">✅</span>' : ''}</div><div style="color:#8f9bab;font-size:11px;margin-top:2px">Мин. вывод: ${minW > 0 ? f(minW, 6) : '—'}</div>${fundLine}</div><div style="text-align:right;margin-right:6px"><div style="color:#fff;font-weight:bold;font-size:15px">${f(t.amt, 6)}</div><div style="color:#8f9bab;font-size:11px">≈ ${f(t.tusd, 2)} TUSD</div></div><div style="display:flex;flex-direction:column;gap:4px;margin-left:4px"><button onclick="openTokenDeposit('${esc(t.sym)}')" style="width:auto;padding:6px 10px;margin:0;font-size:11px">➕</button><button onclick="openWithdraw('${esc(t.sym)}', ${t.amt}, ${minW})" style="width:auto;padding:6px 10px;margin:0;font-size:11px;${canWithdraw ? '' : 'opacity:.4;'}" ${canWithdraw ? '' : 'disabled'}>↩️</button></div></div>`;
   }).join('');
 }
 function openWithdraw(symbol, amount, minW){
@@ -1264,6 +1308,7 @@ async function loadRewardFunds(){
   REWARD_FUNDS = results.filter(Boolean);
   renderRewardFunds();
   recalcStakeRate();
+  renderTotalTusd();
 }
 function renderRewardFunds(){
   const box = document.getElementById('rewardFundsList');
@@ -3238,3 +3283,4 @@ document.addEventListener('DOMContentLoaded',async()=>{
 });
 </script>
 </body></html>
+  
