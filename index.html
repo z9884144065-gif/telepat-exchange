@@ -1433,9 +1433,15 @@ async function loadMyItems(){
   box.innerHTML = '<div class="info">Загрузка...</div>';
 
   try{
-    const {data, error} = await sb.rpc('get_my_items');
-    if(error || !data || data.ok === false){
-      box.innerHTML = '<div class="er">Ошибка загрузки</div>';
+    const {data, error} = await sb.rpc('get_my_items', { p_test_user_id: UID });
+    if(error){
+      console.error('[inventory] RPC error:', error);
+      box.innerHTML = '<div class="er">RPC: ' + esc(error.message) + '</div>';
+      return;
+    }
+    if(!data || data.ok === false){
+      console.error('[inventory] RPC returned:', data);
+      box.innerHTML = '<div class="er">RPC: ' + esc(data?.error || JSON.stringify(data)) + '</div>';
       return;
     }
     MY_ITEMS = data.items || [];
@@ -3105,7 +3111,17 @@ async function createTokenListing(){
   if(sp<=0){msg('Supply>0','error');return}
   if(b){b.disabled=true;b.textContent='⏳...'}
   try{
-    const{data,error}=await sb.rpc('telepat_create_listing',{p_token_name:nm,p_token_symbol:sm,p_jetton_master:jm,p_network:'TON',p_decimals:dc,p_total_supply:sp,p_description:null,p_logo_url:logo||null});
+    const{data,error}=await sb.rpc('telepat_create_listing',{
+      p_telegram_id: UID,
+      p_token_name:nm,
+      p_token_symbol:sm,
+      p_jetton_master:jm,
+      p_network:'TON',
+      p_decimals:dc,
+      p_total_supply:sp,
+      p_description:null,
+      p_logo_url:logo||null
+    });
     if(error){if(r)r.innerHTML=`<span class="er">${esc(error.message)}</span>`;msg(error.message,'error');return}
     const l=Array.isArray(data)?data[0]:data;
     if(r)r.innerHTML=`<span class="ok">✅ ID: ${esc(l?.id||'')}</span>`;
@@ -3121,7 +3137,7 @@ async function createTokenListing(){
 async function loadAdminListings(){
   const box=document.getElementById('adminListingsList');if(!box)return;
   box.innerHTML='<div class="info">Загрузка...</div>';
-  const{data,error}=await sb.rpc('telepat_admin_get_listings');
+  const{data,error}=await sb.rpc('telepat_admin_get_listings', {p_admin_telegram_id: UID});
   if(error){box.innerHTML=`<div class="er">${esc(error.message)}</div>`;return}
   if(!data||!data.length){box.innerHTML='<div class="info">Нет заявок.</div>';return}
   box.innerHTML='';
