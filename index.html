@@ -870,6 +870,8 @@ let __BUY_ORDER = null;
 let SHOP_ITEMS = [];
 let MY_ITEMS = [];
 
+const SLOT_LABEL = { body:'👕 Торс', legs:'👖 Ноги', weapon:'🗡 Оружие', armor:'🛡 Броня', license:'📜 Грамота' };
+
 const BUY_ERR = {
   not_found:            'Ордер не найден',
   already_taken:        'Ордер уже выкуплен или закрыт',
@@ -1312,11 +1314,13 @@ function showSection(name){
     showShopTab(name);
     return;
   }
-  ['wallet','friends','top','earn','admin'].forEach(s=>{
-    document.getElementById('s-'+s)?.classList.toggle('hide',s!==name);
-    document.getElementById('n-'+s)?.classList.toggle('active',s===name);
-  });
-  ['exchange','shop','inventory'].forEach(s => document.getElementById('s-'+s)?.classList.add('hide'));
+  ['exchange','shop','inventory','wallet','friends','top','earn','admin'].forEach(s =>
+    document.getElementById('s-'+s)?.classList.add('hide')
+  );
+  document.getElementById('s-'+name)?.classList.remove('hide');
+  document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById('n-'+name)?.classList.add('active');
+
   if(name==='friends'){loadMyReferrals();loadReferralEarningsSummary()}
   if(name==='top'){loadLeaderboard()}
   if(name==='earn'){loadCheckin();loadAdPrices().then(()=>updateAdBalanceInfo())}
@@ -1325,13 +1329,13 @@ function showSection(name){
 }
 
 function showShopTab(tab){
-  ['exchange','shop','inventory'].forEach(t => {
-    document.getElementById('s-'+t)?.classList.toggle('hide', t !== tab);
-  });
-  document.querySelectorAll('.sh-tab').forEach(btn => {
-    const t = btn.dataset.tab;
-    btn.classList.toggle('active', t === tab);
-  });
+  ['wallet','friends','top','earn','admin','exchange','shop','inventory'].forEach(s =>
+    document.getElementById('s-'+s)?.classList.add('hide')
+  );
+  document.getElementById('s-'+tab)?.classList.remove('hide');
+  document.querySelectorAll('.sh-tab').forEach(btn =>
+    btn.classList.toggle('active', btn.dataset.tab === tab)
+  );
   if(tab === 'exchange'){ loadOrders(); loadMyOrders(); loadMyTrades(); loadTokenReserves(); }
   if(tab === 'shop'){ loadShopItems(); }
   if(tab === 'inventory'){ loadMyItems(); }
@@ -1372,21 +1376,21 @@ async function loadShopItems(){
       const wasPrice = Number(it.price_usd).toFixed(2);
       const discount = hasLicense && it.price_usd > it.price_final;
       const emoji = it.emoji || '🎁';
-      const disabled = !it.can_buy ? 'disabled' : '';
-      const catIcon = it.category === 'weapon' ? '🗡' : it.category === 'clothes' ? '👕' : it.category === 'armor' ? '🛡' : '📜';
+      const disabled = (it.can_buy === false) ? 'disabled' : '';
+      const slotLbl = SLOT_LABEL[it.slot] || '';
 
       return `<div class="wallet-token-row">
         <div class="tlogo lg" style="background:linear-gradient(135deg,#80652d,#c99629)"><span style="font-size:24px">${emoji}</span></div>
         <div style="flex:1;min-width:0">
-          <div style="color:#fff;font-weight:bold;font-size:14px">${catIcon} ${esc(it.name)}</div>
-          <div class="info" style="font-size:11px;margin-top:2px">Уровень ${it.min_rank}+</div>
+          <div style="color:#fff;font-weight:bold;font-size:14px">${esc(it.name)}</div>
+          <div class="info" style="font-size:11px;margin-top:2px">Уровень ${it.min_rank}+${slotLbl ? ' • ' + slotLbl : ''}</div>
           <div style="margin-top:4px">
             ${discount ? `<span style="color:#8f9bab;text-decoration:line-through;font-size:11px">$${wasPrice}</span> ` : ''}
             <b style="color:#f4cf70">$${priceShow}</b>
           </div>
         </div>
         <div class="wt-actions">
-          <button onclick="buyShopItem('${esc(it.symbol)}')" ${disabled} title="Купить">🛒</button>
+          <button onclick='buyShopItem(${JSON.stringify(it.symbol)})' ${disabled} title="Купить">🛒</button>
         </div>
       </div>`;
     }).join('');
@@ -1416,6 +1420,7 @@ async function buyShopItem(symbol){
     msg('✅ Куплено: ' + it.name + ' за $' + price, 'success');
     await loadUser();
     await loadShopItems();
+    await loadMyItems();
   }catch(e){
     msg('Ошибка: ' + e.message, 'error');
   }
@@ -1448,17 +1453,18 @@ async function loadMyItems(){
 
     box.innerHTML = MY_ITEMS.map(it => {
       const emoji = it.emoji || '🎁';
-      const catIcon = it.category === 'weapon' ? '🗡' : it.category === 'clothes' ? '👕' : it.category === 'armor' ? '🛡' : '📜';
       const basePrice = Number(it.base_price || 0).toFixed(2);
+      const slotLbl = SLOT_LABEL[it.slot] || '';
 
       let actionButtons = '';
       if(it.is_listed){
         actionButtons = '<span style="color:#8f9bab;font-size:11px">На бирже за $' + Number(it.listed_price_usd || 0).toFixed(2) + '</span>';
       } else if(it.is_equipped){
-        actionButtons = '<button onclick="sellMyItem(\'' + esc(it.id) + '\')" title="Продать в магазин">💰</button>';
+        actionButtons = `<button onclick='equipMyItem(${JSON.stringify(it.id)})' disabled title="Уже надето">✅</button>` +
+                        `<button onclick='sellMyItem(${JSON.stringify(it.id)})' title="Продать в магазин">💰</button>`;
       } else {
-        actionButtons = '<button onclick="equipMyItem(\'' + esc(it.id) + '\')" title="Надеть">👕</button>' +
-                        '<button onclick="sellMyItem(\'' + esc(it.id) + '\')" title="Продать в магазин">💰</button>';
+        actionButtons = `<button onclick='equipMyItem(${JSON.stringify(it.id)})' title="Надеть">👕</button>` +
+                        `<button onclick='sellMyItem(${JSON.stringify(it.id)})' title="Продать в магазин">💰</button>`;
       }
 
       const equippedCls = it.is_equipped ? 'equipped' : '';
@@ -1466,11 +1472,12 @@ async function loadMyItems(){
       return `<div class="wallet-token-row ${equippedCls}">
         <div class="tlogo lg" style="position:relative;background:linear-gradient(135deg,#80652d,#c99629)"><span style="font-size:24px">${emoji}</span>${equippedBadge}</div>
         <div style="flex:1;min-width:0">
-          <div style="color:#fff;font-weight:bold;font-size:14px">${catIcon} ${esc(it.name)}</div>
+          <div style="color:#fff;font-weight:bold;font-size:14px">${esc(it.name)}</div>
           <div class="info" style="font-size:11px;margin-top:2px">
             ${it.is_equipped ? '<b style="color:#39d98a">✅ НАДЕТО</b>' : 'Уровень ' + it.min_rank + '+'}
             • База: $${basePrice}
           </div>
+          <div style="color:#8f9bab;font-size:10px;margin-top:2px">${slotLbl}</div>
         </div>
         <div class="wt-actions">${actionButtons}</div>
       </div>`;
@@ -1484,13 +1491,22 @@ async function loadMyItems(){
 async function equipMyItem(userItemId){
   try{
     const {data, error} = await sb.rpc('equip_item', {p_user_item_id: userItemId});
-    if(error || !data || data.ok === false){
-      msg((data && data.error) || (error && error.message) || 'Ошибка', 'error');
+    if(error){
+      msg('RPC: ' + error.message, 'error');
+      console.error('[equip]', error);
       return;
     }
-    msg('✅ Надето', 'success');
+    if(!data || data.ok === false){
+      const reason = data?.error || data?.message || JSON.stringify(data);
+      msg('❌ Не надеть: ' + reason, 'error');
+      return;
+    }
+    msg('✅ Надето' + (data.slot ? ' (' + data.slot + ')' : ''), 'success');
     await loadMyItems();
-  }catch(e){ msg('Ошибка: ' + e.message, 'error'); }
+  }catch(e){
+    console.error('[equip]', e);
+    msg('Ошибка: ' + e.message, 'error');
+  }
 }
 
 async function sellMyItem(userItemId){
