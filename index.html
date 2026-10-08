@@ -58,6 +58,8 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 .nav{position:fixed;z-index:900;bottom:0;left:0;right:0;background:#0e151fef;backdrop-filter:blur(12px);border-top:1px solid #303d4f;padding:10px 4px calc(16px + env(safe-area-inset-bottom));display:flex;justify-content:center;gap:3px}
 .nav button{width:auto;flex:1;max-width:80px;padding:10px 2px;margin:0;background:#1b2635;color:#d9e0e8;font-size:9px}
 .nav button.active{background:#80652d;color:#fff}
+.sh-tab{background:#1b2635;color:#d9e0e8;border:1px solid #45536a;font-size:12px;padding:10px 6px;margin:0}
+.sh-tab.active{background:#80652d;color:#fff;border-color:#80652d}
 .hide{display:none!important}
 .msg{position:fixed;z-index:4000;left:12px;right:12px;top:12px;padding:13px;border-radius:14px;background:#1b2737;border:1px solid #4c5b70;display:none;text-align:center;font-size:13px}.msg.show{display:block}
 .admin{border-color:#8a6b28}
@@ -122,6 +124,9 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 .tlogo.xs{width:24px;height:24px;flex:0 0 24px;font-size:13px;vertical-align:middle;display:inline-flex;margin-right:4px;box-shadow:0 1px 4px rgba(0,0,0,.35),inset 0 0 0 1px rgba(255,255,255,.05)}
 .tlogo.lg{width:52px;height:52px;flex:0 0 52px;font-size:24px}
 .wallet-token-row{display:flex;align-items:center;gap:12px;padding:11px 13px;background:linear-gradient(145deg,#101a28,#0c121c);border:1px solid #2d3a4c;border-radius:15px;box-shadow:0 4px 12px rgba(0,0,0,.3)}
+.wallet-token-row.equipped{border-color:#39d98a !important;box-shadow:0 0 20px #39d98a66, inset 0 0 12px #39d98a22 !important;background:linear-gradient(145deg,#102a1c,#0c1c14) !important}
+.wallet-token-row.equipped .tlogo{box-shadow:0 0 16px #39d98acc, inset 0 0 0 2px #39d98a !important}
+.equip-badge{position:absolute;top:-6px;right:-6px;background:#39d98a;color:#0d280d;font-size:10px;font-weight:bold;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px #0008;z-index:5}
 .wallet-token-row .wt-actions{display:flex;flex-direction:column;gap:8px;margin-left:6px}
 .wallet-token-row .wt-actions button{width:46px;height:46px;min-width:46px;padding:0;margin:0;font-size:22px;line-height:1;border-radius:14px;display:flex;align-items:center;justify-content:center}
 .wallet-token-row .wt-actions button:disabled{opacity:.35}
@@ -261,6 +266,11 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 </div>
 </section>
 <section id="s-exchange" class="hide">
+<div class="tb" style="margin-bottom:14px">
+<button class="sh-tab" data-tab="exchange" onclick="showShopTab('exchange')">🔄 Обмен</button>
+<button class="sh-tab" data-tab="shop" onclick="showShopTab('shop')">🏪 Магазин</button>
+<button class="sh-tab" data-tab="inventory" onclick="showShopTab('inventory')">🎒 Мои</button>
+</div>
 <div class="card gold">
 <div class="title">🔄 СОЗДАТЬ P2P-ОРДЕР</div>
 <div class="egrid">
@@ -289,6 +299,36 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 <div class="card" id="myOrdersCard"><div class="title">📌 МОИ ОРДЕРА</div><div id="myOrdersList">Загрузка...</div></div>
 </div>
 <div class="card" id="tradesCard"><div class="title">🤝 МОИ СДЕЛКИ</div><div id="myTrades">Загрузка...</div></div>
+</section>
+
+<section id="s-shop" class="hide">
+<div class="tb" style="margin-bottom:14px">
+<button class="sh-tab" data-tab="exchange" onclick="showShopTab('exchange')">🔄 Обмен</button>
+<button class="sh-tab" data-tab="shop" onclick="showShopTab('shop')">🏪 Магазин</button>
+<button class="sh-tab" data-tab="inventory" onclick="showShopTab('inventory')">🎒 Мои</button>
+</div>
+<div class="card gold">
+<div class="title">🏪 МАГАЗИН ПРЕДМЕТОВ</div>
+<div class="info" id="shopLicenseInfo" style="margin-bottom:12px">Загрузка...</div>
+<div id="shopItemsList" style="display:flex;flex-direction:column;gap:8px">
+<div class="info">Загрузка...</div>
+</div>
+</div>
+</section>
+
+<section id="s-inventory" class="hide">
+<div class="tb" style="margin-bottom:14px">
+<button class="sh-tab" data-tab="exchange" onclick="showShopTab('exchange')">🔄 Обмен</button>
+<button class="sh-tab" data-tab="shop" onclick="showShopTab('shop')">🏪 Магазин</button>
+<button class="sh-tab" data-tab="inventory" onclick="showShopTab('inventory')">🎒 Мои</button>
+</div>
+<div class="card gold">
+<div class="title">🎒 МОИ ПРЕДМЕТЫ</div>
+<div class="info" id="inventorySummary" style="margin-bottom:12px">Загрузка...</div>
+<div id="inventoryList" style="display:flex;flex-direction:column;gap:8px">
+<div class="info">Загрузка...</div>
+</div>
+</div>
 </section>
 
 <section id="s-friends" class="hide">
@@ -377,26 +417,6 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 <div class="info" id="checkinStatusMsg" style="text-align:center;margin-top:8px"></div>
 <div class="title" style="margin-top:16px;font-size:12px">КАЛЕНДАРЬ 30 ДНЕЙ</div>
 <div id="checkinCalendar" class="ci-grid"></div>
-</div>
-</section>
-
-<section id="s-shop" class="hide">
-<div class="card gold">
-<div class="title">🏪 МАГАЗИН ПРЕДМЕТОВ</div>
-<div class="info" id="shopLicenseInfo" style="margin-bottom:12px">Загрузка...</div>
-<div id="shopItemsList" style="display:flex;flex-direction:column;gap:8px">
-<div class="info">Загрузка...</div>
-</div>
-</div>
-</section>
-
-<section id="s-inventory" class="hide">
-<div class="card gold">
-<div class="title">🎒 МОИ ПРЕДМЕТЫ</div>
-<div class="info" id="inventorySummary" style="margin-bottom:12px">Загрузка...</div>
-<div id="inventoryList" style="display:flex;flex-direction:column;gap:8px">
-<div class="info">Загрузка...</div>
-</div>
 </div>
 </section>
 
@@ -812,9 +832,7 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 
 <div class="nav">
 <button id="n-wallet" class="active" onclick="showSection('wallet')">🏠 Кошелёк</button>
-<button id="n-exchange" onclick="showSection('exchange')">🔄 Обмен</button>
 <button id="n-shop" onclick="showSection('shop')">🏪 Магазин</button>
-<button id="n-inventory" onclick="showSection('inventory')">🎒 Мои</button>
 <button id="n-friends" onclick="showSection('friends')">👥 Друзья</button>
 <button id="n-top" onclick="showSection('top')">🏆 Топ</button>
 <button id="n-earn" onclick="showSection('earn')">💎 Доход</button>
@@ -1073,7 +1091,8 @@ async function claimStaking(){
     await loadStakeState();
   } catch(e){ msg('Ошибка', 'error'); }
 }
-  function openTelegramProfile(){
+
+function openTelegramProfile(){
   const name = tgu?.first_name || CU?.first_name || 'Пользователь';
   const handle = tgu?.username || CU?.username;
   const rank = CU?.rank_name || 'Новичок';
@@ -1134,8 +1153,7 @@ async function loadUser(){
   if(UID === AID) document.getElementById('ownerEarningsBtn')?.classList.remove('hide');
   loadReferral(); updateOrderForm();
 }
-
-function renderUser(){
+  function renderUser(){
   if(!CU)return;
   const name=[tgu?.first_name||'',tgu?.last_name||''].join(' ').trim()||CU.first_name||tgu?.username||CU.username||'User';
   document.getElementById('userName').textContent=name;
@@ -1290,18 +1308,203 @@ function openWithdraw(symbol, amount, minW){
 function openTokenDeposit(symbol){ msg(`Пополнение ${symbol}: подключите TON-кошелёк (скоро)`, 'info'); }
 
 function showSection(name){
-  ['wallet','exchange','friends','top','earn','shop','inventory','admin'].forEach(s=>{
+  if(['exchange','shop','inventory'].includes(name)){
+    showShopTab(name);
+    return;
+  }
+  ['wallet','friends','top','earn','admin'].forEach(s=>{
     document.getElementById('s-'+s)?.classList.toggle('hide',s!==name);
     document.getElementById('n-'+s)?.classList.toggle('active',s===name);
   });
-  if(name==='exchange'){loadOrders();loadMyOrders();loadMyTrades();loadTokenReserves()}
+  ['exchange','shop','inventory'].forEach(s => document.getElementById('s-'+s)?.classList.add('hide'));
   if(name==='friends'){loadMyReferrals();loadReferralEarningsSummary()}
   if(name==='top'){loadLeaderboard()}
   if(name==='earn'){loadCheckin();loadAdPrices().then(()=>updateAdBalanceInfo())}
-  if(name==='shop'){loadShopItems()}
-  if(name==='inventory'){loadMyItems()}
   if(name==='admin'&&UID===AID){loadAdminStats();loadAdminChats();loadAdminListings();loadAdminTasks();loadAdminVerification();loadAdminCheckin();loadAllLogos();adminAdLoad();loadBannerSettings()}
   window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function showShopTab(tab){
+  ['exchange','shop','inventory'].forEach(t => {
+    document.getElementById('s-'+t)?.classList.toggle('hide', t !== tab);
+  });
+  document.querySelectorAll('.sh-tab').forEach(btn => {
+    const t = btn.dataset.tab;
+    btn.classList.toggle('active', t === tab);
+  });
+  if(tab === 'exchange'){ loadOrders(); loadMyOrders(); loadMyTrades(); loadTokenReserves(); }
+  if(tab === 'shop'){ loadShopItems(); }
+  if(tab === 'inventory'){ loadMyItems(); }
+  document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById('n-shop')?.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+async function loadShopItems(){
+  const box = document.getElementById('shopItemsList');
+  const info = document.getElementById('shopLicenseInfo');
+  if(!box) return;
+  box.innerHTML = '<div class="info">Загрузка...</div>';
+
+  try{
+    const {data, error} = await sb.rpc('get_shop_items', {p_min_rank: 0});
+    if(error || !data || data.ok === false){
+      const errText = (data && data.error) || (error && error.message) || 'Неизвестная ошибка';
+      box.innerHTML = '<div class="er">Ошибка: ' + esc(errText) + '</div>';
+      return;
+    }
+    SHOP_ITEMS = data.items || [];
+    const hasLicense = !!data.has_license;
+
+    if(info){
+      info.innerHTML = hasLicense
+        ? '📜 <b style="color:#39d98a">Грамота торговца активна</b> — скидка 20% на всё'
+        : '💡 Купи <b>грамоту торговца</b> — получишь скидку 20% и расширенный склад';
+    }
+
+    if(!SHOP_ITEMS.length){
+      box.innerHTML = '<div class="info">Предметов пока нет</div>';
+      return;
+    }
+
+    box.innerHTML = SHOP_ITEMS.map(it => {
+      const priceShow = Number(it.price_final).toFixed(2);
+      const wasPrice = Number(it.price_usd).toFixed(2);
+      const discount = hasLicense && it.price_usd > it.price_final;
+      const emoji = it.emoji || '🎁';
+      const disabled = !it.can_buy ? 'disabled' : '';
+      const catIcon = it.category === 'weapon' ? '🗡' : it.category === 'clothes' ? '👕' : it.category === 'armor' ? '🛡' : '📜';
+
+      return `<div class="wallet-token-row">
+        <div class="tlogo lg" style="background:linear-gradient(135deg,#80652d,#c99629)"><span style="font-size:24px">${emoji}</span></div>
+        <div style="flex:1;min-width:0">
+          <div style="color:#fff;font-weight:bold;font-size:14px">${catIcon} ${esc(it.name)}</div>
+          <div class="info" style="font-size:11px;margin-top:2px">Уровень ${it.min_rank}+</div>
+          <div style="margin-top:4px">
+            ${discount ? `<span style="color:#8f9bab;text-decoration:line-through;font-size:11px">$${wasPrice}</span> ` : ''}
+            <b style="color:#f4cf70">$${priceShow}</b>
+          </div>
+        </div>
+        <div class="wt-actions">
+          <button onclick="buyShopItem('${esc(it.symbol)}')" ${disabled} title="Купить">🛒</button>
+        </div>
+      </div>`;
+    }).join('');
+  }catch(e){
+    console.error('[shop]', e);
+    box.innerHTML = '<div class="er">Ошибка: ' + esc(e.message) + '</div>';
+  }
+}
+
+async function buyShopItem(symbol){
+  if(!UID) return;
+  const it = SHOP_ITEMS.find(x => x.symbol === symbol);
+  if(!it) return;
+
+  const price = Number(it.price_final).toFixed(2);
+  if(!confirm('Купить «' + it.name + '» за $' + price + '?\n\nОплатить в TUSD?')) return;
+
+  try{
+    const {data, error} = await sb.rpc('buy_item', {
+      p_item_symbol: symbol,
+      p_pay_token: 'TUSD'
+    });
+    if(error || !data || data.ok === false){
+      msg((data && data.error) || (error && error.message) || 'Ошибка покупки', 'error');
+      return;
+    }
+    msg('✅ Куплено: ' + it.name + ' за $' + price, 'success');
+    await loadUser();
+    await loadShopItems();
+  }catch(e){
+    msg('Ошибка: ' + e.message, 'error');
+  }
+}
+
+async function loadMyItems(){
+  const box = document.getElementById('inventoryList');
+  const summary = document.getElementById('inventorySummary');
+  if(!box) return;
+  box.innerHTML = '<div class="info">Загрузка...</div>';
+
+  try{
+    const {data, error} = await sb.rpc('get_my_items');
+    if(error || !data || data.ok === false){
+      box.innerHTML = '<div class="er">Ошибка загрузки</div>';
+      return;
+    }
+    MY_ITEMS = data.items || [];
+
+    if(summary){
+      const equipped = MY_ITEMS.filter(x => x.is_equipped).length;
+      const listed = MY_ITEMS.filter(x => x.is_listed).length;
+      summary.innerHTML = 'Всего: <b>' + MY_ITEMS.length + '</b> • Надето: <b>' + equipped + '</b> • На бирже: <b>' + listed + '</b>';
+    }
+
+    if(!MY_ITEMS.length){
+      box.innerHTML = '<div class="info">У вас пока нет предметов. Загляните в 🏪 Магазин</div>';
+      return;
+    }
+
+    box.innerHTML = MY_ITEMS.map(it => {
+      const emoji = it.emoji || '🎁';
+      const catIcon = it.category === 'weapon' ? '🗡' : it.category === 'clothes' ? '👕' : it.category === 'armor' ? '🛡' : '📜';
+      const basePrice = Number(it.base_price || 0).toFixed(2);
+
+      let actionButtons = '';
+      if(it.is_listed){
+        actionButtons = '<span style="color:#8f9bab;font-size:11px">На бирже за $' + Number(it.listed_price_usd || 0).toFixed(2) + '</span>';
+      } else if(it.is_equipped){
+        actionButtons = '<button onclick="sellMyItem(\'' + esc(it.id) + '\')" title="Продать в магазин">💰</button>';
+      } else {
+        actionButtons = '<button onclick="equipMyItem(\'' + esc(it.id) + '\')" title="Надеть">👕</button>' +
+                        '<button onclick="sellMyItem(\'' + esc(it.id) + '\')" title="Продать в магазин">💰</button>';
+      }
+
+      const equippedCls = it.is_equipped ? 'equipped' : '';
+      const equippedBadge = it.is_equipped ? '<div class="equip-badge">✓</div>' : '';
+      return `<div class="wallet-token-row ${equippedCls}">
+        <div class="tlogo lg" style="position:relative;background:linear-gradient(135deg,#80652d,#c99629)"><span style="font-size:24px">${emoji}</span>${equippedBadge}</div>
+        <div style="flex:1;min-width:0">
+          <div style="color:#fff;font-weight:bold;font-size:14px">${catIcon} ${esc(it.name)}</div>
+          <div class="info" style="font-size:11px;margin-top:2px">
+            ${it.is_equipped ? '<b style="color:#39d98a">✅ НАДЕТО</b>' : 'Уровень ' + it.min_rank + '+'}
+            • База: $${basePrice}
+          </div>
+        </div>
+        <div class="wt-actions">${actionButtons}</div>
+      </div>`;
+    }).join('');
+  }catch(e){
+    console.error('[inventory]', e);
+    box.innerHTML = '<div class="er">Ошибка: ' + esc(e.message) + '</div>';
+  }
+}
+
+async function equipMyItem(userItemId){
+  try{
+    const {data, error} = await sb.rpc('equip_item', {p_user_item_id: userItemId});
+    if(error || !data || data.ok === false){
+      msg((data && data.error) || (error && error.message) || 'Ошибка', 'error');
+      return;
+    }
+    msg('✅ Надето', 'success');
+    await loadMyItems();
+  }catch(e){ msg('Ошибка: ' + e.message, 'error'); }
+}
+
+async function sellMyItem(userItemId){
+  if(!confirm('Продать предмет в магазин по цене покупки?')) return;
+  try{
+    const {data, error} = await sb.rpc('sell_item_to_shop', {p_user_item_id: userItemId});
+    if(error || !data || data.ok === false){
+      msg((data && data.error) || (error && error.message) || 'Ошибка', 'error');
+      return;
+    }
+    msg('💰 Возвращено: $' + Number(data.refunded_usd).toFixed(2), 'success');
+    await loadUser();
+    await loadMyItems();
+  }catch(e){ msg('Ошибка: ' + e.message, 'error'); }
 }
 
 function showLbTab(tab){
@@ -1541,172 +1744,6 @@ async function saveAdminRewardConfig(){
   await loadAdminRewardTokens();
 }
 
-// ==================== МАГАЗИН ====================
-async function loadShopItems(){
-  const box = document.getElementById('shopItemsList');
-  const info = document.getElementById('shopLicenseInfo');
-  if(!box) return;
-  box.innerHTML = '<div class="info">Загрузка...</div>';
-
-  try{
-    const {data, error} = await sb.rpc('get_shop_items', {p_min_rank: 0});
-    if(error || !data || data.ok === false){
-      box.innerHTML = '<div class="er">Ошибка загрузки</div>';
-      return;
-    }
-    SHOP_ITEMS = data.items || [];
-    const hasLicense = !!data.has_license;
-
-    if(info){
-      info.innerHTML = hasLicense
-        ? '📜 <b style="color:#39d98a">Грамота торговца активна</b> — скидка 20% на всё'
-        : '💡 Купи <b>грамоту торговца</b> — получишь скидку 20% и расширенный склад';
-    }
-
-    if(!SHOP_ITEMS.length){
-      box.innerHTML = '<div class="info">Предметов пока нет</div>';
-      return;
-    }
-
-    box.innerHTML = SHOP_ITEMS.map(it => {
-      const priceShow = Number(it.price_final).toFixed(2);
-      const wasPrice = Number(it.price_usd).toFixed(2);
-      const discount = hasLicense && it.price_usd > it.price_final;
-      const emoji = it.emoji || '🎁';
-      const disabled = !it.can_buy ? 'disabled' : '';
-      const catIcon = it.category === 'weapon' ? '🗡' : it.category === 'clothes' ? '👕' : it.category === 'armor' ? '🛡' : '📜';
-
-      return `<div class="wallet-token-row">
-        <div class="tlogo lg" style="background:linear-gradient(135deg,#80652d,#c99629)"><span style="font-size:24px">${emoji}</span></div>
-        <div style="flex:1;min-width:0">
-          <div style="color:#fff;font-weight:bold;font-size:14px">${catIcon} ${esc(it.name)}</div>
-          <div class="info" style="font-size:11px;margin-top:2px">Уровень ${it.min_rank}+</div>
-          <div style="margin-top:4px">
-            ${discount ? `<span style="color:#8f9bab;text-decoration:line-through;font-size:11px">$${wasPrice}</span> ` : ''}
-            <b style="color:#f4cf70">$${priceShow}</b>
-          </div>
-        </div>
-        <div class="wt-actions">
-          <button onclick="buyShopItem('${esc(it.symbol)}')" ${disabled} title="Купить">🛒</button>
-        </div>
-      </div>`;
-    }).join('');
-  }catch(e){
-    console.error('[shop]', e);
-    box.innerHTML = '<div class="er">Ошибка: ' + esc(e.message) + '</div>';
-  }
-}
-
-async function buyShopItem(symbol){
-  if(!UID) return;
-  const it = SHOP_ITEMS.find(x => x.symbol === symbol);
-  if(!it) return;
-
-  const price = Number(it.price_final).toFixed(2);
-  if(!confirm('Купить «' + it.name + '» за $' + price + '?\n\nОплатить в TUSD?')) return;
-
-  try{
-    const {data, error} = await sb.rpc('buy_item', {
-      p_item_symbol: symbol,
-      p_pay_token: 'TUSD'
-    });
-    if(error || !data || data.ok === false){
-      msg((data && data.error) || (error && error.message) || 'Ошибка покупки', 'error');
-      return;
-    }
-    msg('✅ Куплено: ' + it.name + ' за $' + price, 'success');
-    await loadUser();
-    await loadShopItems();
-  }catch(e){
-    msg('Ошибка: ' + e.message, 'error');
-  }
-}
-
-async function loadMyItems(){
-  const box = document.getElementById('inventoryList');
-  const summary = document.getElementById('inventorySummary');
-  if(!box) return;
-  box.innerHTML = '<div class="info">Загрузка...</div>';
-
-  try{
-    const {data, error} = await sb.rpc('get_my_items');
-    if(error || !data || data.ok === false){
-      box.innerHTML = '<div class="er">Ошибка загрузки</div>';
-      return;
-    }
-    MY_ITEMS = data.items || [];
-
-    if(summary){
-      const equipped = MY_ITEMS.filter(x => x.is_equipped).length;
-      const listed = MY_ITEMS.filter(x => x.is_listed).length;
-      summary.innerHTML = 'Всего: <b>' + MY_ITEMS.length + '</b> • Надето: <b>' + equipped + '</b> • На бирже: <b>' + listed + '</b>';
-    }
-
-    if(!MY_ITEMS.length){
-      box.innerHTML = '<div class="info">У вас пока нет предметов. Загляните в 🏪 Магазин</div>';
-      return;
-    }
-
-    box.innerHTML = MY_ITEMS.map(it => {
-      const emoji = it.emoji || '🎁';
-      const catIcon = it.category === 'weapon' ? '🗡' : it.category === 'clothes' ? '👕' : it.category === 'armor' ? '🛡' : '📜';
-      const basePrice = Number(it.base_price || 0).toFixed(2);
-
-      let actionButtons = '';
-      if(it.is_listed){
-        actionButtons = '<span style="color:#8f9bab;font-size:11px">На бирже за $' + Number(it.listed_price_usd || 0).toFixed(2) + '</span>';
-      } else if(it.is_equipped){
-        actionButtons = '<button onclick="sellMyItem(\'' + esc(it.id) + '\')" title="Продать в магазин">💰</button>';
-      } else {
-        actionButtons = '<button onclick="equipMyItem(\'' + esc(it.id) + '\')" title="Надеть">👕</button>' +
-                        '<button onclick="sellMyItem(\'' + esc(it.id) + '\')" title="Продать в магазин">💰</button>';
-      }
-
-      return `<div class="wallet-token-row">
-        <div class="tlogo lg" style="background:linear-gradient(135deg,#80652d,#c99629)"><span style="font-size:24px">${emoji}</span></div>
-        <div style="flex:1;min-width:0">
-          <div style="color:#fff;font-weight:bold;font-size:14px">${catIcon} ${esc(it.name)}</div>
-          <div class="info" style="font-size:11px;margin-top:2px">
-            ${it.is_equipped ? '<b style="color:#39d98a">✅ Надето</b>' : 'Уровень ' + it.min_rank + '+'}
-            • База: $${basePrice}
-          </div>
-        </div>
-        <div class="wt-actions">${actionButtons}</div>
-      </div>`;
-    }).join('');
-  }catch(e){
-    console.error('[inventory]', e);
-    box.innerHTML = '<div class="er">Ошибка: ' + esc(e.message) + '</div>';
-  }
-}
-
-async function equipMyItem(userItemId){
-  try{
-    const {data, error} = await sb.rpc('equip_item', {p_user_item_id: userItemId});
-    if(error || !data || data.ok === false){
-      msg((data && data.error) || (error && error.message) || 'Ошибка', 'error');
-      return;
-    }
-    msg('✅ Надето', 'success');
-    await loadMyItems();
-  }catch(e){ msg('Ошибка: ' + e.message, 'error'); }
-}
-
-async function sellMyItem(userItemId){
-  if(!confirm('Продать предмет в магазин по цене покупки?')) return;
-  try{
-    const {data, error} = await sb.rpc('sell_item_to_shop', {p_user_item_id: userItemId});
-    if(error || !data || data.ok === false){
-      msg((data && data.error) || (error && error.message) || 'Ошибка', 'error');
-      return;
-    }
-    msg('💰 Возвращено: $' + Number(data.refunded_usd).toFixed(2), 'success');
-    await loadUser();
-    await loadMyItems();
-  }catch(e){ msg('Ошибка: ' + e.message, 'error'); }
-}
-
-// ==================== ОСТАЛЬНОЕ ====================
 const OP_ICONS = {
   ad_view:'📺', checkin:'🔥', task_reward:'📋', task_commission:'👑',
   staking_claim:'💧', welcome_bonus:'🎁',
