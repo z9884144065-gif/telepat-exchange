@@ -57,7 +57,7 @@ button.act.buy{background:var(--green)}button.act.sell{background:var(--red)}but
 .hide{display:none!important}
 .modal{position:fixed;z-index:5000;inset:0;background:rgba(0,0,0,.7);display:none;align-items:flex-end;justify-content:center;padding:12px}
 .modal.show{display:flex}
-.modal-in{width:100%;max-width:520px;max-height:75vh;overflow-y:auto;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px}
+.modal-in{width:100%;max-width:520px;max-height:80vh;overflow-y:auto;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px}
 .modal-in .tok-item{display:flex;align-items:center;gap:12px;padding:12px;border-radius:10px;cursor:pointer;margin-top:6px;background:var(--bg);border:1px solid var(--line)}
 .modal-in .tok-item .nm{flex:1;color:#fff;font-weight:700;font-size:14px}
 .nav{position:fixed;z-index:900;bottom:0;left:0;right:0;background:#0e131a;border-top:1px solid var(--line);padding:8px 6px calc(8px + env(safe-area-inset-bottom));display:flex;justify-content:center;gap:4px}
@@ -110,15 +110,6 @@ button.act.buy{background:var(--green)}button.act.sell{background:var(--red)}but
 .stake-counter .row .k{color:#8a94a6}
 .stake-counter .row .v{color:#26a17b;font-weight:700;font-variant-numeric:tabular-nums}
 .stake-counter .total{color:var(--gold);font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;text-align:center;margin-top:8px;padding-top:8px;border-top:1px solid #1d5a3a}
-.field{margin-bottom:10px}
-.field label{display:block;font-size:11px;color:var(--muted);margin-bottom:5px}
-.field input,.field select{width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:9px 11px;border-radius:8px;outline:none;font-family:inherit;font-size:13px}
-.field input:focus{border-color:var(--blue)}
-.modal-actions{display:flex;gap:8px;margin-top:14px}
-.modal-actions button{flex:1;padding:11px;border-radius:10px;border:0;font-weight:700;font-size:13px;cursor:pointer}
-.modal-actions .ok{background:var(--blue);color:#fff}
-.modal-actions .cancel{background:var(--card);color:#fff;border:1px solid var(--line)}
-.rating-star{color:var(--gold);font-size:12px}
 
 /* LEVEL CARD */
 .level-card{background:linear-gradient(135deg,#1a212c,#10151c);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px}
@@ -139,7 +130,7 @@ button.act.buy{background:var(--green)}button.act.sell{background:var(--red)}but
 .bar-fill::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);transform:translateX(-100%);animation:shimmer 2.5s infinite}
 @keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
 .level-up{animation:pulse 1s ease}
-@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08);box-shadow:0 0 30px rgba(244,207,112,.8)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05);box-shadow:0 0 30px rgba(244,207,112,.8)}}
 
 /* AUCTION */
 .auc-card{background:linear-gradient(145deg,#151a21,#10151c);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:10px;position:relative;overflow:hidden}
@@ -147,6 +138,16 @@ button.act.buy{background:var(--green)}button.act.sell{background:var(--red)}but
 .auc-timer{color:var(--cyan);font-weight:700;font-variant-numeric:tabular-nums}
 .auc-row{display:flex;justify-content:space-between;font-size:12px;padding:4px 0;color:var(--muted)}
 .auc-row b{color:#fff}
+
+/* ADMIN */
+.field{margin-bottom:10px}
+.field label{display:block;font-size:11px;color:var(--muted);margin-bottom:5px}
+.field input,.field select{width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:9px 11px;border-radius:8px;outline:none;font-family:inherit;font-size:13px}
+.field input:focus{border-color:var(--blue)}
+.admin-card{border-color:#8a6b28}
+.admin-tabs{display:flex;gap:4px;margin-bottom:12px;overflow-x:auto;padding-bottom:2px}
+.admin-tabs button{padding:8px 12px;margin:0;background:var(--card);color:var(--muted);border:1px solid var(--line);font-size:11px;font-weight:700;cursor:pointer;border-radius:16px;white-space:nowrap;flex:0 0 auto}
+.admin-tabs button.active{background:var(--gold);color:#111;border-color:var(--gold)}
 </style></head><body>
 <div id="msg" class="msg"></div>
 <div class="app">
@@ -162,7 +163,7 @@ button.act.buy{background:var(--green)}button.act.sell{background:var(--red)}but
 <div id="s-wallet">
 <div class="total-bal">
 <div class="lbl">Portfolio Value</div>
-<div class="val">$<span id="portVal">180 000</span></div>
+<div class="val">$<span id="portVal">0.00</span></div>
 </div>
 
 <!-- LEVEL CARD -->
@@ -356,7 +357,8 @@ button.act.buy{background:var(--green)}button.act.sell{background:var(--red)}but
 <div class="info-row"><span>🥇 Level 1</span><b>10%</b></div>
 <div class="info-row"><span>🥈 Level 2</span><b>5%</b></div>
 <div class="info-row"><span>🥉 Level 3</span><b>3%</b></div>
-<button class="act" onclick="msg('Link copied','success')">📋 Copy Referral Link</button>
+<input id="refLink" readonly value="https://t.me/TELEPATp2p_bot?start=demo" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:10px;border-radius:8px;margin-top:10px;font-size:12px">
+<button class="act" onclick="msg('📋 Скопировано','success')">📋 Copy Referral Link</button>
 </div>
 <div class="card">
 <div class="card-title">📊 My Referrals</div>
@@ -411,8 +413,8 @@ button.act.buy{background:var(--green)}button.act.sell{background:var(--red)}but
 <!-- =============== АДМИН =============== -->
 <div id="s-admin" class="hide">
 <div id="adminLogin">
-<div class="card">
-<div class="card-title">👑 Admin Panel</div>
+<div class="card admin-card">
+<div class="card-title">👑 АДМИН-ПАНЕЛЬ</div>
 <div class="field"><label>Пароль</label><input id="adPwd" type="password" placeholder="admin"></div>
 <button class="act" onclick="adminLogin()">Войти</button>
 <div class="hint">Демо-пароль: admin</div>
@@ -420,8 +422,36 @@ button.act.buy{background:var(--green)}button.act.sell{background:var(--red)}but
 </div>
 
 <div id="adminPanel" class="hide">
-<div class="card">
-<div class="card-title">🎖️ Уровень и прогресс</div>
+<div class="admin-tabs" id="adminTabs">
+<button class="active" onclick="adminTab('stats')">📊 Статистика</button>
+<button onclick="adminTab('level')">🎖️ Уровни</button>
+<button onclick="adminTab('balance')">💰 Балансы</button>
+<button onclick="adminTab('stake')">💎 Стейкинг</button>
+<button onclick="adminTab('prices')">📜 Сертификаты</button>
+<button onclick="adminTab('tokens')">🪙 Курсы</button>
+<button onclick="adminTab('users')">👥 Юзеры</button>
+<button onclick="adminTab('actions')">⚙️ Действия</button>
+</div>
+
+<!-- STATS -->
+<div id="at-stats" class="admin-tab-content">
+<div class="card admin-card">
+<div class="card-title">📊 СТАТИСТИКА СИСТЕМЫ</div>
+<div class="row-tbl"><div class="lft">👥 Пользователей</div><div class="rt"><b id="statUsers">124</b></div></div>
+<div class="row-tbl"><div class="lft">📦 Ордеров открыто</div><div class="rt"><b id="statOrders">18</b></div></div>
+<div class="row-tbl"><div class="lft">💧 Пулов</div><div class="rt"><b id="statPools">3</b></div></div>
+<div class="row-tbl"><div class="lft">💰 Общий TUSD</div><div class="rt"><b id="statTUSD">0</b></div></div>
+<div class="row-tbl"><div class="lft">🥇 Общий TG</div><div class="rt"><b id="statTG">0</b></div></div>
+<div class="row-tbl"><div class="lft">🤖 Общий AI</div><div class="rt"><b id="statAI">0</b></div></div>
+<div class="row-tbl"><div class="lft">💎 Застейкано USD</div><div class="rt"><b id="statStaked">0</b></div></div>
+<div class="row-tbl"><div class="lft">🎁 Фондов наград</div><div class="rt"><b>3 активных</b></div></div>
+</div>
+</div>
+
+<!-- LEVEL -->
+<div id="at-level" class="admin-tab-content hide">
+<div class="card admin-card">
+<div class="card-title">🎖️ УРОВЕНЬ И ПРОГРЕСС</div>
 <div class="field"><label>Текущий уровень (1-8)</label><input id="adLevel" type="number" min="1" max="8" value="1"></div>
 <div class="field"><label>Сделок сделано</label><input id="adDeals" type="number" value="3"></div>
 <div class="field"><label>Рефералов приглашено</label><input id="adRefs" type="number" value="1"></div>
@@ -431,49 +461,81 @@ button.act.buy{background:var(--green)}button.act.sell{background:var(--red)}but
 <button class="act sell" style="flex:1;margin:0" onclick="adminLevelDown()">⬇️ Понизить</button>
 </div>
 <button class="act gold" style="margin-top:8px" onclick="adminFillMax()">🎯 Заполнить по максимуму</button>
+<div class="hint" style="margin-top:10px">Все три шкалы на главной заполнятся — проверишь анимацию</div>
+</div>
 </div>
 
-<div class="card">
-<div class="card-title">👤 Мои балансы</div>
+<!-- BALANCE -->
+<div id="at-balance" class="admin-tab-content hide">
+<div class="card admin-card">
+<div class="card-title">💰 МОИ БАЛАНСЫ</div>
 <div class="field"><label>TUSD</label><input id="adTUSD" type="number" value="100000"></div>
 <div class="field"><label>TG</label><input id="adTG" type="number" value="100"></div>
 <div class="field"><label>AI</label><input id="adAI" type="number" value="1000000"></div>
 <div class="field"><label>VKCOIN</label><input id="adVK" type="number" value="10000000"></div>
 <div class="field"><label>BBK</label><input id="adBBK" type="number" value="100000"></div>
+<div class="hint" style="margin-top:10px">Меняй — на главной сразу обновится Portfolio Value</div>
+</div>
 </div>
 
-<div class="card">
-<div class="card-title">💎 Стейкинг (что застейкано)</div>
+<!-- STAKE -->
+<div id="at-stake" class="admin-tab-content hide">
+<div class="card admin-card">
+<div class="card-title">💎 СТЕЙКИНГ (что застейкано)</div>
+<div class="hint" style="margin-bottom:12px">2% в месяц по каждой монете. Счётчик на главной ускорится.</div>
 <div class="field"><label>TUSD staked</label><input id="stTUSD" type="number" value="1000"></div>
 <div class="field"><label>TG staked</label><input id="stTG" type="number" value="50"></div>
 <div class="field"><label>AI staked</label><input id="stAI" type="number" value="10000"></div>
 </div>
+</div>
 
-<div class="card">
-<div class="card-title">📜 Цены сертификатов (USD)</div>
+<!-- PRICES -->
+<div id="at-prices" class="admin-tab-content hide">
+<div class="card admin-card">
+<div class="card-title">📜 ЦЕНЫ СЕРТИФИКАТОВ (USD)</div>
 <div class="field"><label>3 месяца</label><input id="c3m" type="number" value="25"></div>
 <div class="field"><label>6 месяцев</label><input id="c6m" type="number" value="50"></div>
 <div class="field"><label>1 год</label><input id="c1y" type="number" value="100"></div>
 <div class="field"><label>Бессрочный</label><input id="cinf" type="number" value="250"></div>
 </div>
-
-<div class="card">
-<div class="card-title">⭐ Сертификат продавца (статус)</div>
-<div class="field"><label>Активен</label><select id="adCertActive"><option value="0">Нет</option><option value="1">Да</option></select></div>
-<div class="field"><label>Рейтинг (0-5)</label><input id="adStars" type="number" min="0" max="5" value="3"></div>
-<div class="field"><label>Сделок всего</label><input id="adDealsTotal" type="number" value="12"></div>
+<div class="card admin-card">
+<div class="card-title">⭐ СТАТУС ПРОДАВЦА</div>
+<div class="field"><label>Сертификат активен</label><select id="adCertActive"><option value="0">Нет</option><option value="1">Да</option></select></div>
+<div class="field"><label>Мой рейтинг (звёзды 0-5)</label><input id="adStars" type="number" min="0" max="5" value="3"></div>
+<div class="field"><label>Всего сделок</label><input id="adDealsTotal" type="number" value="12"></div>
+</div>
 </div>
 
-<div class="card">
-<div class="card-title">👥 Пользователи и рейтинги</div>
+<!-- TOKENS -->
+<div id="at-tokens" class="admin-tab-content hide">
+<div class="card admin-card">
+<div class="card-title">🪙 КУРСЫ ТОКЕНОВ</div>
+<div class="field"><label>TG → USD</label><input id="rateTG" type="number" step="0.01" value="100"></div>
+<div class="field"><label>AI → USD</label><input id="rateAI" type="number" step="0.0001" value="0.01"></div>
+<div class="field"><label>TUSD → USD</label><input id="rateTUSD" type="number" step="0.01" value="1"></div>
+<div class="field"><label>VKCOIN → USD</label><input id="rateVKCOIN" type="number" step="0.0001" value="0.001"></div>
+<div class="field"><label>BBK → USD</label><input id="rateBBK" type="number" step="0.01" value="0.5"></div>
+</div>
+</div>
+
+<!-- USERS -->
+<div id="at-users" class="admin-tab-content hide">
+<div class="card admin-card">
+<div class="card-title">👥 ПОЛЬЗОВАТЕЛИ И РЕЙТИНГИ</div>
 <div id="adminUsersList"></div>
 </div>
-
-<div class="card">
-<div class="card-title">⚙️ Действия</div>
-<button class="act" onclick="adminSave()">💾 Сохранить</button>
-<button class="act sell" onclick="if(confirm('Сбросить демо?'))location.reload()">🔄 Сбросить</button>
 </div>
+
+<!-- ACTIONS -->
+<div id="at-actions" class="admin-tab-content hide">
+<div class="card admin-card">
+<div class="card-title">⚙️ ДЕЙСТВИЯ</div>
+<button class="act" onclick="adminSave()">💾 СОХРАНИТЬ ВСЁ</button>
+<button class="act sell" style="margin-top:10px" onclick="adminReset()">🔄 СБРОСИТЬ ДЕМО</button>
+<div class="hint" style="margin-top:10px">«Сохранить всё» применит все настройки с вкладок</div>
+</div>
+</div>
+
 </div>
 </div>
 
@@ -505,26 +567,23 @@ button.act.buy{background:var(--green)}button.act.sell{background:var(--red)}but
 const DEMO_TOKENS=[{symbol:'TG',name:'Telepat Gold',price:100},{symbol:'AI',name:'AI Token',price:0.01},{symbol:'TUSD',name:'Telepat Dollar',price:1},{symbol:'VKCOIN',name:'VK Coin',price:0.001},{symbol:'BBK',name:'Bbk Token',price:0.5}];
 const DEMO_POOLS=[{symbol:'TG',reserve_token:12.5,reserve_tusd:1250,total_lp:125,tvl:2500,apr:42.5},{symbol:'AI',reserve_token:45000,reserve_tusd:450,total_lp:4500,tvl:900,apr:18.2},{symbol:'VKCOIN',reserve_token:8500000,reserve_tusd:8500,total_lp:85000,tvl:17000,apr:64.8}];
 const DEMO_MY_LP=[{symbol:'TG',lp_tokens:25},{symbol:'AI',lp_tokens:500}];
-let FROM='TUSD',TO='TG',LIQ_TOK=null,MODAL_TARGET='from',SLIPPAGE=0.5,WALLET=false;
+let FROM='TUSD',TO='TG',MODAL_TARGET='from',SLIPPAGE=0.5,WALLET=false;
 let ALL_TOKENS=[...DEMO_TOKENS];
 let USER_BALANCES={TUSD:100000,TG:100,AI:1000000,VKCOIN:10000000,BBK:100000};
 let POOLS=[...DEMO_POOLS];
 let MY_LP=[...DEMO_MY_LP];
 let HISTORY=[];
 
-// СТЕЙКИНГ: по каждой монете отдельно
 let STAKED={TUSD:1000, TG:50, AI:10000, VKCOIN:0, BBK:0};
 let REWARDS={TUSD:0, TG:0, AI:0, VKCOIN:0, BBK:0};
-const MONTHLY_APR=0.02; // 2% в месяц
+const MONTHLY_APR=0.02;
 const SECONDS_IN_MONTH=30*24*3600;
 
-// Магазин
 let SHOP_PRICES={c3m:25, c6m:50, c1y:100, cinf:250};
 let INVENTORY=[];
-let SELLER_CERT=null; // {tier, expiry}
+let SELLER_CERT=null;
 let USER_RATING={stars:3, deals:12, isSeller:false};
 
-// УРОВНИ
 const LEVELS=[
   {n:1, name:'Мечник', icon:'⚔️', deals:10, refs:3, earn:100},
   {n:2, name:'Рыцарь', icon:'🛡️', deals:25, refs:8, earn:300},
@@ -583,14 +642,14 @@ const ADMIN_USERS=[
 let AUCTIONS=[
   { id:'au1', item:'👑 Корона Императора', rarity:'mythic', seller:'@king_maker', stars:5, start:1000, current:1250, step:2.5, round:2, maxRound:5, leader:'@whale_777', bids:14, endsAt: Date.now()+6*3600000, effect:'+10% ко всем наградам' },
   { id:'au2', item:'🏷️ Титул: Король Севера', rarity:'legend', seller:'@seller_X', stars:5, start:300, current:342, step:2.5, round:1, maxRound:5, leader:'@player_V', bids:7, endsAt: Date.now()+22*3600000, effect:'+5% к рефералке' },
+  { id:'au3', item:'🗡️ Экскалибур', rarity:'mythic', seller:'@seller_X', stars:5, start:250, current:280, step:2.5, round:1, maxRound:5, leader:'—', bids:2, endsAt: Date.now()+12*3600000, effect:'×2 к PvP' },
 ];
 
 const ICONS={'TG':{e:'🥇',b:'#f5d477'},'AI':{e:'🤖',b:'#8b5cf6'},'TUSD':{e:'💵',b:'#39d98a'},'VKCOIN':{e:'🎮',b:'#4f8cff'},'BBK':{e:'🪙',b:'#c99629'},'DEFAULT':{e:'🪙',b:'#7f8c9f'}};
 const n=v=>{const x=Number(v);return Number.isFinite(x)?x:0};
 const f=(v,m=6)=>n(v).toLocaleString('ru-RU',{maximumFractionDigits:m});
-const f8=v=>n(v).toFixed(8);
 const esc=v=>String(v??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
-function msg(t,ty='info'){const e=document.getElementById('msg');e.textContent=t;e.style.borderColor=ty==='error'?'#8b3f4c':ty==='success'?'#397b5b':'#4c5b70';e.classList.add('show');setTimeout(()=>e.classList.remove('show'),3000)}
+function msg(t,ty='info'){const e=document.getElementById('msg');e.textContent=t;e.style.borderColor=ty==='error'?'#8b3f4c':ty==='success'?'#397b5b':'#4c5b70';e.classList.add('show');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('show'),3000)}
 function ticon(sym){return ICONS[sym]||ICONS.DEFAULT}
 function ticonHTML(sym,lg){const ic=ticon(sym);return `<span class="tlogo${lg?' lg':''}" style="background:${ic.b}">${ic.e}</span>`}
 function setIcon(id,sym){const ic=ticon(sym);const el=document.getElementById(id);if(!el)return;el.style.background=ic.b;el.textContent=ic.e}
@@ -600,7 +659,7 @@ function starsHTML(nn){nn=Math.max(0,Math.min(5,Math.round(nn)));return `<span c
 function rarityClass(r){return ({common:'r-common',rare:'r-rare',epic:'r-epic',legend:'r-legend',mythic:'r-mythic'})[r]||'r-common'}
 function rarityLabel(r){return ({common:'Common',rare:'Rare',epic:'Epic',legend:'Legendary',mythic:'Mythic'})[r]||r}
 
-// ==================== WALLET ====================
+// ==================== NAV ====================
 function toggleWallet(){
   WALLET=!WALLET;
   document.getElementById('walletLabel').textContent=WALLET?'UQ...7x9':'Connect';
@@ -608,7 +667,6 @@ function toggleWallet(){
   if(WALLET)msg('✅ Wallet connected (demo)','success');
   calcSwap();
 }
-
 function goMain(t){
   ['wallet','exchange','friends','auction','earn','admin'].forEach(x=>{
     document.getElementById('s-'+x).classList.toggle('hide',x!==t);
@@ -685,7 +743,6 @@ function doSwap(){
   document.getElementById('amtFrom').value='';document.getElementById('amtTo').value='';
   renderBalances();renderHistory();updatePortfolio();calcSwap();
 }
-
 function openTokModal(target){
   MODAL_TARGET=target;
   const box=document.getElementById('tokList');let list=ALL_TOKENS;
@@ -758,7 +815,7 @@ function renderChart(){
   document.getElementById('chartChange').style.color=change>=0?'var(--green)':'var(--red)';
 }
 
-// ==================== STAKING COUNTER ====================
+// ==================== STAKING ====================
 let lastTick=Date.now();
 function tickStaking(){
   const now=Date.now();const dt=(now-lastTick)/1000;lastTick=now;
@@ -1028,7 +1085,22 @@ function adminLogin(){
   document.getElementById('adminPanel').classList.remove('hide');
   syncAdminInputs();
   renderAdminUsers();
+  updateAdminStats();
   msg('✅ Добро пожаловать в админку','success');
+}
+function adminTab(t){
+  document.querySelectorAll('#adminTabs button').forEach((b,i)=>b.classList.remove('active'));
+  event.target.classList.add('active');
+  document.querySelectorAll('.admin-tab-content').forEach(c=>c.classList.add('hide'));
+  document.getElementById('at-'+t).classList.remove('hide');
+}
+function updateAdminStats(){
+  document.getElementById('statTUSD').textContent=f(USER_BALANCES.TUSD,2);
+  document.getElementById('statTG').textContent=f(USER_BALANCES.TG,2);
+  document.getElementById('statAI').textContent=f(USER_BALANCES.AI,2);
+  const stakedUSD=n(STAKED.TG)*100+n(STAKED.TUSD)*1+n(STAKED.AI)*0.01;
+  document.getElementById('statStaked').textContent=f(stakedUSD,2);
+  document.getElementById('statPools').textContent=POOLS.length;
 }
 function syncAdminInputs(){
   document.getElementById('adTUSD').value=USER_BALANCES.TUSD;
@@ -1046,8 +1118,15 @@ function syncAdminInputs(){
   document.getElementById('adCertActive').value=USER_RATING.isSeller?'1':'0';
   document.getElementById('adStars').value=USER_RATING.stars;
   document.getElementById('adDealsTotal').value=USER_RATING.deals;
-  const adL=document.getElementById('adLevel');
-  if(adL){adL.value=USER_PROGRESS.level;document.getElementById('adDeals').value=USER_PROGRESS.deals;document.getElementById('adRefs').value=USER_PROGRESS.refs;document.getElementById('adEarned').value=USER_PROGRESS.earned;}
+  document.getElementById('adLevel').value=USER_PROGRESS.level;
+  document.getElementById('adDeals').value=USER_PROGRESS.deals;
+  document.getElementById('adRefs').value=USER_PROGRESS.refs;
+  document.getElementById('adEarned').value=USER_PROGRESS.earned;
+  document.getElementById('rateTG').value=tokenPrice('TG');
+  document.getElementById('rateAI').value=tokenPrice('AI');
+  document.getElementById('rateTUSD').value=tokenPrice('TUSD');
+  document.getElementById('rateVKCOIN').value=tokenPrice('VKCOIN');
+  document.getElementById('rateBBK').value=tokenPrice('BBK');
 }
 function adminSave(){
   USER_BALANCES.TUSD=n(document.getElementById('adTUSD').value);
@@ -1065,16 +1144,21 @@ function adminSave(){
   USER_RATING.isSeller=document.getElementById('adCertActive').value==='1';
   USER_RATING.stars=n(document.getElementById('adStars').value);
   USER_RATING.deals=n(document.getElementById('adDealsTotal').value);
-  const adL=document.getElementById('adLevel');
-  if(adL){
-    USER_PROGRESS.level=Math.max(1,Math.min(LEVELS.length,parseInt(adL.value)||1));
-    USER_PROGRESS.deals=n(document.getElementById('adDeals').value);
-    USER_PROGRESS.refs=n(document.getElementById('adRefs').value);
-    USER_PROGRESS.earned=n(document.getElementById('adEarned').value);
-    renderLevel();
-  }
-  renderBalances();updatePortfolio();
+  USER_PROGRESS.level=Math.max(1,Math.min(LEVELS.length,parseInt(document.getElementById('adLevel').value)||1));
+  USER_PROGRESS.deals=n(document.getElementById('adDeals').value);
+  USER_PROGRESS.refs=n(document.getElementById('adRefs').value);
+  USER_PROGRESS.earned=n(document.getElementById('adEarned').value);
+  ALL_TOKENS.find(t=>t.symbol==='TG').price=n(document.getElementById('rateTG').value);
+  ALL_TOKENS.find(t=>t.symbol==='AI').price=n(document.getElementById('rateAI').value);
+  ALL_TOKENS.find(t=>t.symbol==='TUSD').price=n(document.getElementById('rateTUSD').value);
+  ALL_TOKENS.find(t=>t.symbol==='VKCOIN').price=n(document.getElementById('rateVKCOIN').value);
+  ALL_TOKENS.find(t=>t.symbol==='BBK').price=n(document.getElementById('rateBBK').value);
+  renderBalances();updatePortfolio();renderLevel();updateAdminStats();
   msg('💾 Сохранено','success');
+}
+function adminReset(){
+  if(!confirm('Сбросить всё демо?'))return;
+  location.reload();
 }
 function renderAdminUsers(){
   const box=document.getElementById('adminUsersList');if(!box)return;
@@ -1083,7 +1167,7 @@ function renderAdminUsers(){
 
 // ==================== MODAL2 ====================
 function openModal2(title,body){
-  document.getElementById('modal2In').innerHTML=`<div class="card-title">${title}</div>${body}<div class="modal-actions"><button class="cancel" onclick="closeModal2()">Закрыть</button></div>`;
+  document.getElementById('modal2In').innerHTML=`<div class="card-title">${title}</div>${body}<div style="margin-top:12px"><button class="act sell" onclick="closeModal2()">Закрыть</button></div>`;
   document.getElementById('modal2').classList.add('show');
 }
 function closeModal2(e){if(e&&e.target!==document.getElementById('modal2'))return;document.getElementById('modal2').classList.remove('show')}
@@ -1092,9 +1176,7 @@ function closeModal2(e){if(e&&e.target!==document.getElementById('modal2'))retur
 document.addEventListener('DOMContentLoaded',()=>{
   renderSwapTokens();renderBalances();updateBalances();renderPools();renderMyLp();renderHistory();updatePortfolio();
   calcSwap();renderShopMenu();renderP2P();renderLevel();
-  document.getElementById('adminPools').textContent=POOLS.length;
 });
-// Автообновление аукционов
 setInterval(()=>{ if(!document.getElementById('s-auction').classList.contains('hide')) renderAuctions(); }, 1000);
 </script>
 </body></html>
