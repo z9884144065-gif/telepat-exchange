@@ -1,1597 +1,872 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TELEPAT — Empire</title>
-    <!-- Подключаем Telegram WebApp SDK -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        :root {
-            --bg: #0b0e11;
-            --bg-card: #151a21;
-            --bg-card-2: #1a212c;
-            --line: #252b36;
-            --gold: #f4cf70;
-            --text: #ffffff;
-            --muted: #8a94a6;
-            --green: #26a17b;
-            --red: #f6465d;
-            --blue: #2f80ed;
-            --purple: #a855f7;
-            --cyan: #22d3ee;
-        }
-        * { box-sizing: border-box; }
-        html, body {
-            margin: 0;
-            padding: 0;
-            background: radial-gradient(circle at 50% -10%, #1a2535 0%, var(--bg) 42%), var(--bg);
-            color: var(--text);
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-            min-height: 100vh;
-            -webkit-tap-highlight-color: transparent;
-        }
-        .app {
-            max-width: 520px;
-            margin: 0 auto;
-            padding: 14px 12px 110px; /* Отступ снизу для навигации */
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>TELEPAT — Empire</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{--bg:#0b0e11;--bg-card:#151a21;--bg-card-2:#1a212c;--line:#252b36;--gold:#f4cf70;--text:#fff;--muted:#8a94a6;--green:#26a17b;--red:#f6465d;--blue:#2f80ed;--purple:#a855f7;--cyan:#22d3ee}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:radial-gradient(circle at 50% -10%, #1a2535 0%, var(--bg) 42%), var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;min-height:100vh;-webkit-tap-highlight-color:transparent}
+.app{max-width:520px;margin:0 auto;padding:14px 12px 110px}
+.top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.logo{font-size:20px;font-weight:800;color:var(--gold);letter-spacing:.5px}
+.top-icons{display:flex;gap:6px}
+.icon-btn{width:34px;height:34px;border-radius:50%;background:var(--bg-card);border:1px solid var(--line);color:var(--muted);display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;transition:.2s}
+.icon-btn:hover{border-color:var(--gold);color:var(--gold)}
+.icon-btn.badge{position:relative}
+.icon-btn.badge::after{content:attr(data-badge);position:absolute;top:-3px;right:-3px;background:var(--red);color:#fff;font-size:9px;font-weight:700;padding:2px 5px;border-radius:8px;min-width:14px;text-align:center}
 
-        /* ============ ШАПКА ============ */
-        .top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-        .logo {
-            font-size: 20px;
-            font-weight: 800;
-            color: var(--gold);
-            letter-spacing: 0.5px;
-        }
-        .top-icons {
-            display: flex;
-            gap: 8px;
-        }
-        .icon-btn {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: var(--bg-card);
-            border: 1px solid var(--line);
-            color: var(--muted);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .icon-btn:hover {
-            border-color: var(--gold);
-            color: var(--gold);
-        }
+/* ПРОФИЛЬ */
+.profile-card{background:linear-gradient(135deg,#1a212c,#0e131a);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px;position:relative;overflow:hidden}
+.profile-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--blue),var(--purple),var(--gold))}
+.profile-header{display:flex;align-items:center;gap:14px}
+.avatar-wrapper{position:relative;width:64px;height:64px;flex-shrink:0}
+.avatar-spin-ring{position:absolute;inset:-4px;border-radius:50%;background:conic-gradient(from 0deg,transparent,var(--gold),transparent,var(--gold),transparent);animation:spin 6s linear infinite;opacity:.8}
+.avatar-spin-ring::after{content:'';position:absolute;inset:3px;border-radius:50%;background:var(--bg-card)}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.avatar-img{position:relative;z-index:1;width:100%;height:100%;border-radius:50%;object-fit:cover;background:#0d1520;border:2px solid #2a3242}
+.profile-info{flex:1;min-width:0}
+.username{font-size:16px;font-weight:700;color:#fff;display:flex;align-items:center;gap:6px}
+.username .premium-badge{font-size:11px;background:linear-gradient(90deg,#a21caf,#ec4899);color:#fff;padding:2px 6px;border-radius:4px;font-weight:700}
+.user-stats{display:flex;gap:10px;margin-top:6px;font-size:11px;color:var(--muted);flex-wrap:wrap}
+.user-stats .rank-badge-top{color:var(--gold);font-weight:700}
 
-        /* ============ БЛОК ПРОФИЛЯ ============ */
-        .profile-card {
-            background: linear-gradient(135deg, #1a212c, #0e131a);
-            border: 1px solid var(--line);
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 12px;
-            position: relative;
-            overflow: hidden;
-        }
-        .profile-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; height: 3px;
-            background: linear-gradient(90deg, var(--blue), var(--purple), var(--gold));
-        }
-        .profile-header {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            margin-bottom: 12px;
-        }
-        .avatar-wrapper {
-            position: relative;
-            width: 64px;
-            height: 64px;
-            flex-shrink: 0;
-        }
-        .avatar-spin-ring {
-            position: absolute;
-            inset: -4px;
-            border-radius: 50%;
-            background: conic-gradient(from 0deg, transparent, var(--gold), transparent, var(--gold), transparent);
-            animation: spin 6s linear infinite;
-            opacity: 0.8;
-        }
-        .avatar-spin-ring::after {
-            content: '';
-            position: absolute;
-            inset: 3px;
-            border-radius: 50%;
-            background: var(--bg-card);
-        }
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-        .avatar-img {
-            position: relative;
-            z-index: 1;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            object-fit: cover;
-            background: #0d1520;
-            border: 2px solid #2a3242;
-        }
-        .profile-info {
-            flex: 1;
-            min-width: 0;
-        }
-        .username {
-            font-size: 16px;
-            font-weight: 700;
-            color: #fff;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .user-stats {
-            display: flex;
-            gap: 10px;
-            margin-top: 6px;
-            font-size: 11px;
-            color: var(--muted);
-        }
+/* 3 ПЛИТКИ */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px}
+.stat-tile{background:var(--bg-card);border:1px solid var(--line);border-radius:12px;padding:12px 6px;text-align:center}
+.stat-tile .val{font-size:18px;font-weight:800;color:var(--gold);line-height:1.1}
+.stat-tile .lbl{font-size:10px;color:var(--muted);text-transform:uppercase;margin-top:4px;letter-spacing:.5px}
 
-        /* ============ 3 ПЛИТКИ СТАТИСТИКИ ============ */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 8px;
-            margin-bottom: 12px;
-        }
-        .stat-tile {
-            background: var(--bg-card);
-            border: 1px solid var(--line);
-            border-radius: 12px;
-            padding: 12px 6px;
-            text-align: center;
-        }
-        .stat-tile .val {
-            font-size: 18px;
-            font-weight: 800;
-            color: var(--gold);
-            line-height: 1.1;
-        }
-        .stat-tile .lbl {
-            font-size: 10px;
-            color: var(--muted);
-            text-transform: uppercase;
-            margin-top: 4px;
-            letter-spacing: 0.5px;
-        }
+/* РЫЦАРЬ */
+.knight-section{background:var(--bg-card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px}
+.rank-badge{display:flex;align-items:center;gap:10px;margin-bottom:16px;padding:10px;background:#0d1520;border:1px solid #2a3242;border-radius:12px}
+.rank-medal{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#80652d,#c99629);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;position:relative;overflow:hidden}
+.rank-medal img{width:100%;height:100%;object-fit:cover;object-position:top center;transform:scale(1.6);transform-origin:top center}
+.rank-info .rank-name{font-size:15px;font-weight:800;color:#fff}
+.rank-info .rank-sub{font-size:10px;color:var(--muted);margin-top:2px}
 
-        /* ============ БЛОК РЫЦАРЯ И СЛОТОВ ============ */
-        .knight-section {
-            background: var(--bg-card);
-            border: 1px solid var(--line);
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 12px;
-        }
-        .rank-badge {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 16px;
-            padding: 10px;
-            background: #0d1520;
-            border: 1px solid #2a3242;
-            border-radius: 12px;
-        }
-        .rank-medal {
-            width: 44px;
-            height: 44px;
-            border-radius: 10px;
-            background: linear-gradient(135deg, #80652d, #c99629);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-            flex-shrink: 0;
-        }
-        .rank-info .rank-name {
-            font-size: 15px;
-            font-weight: 800;
-            color: #fff;
-        }
-        .rank-info .rank-sub {
-            font-size: 10px;
-            color: var(--muted);
-            margin-top: 2px;
-        }
+.knight-layout{display:grid;grid-template-columns:68px 1fr 68px;gap:10px;align-items:center;margin-bottom:16px}
+.slot-col{display:flex;flex-direction:column;gap:10px}
+.slot{width:68px;height:68px;background:#0d1520;border:2px solid #2a3242;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:30px;cursor:pointer;position:relative;transition:.2s}
+.slot:hover{border-color:var(--blue);transform:scale(1.03)}
+.slot.filled{border-color:var(--green);background:linear-gradient(135deg,#0d2818,#132b1f);box-shadow:0 0 12px rgba(38,161,123,.4)}
+.slot.empty{color:#4a5563;font-size:22px}
+.slot.locked{opacity:.4;cursor:not-allowed}
+.slot.locked::after{content:'🔒';position:absolute;top:2px;right:2px;font-size:11px}
+.slot-label{position:absolute;bottom:-16px;left:50%;transform:translateX(-50%);font-size:8px;color:var(--muted);white-space:nowrap;text-transform:uppercase;letter-spacing:.3px}
+.knight-avatar{position:relative;display:flex;align-items:flex-end;justify-content:center;min-height:260px}
+.knight-img{height:260px;width:auto;max-width:100%;object-fit:contain;filter:drop-shadow(0 8px 24px rgba(0,0,0,.7));animation:idle 3.5s ease-in-out infinite;transition:opacity .3s}
+@keyframes idle{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.knight-speech{position:absolute;bottom:0;left:50%;transform:translateX(-50%);background:#fff;color:#111;padding:6px 12px;border-radius:10px;font-size:10px;font-weight:700;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,.4)}
+.knight-speech::before{content:'';position:absolute;top:-5px;left:50%;transform:translateX(-50%);border:5px solid transparent;border-bottom-color:#fff;border-top:0}
+.slots-row-bottom{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:18px}
+.slots-row-bottom .slot{width:100%;height:52px;font-size:22px;border-radius:12px}
 
-        .knight-layout {
-            display: grid;
-            grid-template-columns: 68px 1fr 68px;
-            gap: 10px;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-        .slot-col {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .slot {
-            width: 68px;
-            height: 68px;
-            background: #0d1520;
-            border: 2px solid #2a3242;
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 30px;
-            cursor: pointer;
-            position: relative;
-            transition: 0.2s;
-        }
-        .slot:hover {
-            border-color: var(--blue);
-            transform: scale(1.03);
-        }
-        .slot.filled {
-            border-color: var(--green);
-            background: linear-gradient(135deg, #0d2818, #132b1f);
-            box-shadow: 0 0 12px rgba(38, 161, 123, 0.4);
-        }
-        .slot.empty {
-            color: #4a5563;
-            font-size: 22px;
-        }
-        .slot.locked {
-            opacity: 0.4;
-            cursor: not-allowed;
-        }
-        .slot.locked::after {
-            content: '🔒';
-            position: absolute;
-            top: 2px;
-            right: 2px;
-            font-size: 11px;
-        }
-        .slot-label {
-            position: absolute;
-            bottom: -16px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 8px;
-            color: var(--muted);
-            white-space: nowrap;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-        }
+/* ШКАЛЫ */
+.scales-container{margin-top:20px;padding-top:16px;border-top:1px solid #2a3242}
+.scale-item{margin-bottom:10px}
+.scale-header{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:4px}
+.scale-header b{color:#fff}
+.scale-bar-bg{height:10px;background:#080b10;border-radius:99px;overflow:hidden}
+.scale-bar-fill{height:100%;border-radius:99px;transition:width .8s cubic-bezier(.4,0,.2,1);position:relative;overflow:hidden}
+.scale-bar-fill::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);transform:translateX(-100%);animation:shimmer 2.5s infinite}
+@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+.scale-bar-fill.blue{background:linear-gradient(90deg,#2f80ed,#4f8cff)}
+.scale-bar-fill.green{background:linear-gradient(90deg,#26a17b,#39d98a)}
+.scale-bar-fill.gold{background:linear-gradient(90deg,#c99629,#f5d477)}
+.scale-bar-fill.purple{background:linear-gradient(90deg,#a855f7,#ec4899)}
+.rule-line{margin-top:10px;padding:8px;background:#0d1520;border:1px solid #2a3242;border-radius:10px;font-size:11px;color:var(--muted);text-align:center}
+.rule-line b{color:var(--gold)}
 
-        .knight-avatar {
-            position: relative;
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
-            min-height: 260px;
-        }
-        .knight-img {
-            height: 260px;
-            width: auto;
-            max-width: 100%;
-            object-fit: contain;
-            filter: drop-shadow(0 8px 24px rgba(0,0,0,0.7));
-            animation: idle 3.5s ease-in-out infinite;
-        }
-        @keyframes idle {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
-        }
-        .knight-speech {
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #fff;
-            color: #111;
-            padding: 6px 12px;
-            border-radius: 10px;
-            font-size: 10px;
-            font-weight: 700;
-            white-space: nowrap;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-        }
-        .knight-speech::before {
-            content: '';
-            position: absolute;
-            top: -5px;
-            left: 50%;
-            transform: translateX(-50%);
-            border: 5px solid transparent;
-            border-bottom-color: #fff;
-            border-top: 0;
-        }
+/* КНОПКИ */
+.quick-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.quick-btn{background:#1e2530;border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;transition:.2s}
+.quick-btn:hover{border-color:var(--gold);transform:translateY(-2px)}
+.quick-btn .icon{font-size:24px}
 
-        .slots-row-bottom {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 8px;
-            margin-top: 18px;
-        }
-        .slots-row-bottom .slot {
-            width: 100%;
-            height: 52px;
-            font-size: 22px;
-            border-radius: 12px;
-        }
+/* НАВИГАЦИЯ */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(14,19,26,.95);backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:8px 6px calc(8px + env(safe-area-inset-bottom));display:flex;justify-content:center;gap:4px;z-index:900}
+.nav-btn{flex:1;max-width:100px;padding:10px 4px;background:transparent;border:0;color:var(--muted);font-size:10px;font-weight:600;cursor:pointer;border-radius:10px;line-height:1.3;display:flex;flex-direction:column;align-items:center;gap:4px;transition:.2s}
+.nav-btn.active{color:var(--gold);background:rgba(244,207,112,.1)}
+.nav-btn .nav-icon{font-size:22px}
 
-        /* ============ ШКАЛЫ ПРОГРЕССА ============ */
-        .scales-container {
-            margin-top: 20px;
-            padding-top: 16px;
-            border-top: 1px solid #2a3242;
-        }
-        .scale-item {
-            margin-bottom: 10px;
-        }
-        .scale-header {
-            display: flex;
-            justify-content: space-between;
-            font-size: 11px;
-            color: var(--muted);
-            margin-bottom: 4px;
-        }
-        .scale-header b { color: #fff; }
-        .scale-bar-bg {
-            height: 10px;
-            background: #080b10;
-            border-radius: 99px;
-            overflow: hidden;
-        }
-        .scale-bar-fill {
-            height: 100%;
-            border-radius: 99px;
-            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
-        .scale-bar-fill::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            transform: translateX(-100%);
-            animation: shimmer 2.5s infinite;
-        }
-        @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-        .scale-bar-fill.blue { background: linear-gradient(90deg, #2f80ed, #4f8cff); }
-        .scale-bar-fill.green { background: linear-gradient(90deg, #26a17b, #39d98a); }
-        .scale-bar-fill.gold { background: linear-gradient(90deg, #c99629, #f5d477); }
-        .scale-bar-fill.purple { background: linear-gradient(90deg, #a855f7, #ec4899); }
+/* ТАБЫ */
+.tabs{display:flex;gap:4px;margin-bottom:12px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:8px 14px;background:var(--bg-card);border:1px solid var(--line);border-radius:20px;color:var(--muted);font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;flex:0 0 auto;transition:.2s}
+.tab.active{background:var(--blue);border-color:var(--blue);color:#fff}
 
-        .rule-line {
-            margin-top: 10px;
-            padding: 8px;
-            background: #0d1520;
-            border: 1px solid #2a3242;
-            border-radius: 10px;
-            font-size: 11px;
-            color: var(--muted);
-            text-align: center;
-        }
-        .rule-line b { color: var(--gold); }
+/* КАРТОЧКИ */
+.item-card{background:var(--bg-card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:8px;display:flex;flex-direction:column;gap:8px}
+.item-card.mine{border-color:var(--gold);box-shadow:0 0 12px rgba(244,207,112,.2);position:relative}
+.item-card.mine::before{content:'👤 МОЯ СДЕЛКА';position:absolute;top:-8px;left:12px;background:var(--gold);color:#111;font-size:9px;font-weight:800;padding:2px 8px;border-radius:6px;letter-spacing:.5px}
+.item-card .item-header{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.item-card .item-name{font-weight:700;font-size:14px;color:#fff}
+.item-card .item-desc{font-size:11px;color:var(--muted)}
+.item-card .item-footer{display:flex;justify-content:space-between;align-items:center;margin-top:4px;gap:8px}
+.item-card .item-price{font-weight:800;color:var(--gold);font-size:15px}
+.item-card button{padding:7px 14px;font-size:12px;font-weight:700;border-radius:8px;border:0;cursor:pointer;background:var(--blue);color:#fff;transition:.2s}
+.item-card button:hover{opacity:.85}
+.item-card button.gold{background:var(--gold);color:#111}
+.item-card button.green{background:var(--green);color:#fff}
+.item-card button.red{background:var(--red);color:#fff}
+.rarity{font-size:9px;text-transform:uppercase;letter-spacing:.8px;font-weight:700;padding:3px 7px;border-radius:4px;white-space:nowrap}
+.rarity.common{background:#334155;color:#cbd5e1}
+.rarity.rare{background:#1e3a8a;color:#93c5fd}
+.rarity.epic{background:#4c1d95;color:#c4b5fd}
+.rarity.legend{background:linear-gradient(90deg,#b45309,#f59e0b);color:#fff}
+.rarity.mythic{background:linear-gradient(90deg,#a21caf,#ec4899,#f59e0b);color:#fff}
 
-        /* ============ КНОПКИ ДЕЙСТВИЙ ============ */
-        .quick-actions {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-bottom: 12px;
-        }
-        .quick-btn {
-            background: #1e2530;
-            border: 1px solid var(--line);
-            border-radius: 12px;
-            padding: 14px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            color: #fff;
-            font-size: 13px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .quick-btn:hover {
-            border-color: var(--gold);
-            transform: translateY(-2px);
-        }
-        .quick-btn .icon {
-            font-size: 24px;
-        }
+/* АДМИН */
+.admin-section{background:var(--bg-card);border:1px solid #8a6b28;border-radius:14px;padding:16px;margin-bottom:12px}
+.admin-section .admin-title{color:var(--gold);font-size:14px;font-weight:700;margin-bottom:12px}
+.admin-field{margin-bottom:10px}
+.admin-field label{display:block;font-size:11px;color:var(--muted);margin-bottom:4px}
+.admin-field input,.admin-field select{width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px 10px;border-radius:8px;outline:none;font-family:inherit;font-size:13px}
+.admin-field input:focus,.admin-field select:focus{border-color:var(--gold)}
+.admin-btn-row{display:flex;gap:8px;margin-top:10px}
+.admin-btn{flex:1;padding:10px;border-radius:10px;border:0;font-weight:700;font-size:13px;cursor:pointer;transition:.2s}
+.admin-btn.primary{background:var(--blue);color:#fff}
+.admin-btn.gold{background:var(--gold);color:#111}
+.admin-btn.danger{background:var(--red);color:#fff}
+.admin-btn.sec{background:#263345;color:#fff;border:1px solid var(--line)}
 
-        /* ============ НИЖНЯЯ НАВИГАЦИЯ ============ */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(14, 19, 26, 0.95);
-            backdrop-filter: blur(12px);
-            border-top: 1px solid var(--line);
-            padding: 8px 6px calc(8px + env(safe-area-inset-bottom));
-            display: flex;
-            justify-content: center;
-            gap: 4px;
-            z-index: 900;
-        }
-        .nav-btn {
-            flex: 1;
-            max-width: 100px;
-            padding: 10px 4px;
-            background: transparent;
-            border: 0;
-            color: var(--muted);
-            font-size: 10px;
-            font-weight: 600;
-            cursor: pointer;
-            border-radius: 10px;
-            line-height: 1.3;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            transition: 0.2s;
-        }
-        .nav-btn.active {
-            color: var(--gold);
-            background: rgba(244, 207, 112, 0.1);
-        }
-        .nav-btn .nav-icon {
-            font-size: 22px;
-        }
-
-        /* ============ МАГАЗИН ============ */
-        .shop-tabs {
-            display: flex;
-            gap: 4px;
-            margin-bottom: 12px;
-            overflow-x: auto;
-            padding-bottom: 2px;
-        }
-        .shop-tab {
-            padding: 8px 14px;
-            background: var(--bg-card);
-            border: 1px solid var(--line);
-            border-radius: 20px;
-            color: var(--muted);
-            font-size: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            white-space: nowrap;
-            flex: 0 0 auto;
-            transition: 0.2s;
-        }
-        .shop-tab.active {
-            background: var(--blue);
-            border-color: var(--blue);
-            color: #fff;
-        }
-        .item-card {
-            background: var(--bg-card);
-            border: 1px solid var(--line);
-            border-radius: 12px;
-            padding: 14px;
-            margin-bottom: 8px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .item-card .item-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .item-card .item-name {
-            font-weight: 700;
-            font-size: 14px;
-        }
-        .item-card .item-desc {
-            font-size: 11px;
-            color: var(--muted);
-        }
-        .item-card .item-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 4px;
-        }
-        .item-card .item-price {
-            font-weight: 800;
-            color: var(--gold);
-            font-size: 15px;
-        }
-        .item-card button {
-            padding: 7px 14px;
-            font-size: 12px;
-            font-weight: 700;
-            border-radius: 8px;
-            border: 0;
-            cursor: pointer;
-            background: var(--blue);
-            color: #fff;
-        }
-        .item-card button.gold {
-            background: var(--gold);
-            color: #111;
-        }
-        .item-card button.green {
-            background: var(--green);
-            color: #fff;
-        }
-        .rarity {
-            font-size: 9px;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            font-weight: 700;
-            padding: 3px 7px;
-            border-radius: 4px;
-        }
-        .rarity.common { background: #334155; color: #cbd5e1; }
-        .rarity.rare { background: #1e3a8a; color: #93c5fd; }
-        .rarity.epic { background: #4c1d95; color: #c4b5fd; }
-        .rarity.legend { background: linear-gradient(90deg,#b45309,#f59e0b); color: #fff; }
-        .rarity.mythic { background: linear-gradient(90deg,#a21caf,#ec4899,#f59e0b); color: #fff; }
-
-        /* ============ АДМИН-ПАНЕЛЬ ============ */
-        .admin-section {
-            background: var(--bg-card);
-            border: 1px solid #8a6b28;
-            border-radius: 14px;
-            padding: 16px;
-            margin-bottom: 12px;
-        }
-        .admin-section .admin-title {
-            color: var(--gold);
-            font-size: 14px;
-            font-weight: 700;
-            margin-bottom: 12px;
-        }
-        .admin-field {
-            margin-bottom: 10px;
-        }
-        .admin-field label {
-            display: block;
-            font-size: 11px;
-            color: var(--muted);
-            margin-bottom: 4px;
-        }
-        .admin-field input,
-        .admin-field select {
-            width: 100%;
-            background: var(--bg);
-            border: 1px solid var(--line);
-            color: #fff;
-            padding: 8px 10px;
-            border-radius: 8px;
-            outline: none;
-            font-family: inherit;
-            font-size: 13px;
-        }
-        .admin-field input:focus,
-        .admin-field select:focus {
-            border-color: var(--gold);
-        }
-        .admin-btn-row {
-            display: flex;
-            gap: 8px;
-            margin-top: 10px;
-        }
-        .admin-btn {
-            flex: 1;
-            padding: 10px;
-            border-radius: 10px;
-            border: 0;
-            font-weight: 700;
-            font-size: 13px;
-            cursor: pointer;
-        }
-        .admin-btn.primary { background: var(--blue); color: #fff; }
-        .admin-btn.gold { background: var(--gold); color: #111; }
-        .admin-btn.danger { background: var(--red); color: #fff; }
-        .admin-btn.sec { background: #263345; color: #fff; border: 1px solid var(--line); }
-
-        /* ============ УТИЛИТЫ ============ */
-        .hidden { display: none !important; }
-        .msg-toast {
-            position: fixed;
-            top: 12px;
-            left: 12px;
-            right: 12px;
-            padding: 12px;
-            border-radius: 12px;
-            background: #1e252f;
-            border: 1px solid var(--line);
-            text-align: center;
-            font-size: 13px;
-            z-index: 2000;
-            display: none;
-        }
-        .msg-toast.show { display: block; }
-        .msg-toast.success { border-color: var(--green); }
-        .msg-toast.error { border-color: var(--red); }
-    </style>
+/* УТИЛИТЫ */
+.hidden{display:none!important}
+.msg-toast{position:fixed;top:12px;left:12px;right:12px;padding:12px;border-radius:12px;background:#1e252f;border:1px solid var(--line);text-align:center;font-size:13px;z-index:2000;display:none}
+.msg-toast.show{display:block;animation:slideDown .3s}
+@keyframes slideDown{from{transform:translateY(-20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.msg-toast.success{border-color:var(--green)}
+.msg-toast.error{border-color:var(--red)}
+h2{margin-top:0}
+</style>
 </head>
 <body>
-    <div id="msg" class="msg-toast"></div>
-    <div class="app">
+<div id="msg" class="msg-toast"></div>
+<div class="app">
 
-        <!-- ================= ГЛАВНЫЙ ЭКРАН (ДОМ) ================= -->
-        <div id="view-home">
-            <!-- Шапка -->
-            <div class="top-bar">
-                <div class="logo">⚔️ Empire Telepat</div>
-                <div class="top-icons">
-                    <button class="icon-btn" onclick="msg('Чат поддержки (демо)')">💬</button>
-                    <button class="icon-btn" onclick="msg('Звук вкл/выкл (демо)')">🔊</button>
-                    <button class="icon-btn" onclick="msg('FAQ (демо)')">❓</button>
-                    <button class="icon-btn" onclick="msg('Кошелёк (демо)')">👛</button>
-                    <button class="icon-btn" onclick="msg('Язык: RU')">🇷🇺</button>
-                </div>
-            </div>
+<!-- ГЛАВНАЯ -->
+<div id="view-home">
+<div class="top-bar">
+<div class="logo">⚔️ Empire Telepat</div>
+<div class="top-icons">
+<button class="icon-btn" onclick="msg('Чат поддержки (демо)')">💬</button>
+<button class="icon-btn" onclick="msg('Звук вкл/выкл (демо)')">🔊</button>
+<button class="icon-btn" onclick="msg('FAQ (демо)')">❓</button>
+<button class="icon-btn" onclick="msg('Кошелёк (демо)')">👛</button>
+<button class="icon-btn" onclick="msg('Язык: RU')">🇷🇺</button>
+</div>
+</div>
 
-            <!-- Профиль -->
-            <div class="profile-card">
-                <div class="profile-header">
-                    <div class="avatar-wrapper">
-                        <div class="avatar-spin-ring"></div>
-                        <img class="avatar-img" src="https://i.pravatar.cc/150?u=telepat" alt="Avatar" id="userAvatar">
-                    </div>
-                    <div class="profile-info">
-                        <div class="username" id="userName">@username</div>
-                        <div class="user-stats">
-                            <span id="userRank">👑 Новичок</span>
-                            <span id="userDays">📅 0 дней</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<div class="profile-card">
+<div class="profile-header">
+<div class="avatar-wrapper">
+<div class="avatar-spin-ring"></div>
+<img class="avatar-img" src="https://i.pravatar.cc/150?u=telepat" alt="Avatar">
+</div>
+<div class="profile-info">
+<div class="username" id="userName">@username</div>
+<div class="user-stats">
+<span class="rank-badge-top" id="userRank">👑 Новичок</span>
+<span id="userDays">📅 0 дней</span>
+</div>
+</div>
+</div>
+</div>
 
-            <!-- 3 Плитки -->
-            <div class="stats-grid">
-                <div class="stat-tile">
-                    <div class="val" id="statLevel">0</div>
-                    <div class="lbl">Уровень</div>
-                </div>
-                <div class="stat-tile">
-                    <div class="val" id="statRating">1500</div>
-                    <div class="lbl">Рейтинг</div>
-                </div>
-                <div class="stat-tile">
-                    <div class="val" id="statBalance">$0</div>
-                    <div class="lbl">Баланс</div>
-                </div>
-            </div>
+<div class="stats-grid">
+<div class="stat-tile"><div class="val" id="statLevel">0</div><div class="lbl">Уровень</div></div>
+<div class="stat-tile"><div class="val" id="statRating">1500</div><div class="lbl">Рейтинг</div></div>
+<div class="stat-tile"><div class="val" id="statBalance">$0</div><div class="lbl">Баланс</div></div>
+</div>
 
-            <!-- Рыцарь и Слоты -->
-            <div class="knight-section">
-                <div class="rank-badge">
-                    <div class="rank-medal" id="rankMedal">⚔️</div>
-                    <div class="rank-info">
-                        <div class="rank-name" id="rankName">Новичок</div>
-                        <div class="rank-sub" id="rankSub">Уровень 0 из 21</div>
-                    </div>
-                </div>
+<div class="knight-section">
+<div class="rank-badge">
+<div class="rank-medal" id="rankMedal">⚔️</div>
+<div class="rank-info">
+<div class="rank-name" id="rankName">Новичок</div>
+<div class="rank-sub" id="rankSub">Уровень 0 из 21</div>
+</div>
+</div>
 
-                <div class="knight-layout">
-                    <!-- Левая колонка (занятые слоты) -->
-                    <div class="slot-col">
-                        <div class="slot filled" id="slot-weapon" onclick="clickSlot('weapon')">
-                            <span class="slot-label">Меч</span>
-                            🗡️
-                        </div>
-                        <div class="slot filled" id="slot-body" onclick="clickSlot('body')">
-                            <span class="slot-label">Рубашка</span>
-                            👕
-                        </div>
-                        <div class="slot filled" id="slot-legs" onclick="clickSlot('legs')">
-                            <span class="slot-label">Брюки</span>
-                            👖
-                        </div>
-                    </div>
+<div class="knight-layout">
+<div class="slot-col">
+<div class="slot" id="slot-weapon" onclick="clickSlot('weapon')"><span class="slot-label">Меч</span>🗡️</div>
+<div class="slot" id="slot-body" onclick="clickSlot('body')"><span class="slot-label">Рубашка</span>👕</div>
+<div class="slot" id="slot-legs" onclick="clickSlot('legs')"><span class="slot-label">Брюки</span>👖</div>
+</div>
+<div class="knight-avatar">
+<img class="knight-img" id="knightImg" src="knight-0.png" alt="Knight" onerror="this.style.display='none'">
+<div class="knight-speech" id="knightSpeech">Славный путь начинается!</div>
+</div>
+<div class="slot-col">
+<div class="slot empty locked"><span class="slot-label">Шлем</span>⛑️</div>
+<div class="slot empty locked"><span class="slot-label">Щит</span>🛡️</div>
+<div class="slot empty locked"><span class="slot-label">Плащ</span>🧥</div>
+</div>
+</div>
 
-                    <!-- Центр: Рыцарь -->
-                    <div class="knight-avatar">
-                        <img class="knight-img" id="knightImg" src="knight-0.png" alt="Knight" onerror="this.src='https://i.imgur.com/8QO9y8p.png'">
-                        <div class="knight-speech" id="knightSpeech">Славный путь начинается!</div>
-                    </div>
+<div class="slots-row-bottom">
+<div class="slot empty locked"><span class="slot-label">Кольцо</span>💍</div>
+<div class="slot empty locked"><span class="slot-label">Сумка</span>🎒</div>
+<div class="slot empty locked"><span class="slot-label">Питомец</span>🐺</div>
+<div class="slot empty locked"><span class="slot-label">Титул</span>🏷️</div>
+<div class="slot empty locked"><span class="slot-label">Аура</span>✨</div>
+</div>
 
-                    <!-- Правая колонка (пустые слоты) -->
-                    <div class="slot-col">
-                        <div class="slot empty locked">
-                            <span class="slot-label">Шлем</span>
-                            ⛑️
-                        </div>
-                        <div class="slot empty locked">
-                            <span class="slot-label">Щит</span>
-                            🛡️
-                        </div>
-                        <div class="slot empty locked">
-                            <span class="slot-label">Плащ</span>
-                            🧥
-                        </div>
-                    </div>
-                </div>
+<div class="scales-container">
+<div class="scale-item">
+<div class="scale-header"><span>💎 Стейк</span><b id="scStakeTxt">$0 / $0.5</b></div>
+<div class="scale-bar-bg"><div class="scale-bar-fill blue" id="scStake" style="width:0%"></div></div>
+</div>
+<div class="scale-item">
+<div class="scale-header"><span>🔄 Сделки</span><b id="scDealsTxt">0 / 1</b></div>
+<div class="scale-bar-bg"><div class="scale-bar-fill green" id="scDeals" style="width:0%"></div></div>
+</div>
+<div class="scale-item">
+<div class="scale-header"><span>👥 Рефералы</span><b id="scRefsTxt">0 / 0</b></div>
+<div class="scale-bar-bg"><div class="scale-bar-fill gold" id="scRefs" style="width:0%"></div></div>
+</div>
+<div class="scale-item hidden" id="scStarWrap">
+<div class="scale-header"><span>⭐ Звёздный</span><b id="scStarTxt">—</b></div>
+<div class="scale-bar-bg"><div class="scale-bar-fill purple" id="scStar" style="width:0%"></div></div>
+</div>
+</div>
+<div class="rule-line">📜 Правило: <b>уровень = минимум из 4 шкал</b>.</div>
+</div>
 
-                <!-- Нижний ряд слотов -->
-                <div class="slots-row-bottom">
-                    <div class="slot empty locked"><span class="slot-label">Кольцо</span>💍</div>
-                    <div class="slot empty locked"><span class="slot-label">Сумка</span>🎒</div>
-                    <div class="slot empty locked"><span class="slot-label">Питомец</span>🐺</div>
-                    <div class="slot empty locked"><span class="slot-label">Титул</span>🏷️</div>
-                    <div class="slot empty locked"><span class="slot-label">Аура</span>✨</div>
-                </div>
+<div class="quick-actions">
+<button class="quick-btn" onclick="goView('shop')"><span class="icon">🏪</span> Магазин</button>
+<button class="quick-btn" onclick="goView('income')"><span class="icon">🎯</span> Доход</button>
+<button class="quick-btn" onclick="goView('friends')"><span class="icon">👥</span> Друзья</button>
+<button class="quick-btn" onclick="goView('admin')"><span class="icon">👑</span> Админ</button>
+</div>
+</div>
 
-                <!-- Шкалы -->
-                <div class="scales-container">
-                    <div class="scale-item">
-                        <div class="scale-header">
-                            <span>💎 Стейк</span>
-                            <b id="scStakeTxt">$0 / $0.5</b>
-                        </div>
-                        <div class="scale-bar-bg">
-                            <div class="scale-bar-fill blue" id="scStake" style="width: 0%"></div>
-                        </div>
-                    </div>
-                    <div class="scale-item">
-                        <div class="scale-header">
-                            <span>🔄 Сделки</span>
-                            <b id="scDealsTxt">0 / 1</b>
-                        </div>
-                        <div class="scale-bar-bg">
-                            <div class="scale-bar-fill green" id="scDeals" style="width: 0%"></div>
-                        </div>
-                    </div>
-                    <div class="scale-item">
-                        <div class="scale-header">
-                            <span>👥 Рефералы</span>
-                            <b id="scRefsTxt">0 / 0</b>
-                        </div>
-                        <div class="scale-bar-bg">
-                            <div class="scale-bar-fill gold" id="scRefs" style="width: 0%"></div>
-                        </div>
-                    </div>
-                    <div class="scale-item" id="scStarWrap" style="display: none;">
-                        <div class="scale-header">
-                            <span>⭐ Звёздный</span>
-                            <b id="scStarTxt">—</b>
-                        </div>
-                        <div class="scale-bar-bg">
-                            <div class="scale-bar-fill purple" id="scStar" style="width: 0%"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="rule-line">
-                    📜 Правило: <b>уровень = минимум из 4 шкал</b>. Не выполнил хотя бы одну — сидишь на текущем.
-                </div>
-            </div>
+<!-- МАГАЗИН -->
+<div id="view-shop" class="hidden">
+<h2 style="color:var(--gold)">🏪 Магазин</h2>
+<div class="tabs" id="shopTabs">
+<button class="tab active" data-tab="gear" onclick="showShopTab('gear')">⚔️ Амуниция</button>
+<button class="tab" data-tab="weapons" onclick="showShopTab('weapons')">🗡️ Оружие</button>
+<button class="tab" data-tab="artifacts" onclick="showShopTab('artifacts')">💎 Артефакты</button>
+<button class="tab" data-tab="titles" onclick="showShopTab('titles')">🏷️ Титулы</button>
+<button class="tab" data-tab="certs" onclick="showShopTab('certs')">📜 Сертификаты</button>
+<button class="tab" data-tab="refs" onclick="showShopTab('refs')">👥 Рефералы</button>
+<button class="tab" data-tab="auction" onclick="showShopTab('auction')">🔨 Аукцион</button>
+</div>
+<div id="shopContent"></div>
+</div>
 
-            <!-- Быстрые действия -->
-            <div class="quick-actions">
-                <button class="quick-btn" onclick="goView('shop')">
-                    <span class="icon">🏪</span> Магазин
-                </button>
-                <button class="quick-btn" onclick="goView('income')">
-                    <span class="icon">🎯</span> Доход
-                </button>
-                <button class="quick-btn" onclick="goView('friends')">
-                    <span class="icon">👥</span> Друзья
-                </button>
-                <button class="quick-btn" onclick="goView('admin')">
-                    <span class="icon">👑</span> Админ
-                </button>
-            </div>
-        </div>
+<!-- ДОХОД -->
+<div id="view-income" class="hidden">
+<h2 style="color:var(--gold)">🎯 Доход</h2>
+<div class="tabs" id="incomeTabs">
+<button class="tab active" data-tab="p2p" onclick="showIncomeTab('p2p')">💱 P2P</button>
+<button class="tab" data-tab="swap" onclick="showIncomeTab('swap')">🔄 Swap</button>
+<button class="tab" data-tab="staking" onclick="showIncomeTab('staking')">💎 Стейкинг</button>
+<button class="tab" data-tab="checkin" onclick="showIncomeTab('checkin')">🔥 Чекин</button>
+<button class="tab" data-tab="tasks" onclick="showIncomeTab('tasks')">📋 Задания</button>
+<button class="tab" data-tab="ads" onclick="showIncomeTab('ads')">📢 Реклама</button>
+</div>
+<div id="incomeContent"></div>
+</div>
 
-        <!-- ================= ЭКРАН МАГАЗИНА ================= -->
-        <div id="view-shop" class="hidden">
-            <h2 style="color:var(--gold); margin-top:0;">🏪 Магазин</h2>
-            <div class="shop-tabs" id="shopTabs">
-                <button class="shop-tab active" data-tab="gear" onclick="showShopTab('gear')">⚔️ Амуниция</button>
-                <button class="shop-tab" data-tab="titles" onclick="showShopTab('titles')">🏷️ Титулы</button>
-                <button class="shop-tab" data-tab="artifacts" onclick="showShopTab('artifacts')">💎 Артефакты</button>
-                <button class="shop-tab" data-tab="certs" onclick="showShopTab('certs')">📜 Сертификаты</button>
-                <button class="shop-tab" data-tab="auction" onclick="showShopTab('auction')">🔨 Аукцион</button>
-            </div>
-            <div id="shopContent"></div>
-        </div>
+<!-- ДРУЗЬЯ -->
+<div id="view-friends" class="hidden">
+<h2 style="color:var(--gold)">👥 Друзья</h2>
+<div class="item-card">
+<div class="item-header"><b>Пригласительная ссылка</b></div>
+<div style="display:flex;gap:8px">
+<input type="text" readonly value="https://t.me/TELEPATp2p_bot?start=demo" style="flex:1;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px;font-size:12px">
+<button class="gold" onclick="msg('Скопировано','success')">Копировать</button>
+</div>
+</div>
+<div class="item-card">
+<div class="item-header"><b>Мои рефералы</b></div>
+<div style="font-size:12px;color:var(--muted);padding:8px 0;border-bottom:1px solid var(--line)">👤 @friend_1 • Lv.2 • +$12</div>
+<div style="font-size:12px;color:var(--muted);padding:8px 0">👤 @friend_2 • Lv.4 • +$88</div>
+</div>
+</div>
 
-        <!-- ================= ЭКРАН ДОХОДА ================= -->
-        <div id="view-income" class="hidden">
-            <h2 style="color:var(--gold); margin-top:0;">🎯 Доход</h2>
-            <div class="shop-tabs" id="incomeTabs">
-                <button class="shop-tab active" data-tab="p2p" onclick="showIncomeTab('p2p')">🤝 P2P</button>
-                <button class="shop-tab" data-tab="swap" onclick="showIncomeTab('swap')">🔄 Swap</button>
-                <button class="shop-tab" data-tab="staking" onclick="showIncomeTab('staking')">💎 Стейкинг</button>
-                <button class="shop-tab" data-tab="checkin" onclick="showIncomeTab('checkin')">🔥 Чекин</button>
-                <button class="shop-tab" data-tab="tasks" onclick="showIncomeTab('tasks')">📋 Задания</button>
-                <button class="shop-tab" data-tab="ads" onclick="showIncomeTab('ads')">📢 Реклама</button>
-            </div>
-            <div id="incomeContent"></div>
-        </div>
+<!-- АДМИН -->
+<div id="view-admin" class="hidden">
+<h2 style="color:var(--gold)">👑 Админ-панель</h2>
+<div id="adminLogin">
+<div class="admin-section">
+<div class="admin-field"><label>Пароль</label><input type="password" id="adminPwd" placeholder="admin"></div>
+<button class="admin-btn primary" style="width:100%" onclick="adminLogin()">Войти</button>
+<p style="font-size:11px;color:var(--muted);margin-top:8px;text-align:center">Демо-пароль: admin</p>
+</div>
+</div>
+<div id="adminPanel" class="hidden">
+<div class="admin-section">
+<div class="admin-title">🎖️ Уровень и Прогресс</div>
+<div class="admin-field"><label>Стейк (USD)</label><input type="number" id="adStakeUSD" step="0.01" value="0"></div>
+<div class="admin-field"><label>Сделки</label><input type="number" id="adDeals" value="0"></div>
+<div class="admin-field"><label>Рефералы</label><input type="number" id="adRefs" value="0"></div>
+<div class="admin-field"><label>Звёздный реферал (0-21)</label><input type="number" id="adStarRef" value="-1"></div>
+<div class="admin-btn-row">
+<button class="admin-btn gold" onclick="adminLevelUp()">⬆️ Апнуть</button>
+<button class="admin-btn danger" onclick="adminLevelDown()">⬇️ Понизить</button>
+</div>
+<button class="admin-btn sec" style="width:100%;margin-top:8px" onclick="adminFillMax()">🎯 Заполнить максимум</button>
+</div>
 
-        <!-- ================= ЭКРАН ДРУЗЕЙ ================= -->
-        <div id="view-friends" class="hidden">
-            <h2 style="color:var(--gold); margin-top:0;">👥 Друзья</h2>
-            <div class="item-card">
-                <div class="item-header"><b>Пригласительная ссылка</b></div>
-                <div style="display:flex; gap:8px;">
-                    <input type="text" readonly value="https://t.me/TELEPATp2p_bot?start=demo" style="flex:1; background:var(--bg); border:1px solid var(--line); color:#fff; padding:8px; border-radius:8px; font-size:12px;">
-                    <button class="gold" style="padding:8px 12px; border-radius:8px; border:0; font-weight:700; cursor:pointer;" onclick="msg('Скопировано')">Копировать</button>
-                </div>
-            </div>
-            <div class="item-card">
-                <div class="item-header"><b>Мои рефералы</b></div>
-                <div id="refList" style="font-size:12px; color:var(--muted);">Загрузка...</div>
-            </div>
-        </div>
+<div class="admin-section">
+<div class="admin-title">💰 Балансы</div>
+<div class="admin-field"><label>TUSD</label><input type="number" id="adTUSD" value="100000"></div>
+<div class="admin-field"><label>TG</label><input type="number" id="adTG" value="100"></div>
+<div class="admin-field"><label>AI</label><input type="number" id="adAI" value="1000000"></div>
+<div class="admin-field"><label>VKCOIN</label><input type="number" id="adVK" value="10000000"></div>
+</div>
 
-        <!-- ================= ЭКРАН АДМИН-ПАНЕЛИ ================= -->
-        <div id="view-admin" class="hidden">
-            <h2 style="color:var(--gold); margin-top:0;">👑 Админ-панель</h2>
+<div class="admin-section">
+<div class="admin-title">💎 Стейкинг</div>
+<div class="admin-field"><label>TUSD staked</label><input type="number" id="stTUSD" value="1000"></div>
+<div class="admin-field"><label>TG staked</label><input type="number" id="stTG" value="50"></div>
+<div class="admin-field"><label>AI staked</label><input type="number" id="stAI" value="10000"></div>
+</div>
 
-            <!-- Вход по паролю -->
-            <div id="adminLogin">
-                <div class="admin-section">
-                    <div class="admin-field">
-                        <label>Пароль</label>
-                        <input type="password" id="adminPwd" placeholder="admin">
-                    </div>
-                    <button class="admin-btn primary" onclick="adminLogin()">Войти</button>
-                    <p style="font-size:11px; color:var(--muted); margin-top:8px;">Демо-пароль: admin</p>
-                </div>
-            </div>
+<div class="admin-section">
+<div class="admin-title">📜 Цены сертификатов</div>
+<div class="admin-field"><label>Старт (3 мес)</label><input type="number" id="c3m" value="25"></div>
+<div class="admin-field"><label>Профи (6 мес)</label><input type="number" id="c6m" value="50"></div>
+<div class="admin-field"><label>Бизнес (1 год)</label><input type="number" id="c1y" value="100"></div>
+<div class="admin-field"><label>Вечный</label><input type="number" id="cinf" value="250"></div>
+</div>
 
-            <!-- Панель после входа -->
-            <div id="adminPanel" class="hidden">
-                <!-- Блок: Уровень и Прогресс -->
-                <div class="admin-section">
-                    <div class="admin-title">🎖️ Уровень и Прогресс</div>
-                    <div class="admin-field">
-                        <label>Стейк (USD)</label>
-                        <input type="number" id="adStakeUSD" step="0.01" value="0">
-                    </div>
-                    <div class="admin-field">
-                        <label>Сделки</label>
-                        <input type="number" id="adDeals" value="0">
-                    </div>
-                    <div class="admin-field">
-                        <label>Рефералы</label>
-                        <input type="number" id="adRefs" value="0">
-                    </div>
-                    <div class="admin-field">
-                        <label>Звёздный реферал (уровень друга 0-21)</label>
-                        <input type="number" id="adStarRef" value="-1">
-                    </div>
-                    <div class="admin-field">
-                        <label>Активный титул</label>
-                        <select id="adActiveTitle"></select>
-                    </div>
-                    <div class="admin-btn-row">
-                        <button class="admin-btn gold" onclick="adminLevelUp()">⬆️ Апнуть</button>
-                        <button class="admin-btn danger" onclick="adminLevelDown()">⬇️ Понизить</button>
-                    </div>
-                    <button class="admin-btn sec" style="margin-top:8px; width:100%;" onclick="adminFillMax()">🎯 Заполнить по максимуму</button>
-                </div>
+<div class="admin-section">
+<div class="admin-title">🏷️ Продажа титулов</div>
+<div class="admin-field"><label>Роялти с перепродажи копий (%)</label><input type="number" id="adRoyalty" value="10"></div>
+<div class="admin-field"><label>Создание копий раз в (месяцев)</label><input type="number" id="adCopyInterval" value="3"></div>
+</div>
 
-                <!-- Блок: Балансы -->
-                <div class="admin-section">
-                    <div class="admin-title">💰 Балансы</div>
-                    <div class="admin-field"><label>TUSD</label><input type="number" id="adTUSD" value="100000"></div>
-                    <div class="admin-field"><label>TG</label><input type="number" id="adTG" value="100"></div>
-                    <div class="admin-field"><label>AI</label><input type="number" id="adAI" value="1000000"></div>
-                    <div class="admin-field"><label>VKCOIN</label><input type="number" id="adVK" value="10000000"></div>
-                </div>
+<div class="admin-section">
+<div class="admin-title">⚙️ Действия</div>
+<button class="admin-btn primary" style="width:100%" onclick="adminSave()">💾 Сохранить всё</button>
+<button class="admin-btn danger" style="width:100%;margin-top:8px" onclick="resetDemo()">🔄 Сбросить демо</button>
+</div>
+</div>
+</div>
 
-                <!-- Блок: Стейкинг -->
-                <div class="admin-section">
-                    <div class="admin-title">💎 Стейкинг</div>
-                    <div class="admin-field"><label>TUSD staked</label><input type="number" id="stTUSD" value="1000"></div>
-                    <div class="admin-field"><label>TG staked</label><input type="number" id="stTG" value="50"></div>
-                    <div class="admin-field"><label>AI staked</label><input type="number" id="stAI" value="10000"></div>
-                </div>
+</div>
 
-                <!-- Блок: Цены -->
-                <div class="admin-section">
-                    <div class="admin-title">📜 Цены сертификатов</div>
-                    <div class="admin-field"><label>3 месяца</label><input type="number" id="c3m" value="25"></div>
-                    <div class="admin-field"><label>6 месяцев</label><input type="number" id="c6m" value="50"></div>
-                    <div class="admin-field"><label>1 год</label><input type="number" id="c1y" value="100"></div>
-                    <div class="admin-field"><label>Бессрочный</label><input type="number" id="cinf" value="250"></div>
-                </div>
+<!-- НАВИГАЦИЯ -->
+<div class="bottom-nav">
+<button class="nav-btn active" id="nav-home" onclick="goView('home')"><span class="nav-icon">🏠</span> Дом</button>
+<button class="nav-btn" id="nav-shop" onclick="goView('shop')"><span class="nav-icon">🏪</span> Магазин</button>
+<button class="nav-btn" id="nav-income" onclick="goView('income')"><span class="nav-icon">🎯</span> Доход</button>
+<button class="nav-btn" id="nav-friends" onclick="goView('friends')"><span class="nav-icon">👥</span> Друзья</button>
+<button class="nav-btn" id="nav-admin" onclick="goView('admin')"><span class="nav-icon">👑</span> Админ</button>
+</div>
 
-                <!-- Кнопки управления -->
-                <div class="admin-section">
-                    <div class="admin-title">⚙️ Действия</div>
-                    <button class="admin-btn primary" style="width:100%;" onclick="adminSave()">💾 Сохранить всё</button>
-                    <button class="admin-btn danger" style="margin-top:8px; width:100%;" onclick="resetDemo()">🔄 Сбросить демо</button>
-                </div>
-            </div>
-        </div>
+<script>
+const LS_KEY='telepat_empire_v2';
+const TG_PRICE=100;
 
-    </div>
+const LEVELS=[
+{n:0,name:'Новичок',icon:'🗡️',stake:0,deals:0,refs:0,star:null,group:0},
+{n:1,name:'Крестьянин',icon:'🌾',stake:0.5,deals:1,refs:0,star:null,group:0},
+{n:2,name:'Вольный',icon:'🪶',stake:1,deals:2,refs:1,star:null,group:0},
+{n:3,name:'Гражданин',icon:'🎩',stake:2,deals:5,refs:2,star:null,group:0},
+{n:4,name:'Оруженосец',icon:'⚔️',stake:3,deals:10,refs:4,star:null,group:1},
+{n:5,name:'Мечник',icon:'🗡️',stake:4,deals:15,refs:6,star:null,group:1},
+{n:6,name:'Десятник',icon:'🛡️',stake:5,deals:20,refs:8,star:2,group:1},
+{n:7,name:'Сотник',icon:'⚔️',stake:6,deals:25,refs:10,star:3,group:1},
+{n:8,name:'Тысячник',icon:'🪓',stake:7,deals:30,refs:13,star:4,group:1},
+{n:9,name:'Рыцарь',icon:'🛡️',stake:8,deals:40,refs:16,star:5,group:2},
+{n:10,name:'Железный',icon:'⚙️',stake:16,deals:50,refs:19,star:6,group:2},
+{n:11,name:'Бронзовый',icon:'🛡️',stake:32,deals:70,refs:22,star:7,group:2},
+{n:12,name:'Серебряный',icon:'🛡️',stake:64,deals:90,refs:25,star:8,group:2},
+{n:13,name:'Золотой',icon:'👑',stake:128,deals:120,refs:29,star:9,group:2},
+{n:14,name:'Барон',icon:'👑',stake:256,deals:150,refs:33,star:10,group:3},
+{n:15,name:'Виконт',icon:'💎',stake:512,deals:200,refs:37,star:11,group:3},
+{n:16,name:'Граф',icon:'⭐',stake:1024,deals:250,refs:42,star:12,group:3},
+{n:17,name:'Маркиз',icon:'🔮',stake:2048,deals:350,refs:47,star:13,group:3},
+{n:18,name:'Герцог',icon:'🌹',stake:4096,deals:500,refs:52,star:14,group:4},
+{n:19,name:'Князь',icon:'👑',stake:8192,deals:750,refs:57,star:15,group:4},
+{n:20,name:'Король',icon:'👑',stake:16384,deals:1000,refs:62,star:16,group:4},
+{n:21,name:'Император',icon:'👑',stake:32768,deals:1500,refs:67,star:17,group:4},
+];
 
-    <!-- ================= НИЖНЯЯ НАВИГАЦИЯ ================= -->
-    <div class="bottom-nav">
-        <button class="nav-btn active" id="nav-home" onclick="goView('home')">
-            <span class="nav-icon">🏠</span> Дом
-        </button>
-        <button class="nav-btn" id="nav-shop" onclick="goView('shop')">
-            <span class="nav-icon">🏪</span> Магазин
-        </button>
-        <button class="nav-btn" id="nav-income" onclick="goView('income')">
-            <span class="nav-icon">🎯</span> Доход
-        </button>
-        <button class="nav-btn" id="nav-friends" onclick="goView('friends')">
-            <span class="nav-icon">👥</span> Друзья
-        </button>
-        <button class="nav-btn" id="nav-admin" onclick="goView('admin')">
-            <span class="nav-icon">👑</span> Админ
-        </button>
-    </div>
+const GROUP_IMAGE={0:'knight-0.png',1:'knight-4.png',2:'knight-9.png',3:'knight-14.png',4:'knight-18.png'};
 
-    <script>
-        // ==================== ДАННЫЕ ====================
-        const LS_KEY = 'telepat_empire_demo';
-        const TG_PRICE = 100; // 1 TG = $100
+const LEVEL_FILTER={0:'sepia(0.6) brightness(0.85) saturate(0.8)',1:'none',2:'sepia(0.15) saturate(1.05)',3:'saturate(1.1)',4:'brightness(0.9) saturate(1.1)',5:'none',6:'brightness(0.85) contrast(1.05)',7:'hue-rotate(-10deg) saturate(1.1)',8:'hue-rotate(20deg) saturate(1.15) brightness(1.02)',9:'none',10:'grayscale(0.7) brightness(1.05)',11:'sepia(0.5) saturate(1.5)',12:'grayscale(0.4) brightness(1.1) contrast(1.05)',13:'sepia(0.4) saturate(1.8) brightness(1.1)',14:'none',15:'hue-rotate(180deg) saturate(1.2)',16:'hue-rotate(160deg) saturate(1.1)',17:'hue-rotate(120deg) saturate(1.2)',18:'none',19:'hue-rotate(-30deg) saturate(1.3)',20:'sepia(0.3) saturate(1.6) brightness(1.08)',21:'hue-rotate(45deg) saturate(1.4) brightness(1.1)'};
 
-        // 22 уровня из твоей таблицы
-        const LEVELS = [
-            { n: 0,  name: 'Новичок',     icon: '🗡️', stake: 0,     deals: 0,    refs: 0,  star: null, group: 0 },
-            { n: 1,  name: 'Крестьянин',  icon: '🌾', stake: 0.5,   deals: 1,    refs: 0,  star: null, group: 0 },
-            { n: 2,  name: 'Вольный',     icon: '🪶', stake: 1,     deals: 2,    refs: 1,  star: null, group: 0 },
-            { n: 3,  name: 'Гражданин',   icon: '🎩', stake: 2,     deals: 5,    refs: 2,  star: null, group: 0 },
-            { n: 4,  name: 'Оруженосец',  icon: '⚔️', stake: 3,     deals: 10,   refs: 4,  star: null, group: 1 },
-            { n: 5,  name: 'Мечник',      icon: '🗡️', stake: 4,     deals: 15,   refs: 6,  star: null, group: 1 },
-            { n: 6,  name: 'Десятник',    icon: '🛡️', stake: 5,     deals: 20,   refs: 8,  star: 2,   group: 1 },
-            { n: 7,  name: 'Сотник',      icon: '⚔️', stake: 6,     deals: 25,   refs: 10, star: 3,   group: 1 },
-            { n: 8,  name: 'Тысячник',    icon: '🪓', stake: 7,     deals: 30,   refs: 13, star: 4,   group: 1 },
-            { n: 9,  name: 'Рыцарь',      icon: '🛡️', stake: 8,     deals: 40,   refs: 16, star: 5,   group: 2 },
-            { n: 10, name: 'Железный',    icon: '⚙️', stake: 16,    deals: 50,   refs: 19, star: 6,   group: 2 },
-            { n: 11, name: 'Бронзовый',   icon: '🛡️', stake: 32,    deals: 70,   refs: 22, star: 7,   group: 2 },
-            { n: 12, name: 'Серебряный',  icon: '🛡️', stake: 64,    deals: 90,   refs: 25, star: 8,   group: 2 },
-            { n: 13, name: 'Золотой',     icon: '👑', stake: 128,   deals: 120,  refs: 29, star: 9,   group: 2 },
-            { n: 14, name: 'Барон',       icon: '👑', stake: 256,   deals: 150,  refs: 33, star: 10,  group: 3 },
-            { n: 15, name: 'Виконт',      icon: '💎', stake: 512,   deals: 200,  refs: 37, star: 11,  group: 3 },
-            { n: 16, name: 'Граф',        icon: '⭐', stake: 1024,  deals: 250,  refs: 42, star: 12,  group: 3 },
-            { n: 17, name: 'Маркиз',      icon: '🔮', stake: 2048,  deals: 350,  refs: 47, star: 13,  group: 3 },
-            { n: 18, name: 'Герцог',      icon: '🌹', stake: 4096,  deals: 500,  refs: 52, star: 14,  group: 4 },
-            { n: 19, name: 'Князь',       icon: '👑', stake: 8192,  deals: 750,  refs: 57, star: 15,  group: 4 },
-            { n: 20, name: 'Король',      icon: '👑', stake: 16384, deals: 1000, refs: 62, star: 16,  group: 4 },
-            { n: 21, name: 'Император',   icon: '👑', stake: 32768, deals: 1500, refs: 67, star: 17,  group: 4 },
-        ];
+// ТИТУЛЫ — только те, что можно купить (14-21)
+const TITLES=[
+{id:'baron',name:'Барон',level:14,icon:'👑',price:256,eff:'+1% к рефералке'},
+{id:'vicomte',name:'Виконт',level:15,icon:'💎',price:512,eff:'+2% к рефералке'},
+{id:'comte',name:'Граф',level:16,icon:'⭐',price:1024,eff:'+3% к рефералке'},
+{id:'marquis',name:'Маркиз',level:17,icon:'🔮',price:2048,eff:'+5% к рефералке'},
+{id:'duc',name:'Герцог',level:18,icon:'🌹',price:4096,eff:'+7% к рефералке'},
+{id:'prince',name:'Князь',level:19,icon:'👑',price:8192,eff:'+10% к рефералке'},
+{id:'roi',name:'Король',level:20,icon:'👑',price:16384,eff:'+15% к рефералке'},
+{id:'empereur',name:'Император',level:21,icon:'👑',price:32768,eff:'+20% к рефералке'},
+];
 
-        // Картинки по группам
-        const GROUP_IMAGE = {
-            0: 'knight-0.png',
-            1: 'knight-4.png',
-            2: 'knight-9.png',
-            3: 'knight-14.png',
-            4: 'knight-18.png',
-        };
+// Активные P2P-лоты (только токены)
+const P2P_TOKENS=[
+{id:'p1',my:false,seller:'@seller_X',stars:5,from:'TG',to:'TUSD',fromAmt:100,toAmt:10000,rate:100},
+{id:'p2',my:false,seller:'@whale_777',stars:4,from:'AI',to:'TUSD',fromAmt:100000,toAmt:1000,rate:0.01},
+{id:'p3',my:true,seller:'@you',stars:3,from:'TG',to:'TUSD',fromAmt:5,toAmt:500,rate:100},
+{id:'p4',my:false,seller:'@noob_42',stars:1,from:'VKCOIN',to:'TUSD',fromAmt:500000,toAmt:500,rate:0.001},
+];
 
-        // Фильтры для уровней внутри групп
-        const LEVEL_FILTER = {
-            0: 'sepia(0.6) brightness(0.85) saturate(0.8)',
-            1: 'none',
-            2: 'sepia(0.15) saturate(1.05)',
-            3: 'saturate(1.1)',
-            4: 'brightness(0.9) saturate(1.1)',
-            5: 'none',
-            6: 'brightness(0.85) contrast(1.05)',
-            7: 'hue-rotate(-10deg) saturate(1.1)',
-            8: 'hue-rotate(20deg) saturate(1.15) brightness(1.02)',
-            9: 'none',
-            10: 'grayscale(0.7) brightness(1.05)',
-            11: 'sepia(0.5) saturate(1.5)',
-            12: 'grayscale(0.4) brightness(1.1) contrast(1.05)',
-            13: 'sepia(0.4) saturate(1.8) brightness(1.1)',
-            14: 'none',
-            15: 'hue-rotate(180deg) saturate(1.2)',
-            16: 'hue-rotate(160deg) saturate(1.1)',
-            17: 'hue-rotate(120deg) saturate(1.2)',
-            18: 'none',
-            19: 'hue-rotate(-30deg) saturate(1.3)',
-            20: 'sepia(0.3) saturate(1.6) brightness(1.08)',
-            21: 'hue-rotate(45deg) saturate(1.4) brightness(1.1)',
-        };
+// Рефералы на продажу
+const REFS_SALE=[
+{id:'r1',login:'@ref_1024',level:3,earned:120,days:45,price:40,owner:'@seller_X',stars:4,avgMonth:40},
+{id:'r2',login:'@ref_2048',level:5,earned:430,days:120,price:150,owner:'@whale_777',stars:5,avgMonth:107},
+{id:'r3',login:'@ref_4096',level:2,earned:18,days:12,price:8,owner:'@noob_42',stars:1,avgMonth:1.5},
+];
 
-        // Текущее состояние
-        let state = {
-            user: { name: '@username', days: 0 },
-            balances: { TUSD: 100000, TG: 100, AI: 1000000, VKCOIN: 10000000 },
-            staked: { TUSD: 1000, TG: 50, AI: 10000, VKCOIN: 0 },
-            progress: { level: 0, stakeUSD: 0, deals: 0, refs: 0, starRefLevel: -1 },
-            rating: 1500,
-            equipped: { weapon: null, body: null, legs: null },
-            activeTitle: null,
-        };
+let state={
+user:{name:'@username',days:0,isPremium:false},
+balances:{TUSD:100000,TG:100,AI:1000000,VKCOIN:10000000},
+staked:{TUSD:1000,TG:50,AI:10000,VKCOIN:0},
+progress:{stakeUSD:0,deals:3,refs:1,starRefLevel:-1},
+rating:1500,
+equipped:{weapon:null,body:null,legs:null},
+activeTitle:null,
+adminSettings:{royalty:10,copyInterval:3}
+};
 
-        // Загрузка из localStorage
-        function loadState() {
-            const saved = localStorage.getItem(LS_KEY);
-            if (saved) {
-                try { state = JSON.parse(saved); } catch (e) { console.warn('Save load error', e); }
-            }
-        }
+function loadState(){
+const saved=localStorage.getItem(LS_KEY);
+if(saved){try{state=Object.assign(state,JSON.parse(saved))}catch(e){console.warn(e)}}
+}
+function saveState(){localStorage.setItem(LS_KEY,JSON.stringify(state))}
 
-        // Сохранение
-        function saveState() {
-            localStorage.setItem(LS_KEY, JSON.stringify(state));
-        }
+const $=id=>document.getElementById(id);
+const fmt=(v,m=2)=>Number(v||0).toLocaleString('ru-RU',{maximumFractionDigits:m});
+const n=v=>{const x=Number(v);return Number.isFinite(x)?x:0};
 
-        // ==================== УТИЛИТЫ ====================
-        const $ = (id) => document.getElementById(id);
-        const fmt = (v, m = 2) => Number(v || 0).toLocaleString('ru-RU', { maximumFractionDigits: m });
-        const n = (v) => { const x = Number(v); return Number.isFinite(x) ? x : 0; };
+function msg(text,type='info'){
+const el=$('msg');
+el.textContent=text;
+el.className='msg-toast show '+type;
+clearTimeout(el._t);
+el._t=setTimeout(()=>el.classList.remove('show'),2800);
+}
 
-        function msg(text, type = 'info') {
-            const el = $('msg');
-            el.textContent = text;
-            el.className = 'msg-toast show ' + type;
-            clearTimeout(el._t);
-            el._t = setTimeout(() => el.classList.remove('show'), 2800);
-        }
+function goView(viewName){
+['home','shop','income','friends','admin'].forEach(v=>{
+$(`view-${v}`).classList.toggle('hidden',v!==viewName);
+$(`nav-${v}`).classList.toggle('active',v===viewName);
+});
+if(viewName==='shop')renderShop();
+if(viewName==='income')renderIncome();
+if(viewName==='admin')renderAdminPanel();
+window.scrollTo({top:0,behavior:'smooth'});
+}
 
-        // ==================== НАВИГАЦИЯ ====================
-        function goView(viewName) {
-            ['home', 'shop', 'income', 'friends', 'admin'].forEach(v => {
-                const el = $(`view-${v}`);
-                if (el) el.classList.toggle('hidden', v !== viewName);
-                const nav = $(`nav-${v}`);
-                if (nav) nav.classList.toggle('active', v === viewName);
-            });
-            // Обновляем контент при переходе
-            if (viewName === 'shop') renderShop();
-            if (viewName === 'income') renderIncome();
-            if (viewName === 'friends') renderFriends();
-            if (viewName === 'admin') renderAdminPanel();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+function calcStakeUSD(){
+return n(state.staked.TG)*TG_PRICE+n(state.staked.TUSD)+n(state.staked.AI)*0.01+n(state.staked.VKCOIN)*0.001;
+}
 
-        // ==================== РАСЧЁТ УРОВНЯ ====================
-        function calcStakeUSD() {
-            return n(state.staked.TG) * TG_PRICE + n(state.staked.TUSD) + n(state.staked.AI) * 0.01 + n(state.staked.VKCOIN) * 0.001;
-        }
+function calcLevel(){
+const stake=calcStakeUSD();
+const deals=state.progress.deals;
+const refs=state.progress.refs;
+const starRef=state.progress.starRefLevel;
+let maxLevel=0;
+for(let i=0;i<LEVELS.length;i++){
+const lv=LEVELS[i];
+if(stake>=lv.stake&&deals>=lv.deals&&refs>=lv.refs){
+if(lv.star!=null){if(starRef==null||starRef<lv.star)break}
+maxLevel=lv.n;
+}else break;
+}
+// Если куплен титул — используем его уровень
+if(state.activeTitle){
+const t=TITLES.find(x=>x.id===state.activeTitle.id);
+if(t&&t.level>maxLevel)return t.level;
+}
+return maxLevel;
+}
+function getLevelData(levelNum){return LEVELS.find(l=>l.n===levelNum)||LEVELS[0]}
+function getNextLevel(levelNum){
+const idx=LEVELS.findIndex(l=>l.n===levelNum);
+return idx>=0&&idx<LEVELS.length-1?LEVELS[idx+1]:null;
+}
 
-        function calcLevel() {
-            const stake = calcStakeUSD();
-            const deals = state.progress.deals;
-            const refs = state.progress.refs;
-            const starRef = state.progress.starRefLevel;
-            let maxLevel = 0;
-            for (let i = 0; i < LEVELS.length; i++) {
-                const lv = LEVELS[i];
-                if (stake >= lv.stake && deals >= lv.deals && refs >= lv.refs) {
-                    if (lv.star != null) {
-                        if (starRef == null || starRef < lv.star) break;
-                    }
-                    maxLevel = lv.n;
-                } else { break; }
-            }
-            return maxLevel;
-        }
+function renderHome(){
+const currentLevel=calcLevel();
+const lv=getLevelData(currentLevel);
+const next=getNextLevel(currentLevel);
 
-        function getLevelData(levelNum) {
-            return LEVELS.find(l => l.n === levelNum) || LEVELS[0];
-        }
+$('userName').innerHTML=`${state.user.name}${state.user.isPremium?' <span class="premium-badge">VIP</span>':''}`;
+$('userRank').textContent='👑 '+lv.name;
+$('userDays').textContent='📅 '+state.user.days+' дней';
+$('statLevel').textContent=currentLevel;
+$('statRating').textContent=state.rating;
+const totalUSD=n(state.balances.TG)*TG_PRICE+n(state.balances.TUSD)+n(state.balances.AI)*0.01+n(state.balances.VKCOIN)*0.001;
+$('statBalance').textContent='$'+fmt(totalUSD,0);
 
-        function getNextLevel(levelNum) {
-            const idx = LEVELS.findIndex(l => l.n === levelNum);
-            return idx >= 0 && idx < LEVELS.length - 1 ? LEVELS[idx + 1] : null;
-        }
+$('rankMedal').innerHTML=`<img src="${GROUP_IMAGE[lv.group]}" style="filter:${LEVEL_FILTER[lv.n]||'none'}" onerror="this.parentElement.textContent='${lv.icon}'">`;
+$('rankName').textContent=lv.name;
+$('rankSub').textContent=`Уровень ${lv.n} из 21`;
 
-        // ==================== ОТРИСОВКА ГЛАВНОЙ ====================
-        function renderHome() {
-            const currentLevel = calcLevel();
-            const lv = getLevelData(currentLevel);
-            const next = getNextLevel(currentLevel);
+const img=$('knightImg');
+const imgSrc=GROUP_IMAGE[lv.group]||GROUP_IMAGE[0];
+if(!img.src.includes(imgSrc)){
+img.style.opacity='0';
+setTimeout(()=>{
+img.src=imgSrc;
+img.style.filter=LEVEL_FILTER[lv.n]||'none';
+img.style.opacity='1';
+},200);
+}else{
+img.style.filter=LEVEL_FILTER[lv.n]||'none';
+}
 
-            // Профиль
-            $('userName').textContent = state.user.name;
-            $('userRank').textContent = `👑 ${lv.name}`;
-            $('userDays').textContent = `📅 ${state.user.days} дней`;
-            $('statLevel').textContent = currentLevel;
-            $('statRating').textContent = state.rating;
-            const totalUSD = n(state.balances.TG) * TG_PRICE + n(state.balances.TUSD) + n(state.balances.AI) * 0.01 + n(state.balances.VKCOIN) * 0.001;
-            $('statBalance').textContent = `$${fmt(totalUSD, 0)}`;
+// Слоты
+['weapon','body','legs'].forEach(slot=>{
+const el=$('slot-'+slot);
+const it=state.equipped[slot];
+if(it){
+el.classList.remove('empty','locked');
+el.classList.add('filled');
+el.innerHTML=`<span class="slot-label">${slot==='weapon'?'Меч':slot==='body'?'Рубашка':'Брюки'}</span>${it.icon}`;
+}else{
+el.classList.add('empty');
+el.innerHTML=`<span class="slot-label">${slot==='weapon'?'Меч':slot==='body'?'Рубашка':'Брюки'}</span>${slot==='weapon'?'🗡️':slot==='body'?'👕':'👖'}`;
+}
+});
 
-            // Плашка ранга
-            $('rankMedal').textContent = lv.icon;
-            $('rankName').textContent = lv.name;
-            $('rankSub').textContent = `Уровень ${lv.n} из 21`;
+// Шкалы
+const stake=calcStakeUSD();
+const pr=state.progress;
+const stakeTarget=next?next.stake:lv.stake;
+const dealsTarget=next?next.deals:lv.deals;
+const refsTarget=next?next.refs:lv.refs;
+const pStake=stakeTarget>0?Math.min(100,(stake/stakeTarget)*100):100;
+const pDeals=dealsTarget>0?Math.min(100,(pr.deals/dealsTarget)*100):100;
+const pRefs=refsTarget>0?Math.min(100,(pr.refs/refsTarget)*100):100;
+$('scStake').style.width=pStake+'%';
+$('scDeals').style.width=pDeals+'%';
+$('scRefs').style.width=pRefs+'%';
+$('scStakeTxt').textContent=`$${fmt(stake,2)} / $${fmt(stakeTarget,2)}`;
+$('scDealsTxt').textContent=`${pr.deals} / ${dealsTarget}`;
+$('scRefsTxt').textContent=`${pr.refs} / ${refsTarget}`;
 
-            // Рыцарь (картинка)
-            const img = $('knightImg');
-            const imgSrc = GROUP_IMAGE[lv.group] || GROUP_IMAGE[0];
-            if (img.src !== imgSrc) {
-                img.style.opacity = '0';
-                setTimeout(() => {
-                    img.src = imgSrc;
-                    img.style.filter = LEVEL_FILTER[lv.n] || 'none';
-                    img.style.opacity = '1';
-                }, 200);
-            } else {
-                img.style.filter = LEVEL_FILTER[lv.n] || 'none';
-            }
+const starWrap=$('scStarWrap');
+if(currentLevel>=6||(next&&next.star!=null)){
+starWrap.classList.remove('hidden');
+const starTarget=next&&next.star!=null?next.star:(lv.star||0);
+const currentStar=pr.starRefLevel>=0?pr.starRefLevel:0;
+const pStar=starTarget>0?Math.min(100,(currentStar/starTarget)*100):100;
+$('scStar').style.width=pStar+'%';
+$('scStarTxt').textContent=starTarget>0?`${currentStar} / ${starTarget}`:'✅';
+}else starWrap.classList.add('hidden');
 
-            // Шкалы
-            const stake = calcStakeUSD();
-            const pr = state.progress;
-            const stakeTarget = next ? next.stake : lv.stake;
-            const dealsTarget = next ? next.deals : lv.deals;
-            const refsTarget = next ? next.refs : lv.refs;
+const eq=state.equipped;
+const gearLv=currentLevel>=1?Math.min(8,Math.max(1,Math.ceil(currentLevel/3))):1;
+const allEquipped=eq.weapon&&eq.body&&eq.legs;
+const allCurrentLv=allEquipped&&eq.weapon.level===gearLv&&eq.body.level===gearLv&&eq.legs.level===gearLv;
+const ready=pStake>=100&&pDeals>=100&&pRefs>=100;
+if(!next)setKnightSpeech('Я — Император!');
+else if(ready&&allCurrentLv)setKnightSpeech('Готов к апу!');
+else if(ready&&!allCurrentLv)setKnightSpeech(`Купи амуницию ур.${gearLv}`);
+else setKnightSpeech('Нужны все 4 шкалы 100%');
+}
+function setKnightSpeech(text){const el=$('knightSpeech');if(el)el.textContent=text}
 
-            const pStake = stakeTarget > 0 ? Math.min(100, (stake / stakeTarget) * 100) : 100;
-            const pDeals = dealsTarget > 0 ? Math.min(100, (pr.deals / dealsTarget) * 100) : 100;
-            const pRefs = refsTarget > 0 ? Math.min(100, (pr.refs / refsTarget) * 100) : 100;
+function clickSlot(slot){
+const it=state.equipped[slot];
+if(it){msg(`${it.icon} ${it.name} — снять?`);return}
+msg('Купи в магазине','info');
+}
 
-            $('scStake').style.width = pStake + '%';
-            $('scDeals').style.width = pDeals + '%';
-            $('scRefs').style.width = pRefs + '%';
-            $('scStakeTxt').textContent = `$${fmt(stake, 2)} / $${fmt(stakeTarget, 2)}`;
-            $('scDealsTxt').textContent = `${pr.deals} / ${dealsTarget}`;
-            $('scRefsTxt').textContent = `${pr.refs} / ${refsTarget}`;
+// МАГАЗИН
+let currentShopTab='gear';
+function renderShop(){showShopTab(currentShopTab)}
 
-            // Звёздный
-            const starWrap = $('scStarWrap');
-            if (currentLevel >= 6 || (next && next.star != null)) {
-                starWrap.style.display = 'block';
-                const starTarget = next && next.star != null ? next.star : (lv.star || 0);
-                const currentStar = pr.starRefLevel >= 0 ? pr.starRefLevel : 0;
-                const pStar = starTarget > 0 ? Math.min(100, (currentStar / starTarget) * 100) : 100;
-                $('scStar').style.width = pStar + '%';
-                if (starTarget > 0) $('scStarTxt').textContent = `${currentStar} / ${starTarget}`;
-                else $('scStarTxt').textContent = '✅';
-            } else {
-                starWrap.style.display = 'none';
-            }
+function showShopTab(tab){
+currentShopTab=tab;
+document.querySelectorAll('#shopTabs .tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
+const c=$('shopContent');
+if(tab==='gear'||tab==='weapons'){
+const currentLevel=calcLevel();
+const gearLv=currentLevel>=1?Math.min(8,Math.max(1,Math.ceil(currentLevel/3))):1;
+const sets={
+1:{weapon:{icon:'🗡️',name:'Ржавый меч',atk:5,pow:10},body:{icon:'👕',name:'Кожаная рубаха',atk:0,pow:15},legs:{icon:'👖',name:'Кожаные штаны',atk:0,pow:10}},
+2:{weapon:{icon:'⚔️',name:'Стальной меч',atk:12,pow:25},body:{icon:'🥋',name:'Кольчуга',atk:2,pow:35},legs:{icon:'👖',name:'Стальные поножи',atk:0,pow:25}},
+3:{weapon:{icon:'🗡️',name:'Рыцарский меч',atk:22,pow:45},body:{icon:'🛡️',name:'Кираса',atk:5,pow:60},legs:{icon:'👖',name:'Латные ноги',atk:2,pow:45}},
+4:{weapon:{icon:'⚔️',name:'Клинок барона',atk:35,pow:70},body:{icon:'🥋',name:'Мифриловый доспех',atk:8,pow:95},legs:{icon:'👖',name:'Мифриловые поножи',atk:3,pow:70}},
+5:{weapon:{icon:'🗡️',name:'Клинок графа',atk:50,pow:110},body:{icon:'🛡️',name:'Доспех дракона',atk:12,pow:150},legs:{icon:'👖',name:'Поножи дракона',atk:6,pow:110}},
+6:{weapon:{icon:'⚔️',name:'Клинок герцога',atk:70,pow:160},body:{icon:'🥋',name:'Доспех бездны',atk:18,pow:220},legs:{icon:'👖',name:'Поножи бездны',atk:8,pow:160}},
+7:{weapon:{icon:'🗡️',name:'Меч короля',atk:100,pow:240},body:{icon:'🛡️',name:'Королевский доспех',atk:25,pow:320},legs:{icon:'👖',name:'Королевские поножи',atk:12,pow:240}},
+8:{weapon:{icon:'⚔️',name:'Экскалибур',atk:150,pow:350},body:{icon:'🥋',name:'Доспех императора',atk:40,pow:500},legs:{icon:'👖',name:'Поножи императора',atk:20,pow:350}},
+};
+const set=sets[gearLv]||sets[1];
+const priceEach=Math.round((gearLv*50)/3);
+const slots=tab==='weapons'?['weapon']:['body','legs'];
+c.innerHTML=`
+<div class="item-card"><div class="item-header"><b>${tab==='weapons'?'🗡️ Оружие':'⚔️ Амуниция'} уровня ${gearLv}</b></div><div class="item-desc">Купи все 3 предмета и надень — откроется ап</div></div>
+${slots.map(slot=>`
+<div class="item-card">
+<div class="item-header"><span class="item-name">${set[slot].icon} ${set[slot].name}</span><span class="rarity common">Ур. ${gearLv}</span></div>
+<div class="item-desc">⚔️ +${set[slot].atk} ATK • 💪 +${set[slot].pow} POW</div>
+<div class="item-footer"><span class="item-price">$${priceEach}</span><button onclick="buyGear('${slot}',${gearLv},${priceEach})">Купить</button></div>
+</div>`).join('')}
+`;
+}else if(tab==='artifacts'){
+c.innerHTML=`
+<div class="item-card"><div class="item-header"><b>💎 Артефакты</b></div><div class="item-desc">Камни, зелья, сферы — усилители</div></div>
+<div class="item-card"><div class="item-header"><span class="item-name">💎 Камень дохода</span><span class="rarity common">Common</span></div><div class="item-desc">+5% к стейку</div><div class="item-footer"><span class="item-price">$10</span><button onclick="msg('Куплено','success')">Купить</button></div></div>
+<div class="item-card"><div class="item-header"><span class="item-name">🧪 Зелье мощи</span><span class="rarity epic">Epic</span></div><div class="item-desc">+50 APR, 12ч</div><div class="item-footer"><span class="item-price">$25</span><button onclick="msg('Куплено','success')">Купить</button></div></div>
+<div class="item-card"><div class="item-header"><span class="item-name">🔮 Сфера бездны</span><span class="rarity legend">Legendary</span></div><div class="item-desc">+10% ко всему</div><div class="item-footer"><span class="item-price">$150</span><button onclick="msg('Куплено','success')">Купить</button></div></div>
+`;
+}else if(tab==='titles'){
+c.innerHTML=`
+<div class="item-card"><div class="item-header"><b>🏷️ Титулы</b></div><div class="item-desc">Купил → перешёл на уровень. 90% денег админу, 10% в фонд</div></div>
+${TITLES.map(t=>`
+<div class="item-card">
+<div class="item-header"><span class="item-name">${t.icon} ${t.name}</span><span class="rarity legend">Уровень ${t.level}</span></div>
+<div class="item-desc">${t.eff} • цена в системе</div>
+<div class="item-footer"><span class="item-price">$${t.price}</span><button onclick="buyTitle('${t.id}')">Купить</button></div>
+</div>`).join('')}
+`;
+}else if(tab==='certs'){
+const p={c3m:25,c6m:50,c1y:100,cinf:250};
+c.innerHTML=`
+<div class="item-card"><div class="item-header"><b>📜 Сертификаты продавца</b></div></div>
+<div class="item-card"><div class="item-header"><span class="item-name">📜 Старт</span><span class="rarity legend">3 мес</span></div><div class="item-desc">До 5 лотов • комиссия 5%</div><div class="item-footer"><span class="item-price">$${p.c3m}</span><button onclick="buyCert('Старт')">Купить</button></div></div>
+<div class="item-card"><div class="item-header"><span class="item-name">📜 Профи</span><span class="rarity legend">6 мес</span></div><div class="item-desc">До 20 лотов • комиссия 3.5% • продажа рефералов</div><div class="item-footer"><span class="item-price">$${p.c6m}</span><button onclick="buyCert('Профи')">Купить</button></div></div>
+<div class="item-card"><div class="item-header"><span class="item-name">📜 Бизнес</span><span class="rarity legend">1 год</span></div><div class="item-desc">До 100 лотов • комиссия 2% • продажа своего титула</div><div class="item-footer"><span class="item-price">$${p.c1y}</span><button onclick="buyCert('Бизнес')">Купить</button></div></div>
+<div class="item-card"><div class="item-header"><span class="item-name">📜 Вечный</span><span class="rarity mythic">VIP</span></div><div class="item-desc">∞ лотов • комиссия 1% • создание копий титула раз в 3 мес</div><div class="item-footer"><span class="item-price">$${p.cinf}</span><button class="gold" onclick="buyCert('Вечный')">Купить</button></div></div>
+`;
+}else if(tab==='refs'){
+c.innerHTML=`
+<div class="item-card"><div class="item-header"><b>👥 Рефералы на продажу</b></div><div class="item-desc">Живые рефералы с историей заработка. Покупка = смена владельца</div></div>
+${REFS_SALE.map(r=>`
+<div class="item-card">
+<div class="item-header"><span class="item-name">👤 ${r.login}</span><span class="rarity rare">Lv.${r.level}</span></div>
+<div class="item-desc">Владелец: ${r.owner} ⭐${r.stars}<br>Заработал: $${r.earned} • ${r.days} дней • ~$${r.avgMonth}/мес</div>
+<div class="item-footer"><span class="item-price">$${r.price}</span><button onclick="buyRef('${r.id}')">Купить</button></div>
+</div>`).join('')}
+`;
+}else if(tab==='auction'){
+c.innerHTML=`
+<div class="item-card"><div class="item-header"><b>🔨 Аукцион</b></div><div class="item-desc">Только с сертификатом Профи и выше</div></div>
+<div class="item-card"><div class="item-header"><span class="item-name">👑 Корона Императора</span><span class="rarity mythic">Mythic</span></div><div class="item-desc">Текущая ставка: $1250 • Лидер: @whale_777 • 6ч</div><div class="item-footer"><span class="item-price">$1250</span><button onclick="msg('Ставка принята','success')">Ставка</button></div></div>
+<div class="item-card"><div class="item-header"><span class="item-name">🗡️ Экскалибур</span><span class="rarity mythic">Mythic</span></div><div class="item-desc">Текущая ставка: $920 • Лидер: @player_V • 12ч</div><div class="item-footer"><span class="item-price">$920</span><button onclick="msg('Ставка принята','success')">Ставка</button></div></div>
+`;
+}
+}
 
-            // Подсказка
-            const eq = state.equipped;
-            const gearLv = currentLevel >= 1 ? Math.min(8, Math.max(1, Math.ceil(currentLevel / 3))) : 1;
-            const allEquipped = eq.weapon && eq.body && eq.legs;
-            const allCurrentLv = allEquipped && eq.weapon.level === gearLv && eq.body.level === gearLv && eq.legs.level === gearLv;
-            const ready = pStake >= 100 && pDeals >= 100 && pRefs >= 100;
-            if (!next) setKnightSpeech('Я — Император!');
-            else if (ready && allCurrentLv) setKnightSpeech('Готов к апу!');
-            else if (ready && !allCurrentLv) setKnightSpeech(`Купи амуницию ур.${gearLv}`);
-            else setKnightSpeech(`Нужны все 4 шкалы 100%`);
-        }
+function buyGear(slot,lvN,price){
+if(state.balances.TUSD<price){msg('Недостаточно TUSD','error');return}
+state.balances.TUSD-=price;
+const sets={
+1:{weapon:{icon:'🗡️',name:'Ржавый меч',atk:5,pow:10},body:{icon:'👕',name:'Кожаная рубаха',atk:0,pow:15},legs:{icon:'👖',name:'Кожаные штаны',atk:0,pow:10}},
+};
+const set=sets[lvN]||sets[1];
+state.equipped[slot]={...set[slot],slot,level:lvN,atk:set[slot].atk,pow:set[slot].pow};
+saveState();renderHome();showShopTab(currentShopTab);
+msg(`✅ ${set[slot].name} надето`,'success');
+}
 
-        function setKnightSpeech(text) {
-            const el = $('knightSpeech');
-            if (el) el.textContent = text;
-        }
+function buyTitle(id){
+const t=TITLES.find(x=>x.id===id);
+if(!t)return;
+if(state.balances.TUSD<t.price){msg('Недостаточно TUSD','error');return}
+if(!confirm(`Купить титул ${t.name} за $${t.price}?\n\nВы сразу станете уровня ${t.level}.\n90% ($${(t.price*0.9).toFixed(2)}) уйдёт админу, 10% ($${(t.price*0.1).toFixed(2)}) в фонд.`))return;
+state.balances.TUSD-=t.price;
+state.activeTitle={id:t.id,name:t.name,level:t.level};
+state.user.isPremium=true;
+saveState();renderHome();
+msg(`👑 Вы теперь ${t.name}!`,'success');
+}
 
-        // ==================== МАГАЗИН ====================
-        let currentShopTab = 'gear';
-        function renderShop() {
-            showShopTab(currentShopTab);
-        }
+function buyCert(tier){
+const prices={'Старт':25,'Профи':50,'Бизнес':100,'Вечный':250};
+const p=prices[tier];
+if(state.balances.TUSD<p){msg('Недостаточно TUSD','error');return}
+state.balances.TUSD-=p;
+state.activeCert=tier;
+if(tier==='Вечный')state.user.isPremium=true;
+saveState();renderHome();
+msg(`✅ Сертификат "${tier}" активирован`,'success');
+}
 
-        function showShopTab(tab) {
-            currentShopTab = tab;
-            document.querySelectorAll('#shopTabs .shop-tab').forEach(b => {
-                b.classList.toggle('active', b.dataset.tab === tab);
-            });
-            const container = $('shopContent');
-            if (tab === 'gear') {
-                const currentLevel = calcLevel();
-                const gearLv = currentLevel >= 1 ? Math.min(8, Math.max(1, Math.ceil(currentLevel / 3))) : 1;
-                const sets = {
-                    1: { weapon: { icon: '🗡️', name: 'Ржавый меч', atk: 5, pow: 10 }, body: { icon: '👕', name: 'Кожаная рубаха', atk: 0, pow: 15 }, legs: { icon: '👖', name: 'Кожаные штаны', atk: 0, pow: 10 } },
-                    2: { weapon: { icon: '⚔️', name: 'Стальной меч', atk: 12, pow: 25 }, body: { icon: '🥋', name: 'Кольчуга', atk: 2, pow: 35 }, legs: { icon: '👖', name: 'Стальные поножи', atk: 0, pow: 25 } },
-                    // ... можно добавить остальные
-                };
-                const set = sets[gearLv] || sets[1];
-                const priceEach = Math.round((gearLv * 50) / 3);
-                container.innerHTML = `
-                    <div class="item-card">
-                        <div class="item-header"><b>Амуниция уровня ${gearLv}</b></div>
-                        <div class="item-desc">Купи все 3 предмета текущего уровня, надень — откроется ап</div>
-                    </div>
-                    ${['weapon', 'body', 'legs'].map(slot => `
-                        <div class="item-card">
-                            <div class="item-header">
-                                <span class="item-name">${set[slot].icon} ${set[slot].name}</span>
-                                <span class="rarity common">Ур. ${gearLv}</span>
-                            </div>
-                            <div class="item-desc">⚔️ +${set[slot].atk} ATK • 💪 +${set[slot].pow} POW</div>
-                            <div class="item-footer">
-                                <span class="item-price">$${priceEach}</span>
-                                <button onclick="buyGear('${slot}', ${gearLv})">Купить</button>
-                            </div>
-                        </div>
-                    `).join('')}
-                `;
-            } else if (tab === 'titles') {
-                const titles = [
-                    { id: 't1', name: 'Лорд', icon: '🎩', price: 30, eff: '+1% к рефералке', rarity: 'rare' },
-                    { id: 't2', name: 'Барон', icon: '🎩', price: 80, eff: '+2% к рефералке', rarity: 'epic' },
-                    { id: 't3', name: 'Король Севера', icon: '👑', price: 300, eff: '+5% к рефералке', rarity: 'legend' },
-                    { id: 't4', name: 'Император', icon: '🌟', price: 1500, eff: '+10% ко всему', rarity: 'mythic' },
-                ];
-                container.innerHTML = titles.map(t => `
-                    <div class="item-card">
-                        <div class="item-header">
-                            <span class="item-name">${t.icon} ${t.name}</span>
-                            <span class="rarity ${t.rarity}">${t.rarity}</span>
-                        </div>
-                        <div class="item-desc">${t.eff}</div>
-                        <div class="item-footer">
-                            <span class="item-price">$${t.price}</span>
-                            <button onclick="buyTitle('${t.id}')">Купить</button>
-                        </div>
-                    </div>
-                `).join('');
-            } else if (tab === 'artifacts') {
-                container.innerHTML = `
-                    <div class="item-card">
-                        <div class="item-header"><b>💎 Артефакты</b></div>
-                        <div class="item-desc">Камни, зелья, сферы — усилители для твоего рыцаря</div>
-                    </div>
-                    <div class="item-card">
-                        <div class="item-header"><span class="item-name">💎 Камень дохода</span><span class="rarity common">Common</span></div>
-                        <div class="item-desc">+5% к стейку</div>
-                        <div class="item-footer"><span class="item-price">$10</span><button onclick="msg('Куплено')">Купить</button></div>
-                    </div>
-                    <div class="item-card">
-                        <div class="item-header"><span class="item-name">🧪 Зелье мощи</span><span class="rarity epic">Epic</span></div>
-                        <div class="item-desc">+50 APR, 12ч</div>
-                        <div class="item-footer"><span class="item-price">$25</span><button onclick="msg('Куплено')">Купить</button></div>
-                    </div>
-                `;
-            } else if (tab === 'certs') {
-                const prices = { c3m: 25, c6m: 50, c1y: 100, cinf: 250 };
-                container.innerHTML = `
-                    <div class="item-card">
-                        <div class="item-header"><b>📜 Сертификаты продавца</b></div>
-                        <div class="item-desc">Открывают P2P-торговлю, скидку и расширенный склад</div>
-                    </div>
-                    <div class="item-card">
-                        <div class="item-header"><span class="item-name">📜 Старт</span><span class="rarity legend">3 мес</span></div>
-                        <div class="item-desc">До 5 лотов • комиссия 5%</div>
-                        <div class="item-footer"><span class="item-price">$${prices.c3m}</span><button onclick="msg('Куплено')">Купить</button></div>
-                    </div>
-                    <div class="item-card">
-                        <div class="item-header"><span class="item-name">📜 Профи</span><span class="rarity legend">6 мес</span></div>
-                        <div class="item-desc">До 20 лотов • комиссия 3.5%</div>
-                        <div class="item-footer"><span class="item-price">$${prices.c6m}</span><button onclick="msg('Куплено')">Купить</button></div>
-                    </div>
-                    <div class="item-card">
-                        <div class="item-header"><span class="item-name">📜 Бизнес</span><span class="rarity legend">1 год</span></div>
-                        <div class="item-desc">До 100 лотов • комиссия 2%</div>
-                        <div class="item-footer"><span class="item-price">$${prices.c1y}</span><button onclick="msg('Куплено')">Купить</button></div>
-                    </div>
-                    <div class="item-card">
-                        <div class="item-header"><span class="item-name">📜 Бессрочный</span><span class="rarity mythic">VIP</span></div>
-                        <div class="item-desc">Без лимита • комиссия 1% • VIP-поддержка</div>
-                        <div class="item-footer"><span class="item-price">$${prices.cinf}</span><button onclick="msg('Куплено')">Купить</button></div>
-                    </div>
-                `;
-            } else if (tab === 'auction') {
-                container.innerHTML = `
-                    <div class="item-card">
-                        <div class="item-header"><b>🔨 Аукцион</b></div>
-                        <div class="item-desc">Здесь будут лоты с таймерами, ставками и кнопкой «Купить сейчас»</div>
-                    </div>
-                    <div class="item-card">
-                        <div class="item-header"><span class="item-name">👑 Корона Императора</span><span class="rarity mythic">Mythic</span></div>
-                        <div class="item-desc">Текущая ставка: $1250 • Лидер: @whale_777</div>
-                        <div class="item-footer"><span class="item-price">$1250</span><button onclick="msg('Ставка принята')">Ставка</button></div>
-                    </div>
-                `;
-            }
-        }
+function buyRef(id){
+const r=REFS_SALE.find(x=>x.id===id);
+if(!r)return;
+if(state.balances.TUSD<r.price){msg('Недостаточно TUSD','error');return}
+state.balances.TUSD-=r.price;
+state.progress.refs+=1;
+saveState();renderHome();
+msg(`✅ Реферал ${r.login} куплен`,'success');
+}
 
-        // ==================== ДОХОД ====================
-        let currentIncomeTab = 'p2p';
-        function renderIncome() {
-            showIncomeTab(currentIncomeTab);
-        }
-        function showIncomeTab(tab) {
-            currentIncomeTab = tab;
-            document.querySelectorAll('#incomeTabs .shop-tab').forEach(b => {
-                b.classList.toggle('active', b.dataset.tab === tab);
-            });
-            const container = $('incomeContent');
-            if (tab === 'p2p') {
-                container.innerHTML = `
-                    <div class="item-card">
-                        <div class="item-header"><b>🤝 P2P Маркет</b></div>
-                        <div class="item-desc">Обменивай токены, артефакты, рефералов и титулы</div>
-                    </div>
-                    <div class="item-card">
-                        <div class="item-header"><span class="item-name">🥇 TG → TUSD</span><span class="rarity legend">Продавец</span></div>
-                        <div class="item-desc">100 TG за $10000 • @seller_X ⭐⭐⭐⭐⭐</div>
-                        <div class="item-footer"><span class="item-price">$10000</span><button onclick="msg('Сделка создана')">Купить</button></div>
-                    </div>
-                    <div class="item-card">
-                        <div class="item-header"><span class="item-name">👥 Реферал @ref_1024</span><span class="rarity epic">Lv.3</span></div>
-                        <div class="item-desc">Заработал $120 • 45 дней • @whale_777 ⭐⭐⭐⭐</div>
-                        <div class="item-footer"><span class="item-price">$40</span><button onclick="msg('Реферал куплен')">Купить</button></div>
-                    </div>
-                `;
-            } else if (tab === 'swap') {
-                container.innerHTML = `
-                    <div class="item-card">
-                        <div class="item-header"><b>🔄 Swap</b></div>
-                        <div class="item-desc">Меняй токены по курсу $1 TG = $100</div>
-                    </div>
-                    <div style="background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:14px;">
-                        <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--muted); margin-bottom:6px;">
-                            <span>Отдаёте</span><span>Баланс: ${fmt(state.balances.TG)} TG</span>
-                        </div>
-                        <div style="display:flex; gap:8px; align-items:center; margin-bottom:8px;">
-                            <input type="number" id="swapFrom" placeholder="0.0" style="flex:1; background:transparent; border:0; color:#fff; font-size:20px; font-weight:700; outline:none;">
-                            <span style="font-weight:700;">TG</span>
-                        </div>
-                        <div style="text-align:center; color:var(--muted); margin:8px 0;">⇅</div>
-                        <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--muted); margin-bottom:6px;">
-                            <span>Получаете</span><span>≈ $0</span>
-                        </div>
-                        <div style="display:flex; gap:8px; align-items:center;">
-                            <input type="number" id="swapTo" placeholder="0.0" readonly style="flex:1; background:transparent; border:0; color:#fff; font-size:20px; font-weight:700; outline:none;">
-                            <span style="font-weight:700;">TUSD</span>
-                        </div>
-                    </div>
-                    <button class="admin-btn primary" style="width:100%; margin-top:12px;" onclick="msg('Swap выполнен')">Обменять</button>
-                `;
-            } else if (tab === 'staking') {
-                container.innerHTML = `
-                    <div class="item-card">
-                        <div class="item-header"><b>💎 Стейкинг</b></div>
-                        <div class="item-desc">Застейкай токены и получай доход из фонда наград</div>
-                    </div>
-                    ${['TG', 'TUSD', 'AI'].map(sym => {
-                        const staked = n(state.staked[sym]);
-                        const balance = n(state.balances[sym]);
-                        const price = sym === 'TG' ? TG_PRICE : sym === 'AI' ? 0.01 : 1;
-                        const daily = staked * 0.02 / 30;
-                        return `
-                            <div class="item-card">
-                                <div class="item-header"><span class="item-name">${sym === 'TG' ? '🥇' : sym === 'TUSD' ? '💵' : '🤖'} ${sym}</span></div>
-                                <div class="item-desc">В кошельке: ${fmt(balance, 4)} • В стейке: ${fmt(staked, 4)}</div>
-                                <div style="font-size:11px; color:var(--green); margin-top:4px;">+$${fmt(daily, 8)} / день</div>
-                                <div class="item-footer" style="margin-top:8px;">
-                                    <button onclick="msg('Застейкано')">Застейкать</button>
-                                    <button class="gold" onclick="msg('Собрано')">Собрать</button>
-                                </div>
-                            </div>
-                        `;
-                    }).join('')}
-                `;
-            } else if (tab === 'checkin') {
-                container.innerHTML = `
-                    <div class="item-card">
-                        <div class="item-header"><b>🔥 Чекин — 30 дней</b></div>
-                        <div class="item-desc">Заходи каждый день и получай награды</div>
-                        <div style="text-align:center; font-size:36px; font-weight:800; color:var(--gold); margin:12px 0;">12</div>
-                        <div style="text-align:center; font-size:11px; color:var(--muted);">дней подряд</div>
-                        <button class="admin-btn gold" style="width:100%; margin-top:12px;" onclick="msg('День 13 получен')">🔥 Получить день 13</button>
-                    </div>
-                `;
-            } else if (tab === 'tasks') {
-                container.innerHTML = `
-                    <div class="item-card">
-                        <div class="item-header"><b>📋 Задания</b></div>
-                        <div class="item-desc">Выполняй задания и получай TUSD</div>
-                    </div>
-                    <div class="item-card">
-                        <div class="item-header"><span class="item-name">📢 Подписаться на канал</span><span class="item-price">+0.5 TUSD</span></div>
-                        <button class="admin-btn primary" style="width:100%; margin-top:8px;" onclick="msg('Выполнено')">Выполнить</button>
-                    </div>
-                    <div class="item-card">
-                        <div class="item-header"><span class="item-name">🤖 Подписаться на бота</span><span class="item-price">+1 TUSD</span></div>
-                        <button class="admin-btn primary" style="width:100%; margin-top:8px;" onclick="msg('Выполнено')">Выполнить</button>
-                    </div>
-                `;
-            } else if (tab === 'ads') {
-                container.innerHTML = `
-                    <div class="item-card">
-                        <div class="item-header"><b>📢 Реклама</b></div>
-                        <div class="item-desc">Смотри рекламу и зарабатывай, или закажи свою</div>
-                    </div>
-                    <div class="item-card">
-                        <div class="item-header"><span class="item-name">🎬 Смотреть видео</span><span class="item-price">+0.01 TUSD</span></div>
-                        <button class="admin-btn primary" style="width:100%; margin-top:8px;" onclick="msg('Реклама просмотрена')">Смотреть</button>
-                    </div>
-                    <div class="item-card">
-                        <div class="item-header"><b>📢 Заказать рекламу</b></div>
-                        <div class="item-desc">Баннер, видео, задание или ссылка</div>
-                        <button class="admin-btn gold" style="width:100%; margin-top:8px;" onclick="msg('Открыть форму заказа')">Заказать</button>
-                    </div>
-                `;
-            }
-        }
+// ДОХОД
+let currentIncomeTab='p2p';
+function renderIncome(){showIncomeTab(currentIncomeTab)}
+function showIncomeTab(tab){
+currentIncomeTab=tab;
+document.querySelectorAll('#incomeTabs .tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
+const c=$('incomeContent');
+if(tab==='p2p'){
+c.innerHTML=`
+<div class="item-card"><div class="item-header"><b>💱 P2P Маркет</b></div><div class="item-desc">Только токены. Свои сделки подсвечены золотом</div></div>
+${P2P_TOKENS.map(o=>`
+<div class="item-card ${o.my?'mine':''}">
+<div class="item-header"><span class="item-name">${o.from} → ${o.to}</span><span class="rarity rare">⭐${o.stars}</span></div>
+<div class="item-desc">Отдаю: ${fmt(o.fromAmt)} ${o.from} • Получаю: ${fmt(o.toAmt)} ${o.to}<br>Продавец: ${o.seller}</div>
+<div class="item-footer"><span class="item-price">$${fmt(o.toAmt,0)}</span>${o.my?`<button class="red" onclick="msg('Отменено')">Отменить</button>`:`<button onclick="msg('Сделка создана','success')">Купить</button>`}</div>
+</div>`).join('')}
+`;
+}else if(tab==='swap'){
+c.innerHTML=`
+<div class="item-card"><div class="item-header"><b>🔄 Swap</b></div><div class="item-desc">Обмен токенов по курсу 1 TG = $100</div></div>
+<div style="background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:14px">
+<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px"><span>Отдаёте</span><span>Баланс: ${fmt(state.balances.TG)} TG</span></div>
+<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px"><input type="number" placeholder="0.0" style="flex:1;background:transparent;border:0;color:#fff;font-size:20px;font-weight:700;outline:none"><span style="font-weight:700">TG</span></div>
+<div style="text-align:center;color:var(--muted);margin:8px 0">⇅</div>
+<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px"><span>Получаете</span><span>≈ $0</span></div>
+<div style="display:flex;gap:8px;align-items:center"><input type="number" placeholder="0.0" readonly style="flex:1;background:transparent;border:0;color:#fff;font-size:20px;font-weight:700;outline:none"><span style="font-weight:700">TUSD</span></div>
+</div>
+<button class="admin-btn primary" style="width:100%;margin-top:12px" onclick="msg('Swap выполнен','success')">Обменять</button>
+`;
+}else if(tab==='staking'){
+c.innerHTML=`
+<div class="item-card"><div class="item-header"><b>💎 Стейкинг</b></div><div class="item-desc">2% в месяц • Сбор раз в 24 часа</div></div>
+${['TG','TUSD','AI'].map(sym=>{
+const staked=n(state.staked[sym]);
+const balance=n(state.balances[sym]);
+const daily=staked*0.02/30;
+const icon=sym==='TG'?'🥇':sym==='TUSD'?'💵':'🤖';
+return `<div class="item-card">
+<div class="item-header"><span class="item-name">${icon} ${sym}</span></div>
+<div class="item-desc">В кошельке: ${fmt(balance,4)} • В стейке: ${fmt(staked,4)}</div>
+<div style="font-size:11px;color:var(--green);margin-top:4px">+$${fmt(daily,8)} / день</div>
+<div class="item-footer" style="margin-top:8px"><button onclick="msg('Застейкано','success')">Застейкать</button><button class="gold" onclick="msg('Собрано','success')">Собрать</button></div>
+</div>`}).join('')}
+`;
+}else if(tab==='checkin'){
+c.innerHTML=`
+<div class="item-card"><div class="item-header"><b>🔥 Чекин — 30 дней</b></div><div class="item-desc">Заходи каждый день и получай награды</div><div style="text-align:center;font-size:36px;font-weight:800;color:var(--gold);margin:12px 0">12</div><div style="text-align:center;font-size:11px;color:var(--muted)">дней подряд</div><button class="admin-btn gold" style="width:100%;margin-top:12px" onclick="msg('День 13 получен','success')">🔥 Получить день 13</button></div>
+`;
+}else if(tab==='tasks'){
+c.innerHTML=`
+<div class="item-card"><div class="item-header"><b>📋 Задания</b></div></div>
+<div class="item-card"><div class="item-header"><span class="item-name">📢 Подписаться на канал</span><span class="item-price">+0.5 TUSD</span></div><button class="admin-btn primary" style="width:100%;margin-top:8px" onclick="msg('Выполнено','success')">Выполнить</button></div>
+<div class="item-card"><div class="item-header"><span class="item-name">🤖 Подписаться на бота</span><span class="item-price">+1 TUSD</span></div><button class="admin-btn primary" style="width:100%;margin-top:8px" onclick="msg('Выполнено','success')">Выполнить</button></div>
+<div class="item-card"><div class="item-header"><span class="item-name">👥 Пригласить друга</span><span class="item-price">+2 TUSD</span></div><button class="admin-btn primary" style="width:100%;margin-top:8px" onclick="msg('Выполнено','success')">Выполнить</button></div>
+`;
+}else if(tab==='ads'){
+c.innerHTML=`
+<div class="item-card"><div class="item-header"><b>📢 Реклама</b></div><div class="item-desc">Смотри и зарабатывай, или закажи свою</div></div>
+<div class="item-card"><div class="item-header"><span class="item-name">🎬 Смотреть видео</span><span class="item-price">+0.01 TUSD</span></div><button class="admin-btn primary" style="width:100%;margin-top:8px" onclick="msg('Реклама просмотрена','success')">Смотреть</button></div>
+<div class="item-card"><div class="item-header"><b>📢 Заказать рекламу</b></div><div class="item-desc">Баннер, видео, задание или ссылка</div><button class="admin-btn gold" style="width:100%;margin-top:8px" onclick="msg('Открыть форму заказа')">Заказать</button></div>
+`;
+}
+}
 
-        // ==================== ДРУЗЬЯ ====================
-        function renderFriends() {
-            $('refList').innerHTML = `
-                <div style="padding:8px 0; border-bottom:1px solid var(--line);">👤 @friend_1 • Lv.2 • +$12</div>
-                <div style="padding:8px 0;">👤 @friend_2 • Lv.4 • +$88</div>
-            `;
-        }
+// АДМИН
+function renderAdminPanel(){
+$('adStakeUSD').value=state.progress.stakeUSD||calcStakeUSD();
+$('adDeals').value=state.progress.deals;
+$('adRefs').value=state.progress.refs;
+$('adStarRef').value=state.progress.starRefLevel;
+$('adTUSD').value=state.balances.TUSD;
+$('adTG').value=state.balances.TG;
+$('adAI').value=state.balances.AI;
+$('adVK').value=state.balances.VKCOIN;
+$('stTUSD').value=state.staked.TUSD;
+$('stTG').value=state.staked.TG;
+$('stAI').value=state.staked.AI;
+if(state.adminSettings){
+$('adRoyalty').value=state.adminSettings.royalty;
+$('adCopyInterval').value=state.adminSettings.copyInterval;
+}
+}
 
-        // ==================== АДМИН-ПАНЕЛЬ ====================
-        function renderAdminPanel() {
-            // Обновляем поля из state
-            $('adStakeUSD').value = state.progress.stakeUSD || calcStakeUSD();
-            $('adDeals').value = state.progress.deals;
-            $('adRefs').value = state.progress.refs;
-            $('adStarRef').value = state.progress.starRefLevel;
-            $('adTUSD').value = state.balances.TUSD;
-            $('adTG').value = state.balances.TG;
-            $('adAI').value = state.balances.AI;
-            $('adVK').value = state.balances.VKCOIN;
-            $('stTUSD').value = state.staked.TUSD;
-            $('stTG').value = state.staked.TG;
-            $('stAI').value = state.staked.AI;
-            // Титулы в select
-            const sel = $('adActiveTitle');
-            sel.innerHTML = '<option value="">— Нет (по уровню) —</option>';
-            // Можно добавить титулы из массива
-        }
+function adminLogin(){
+if($('adminPwd').value==='admin'){
+$('adminLogin').classList.add('hidden');
+$('adminPanel').classList.remove('hidden');
+renderAdminPanel();
+msg('Добро пожаловать','success');
+}else msg('Неверный пароль','error');
+}
 
-        function adminLogin() {
-            const pwd = $('adminPwd').value;
-            if (pwd === 'admin') {
-                $('adminLogin').classList.add('hidden');
-                $('adminPanel').classList.remove('hidden');
-                renderAdminPanel();
-                msg('Добро пожаловать в админку', 'success');
-            } else {
-                msg('Неверный пароль', 'error');
-            }
-        }
+function adminSave(){
+state.progress.stakeUSD=n($('adStakeUSD').value);
+state.progress.deals=n($('adDeals').value);
+state.progress.refs=n($('adRefs').value);
+state.progress.starRefLevel=parseInt($('adStarRef').value);
+state.balances.TUSD=n($('adTUSD').value);
+state.balances.TG=n($('adTG').value);
+state.balances.AI=n($('adAI').value);
+state.balances.VKCOIN=n($('adVK').value);
+state.staked.TUSD=n($('stTUSD').value);
+state.staked.TG=n($('stTG').value);
+state.staked.AI=n($('stAI').value);
+state.adminSettings={royalty:n($('adRoyalty').value),copyInterval:n($('adCopyInterval').value)};
+saveState();renderHome();
+msg('💾 Сохранено','success');
+}
 
-        function adminSave() {
-            state.progress.stakeUSD = n($('adStakeUSD').value);
-            state.progress.deals = n($('adDeals').value);
-            state.progress.refs = n($('adRefs').value);
-            state.progress.starRefLevel = parseInt($('adStarRef').value);
-            state.balances.TUSD = n($('adTUSD').value);
-            state.balances.TG = n($('adTG').value);
-            state.balances.AI = n($('adAI').value);
-            state.balances.VKCOIN = n($('adVK').value);
-            state.staked.TUSD = n($('stTUSD').value);
-            state.staked.TG = n($('stTG').value);
-            state.staked.AI = n($('stAI').value);
-            saveState();
-            renderHome();
-            msg('Сохранено', 'success');
-        }
+function adminLevelUp(){
+const cur=calcLevel();
+const next=getNextLevel(cur);
+if(!next){msg('Максимум','error');return}
+state.progress.deals=Math.max(state.progress.deals,next.deals);
+state.progress.refs=Math.max(state.progress.refs,next.refs);
+if(next.star!=null)state.progress.starRefLevel=Math.max(state.progress.starRefLevel,next.star);
+const needUSD=next.stake;
+const haveUSD=calcStakeUSD();
+if(haveUSD<needUSD)state.staked.TG=n(state.staked.TG)+(needUSD-haveUSD)/TG_PRICE;
+saveState();renderHome();renderAdminPanel();
+msg(`⬆️ ${next.name}!`,'success');
+}
 
-        function adminLevelUp() {
-            const cur = calcLevel();
-            const next = getNextLevel(cur);
-            if (!next) { msg('Максимальный уровень', 'error'); return; }
-            state.progress.deals = Math.max(state.progress.deals, next.deals);
-            state.progress.refs = Math.max(state.progress.refs, next.refs);
-            if (next.star != null) state.progress.starRefLevel = Math.max(state.progress.starRefLevel, next.star);
-            const staked = state.staked;
-            const needUSD = next.stake;
-            const haveUSD = calcStakeUSD();
-            if (haveUSD < needUSD) {
-                staked.TG = n(staked.TG) + (needUSD - haveUSD) / TG_PRICE;
-            }
-            saveState();
-            renderHome();
-            renderAdminPanel();
-            msg(`⬆️ ${next.name} — новый уровень!`, 'success');
-        }
+function adminLevelDown(){
+const cur=calcLevel();
+if(cur<=0){msg('Минимум','error');return}
+const prev=getLevelData(cur-1);
+state.progress.deals=prev.deals;
+state.progress.refs=prev.refs;
+state.progress.starRefLevel=prev.star==null?0:prev.star;
+saveState();renderHome();renderAdminPanel();
+msg('Уровень понижен');
+}
 
-        function adminLevelDown() {
-            const cur = calcLevel();
-            if (cur <= 0) { msg('Минимум', 'error'); return; }
-            const prev = getLevelData(cur - 1);
-            state.progress.deals = prev.deals;
-            state.progress.refs = prev.refs;
-            state.progress.starRefLevel = prev.star == null ? 0 : prev.star;
-            saveState();
-            renderHome();
-            renderAdminPanel();
-            msg('Уровень понижен');
-        }
+function adminFillMax(){
+const cur=calcLevel();
+const next=getNextLevel(cur);
+if(!next){msg('Максимум','error');return}
+state.progress.deals=next.deals;
+state.progress.refs=next.refs;
+if(next.star!=null)state.progress.starRefLevel=next.star;
+const needUSD=next.stake;
+const haveUSD=calcStakeUSD();
+if(haveUSD<needUSD)state.staked.TG=n(state.staked.TG)+(needUSD-haveUSD)/TG_PRICE;
+saveState();renderHome();renderAdminPanel();
+msg('🎯 Заполнено','success');
+}
 
-        function adminFillMax() {
-            const cur = calcLevel();
-            const next = getNextLevel(cur);
-            if (!next) { msg('Максимум', 'error'); return; }
-            state.progress.deals = next.deals;
-            state.progress.refs = next.refs;
-            if (next.star != null) state.progress.starRefLevel = next.star;
-            const staked = state.staked;
-            const needUSD = next.stake;
-            const haveUSD = calcStakeUSD();
-            if (haveUSD < needUSD) {
-                staked.TG = n(staked.TG) + (needUSD - haveUSD) / TG_PRICE;
-            }
-            saveState();
-            renderHome();
-            renderAdminPanel();
-            msg('Заполнено по максимуму');
-        }
+function resetDemo(){
+if(confirm('Сбросить всё демо?')){
+localStorage.removeItem(LS_KEY);
+location.reload();
+}
+}
 
-        function resetDemo() {
-            if (confirm('Сбросить всё демо?')) {
-                localStorage.removeItem(LS_KEY);
-                location.reload();
-            }
-        }
+// ИНИЦИАЛИЗАЦИЯ
+function init(){
+loadState();
+renderHome();
+goView('home');
+}
 
-        // ==================== ПОКУПКИ ====================
-        function buyGear(slot, lvN) {
-            const price = Math.round((lvN * 50) / 3);
-            if (state.balances.TUSD < price) { msg('Недостаточно TUSD', 'error'); return; }
-            state.balances.TUSD -= price;
-            // Упрощённо: просто одеваем
-            const sets = {
-                1: { weapon: { icon: '🗡️', name: 'Ржавый меч', atk: 5, pow: 10 }, body: { icon: '👕', name: 'Кожаная рубаха', atk: 0, pow: 15 }, legs: { icon: '👖', name: 'Кожаные штаны', atk: 0, pow: 10 } },
-            };
-            const set = sets[lvN] || sets[1];
-            state.equipped[slot] = { ...set[slot], slot, level: lvN, atk: set[slot].atk, pow: set[slot].pow };
-            saveState();
-            renderHome();
-            showShopTab('gear');
-            msg(`Куплено: ${set[slot].name}`, 'success');
-        }
-
-        function buyTitle(id) {
-            const titles = {
-                t1: { name: 'Лорд', icon: '🎩', price: 30 },
-                t2: { name: 'Барон', icon: '🎩', price: 80 },
-                t3: { name: 'Король Севера', icon: '👑', price: 300 },
-                t4: { name: 'Император', icon: '🌟', price: 1500 },
-            };
-            const t = titles[id];
-            if (!t) return;
-            if (state.balances.TUSD < t.price) { msg('Недостаточно TUSD', 'error'); return; }
-            state.balances.TUSD -= t.price;
-            state.activeTitle = t;
-            saveState();
-            renderHome();
-            msg(`Титул "${t.name}" активирован`, 'success');
-        }
-
-        // ==================== СТАРТ ====================
-        function init() {
-            loadState();
-            renderHome();
-            // Показываем вкладку Дом
-            goView('home');
-        }
-
-        // Запуск при загрузке
-        document.addEventListener('DOMContentLoaded', init);
-    </script>
+document.addEventListener('DOMContentLoaded',init);
+</script>
 </body>
 </html>
