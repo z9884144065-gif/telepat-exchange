@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TELEPAT — Exchange & P2P Demo</title>
+<style>
+  :root{
+    --bg:#0a0e17; --bg2:#111827; --card:#151b2b; --card2:#1c2437;
+    --border:#243049; --text:#e6ecf5; --muted:#8593ab;
+    --accent:#4f8cff; --accent2:#7c5cff; --green:#22c55e; --red:#ef4444;
+    --gold:#f5b301; --purple:#a855f7; --cyan:#22d3ee;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+  input,select{font-family:inherit;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:8px;outline:none;width:100%}
+  input:focus,select:focus{border-color:var(--accent)}
+  .hidden{display:none!important}
+
+  /* HEADER */
+  header{position:sticky;top:0;z-index:50;background:rgba(10,14,23,.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+  .hwrap{max-width:1280px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+  .logo{font-weight:800;font-size:20px;letter-spacing:.5px;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .balance-chip{display:flex;gap:8px;align-items:center;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:13px}
+  .balance-chip b{color:var(--gold)}
+  .spacer{flex:1}
+  .icon-btn{width:38px;height:38px;border-radius:10px;background:var(--card);border:1px solid var(--border);display:grid;place-items:center;font-size:16px;transition:.2s}
+  .icon-btn:hover{border-color:var(--accent);background:var(--card2)}
+
+  /* NAV */
+  nav{border-bottom:1px solid var(--border);background:var(--bg2)}
+  .navwrap{max-width:1280px;margin:0 auto;padding:0 20px;display:flex;gap:4px;overflow-x:auto}
+  .navtab{padding:14px 16px;font-size:14px;font-weight:600;color:var(--muted);border-bottom:2px solid transparent;white-space:nowrap;transition:.2s}
+  .navtab:hover{color:var(--text)}
+  .navtab.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+  /* MAIN */
+  main{max-width:1280px;margin:0 auto;padding:24px 20px 80px}
+  .view{animation:fade .25s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  .grid{display:grid;gap:16px}
+  .g2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+  .g3{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+  .g4{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
+
+  .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px}
+  .card h3{font-size:14px;color:var(--muted);font-weight:600;margin-bottom:12px;text-transform:uppercase;letter-spacing:.5px}
+  .card .big{font-size:26px;font-weight:800}
+  .card .sub{font-size:12px;color:var(--muted);margin-top:4px}
+
+  /* SUBTABS */
+  .subtabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px}
+  .subtab{padding:8px 14px;border-radius:20px;background:var(--card);border:1px solid var(--border);font-size:13px;font-weight:600;color:var(--muted)}
+  .subtab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+  /* ITEMS */
+  .item{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px;transition:.2s}
+  .item:hover{border-color:var(--accent);transform:translateY(-2px)}
+  .item .rarity{font-size:10px;text-transform:uppercase;letter-spacing:.8px;font-weight:700;padding:3px 8px;border-radius:4px;width:fit-content}
+  .r-common{background:#334155;color:#cbd5e1}
+  .r-rare{background:#1e3a8a;color:#93c5fd}
+  .r-epic{background:#4c1d95;color:#c4b5fd}
+  .r-legend{background:linear-gradient(90deg,#b45309,#f59e0b);color:#fff}
+  .r-mythic{background:linear-gradient(90deg,#a21caf,#ec4899,#f59e0b);color:#fff}
+  .item .name{font-weight:700;font-size:15px}
+  .item .effect{font-size:12px;color:var(--muted);min-height:32px}
+  .item .price{font-weight:800;color:var(--gold);font-size:16px}
+  .item .price small{color:var(--muted);font-weight:400;font-size:11px}
+  .item .row{display:flex;gap:8px;align-items:center;justify-content:space-between}
+
+  .btn{padding:9px 14px;border-radius:9px;font-weight:600;font-size:13px;transition:.2s;border:1px solid var(--border);background:var(--card2)}
+  .btn:hover{border-color:var(--accent)}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  .btn.primary:hover{background:#3b76e8}
+  .btn.green{background:var(--green);border-color:var(--green);color:#fff}
+  .btn.red{background:var(--red);border-color:var(--red);color:#fff}
+  .btn.gold{background:var(--gold);border-color:var(--gold);color:#111}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+  .btn.sm{padding:6px 10px;font-size:12px}
+  .btn.full{width:100%}
+
+  /* BADGE */
+  .badge{font-size:10px;padding:3px 8px;border-radius:6px;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+  .b-seller{background:linear-gradient(90deg,#f59e0b,#eab308);color:#111}
+  .b-elite{background:linear-gradient(90deg,#a855f7,#ec4899);color:#fff}
+  .b-common{background:#334155;color:#cbd5e1}
+  .stars{color:var(--gold);font-size:12px;letter-spacing:1px}
+
+  /* TABLE */
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--border)}
+  th{color:var(--muted);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+  tr:hover td{background:var(--card2)}
+
+  /* EXCHANGE */
+  .swap{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;max-width:480px;margin:0 auto}
+  .swap-row{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px}
+  .swap-row .top{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:8px}
+  .swap-row .mid{display:flex;gap:10px;align-items:center}
+  .swap-row input{background:transparent;border:none;font-size:22px;font-weight:700;padding:0;flex:1}
+  .swap-row select{width:auto;padding:8px 10px;background:var(--card2);border:1px solid var(--border);border-radius:8px;font-weight:700}
+  .swap-btn{width:44px;height:44px;border-radius:50%;background:var(--card2);border:2px solid var(--bg);display:grid;place-items:center;margin:-6px auto;position:relative;z-index:2;font-size:18px}
+
+  /* AUCTION */
+  .auction{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px;position:relative;overflow:hidden}
+  .auction::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2),var(--gold))}
+  .auction .timer{color:var(--cyan);font-weight:700;font-variant-numeric:tabular-nums}
+  .auction .leader{font-size:12px;color:var(--muted)}
+
+  /* MODAL */
+  .modal{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);display:grid;place-items:center;z-index:100;padding:20px}
+  .modal-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;max-width:520px;width:100%;max-height:85vh;overflow:auto}
+  .modal-box h2{font-size:18px;margin-bottom:16px}
+  .modal-box .field{margin-bottom:12px}
+  .modal-box .field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
+  .modal-actions{display:flex;gap:8px;margin-top:16px}
+
+  /* ADMIN */
+  .admin-section{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:16px}
+  .admin-section h3{color:var(--accent);font-size:14px;margin-bottom:12px;text-transform:uppercase;letter-spacing:.5px}
+  .admin-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--card);border:1px solid var(--accent);border-radius:10px;padding:12px 20px;font-size:14px;z-index:200;animation:slideup .3s ease}
+  @keyframes slideup{from{opacity:0;transform:translate(-50%,20px)}to{opacity:1;transform:translate(-50%,0)}}
+
+  .empty{text-align:center;padding:40px 20px;color:var(--muted);font-size:14px}
+  .divider{height:1px;background:var(--border);margin:16px 0}
+
+  @media(max-width:640px){
+    .hwrap{padding:10px 14px;gap:10px}
+    main{padding:16px 12px 60px}
+    .card{padding:14px}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hwrap">
+    <div class="logo">⚡ TELEPAT</div>
+    <div class="balance-chip">💰 <b id="hBalTG">0</b> TG <span style="color:var(--muted)">≈</span> <span id="hBalUSD">$0</span></div>
+    <div class="spacer"></div>
+    <button class="icon-btn" id="btnHideFunds" title="Скрытые фонды">👁</button>
+    <button class="icon-btn" id="btnAdmin" title="Админ-панель">⚙️</button>
+  </div>
+</header>
+
+<nav>
+  <div class="navwrap" id="nav">
+    <button class="navtab active" data-view="exchange">Обмен</button>
+    <button class="navtab" data-view="wallet">Кошелёк</button>
+    <button class="navtab" data-view="shop">Магазин</button>
+    <button class="navtab" data-view="market">Маркет</button>
+    <button class="navtab" data-view="auction">🔨 Аукцион</button>
+    <button class="navtab" data-view="referrals">Рефералы</button>
+  </div>
+</nav>
+
+<main>
+
+  <!-- EXCHANGE -->
+  <div class="view" id="view-exchange">
+    <div class="swap">
+      <h3 style="color:var(--muted);font-size:13px;margin-bottom:14px">ОБМЕН ТОКЕНОВ</h3>
+      <div class="swap-row">
+        <div class="top"><span>Отдаёте</span><span>Баланс: <b id="exFromBal">0</b></span></div>
+        <div class="mid">
+          <input type="number" id="exFromAmt" placeholder="0.0" value="100">
+          <select id="exFromToken"></select>
+        </div>
+      </div>
+      <button class="swap-btn" id="exFlip">⇅</button>
+      <div class="swap-row">
+        <div class="top"><span>Получаете</span><span>≈ $<b id="exToUSD">0</b></span></div>
+        <div class="mid">
+          <input type="number" id="exToAmt" placeholder="0.0" readonly>
+          <select id="exToToken"></select>
+        </div>
+      </div>
+      <button class="btn primary full" style="margin-top:14px" id="exSwap">Обменять</button>
+      <div style="font-size:11px;color:var(--muted);margin-top:10px;text-align:center">Курс: 1 <span id="exRateL">TG</span> = <span id="exRateR">0.10</span> <span id="exRateR2">USDT</span> • Комиссия 0.3%</div>
+    </div>
+  </div>
+
+  <!-- WALLET -->
+  <div class="view hidden" id="view-wallet">
+    <div class="grid g4" style="margin-bottom:20px">
+      <div class="card"><h3>Общий баланс</h3><div class="big" id="wTotalUSD">$0</div><div class="sub" id="wTotalTG">0 TG</div></div>
+      <div class="card"><h3>Скрытые фонды</h3><div class="big" id="wHidden">$0</div><div class="sub">🔒 приватный счёт</div></div>
+      <div class="card"><h3>В стейкинге</h3><div class="big" id="wStaked">0</div><div class="sub">APR 12%</div></div>
+      <div class="card"><h3>Заработано</h3><div class="big" id="wEarned">$0</div><div class="sub">за всё время</div></div>
+    </div>
+    <div class="card">
+      <h3>Мои токены</h3>
+      <table>
+        <thead><tr><th>Токен</th><th>Кол-во</th><th>Цена USD</th><th>Стоимость</th><th>Действие</th></tr></thead>
+        <tbody id="walletRows"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SHOP -->
+  <div class="view hidden" id="view-shop">
+    <div class="subtabs" id="shopTabs">
+      <button class="subtab active" data-shop="certs">📜 Сертификаты</button>
+      <button class="subtab" data-shop="titles">🏷️ Титулы</button>
+      <button class="subtab" data-shop="artifacts">⚔️ Артефакты</button>
+      <button class="subtab" data-shop="warehouse">📦 Склад</button>
+    </div>
+    <div id="shopContent"></div>
+  </div>
+
+  <!-- MARKET -->
+  <div class="view hidden" id="view-market">
+    <div class="card" style="margin-bottom:16px">
+      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+        <div style="flex:1;min-width:180px"><input id="mkSearch" placeholder="🔍 Поиск по названию или продавцу..."></div>
+        <select id="mkType" style="width:auto"><option value="">Все типы</option><option>Амуниция</option><option>Титул</option><option>Артефакт</option><option>Оружие</option><option>Сертификат</option></select>
+        <select id="mkSort" style="width:auto"><option value="new">Сначала новые</option><option value="cheap">Сначала дешёвые</option><option value="exp">Сначала дорогие</option></select>
+      </div>
+    </div>
+    <div class="grid g3" id="marketGrid"></div>
+  </div>
+
+  <!-- AUCTION -->
+  <div class="view hidden" id="view-auction">
+    <div class="card" style="margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+      <div>
+        <div style="font-weight:700">🔨 Аукционный дом</div>
+        <div style="font-size:12px;color:var(--muted)">Выставлять могут только продавцы с сертификатом. Ставить — любой.</div>
+      </div>
+      <button class="btn primary" id="btnCreateAuction">+ Создать лот</button>
+    </div>
+    <div class="grid g2" id="auctionGrid"></div>
+  </div>
+
+  <!-- REFERRALS -->
+  <div class="view hidden" id="view-referrals">
+    <div class="grid g3" style="margin-bottom:20px">
+      <div class="card"><h3>Мои рефералы</h3><div class="big" id="refCount">0</div><div class="sub">уровень 1–3</div></div>
+      <div class="card"><h3>Заработано</h3><div class="big" id="refEarned">$0</div><div class="sub">за всё время</div></div>
+      <div class="card"><h3>Моя ссылка</h3><div style="font-size:12px;word-break:break-all;color:var(--cyan)" id="refLink">—</div></div>
+    </div>
+    <div class="subtabs">
+      <button class="subtab active" data-ref="my">👥 Мои рефералы</button>
+      <button class="subtab" data-ref="sale">💱 Рефералы на продажу</button>
+    </div>
+    <div id="refContent"></div>
+  </div>
+
+</main>
+
+<!-- MODAL -->
+<div class="modal hidden" id="modal">
+  <div class="modal-box" id="modalBox"></div>
+</div>
+
+<script>
+// ============ STATE ============
+const LS_KEY = 'telepat_demo_v1';
+const DEFAULT_STATE = {
+  user: { name:'@you', balanceTG: 128500, balanceUSD: 12850, hidden: 3200, staked: 15000, earned: 4210, isSeller: false, sellerExpiry: null, stars: 0, deals: 0 },
+  rates: { TG: 0.10, TUSD: 1, USDT: 1, BNB: 320, TON: 5.4 },
+  prices: {
+    cert_3m: 25, cert_6m: 50, cert_1y: 100, cert_inf: 250,
+  },
+  titles: [
+    { id:'t_lord', name:'Лорд', rarity:'rare', effect:'+1% к рефералке', price:30 },
+    { id:'t_baron', name:'Барон', rarity:'epic', effect:'+2% к рефералке, приоритет в выдаче', price:80 },
+    { id:'t_king', name:'Король Севера', rarity:'legend', effect:'+5% к рефералке, +статус', price:300, limited:10 },
+    { id:'t_emperor', name:'Император', rarity:'mythic', effect:'+10% ко всем наградам', price:1500, limited:5 },
+  ],
+  artifacts: [
+    { id:'a_stone_inc', name:'Камень дохода', rarity:'common', effect:'+5% к стейкингу', price:10, type:'Камень' },
+    { id:'a_stone_net', name:'Камень сети', rarity:'rare', effect:'+10% к реферальным', price:40, type:'Камень' },
+    { id:'a_potion1', name:'Зелье усиления I', rarity:'common', effect:'+10% APR, 24ч', price:5, type:'Зелье' },
+    { id:'a_potion3', name:'Зелье усиления III', rarity:'epic', effect:'+50% APR, 12ч', price:25, type:'Зелье' },
+    { id:'a_storage', name:'Безграничное хранилище', rarity:'legend', effect:'Снимает лимит слотов', price:150, type:'Волшебный' },
+    { id:'a_excalibur', name:'Экскалибур', rarity:'mythic', effect:'×2 к PvP-наградам, 14д', price:250, type:'Оружие' },
+  ],
+  inventory: [],
+  market: [
+    { id:'m1', seller:'@seller_X', stars:5, item:'Амуниция 6 ур.', type:'Амуниция', price:100, qty:5, sellerCert:true },
+    { id:'m2', seller:'@seller_X', stars:5, item:'Амуниция 5 ур.', type:'Амуниция', price:80, qty:2, sellerCert:true },
+    { id:'m3', seller:'@noob_42', stars:1, item:'Амуниция 4 ур. (скидка 30%)', type:'Амуниция', price:70, qty:1, sellerCert:false },
+    { id:'m4', seller:'@whale_777', stars:4, item:'Камень дохода', type:'Артефакт', price:12, qty:20, sellerCert:true },
+    { id:'m5', seller:'@king_maker', stars:5, item:'Титул: Барон', type:'Титул', price:95, qty:1, sellerCert:true },
+  ],
+  auctions: [
+    { id:'au1', item:'👑 Корона Императора', rarity:'mythic', seller:'@king_maker', stars:5,
+      start:1000, current:1250, step:2.5, round:2, maxRound:5, leader:'@whale_777', bids:14,
+      endsAt: Date.now()+ 1000*60*60*6, effect:'+10% ко всем наградам, +статус' },
+    { id:'au2', item:'🏷️ Титул: Король Севера', rarity:'legend', seller:'@seller_X', stars:5,
+      start:300, current:342, step:2.5, round:1, maxRound:5, leader:'@player_V', bids:7,
+      endsAt: Date.now()+ 1000*60*60*22, effect:'+5% к рефералке, +статус' },
+  ],
+  referrals: [
+    { id:'r1', login:'@ref_1024', level:3, earned:120, days:45, price:40, owner:'@seller_X', stars:4 },
+    { id:'r2', login:'@ref_2048', level:5, earned:430, days:120, price:150, owner:'@whale_777', stars:5 },
+    { id:'r3', login:'@ref_4096', level:2, earned:18, days:12, price:8, owner:'@noob_42', stars:1 },
+  ],
+  hideFunds: false,
+};
+
+let S = load();
+
+function load(){
+  try{ const raw = localStorage.getItem(LS_KEY); if(raw) return JSON.parse(raw); }catch(e){}
+  return JSON.parse(JSON.stringify(DEFAULT_STATE));
+}
+function save(){ localStorage.setItem(LS_KEY, JSON.stringify(S)); }
+function resetState(){ localStorage.removeItem(LS_KEY); S = JSON.parse(JSON.stringify(DEFAULT_STATE)); renderAll(); }
+
+// ============ HELPERS ============
+const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+const fmtUSD = n => '$' + Number(n).toLocaleString('en-US',{maximumFractionDigits:2});
+const fmtNum = n => Number(n).toLocaleString('en-US',{maximumFractionDigits:2});
+const rarityClass = r => ({common:'r-common',rare:'r-rare',epic:'r-epic',legend:'r-legend',mythic:'r-mythic'}[r]||'r-common');
+const rarityLabel = r => ({common:'Common',rare:'Rare',epic:'Epic',legend:'Legendary',mythic:'Mythic'}[r]||r);
+
+function toast(msg, isErr){
+  const t = document.createElement('div');
+  t.className = 'toast';
+  if(isErr) t.style.borderColor = 'var(--red)';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(), 2200);
+}
+function uid(){ return 'x'+Math.random().toString(36).slice(2,9); }
+
+// ============ NAV ============
+$$('#nav .navtab').forEach(t => t.onclick = () => {
+  $$('#nav .navtab').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active');
+  $$('.view').forEach(v=>v.classList.add('hidden'));
+  $('#view-'+t.dataset.view).classList.remove('hidden');
+  renderAll();
+});
+
+// ============ EXCHANGE ============
+function buildExchange(){
+  const from = $('#exFromToken'), to = $('#exToToken');
+  if(!from.options.length){
+    Object.keys(S.rates).forEach(k=>{
+      from.add(new Option(k,k));
+      to.add(new Option(k,k));
+    });
+    from.value='TG'; to.value='TUSD';
+  }
+  updateExchange();
+}
+function updateExchange(){
+  const from = $('#exFromToken').value, to = $('#exToToken').value;
+  const amt = parseFloat($('#exFromAmt').value)||0;
+  const fromRate = S.rates[from]||1, toRate = S.rates[to]||1;
+  const out = (amt*fromRate/toRate)*0.997;
+  $('#exToAmt').value = out.toFixed(6);
+  $('#exToUSD').textContent = (out*toRate).toFixed(2);
+  $('#exRateL').textContent = from;
+  $('#exRateR').textContent = (fromRate/toRate).toFixed(6);
+  $('#exRateR2').textContent = to;
+  $('#exFromBal').textContent = fmtNum(S.user.balanceTG);
+}
+['exFromAmt','exFromToken','exToToken'].forEach(id=>{
+  document.addEventListener('input', e=>{ if(e.target.id===id) updateExchange(); });
+  document.addEventListener('change', e=>{ if(e.target.id===id) updateExchange(); });
+});
+$('#exFlip').onclick = () => {
+  const a = $('#exFromToken').value; $('#exFromToken').value = $('#exToToken').value; $('#exToToken').value = a;
+  updateExchange();
+};
+$('#exSwap').onclick = () => {
+  const amt = parseFloat($('#exFromAmt').value)||0;
+  if(amt<=0) return toast('Введите сумму',true);
+  if(amt > S.user.balanceTG && $('#exFromToken').value==='TG') return toast('Недостаточно TG',true);
+  toast('✅ Обмен выполнен: '+amt+' '+$('#exFromToken').value+' → '+$('#exToAmt').value+' '+$('#exToToken').value);
+  save();
+};
+
+// ============ WALLET ============
+function renderWallet(){
+  const rows = Object.entries(S.rates).map(([k,r])=>{
+    let amt = 0;
+    if(k==='TG') amt = S.user.balanceTG;
+    else if(k==='TUSD') amt = S.user.balanceUSD;
+    else amt = (k==='USDT'? 500 : k==='BNB'? 2 : k==='TON'? 120 : 0);
+    return `<tr>
+      <td><b>${k}</b></td>
+      <td>${fmtNum(amt)}</td>
+      <td>${fmtUSD(r)}</td>
+      <td><b style="color:var(--gold)">${fmtUSD(amt*r)}</b></td>
+      <td><button class="btn sm" onclick="toast('Демо: действие недоступно')">Обменять</button></td>
+    </tr>`;
+  }).join('');
+  $('#walletRows').innerHTML = rows;
+  const total = S.user.balanceTG*S.rates.TG + S.user.balanceUSD*S.rates.TUSD + 500*S.rates.USDT + 2*S.rates.BNB + 120*S.rates.TON;
+  $('#wTotalUSD').textContent = fmtUSD(total);
+  $('#wTotalTG').textContent = fmtNum(S.user.balanceTG)+' TG';
+  $('#wHidden').textContent = S.hideFunds ? '•••••' : fmtUSD(S.user.hidden);
+  $('#wStaked').textContent = fmtNum(S.user.staked);
+  $('#wEarned').textContent = fmtUSD(S.user.earned);
+}
+$('#btnHideFunds').onclick = () => { S.hideFunds = !S.hideFunds; save(); renderAll(); toast(S.hideFunds?'🔒 Фонды скрыты':'👁 Фонды видны'); };
+
+// ============ SHOP ============
+$$('#shopTabs .subtab').forEach(t => t.onclick = () => {
+  $$('#shopTabs .subtab').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active'); renderShop(t.dataset.shop);
+});
+function renderShop(tab){
+  tab = tab || $('#shopTabs .subtab.active')?.dataset.shop || 'certs';
+  const c = $('#shopContent');
+  if(tab==='certs'){
+    const certs = [
+      {id:'cert_3m', name:'Сертификат продавца — Старт', dur:'3 месяца', price:S.prices.cert_3m, perks:'До 5 лотов • комиссия 5% • бронза'},
+      {id:'cert_6m', name:'Сертификат продавца — Профи', dur:'6 месяцев', price:S.prices.cert_6m, perks:'До 20 лотов • комиссия 3.5% • серебро'},
+      {id:'cert_1y', name:'Сертификат продавца — Бизнес', dur:'1 год', price:S.prices.cert_1y, perks:'До 100 лотов • комиссия 2% • золото'},
+      {id:'cert_inf', name:'Сертификат продавца — Бессрочный', dur:'Навсегда', price:S.prices.cert_inf, perks:'Без лимита • комиссия 1% • платина • VIP'},
+    ];
+    c.innerHTML = `<div class="grid g2">${certs.map(x=>`
+      <div class="item">
+        <span class="rarity r-legend">ЛИЦЕНЗИЯ</span>
+        <div class="name">${x.name}</div>
+        <div class="effect">${x.perks}<br><span style="color:var(--cyan)">Срок: ${x.dur}</span></div>
+        <div class="row">
+          <div class="price">${fmtUSD(x.price)}</div>
+          <button class="btn primary" onclick="buyCert('${x.id}','${x.name}',${x.price})">Купить</button>
+        </div>
+      </div>`).join('')}</div>`;
+  }
+  if(tab==='titles'){
+    c.innerHTML = `<div class="grid g3">${S.titles.map(x=>`
+      <div class="item">
+        <span class="rarity ${rarityClass(x.rarity)}">${rarityLabel(x.rarity)}${x.limited?' • лимит '+x.limited:''}</span>
+        <div class="name">🏷️ ${x.name}</div>
+        <div class="effect">${x.effect}</div>
+        <div class="row">
+          <div class="price">${fmtUSD(x.price)}</div>
+          <button class="btn primary sm" onclick="buyItem('title','${x.id}','${x.name}',${x.price})">Купить</button>
+        </div>
+      </div>`).join('')}</div>`;
+  }
+  if(tab==='artifacts'){
+    const groups = {};
+    S.artifacts.forEach(a=>{ (groups[a.type]=groups[a.type]||[]).push(a); });
+    c.innerHTML = Object.entries(groups).map(([g,items])=>`
+      <h3 style="color:var(--muted);font-size:12px;text-transform:uppercase;margin:14px 0 8px">${g}</h3>
+      <div class="grid g3">${items.map(x=>`
+        <div class="item">
+          <span class="rarity ${rarityClass(x.rarity)}">${rarityLabel(x.rarity)}</span>
+          <div class="name">⚔️ ${x.name}</div>
+          <div class="effect">${x.effect}</div>
+          <div class="row">
+            <div class="price">${fmtUSD(x.price)}</div>
+            <button class="btn primary sm" onclick="buyItem('artifact','${x.id}','${x.name}',${x.price})">Купить</button>
+          </div>
+        </div>`).join('')}</div>
+    `).join('');
+  }
+  if(tab==='warehouse'){
+    if(!S.inventory.length){
+      c.innerHTML = `<div class="empty">📦 Склад пуст.<br>Купи предметы — они появятся здесь для перепродажи.</div>`;
+      return;
+    }
+    c.innerHTML = `<div class="grid g3">${S.inventory.map((x,i)=>`
+      <div class="item">
+        <span class="rarity ${rarityClass(x.rarity)}">${x.category}</span>
+        <div class="name">${x.name}</div>
+        <div class="effect">Куплено за ${fmtUSD(x.price)}</div>
+        <div class="row">
+          <button class="btn sm" onclick="listOnMarket(${i})">На маркет</button>
+          <button class="btn sm gold" onclick="listOnAuction(${i})">На аукцион</button>
+        </div>
+      </div>`).join('')}</div>`;
+  }
+}
+function buyCert(id, name, price){
+  if(S.user.balanceUSD < price) return toast('Недостаточно USD',true);
+  S.user.balanceUSD -= price;
+  S.user.isSeller = true;
+  const days = id==='cert_3m'?90: id==='cert_6m'?180: id==='cert_1y'?365: 36500;
+  S.user.sellerExpiry = Date.now() + days*86400000;
+  save(); renderAll(); toast('✅ '+name+' активирован!');
+}
+function buyItem(cat, id, name, price){
+  const tgNeeded = price / S.rates.TG;
+  if(S.user.balanceTG < tgNeeded) return toast('Недостаточно TG (нужно '+Math.round(tgNeeded)+')',true);
+  S.user.balanceTG -= tgNeeded;
+  const src = cat==='title' ? S.titles : S.artifacts;
+  const it = src.find(x=>x.id===id);
+  S.inventory.push({ name, rarity: it.rarity, price, category: cat==='title'?'Титул':'Артефакт', itemId:id });
+  save(); renderAll(); toast('✅ '+name+' куплено и на складе');
+}
+function listOnMarket(i){
+  const it = S.inventory[i];
+  openModal(`Выставить на маркет`, `
+    <div class="field"><label>Предмет</label><input value="${it.name}" disabled></div>
+    <div class="field"><label>Цена (USD)</label><input id="mPrice" type="number" value="${Math.round(it.price*1.2)}"></div>
+    <div class="field"><label>Кол-во</label><input id="mQty" type="number" value="1" min="1"></div>
+  `, ()=>{
+    const p = parseFloat($('#mPrice').value)||0;
+    const q = parseInt($('#mQty').value)||1;
+    S.market.unshift({ id:uid(), seller:S.user.name, stars:S.user.stars||1, item:it.name, type:it.category, price:p, qty:q, sellerCert:S.user.isSeller });
+    S.inventory.splice(i,1);
+    save(); renderAll(); toast('✅ Лот выставлен');
+  });
+}
+function listOnAuction(i){
+  if(!S.user.isSeller) return toast('Нужен сертификат продавца',true);
+  const it = S.inventory[i];
+  openModal(`Выставить на аукцион`, `
+    <div class="field"><label>Предмет</label><input value="${it.name}" disabled></div>
+    <div class="field"><label>Стартовая цена (USD)</label><input id="aStart" type="number" value="${Math.round(it.price*1.5)}"></div>
+    <div class="field"><label>Длительность (часов)</label><input id="aDur" type="number" value="24"></div>
+  `, ()=>{
+    const start = parseFloat($('#aStart').value)||0;
+    const dur = parseFloat($('#aDur').value)||24;
+    S.auctions.unshift({ id:uid(), item:it.name, rarity:it.rarity, seller:S.user.name, stars:S.user.stars||5,
+      start, current:start, step:2.5, round:1, maxRound:5, leader:'—', bids:0,
+      endsAt: Date.now()+dur*3600000, effect:'' });
+    S.inventory.splice(i,1);
+    save(); renderAll(); toast('🔨 Лот на аукционе');
+  });
+}
+
+// ============ MARKET ============
+function renderMarket(){
+  const q = ($('#mkSearch')?.value||'').toLowerCase();
+  const type = $('#mkType')?.value||'';
+  const sort = $('#mkSort')?.value||'new';
+  let list = S.market.filter(x=>{
+    if(type && x.type!==type) return false;
+    if(q && !(x.item.toLowerCase().includes(q)||x.seller.toLowerCase().includes(q))) return false;
+    return true;
+  });
+  if(sort==='cheap') list.sort((a,b)=>a.price-b.price);
+  if(sort==='exp') list.sort((a,b)=>b.price-a.price);
+  const grid = $('#marketGrid');
+  if(!grid) return;
+  if(!list.length){ grid.innerHTML = `<div class="empty" style="grid-column:1/-1">Ничего не найдено</div>`; return; }
+  grid.innerHTML = list.map(x=>`
+    <div class="item">
+      <div class="row">
+        <span class="badge ${x.sellerCert?'b-seller':'b-common'}">${x.sellerCert?'Продавец':'Обычный'}</span>
+        <span class="stars">${'★'.repeat(x.stars)}${'☆'.repeat(5-x.stars)}</span>
+      </div>
+      <div class="name">${x.item}</div>
+      <div class="effect">${x.type} • в наличии: ${x.qty}</div>
+      <div class="row">
+        <div class="price">${fmtUSD(x.price)}</div>
+        <button class="btn primary sm" onclick="buyMarket('${x.id}')">Купить</button>
+      </div>
+      <div style="font-size:11px;color:var(--muted)">Продавец: ${x.seller}</div>
+    </div>
+  `).join('');
+}
+['mkSearch','mkType','mkSort'].forEach(id=> document.addEventListener('input', e=>{ if(e.target.id===id) renderMarket(); }));
+document.addEventListener('change', e=>{ if(e.target.id==='mkType'||e.target.id==='mkSort') renderMarket(); });
+
+function buyMarket(id){
+  const l = S.market.find(x=>x.id===id);
+  if(!l) return;
+  if(S.user.balanceUSD < l.price) return toast('Недостаточно USD',true);
+  S.user.balanceUSD -= l.price;
+  l.qty--;
+  if(l.qty<=0) S.market = S.market.filter(x=>x.id!==id);
+  save(); renderAll(); toast('✅ Куплено: '+l.item);
+}
+
+// ============ AUCTION ============
+function renderAuction(){
+  const grid = $('#auctionGrid');
+  if(!grid) return;
+  if(!S.auctions.length){ grid.innerHTML = `<div class="empty" style="grid-column:1/-1">Нет активных аукционов</div>`; return; }
+  grid.innerHTML = S.auctions.map(a=>{
+    const next = (a.current*(1+a.step/100));
+    const left = Math.max(0, a.endsAt - Date.now());
+    const h = Math.floor(left/3600000), m = Math.floor((left%3600000)/60000), s = Math.floor((left%60000)/1000);
+    return `
+    <div class="auction">
+      <div class="row">
+        <span class="rarity ${rarityClass(a.rarity)}">${rarityLabel(a.rarity)}</span>
+        <span class="timer">${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}</span>
+      </div>
+      <div class="name" style="font-size:16px;font-weight:700">${a.item}</div>
+      ${a.effect?`<div style="font-size:12px;color:var(--muted)">${a.effect}</div>`:''}
+      <div class="divider"></div>
+      <div class="row"><span class="leader">Текущая ставка</span><b style="color:var(--gold);font-size:18px">${fmtUSD(a.current)}</b></div>
+      <div class="row"><span class="leader">Лидер</span><b>${a.leader}</b></div>
+      <div class="row"><span class="leader">Ставок</span><b>${a.bids}</b></div>
+      <div class="row"><span class="leader">Круг</span><b>${a.round} из ${a.maxRound}</b></div>
+      <div class="divider"></div>
+      <div class="row">
+        <button class="btn primary sm" onclick="bid('${a.id}',${next})">Ставка ${fmtUSD(next)}</button>
+        <button class="btn gold sm" onclick="buyNow('${a.id}')">Купить сейчас ${fmtUSD(a.start*2)}</button>
+      </div>
+      <div style="font-size:11px;color:var(--muted)">Продавец: ${a.seller} <span class="stars">${'★'.repeat(a.stars||5)}</span></div>
+    </div>`;
+  }).join('');
+}
+function bid(id, amount){
+  const a = S.auctions.find(x=>x.id===id);
+  if(!a) return;
+  if(S.user.balanceUSD < amount) return toast('Недостаточно USD (нужно '+fmtUSD(amount)+')',true);
+  a.current = amount; a.leader = S.user.name; a.bids++;
+  save(); renderAuction(); toast('✅ Ставка принята: '+fmtUSD(amount));
+}
+function buyNow(id){
+  const a = S.auctions.find(x=>x.id===id);
+  if(!a) return;
+  const price = a.start*2;
+  if(S.user.balanceUSD < price) return toast('Недостаточно USD (нужно '+fmtUSD(price)+')',true);
+  S.user.balanceUSD -= price;
+  S.auctions = S.auctions.filter(x=>x.id!==id);
+  S.inventory.push({ name:a.item, rarity:a.rarity, price, category:'Аукцион' });
+  save(); renderAll(); toast('🏆 Куплено: '+a.item);
+}
+$('#btnCreateAuction').onclick = () => {
+  if(!S.user.isSeller) return toast('Нужен сертификат продавца',true);
+  if(!S.inventory.length) return toast('Склад пуст',true);
+  openModal('Создать лот', `
+    <div class="field"><label>Название</label><input id="naName" value="${S.inventory[0].name}"></div>
+    <div class="field"><label>Редкость</label><select id="naRar">
+      <option value="common">Common</option><option value="rare">Rare</option>
+      <option value="epic">Epic</option><option value="legend" selected>Legendary</option>
+      <option value="mythic">Mythic</option></select></div>
+    <div class="field"><label>Стартовая цена (USD)</label><input id="naStart" type="number" value="500"></div>
+    <div class="field"><label>Длительность (часов)</label><input id="naDur" type="number" value="24"></div>
+    <div class="field"><label>Эффект / описание</label><input id="naEff" value="Уникальный предмет"></div>
+  `, ()=>{
+    S.auctions.unshift({
+      id:uid(), item:'🔨 '+$('#naName').value, rarity:$('#naRar').value, seller:S.user.name, stars:5,
+      start:parseFloat($('#naStart').value)||0, current:parseFloat($('#naStart').value)||0,
+      step:2.5, round:1, maxRound:5, leader:'—', bids:0,
+      endsAt: Date.now()+(parseFloat($('#naDur').value)||24)*3600000, effect:$('#naEff').value
+    });
+    save(); renderAuction(); toast('🔨 Лот создан');
+  });
+};
+
+// ============ REFERRALS ============
+function renderReferrals(tab){
+  tab = tab || $('[data-ref].active')?.dataset.ref || 'my';
+  const c = $('#refContent');
+  if(tab==='my'){
+    const my = [
+      { login:'@friend_1', level:2, earned:12, days:30 },
+      { login:'@friend_2', level:4, earned:88, days:80 },
+    ];
+    if(!my.length){ c.innerHTML = `<div class="empty">У вас пока нет рефералов</div>`; return; }
+    c.innerHTML = `<div class="card"><table>
+      <thead><tr><th>Логин</th><th>Уровень</th><th>Заработал</th><th>Дней в проекте</th></tr></thead>
+      <tbody>${my.map(r=>`<tr><td><b>${r.login}</b></td><td>Lv.${r.level}</td><td style="color:var(--green)">${fmtUSD(r.earned)}</td><td>${r.days}</td></tr>`).join('')}</tbody>
+    </table></div>`;
+  }
+  if(tab==='sale'){
+    c.innerHTML = `<div class="grid g3">${S.referrals.map(r=>`
+      <div class="item">
+        <div class="row">
+          <span class="badge ${r.stars>=4?'b-seller':'b-common'}">${r.owner}</span>
+          <span class="stars">${'★'.repeat(r.stars)}${'☆'.repeat(5-r.stars)}</span>
+        </div>
+        <div class="name">👤 ${r.login}</div>
+        <div class="effect">Уровень ${r.level}<br>Заработал: ${fmtUSD(r.earned)}<br>Дней в проекте: ${r.days}</div>
+        <div class="row">
+          <div class="price">${fmtUSD(r.price)}</div>
+          <button class="btn primary sm" onclick="buyRef('${r.id}')">Купить</button>
+        </div>
+      </div>`).join('')}</div>`;
+  }
+}
+$$('[data-ref]').forEach(t=> t.onclick = ()=>{
+  $$('[data-ref]').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active'); renderReferrals(t.dataset.ref);
+});
+function buyRef(id){
+  const r = S.referrals.find(x=>x.id===id);
+  if(!r) return;
+  if(S.user.balanceUSD < r.price) return toast('Недостаточно USD',true);
+  S.user.balanceUSD -= r.price;
+  S.referrals = S.referrals.filter(x=>x.id!==id);
+  S.user.earned += 5;
+  save(); renderAll(); toast('✅ Реферал '+r.login+' куплен');
+}
+
+// ============ MODAL ============
+function openModal(title, bodyHTML, onConfirm){
+  $('#modalBox').innerHTML = `
+    <h2>${title}</h2>
+    ${bodyHTML}
+    <div class="modal-actions">
+      <button class="btn primary" id="modalOk">Подтвердить</button>
+      <button class="btn" id="modalCancel">Отмена</button>
+    </div>`;
+  $('#modal').classList.remove('hidden');
+  $('#modalCancel').onclick = closeModal;
+  $('#modalOk').onclick = () => { onConfirm?.(); closeModal(); };
+}
+function closeModal(){ $('#modal').classList.add('hidden'); $('#modalBox').innerHTML=''; }
+$('#modal').onclick = e => { if(e.target.id==='modal') closeModal(); };
+
+// ============ ADMIN ============
+$('#btnAdmin').onclick = () => {
+  openModal('🔐 Админ-панель', `
+    <div class="field"><label>Пароль</label><input id="adPwd" type="password" placeholder="admin"></div>
+    <div style="font-size:11px;color:var(--muted)">Демо-пароль: <b>admin</b></div>
+  `, ()=>{
+    if($('#adPwd').value!=='admin'){ toast('Неверный пароль',true); return; }
+    setTimeout(openAdminPanel, 100);
+  });
+};
+function openAdminPanel(){
+  $('#modalBox').innerHTML = `
+    <h2>⚙️ Админ-панель</h2>
+    <div class="admin-section">
+      <h3>Пользователь</h3>
+      <div class="admin-grid">
+        <div class="field"><label>Баланс TG</label><input id="adTG" type="number" value="${S.user.balanceTG}"></div>
+        <div class="field"><label>Баланс USD</label><input id="adUSD" type="number" value="${S.user.balanceUSD}"></div>
+        <div class="field"><label>Скрытые фонды</label><input id="adHidden" type="number" value="${S.user.hidden}"></div>
+        <div class="field"><label>В стейкинге</label><input id="adStaked" type="number" value="${S.user.staked}"></div>
+        <div class="field"><label>Сертификат продавца</label>
+          <select id="adCert"><option value="1" ${S.user.isSeller?'selected':''}>Активен</option><option value="0" ${!S.user.isSeller?'selected':''}>Нет</option></select>
+        </div>
+      </div>
+    </div>
+    <div class="admin-section">
+      <h3>Курсы токенов</h3>
+      <div class="admin-grid">
+        ${Object.entries(S.rates).map(([k,v])=>`
+          <div class="field"><label>${k} → USD</label><input class="rateIn" data-k="${k}" type="number" step="0.001" value="${v}"></div>
+        `).join('')}
+      </div>
+    </div>
+    <div class="admin-section">
+      <h3>Цены сертификатов (USD)</h3>
+      <div class="admin-grid">
+        <div class="field"><label>3 мес</label><input id="adC3" type="number" value="${S.prices.cert_3m}"></div>
+        <div class="field"><label>6 мес</label><input id="adC6" type="number" value="${S.prices.cert_6m}"></div>
+        <div class="field"><label>1 год</label><input id="adC1" type="number" value="${S.prices.cert_1y}"></div>
+        <div class="field"><label>Бессрочный</label><input id="adCI" type="number" value="${S.prices.cert_inf}"></div>
+      </div>
+    </div>
+    <div class="admin-section">
+      <h3>Массовые действия</h3>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn sm" id="adResetAll">🔄 Сбросить всё демо</button>
+        <button class="btn sm" id="adAddMarket">+ Лот на маркет</button>
+        <button class="btn sm" id="adAddAuc">+ Аукцион</button>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn green" id="adSave">💾 Сохранить</button>
+      <button class="btn" id="adClose">Закрыть</button>
+    </div>`;
+  $('#adClose').onclick = closeModal;
+  $('#adResetAll').onclick = () => { if(confirm('Сбросить все данные демо?')){ resetState(); closeModal(); toast('Сброшено'); } };
+  $('#adAddMarket').onclick = () => {
+    S.market.unshift({ id:uid(), seller:'@admin', stars:5, item:'Новый лот '+Math.floor(Math.random()*900+100), type:'Артефакт', price:50, qty:10, sellerCert:true });
+    save(); renderMarket(); toast('Лот добавлен');
+  };
+  $('#adAddAuc').onclick = () => {
+    S.auctions.unshift({ id:uid(), item:'🔨 Лот администратора', rarity:'epic', seller:'@admin', stars:5,
+      start:100, current:100, step:2.5, round:1, maxRound:5, leader:'—', bids:0,
+      endsAt: Date.now()+3600000*24, effect:'Тестовый лот' });
+    save(); renderAuction(); toast('Аукцион добавлен');
+  };
+  $('#adSave').onclick = () => {
+    S.user.balanceTG = parseFloat($('#adTG').value)||0;
+    S.user.balanceUSD = parseFloat($('#adUSD').value)||0;
+    S.user.hidden = parseFloat($('#adHidden').value)||0;
+    S.user.staked = parseFloat($('#adStaked').value)||0;
+    S.user.isSeller = $('#adCert').value==='1';
+    $$('.rateIn').forEach(i=>{ S.rates[i.dataset.k] = parseFloat(i.value)||1; });
+    S.prices.cert_3m = parseFloat($('#adC3').value)||25;
+    S.prices.cert_6m = parseFloat($('#adC6').value)||50;
+    S.prices.cert_1y = parseFloat($('#adC1').value)||100;
+    S.prices.cert_inf = parseFloat($('#adCI').value)||250;
+    save(); renderAll(); closeModal(); toast('💾 Сохранено');
+  };
+}
+
+// ============ RENDER ALL ============
+function renderHeader(){
+  $('#hBalTG').textContent = fmtNum(S.user.balanceTG);
+  $('#hBalUSD').textContent = fmtUSD(S.user.balanceTG*S.rates.TG);
+}
+function renderAll(){
+  renderHeader();
+  renderWallet();
+  renderShop();
+  renderMarket();
+  renderAuction();
+  renderReferrals();
+  updateExchange();
+  $('#refCount').textContent = 2;
+  $('#refEarned').textContent = fmtUSD(100);
+  $('#refLink').textContent = 't.me/TELEPATp2p_bot?start=' + S.user.name.replace('@','');
+}
+
+// timers
+setInterval(()=>{ if(!$('#view-auction').classList.contains('hidden')) renderAuction(); }, 1000);
+
+// init
+buildExchange();
+renderAll();
+</script>
+</body>
+</html>
