@@ -17,7 +17,7 @@
 .tabs-sub button.active{background:var(--blue);color:#fff;border-color:var(--blue)}
 .info-row{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);padding:4px 0}
 .info-row b{color:#fff;font-weight:400}
-button.act{width:100%;padding:14px;margin:8px 0 0;border:0;border-radius:12px;background:var(--blue);color:#fff;font-weight:700;font-size:15px;cursor:pointer;transition:opacity .2s}
+button.act{width:100%;padding:14px;margin:8px 0 0;border:0;border-radius:12px;background:var(--blue);color:#fff;font-weight:700;font-size:15px;cursor:pointer}
 button.act:disabled{opacity:.35;cursor:not-allowed}
 button.act.buy{background:var(--green)}button.act.sell{background:var(--red)}button.act.gold{background:var(--gold);color:#111}
 .row-tbl{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);font-size:12px;align-items:center}
@@ -40,7 +40,6 @@ button.act.buy{background:var(--green)}button.act.sell{background:var(--red)}but
 .total-bal .lbl{color:var(--muted);font-size:11px;margin-bottom:4px}
 .total-bal .val{color:#fff;font-size:32px;font-weight:800;letter-spacing:-1px}
 
-/* ============ KNIGHT ============ */
 .knight-wrap{background:linear-gradient(135deg,#1a212c,#0e131a);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px;position:relative;overflow:hidden}
 .knight-wrap::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#2f80ed,#a855f7,#f4cf70)}
 .rank-badge{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding:10px;background:#0d1520;border:1px solid #2a3242;border-radius:12px;position:relative}
@@ -49,10 +48,10 @@ button.act.buy{background:var(--green)}button.act.sell{background:var(--red)}but
 .rank-medal img{width:100%;height:100%;object-fit:cover;object-position:top center;transform:scale(1.6);transform-origin:top center}
 .rank-medal.title-medal{background:linear-gradient(135deg,#a21caf,#ec4899);border-color:transparent;box-shadow:0 0 18px rgba(236,72,153,.6)}
 .rank-info{flex:1;min-width:0}
-.rank-name-top{font-size:14px;font-weight:800;color:#fff;display:flex;align-items:center;gap:6px}
+.rank-name-top{font-size:14px;font-weight:800;color:#fff}
 .rank-name-top.title-mode{color:var(--gold)}
 .rank-liga{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-top:2px}
-.rank-xp-bar{height:8px;background:#080b10;border-radius:99px;overflow:hidden;margin-top:6px;display:flex}
+.rank-xp-bar{height:8px;background:#080b10;border-radius:99px;overflow:hidden;margin-top:6px}
 .rank-xp-fill{height:100%;background:linear-gradient(90deg,#c99629,#f5d477);transition:width .8s}
 .rank-xp-text{font-size:10px;color:var(--muted);margin-top:4px}
 
@@ -77,7 +76,6 @@ button.act.buy{background:var(--green)}button.act.sell{background:var(--red)}but
 .slots-row{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:16px}
 .slots-row .slot{width:100%;height:50px;font-size:22px}
 
-/* 4 ШКАЛЫ */
 .scales{margin-top:14px;padding-top:14px;border-top:1px solid #2a3242}
 .scale{margin-bottom:10px}
 .scale-head{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:4px}
@@ -103,7 +101,7 @@ button.act.buy{background:var(--green)}button.act.sell{background:var(--red)}but
 
 .item-card{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px;margin-bottom:8px}
 .item-card .row1{display:flex;justify-content:space-between;align-items:center;gap:8px}
-.item-card .name{font-weight:700;font-size:14px;color:#fff;display:flex;align-items:center;gap:6px}
+.item-card .name{font-weight:700;font-size:14px;color:#fff}
 .item-card .eff{font-size:11px;color:var(--muted)}
 .item-card .price{font-weight:800;color:var(--gold);font-size:15px}
 .item-card .row2{display:flex;justify-content:space-between;align-items:center;gap:8px}
@@ -128,7 +126,7 @@ button.act.buy{background:var(--green)}button.act.sell{background:var(--red)}but
 .auc-timer{color:var(--cyan);font-weight:700;font-variant-numeric:tabular-nums}
 .auc-row{display:flex;justify-content:space-between;font-size:12px;padding:4px 0;color:var(--muted)}
 .auc-row b{color:#fff}
-.badge{font-size:9px;padding:3px 7px;border-radius:5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+.badge{font-size:9px;padding:3px 7px;border-radius:5px;font-weight:700;text-transform:uppercase}
 .b-seller{background:linear-gradient(90deg,#f59e0b,#eab308);color:#111}
 .stars{color:var(--gold);font-size:11px;letter-spacing:1px}
 .field{margin-bottom:10px}
@@ -138,8 +136,6 @@ button.act.buy{background:var(--green)}button.act.sell{background:var(--red)}but
 .admin-tabs{display:flex;gap:4px;margin-bottom:12px;overflow-x:auto;padding-bottom:2px}
 .admin-tabs button{padding:8px 12px;margin:0;background:var(--card);color:var(--muted);border:1px solid var(--line);font-size:11px;font-weight:700;cursor:pointer;border-radius:16px;white-space:nowrap;flex:0 0 auto}
 .admin-tabs button.active{background:var(--gold);color:#111;border-color:var(--gold)}
-
-/* Смена картинки */
 .knight-avatar.swap-out{animation:swapOut .35s ease forwards}
 @keyframes swapOut{to{opacity:0;transform:translateY(-10px) scale(.95)}}
 .knight-avatar.swap-in{animation:swapIn .5s ease forwards}
@@ -153,7 +149,6 @@ button.act.buy{background:var(--green)}button.act.sell{background:var(--red)}but
 <button class="wallet-btn" onclick="toggleWallet()"><span class="dot" id="dot"></span><span id="walletLabel">Connect</span></button>
 </div>
 
-<!-- ГЛАВНАЯ -->
 <div id="s-wallet">
 <div class="total-bal">
 <div class="lbl">Портфель</div>
@@ -179,8 +174,7 @@ button.act.buy{background:var(--green)}button.act.sell{background:var(--red)}but
 </div>
 <div class="knight-body">
   <div class="knight-glow"></div>
-  <img class="knight-avatar" id="knightAvatar" src="images/knight-0.png" alt="Рыцарь" onerror="this.style.display='none';document.getElementById('knightFallback').style.display='block'">
-  <div id="knightFallback" style="display:none;font-size:130px">🛡️</div>
+  <img class="knight-avatar" id="knightAvatar" src="knight-0.png" alt="Рыцарь">
   <div class="knight-speech" id="knightSpeech">Славный путь начинается!</div>
 </div>
 <div class="slot-col">
@@ -248,7 +242,6 @@ button.act.buy{background:var(--green)}button.act.sell{background:var(--red)}but
 <button class="act buy" onclick="faucet()">🚰 Получить тестовые токены</button>
 </div>
 
-<!-- МАГАЗИН -->
 <div id="s-shop" class="hide">
 <div class="tabs-sub">
 <button id="sub-gear" class="active" onclick="switchSub('gear')">⚔️ Амуниция</button>
@@ -257,7 +250,7 @@ button.act.buy{background:var(--green)}button.act.sell{background:var(--red)}but
 <button id="sub-certs" onclick="switchSub('certs')">📜 Сертификаты</button>
 </div>
 <div id="sub-s-gear"><div class="card">
-<div class="card-title">⚔️ АМУНИЦИЯ — УРОВЕНЬ <span id="gearLevelLabel">0</span></div>
+<div class="card-title">⚔️ АМУНИЦИЯ — УРОВЕНЬ <span id="gearLevelLabel">1</span></div>
 <div class="hint" style="margin-bottom:12px">Купи все 3 предмета текущего уровня, надень — откроется ап</div>
 <div id="gearList"></div>
 </div></div>
@@ -269,7 +262,6 @@ button.act.buy{background:var(--green)}button.act.sell{background:var(--red)}but
 <div id="sub-s-certs" class="hide"><div class="card"><div class="card-title">📜 СЕРТИФИКАТЫ ПРОДАВЦА</div><div id="certsList"></div></div></div>
 </div>
 
-<!-- ДРУЗЬЯ -->
 <div id="s-friends" class="hide">
 <div class="card">
 <div class="card-title">👥 ДРУЗЬЯ</div>
@@ -282,7 +274,6 @@ button.act.buy{background:var(--green)}button.act.sell{background:var(--red)}but
 <div class="card"><div class="card-title">💱 Рефералы на продажу</div><div id="refSaleList"></div></div>
 </div>
 
-<!-- АУКЦИОН -->
 <div id="s-auction" class="hide">
 <div class="card">
 <div class="card-title">🔨 Аукционный дом</div>
@@ -291,7 +282,6 @@ button.act.buy{background:var(--green)}button.act.sell{background:var(--red)}but
 <div id="auctionList"></div>
 </div>
 
-<!-- ДОХОД -->
 <div id="s-earn" class="hide">
 <div class="card">
 <div class="card-title">🔥 ЧЕКИН</div>
@@ -300,7 +290,6 @@ button.act.buy{background:var(--green)}button.act.sell{background:var(--red)}but
 </div>
 </div>
 
-<!-- АДМИН -->
 <div id="s-admin" class="hide">
 <div id="adminLogin">
 <div class="card admin-card">
@@ -332,7 +321,6 @@ button.act.buy{background:var(--green)}button.act.sell{background:var(--red)}but
 <div id="at-knight" class="admin-tab-content hide">
 <div class="card admin-card">
 <div class="card-title">⚔️ РЫЦАРЬ И УРОВНИ</div>
-<div class="field"><label>Уровень (0-21)</label><input id="adLevel" type="number" min="0" max="21" value="0"></div>
 <div class="field"><label>Стейк (USD)</label><input id="adStakeUSD" type="number" step="0.01" value="0"></div>
 <div class="field"><label>Сделок</label><input id="adDeals" type="number" value="0"></div>
 <div class="field"><label>Рефералов</label><input id="adRefs" type="number" value="0"></div>
@@ -344,6 +332,7 @@ button.act.buy{background:var(--green)}button.act.sell{background:var(--red)}but
 </div>
 <button class="act gold" style="margin-top:8px" onclick="adminFillMax()">🎯 Заполнить по максимуму</button>
 <button class="act buy" style="margin-top:8px" onclick="adminGiveGear()">⚔️ Выдать амуницию уровня</button>
+<div class="hint" style="margin-top:8px">Текущий уровень: <b id="adCurLevel">0</b></div>
 </div>
 </div>
 <div id="at-balance" class="admin-tab-content hide">
@@ -358,11 +347,11 @@ button.act.buy{background:var(--green)}button.act.sell{background:var(--red)}but
 </div>
 <div id="at-stake" class="admin-tab-content hide">
 <div class="card admin-card">
-<div class="card-title">💎 СТЕЙКИНГ (что реально застейкано)</div>
+<div class="card-title">💎 СТЕЙКИНГ</div>
 <div class="field"><label>TUSD staked</label><input id="stTUSD" type="number" value="1000"></div>
 <div class="field"><label>TG staked</label><input id="stTG" type="number" value="50"></div>
 <div class="field"><label>AI staked</label><input id="stAI" type="number" value="10000"></div>
-<div class="hint" style="margin-top:8px">Стейк в USD для шкалы = (TG × $100) + TUSD + (AI × $0.01)</div>
+<div class="hint" style="margin-top:8px">Стейк в USD = TG × $100 + TUSD + AI × $0.01</div>
 </div>
 </div>
 <div id="at-prices" class="admin-tab-content hide">
@@ -376,7 +365,7 @@ button.act.buy{background:var(--green)}button.act.sell{background:var(--red)}but
 <div class="card admin-card">
 <div class="card-title">⭐ СТАТУС ПРОДАВЦА</div>
 <div class="field"><label>Сертификат активен</label><select id="adCertActive"><option value="0">Нет</option><option value="1">Да</option></select></div>
-<div class="field"><label>Рейтинг (0-5)</label><input id="adStars" type="number" min="0" max="5" value="3"></div>
+<div class="field"><label>Рейтинг</label><input id="adStars" type="number" min="0" max="5" value="3"></div>
 </div>
 </div>
 <div id="at-actions" class="admin-tab-content hide">
@@ -405,9 +394,8 @@ button.act.buy{background:var(--green)}button.act.sell{background:var(--red)}but
 </div>
 
 <script>
-// ==================== STATE ====================
 const LS_KEY='telepat_demo_v4';
-const TG_PRICE=100; // 1 TG = $100 для расчёта стейка
+const TG_PRICE=100;
 
 const DEFAULT_STATE={
   USER_BALANCES:{TUSD:100000,TG:100,AI:1000000,VKCOIN:10000000,BBK:100000},
@@ -423,7 +411,6 @@ const DEFAULT_STATE={
   ACTIVE_TITLE:null,
 };
 
-// 22 уровня — таблица с картинки
 const LEVELS=[
   {n:0,  name:'Новичок',      icon:'🗡️', stake:0,      deals:0,    refs:0,  star:null, group:0},
   {n:1,  name:'Крестьянин',   icon:'🌾', stake:0.5,    deals:1,    refs:0,  star:null, group:0},
@@ -449,16 +436,14 @@ const LEVELS=[
   {n:21, name:'Император',    icon:'👑', stake:32768,  deals:1500, refs:67, star:17,  group:4},
 ];
 
-// Какая картинка для какой группы
 const GROUP_IMAGE={
-  0:'images/knight-0.png',   // Простолюдины 0-3
-  1:'images/knight-4.png',   // Воины 4-8
-  2:'images/knight-9.png',   // Рыцари 9-13
-  3:'images/knight-14.png',  // Знать 14-17
-  4:'images/knight-18.png',  // Владыки 18-21
+  0:'knight-0.png',
+  1:'knight-4.png',
+  2:'knight-9.png',
+  3:'knight-14.png',
+  4:'knight-18.png',
 };
 
-// Цветовой фильтр для каждого уровня внутри группы
 const LEVEL_FILTER={
   0:'sepia(0.6) brightness(0.85) saturate(0.8)',
   1:'none',
@@ -541,7 +526,6 @@ let AUCTIONS=JSON.parse(JSON.stringify(DEFAULT_AUCTIONS));
 
 const get=k=>ST[k]; const set=(k,v)=>{ST[k]=v;saveState()};
 
-// ==================== HELPERS ====================
 const $=id=>document.getElementById(id);
 const fmt=(v,m=2)=>Number(v||0).toLocaleString('ru-RU',{maximumFractionDigits:m});
 const esc=v=>String(v??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
@@ -551,7 +535,6 @@ const rarityCls=r=>({common:'r-common',rare:'r-rare',epic:'r-epic',legend:'r-leg
 const rarityLbl=r=>({common:'Common',rare:'Rare',epic:'Epic',legend:'Legendary',mythic:'Mythic'})[r]||r;
 function msg(t,ty='info'){const e=$('msg');e.textContent=t;e.style.borderColor=ty==='error'?'#8b3f4c':ty==='success'?'#397b5b':'#4c5b70';e.classList.add('show');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('show'),2800)}
 
-// ==================== NAV ====================
 function toggleWallet(){WALLET=!WALLET;$('walletLabel').textContent=WALLET?'UQ...7x9':'Connect';$('dot').style.background=WALLET?'var(--green)':'var(--muted)';if(WALLET)msg('✅ Кошелёк подключён','success')}
 function goMain(t){
   ['wallet','shop','friends','auction','earn','admin'].forEach(x=>{
@@ -571,7 +554,6 @@ function switchSub(t){
   });
 }
 
-// ==================== РАСЧЁТ УРОВНЯ ====================
 function calcStakeUSD(){
   const st=get('STAKED');
   return n(st.TG)*TG_PRICE + n(st.TUSD) + n(st.AI)*RATES.AI + n(st.VKCOIN)*RATES.VKCOIN + n(st.BBK)*RATES.BBK;
@@ -586,7 +568,6 @@ function calcLevel(){
   for(let i=0;i<LEVELS.length;i++){
     const lv = LEVELS[i];
     if(stake >= lv.stake && deals >= lv.deals && refs >= lv.refs){
-      // проверка звёздного
       if(lv.star != null){
         if(starRef == null || starRef < lv.star) break;
       }
@@ -595,15 +576,12 @@ function calcLevel(){
   }
   return maxLevel;
 }
-function getLevelData(levelNum){
-  return LEVELS.find(l=>l.n===levelNum) || LEVELS[0];
-}
+function getLevelData(levelNum){ return LEVELS.find(l=>l.n===levelNum) || LEVELS[0]; }
 function getNextLevel(levelNum){
   const idx = LEVELS.findIndex(l=>l.n===levelNum);
   return idx>=0 && idx<LEVELS.length-1 ? LEVELS[idx+1] : null;
 }
 
-// ==================== РЫЦАРЬ ====================
 function renderKnight(){
   const currentLevel = calcLevel();
   const lv = getLevelData(currentLevel);
@@ -611,7 +589,6 @@ function renderKnight(){
   const title = get('ACTIVE_TITLE');
   const badge = $('rankBadge');
 
-  // Картинка
   const img = $('knightAvatar');
   const imgSrc = GROUP_IMAGE[lv.group] || GROUP_IMAGE[0];
   if(img.getAttribute('src') !== imgSrc){
@@ -627,7 +604,6 @@ function renderKnight(){
     img.style.filter = LEVEL_FILTER[lv.n] || 'none';
   }
 
-  // Плашка ранга
   if(title){
     $('rankMedal').innerHTML = title.icon;
     $('rankMedal').classList.add('title-medal');
@@ -636,10 +612,9 @@ function renderKnight(){
     $('rankLiga').textContent = `Титул активен • ${rarityLbl(title.rarity)}`;
     badge.classList.add('has-title');
     let btn = $('unequipTitleBtn');
-    if(!btn){ btn = document.createElement('button'); btn.id='unequipTitleBtn'; btn.className='unequip-title'; btn.textContent='снять'; btn.style.cssText='position:absolute;top:6px;right:8px;background:#542330;color:#fff;border:1px solid #884050;border-radius:6px;font-size:10px;padding:3px 7px;cursor:pointer'; btn.onclick=(e)=>{e.stopPropagation(); unequipTitle();}; badge.appendChild(btn); }
+    if(!btn){ btn = document.createElement('button'); btn.id='unequipTitleBtn'; btn.textContent='снять'; btn.style.cssText='position:absolute;top:6px;right:8px;background:#542330;color:#fff;border:1px solid #884050;border-radius:6px;font-size:10px;padding:3px 7px;cursor:pointer'; btn.onclick=(e)=>{e.stopPropagation(); unequipTitle();}; badge.appendChild(btn); }
   } else {
-    // показываем маленькую картинку в медальке
-    $('rankMedal').innerHTML = `<img src="${GROUP_IMAGE[lv.group]}" style="filter:${LEVEL_FILTER[lv.n]||'none'}" onerror="this.parentElement.textContent='${lv.icon}'">`;
+    $('rankMedal').innerHTML = `<img src="${GROUP_IMAGE[lv.group]}" style="filter:${LEVEL_FILTER[lv.n]||'none'}">`;
     $('rankMedal').classList.remove('title-medal');
     $('rankName').textContent = lv.name;
     $('rankName').classList.remove('title-mode');
@@ -648,7 +623,6 @@ function renderKnight(){
     const btn=$('unequipTitleBtn'); if(btn) btn.remove();
   }
 
-  // Шкалы
   const stake = calcStakeUSD();
   const pr = get('PROGRESS');
   const stakeTarget = next ? next.stake : lv.stake;
@@ -666,7 +640,6 @@ function renderKnight(){
   $('scDealsTxt').textContent = `${pr.deals} / ${dealsTarget}`;
   $('scRefsTxt').textContent = `${pr.refs} / ${refsTarget}`;
 
-  // звёздная шкала — только с 6 уровня
   const starWrap = $('scStarWrap');
   if(currentLevel >= 6 || (next && next.star != null)){
     starWrap.style.display='block';
@@ -680,7 +653,6 @@ function renderKnight(){
     starWrap.style.display='none';
   }
 
-  // XP полоса (общая — среднее из 4 шкал)
   const avg = (pStake + pDeals + pRefs) / 3;
   $('rankXpFill').style.width = avg + '%';
   if(next){
@@ -689,12 +661,10 @@ function renderKnight(){
     $('rankXpText').textContent = '🌟 Максимальный уровень';
   }
 
-  // слоты
   renderSlot('slot-weapon','weapon','🗡️');
   renderSlot('slot-body','body','👕');
   renderSlot('slot-legs','legs','👖');
 
-  // статы
   let atk=10, pow=0;
   ['weapon','body','legs'].forEach(s=>{
     const it=get('EQUIPPED')[s]; if(!it) return;
@@ -704,20 +674,15 @@ function renderKnight(){
   $('statPow').textContent=pow;
   $('statHp').textContent=100+Math.round(pow/2);
 
-  // подсказка
   const eq=get('EQUIPPED');
   const gearLv = currentLevel>=1 ? Math.min(8, Math.max(1, Math.ceil(currentLevel/3))) : 1;
   const allEquipped=eq.weapon&&eq.body&&eq.legs;
   const allCurrentLv=allEquipped&&eq.weapon.level===gearLv&&eq.body.level===gearLv&&eq.legs.level===gearLv;
   const ready = pStake>=100&&pDeals>=100&&pRefs>=100;
-  if(!next){ /* max */ }
-  else if(ready && allCurrentLv){
-    setKnightSpeech(`Готов к апту!`);
-  } else if(ready && !allCurrentLv){
-    setKnightSpeech(`Купи амуницию ур.${gearLv}`);
-  } else {
-    setKnightSpeech(`Нужны все 4 шкалы 100%`);
-  }
+  if(!next){ setKnightSpeech('Я — Император!'); }
+  else if(ready && allCurrentLv){ setKnightSpeech('Готов к апу!'); }
+  else if(ready && !allCurrentLv){ setKnightSpeech(`Купи амуницию ур.${gearLv}`); }
+  else { setKnightSpeech(`Нужны все 4 шкалы 100%`); }
 }
 function renderSlot(id,slot,defIcon){
   const el=$(id);if(!el)return;
@@ -752,7 +717,7 @@ function unequipItem(slot){
   eq[slot]=null; set('EQUIPPED', eq);
   closeModal2();
   msg(`Снято: ${it.icon} ${it.name}`);
-  renderKnight(); renderInventory();
+  renderKnight();
 }
 function openEquipModal(slot){
   const it=get('EQUIPPED')[slot];
@@ -770,7 +735,6 @@ function setKnightSpeech(text){
   el.style.animation='none';void el.offsetWidth;el.style.animation='speech-pop .4s ease';
 }
 
-// ==================== ТИТУЛЫ ====================
 function equipTitle(title){
   set('ACTIVE_TITLE', title);
   msg(`👑 Титул "${title.name}" активирован`,'success');
@@ -805,7 +769,6 @@ function buyTitle(id){
   saveState(); renderBalances(); updatePortfolio();
 }
 
-// ==================== МАГАЗИН ====================
 function getGearLevel(){
   const currentLevel = calcLevel();
   return currentLevel>=1 ? Math.min(8, Math.max(1, Math.ceil(currentLevel/3))) : 1;
@@ -892,7 +855,6 @@ function buyCert(tier){
   renderCerts(); renderBalances(); updatePortfolio();
 }
 
-// ==================== БАЛАНСЫ / СТЕЙК ====================
 function renderBalances(){
   const bals=get('USER_BALANCES');
   let total=0; Object.keys(RATES).forEach(sym=>{ total+=n(bals[sym])*RATES[sym]; });
@@ -941,7 +903,6 @@ function renderStaking(){
 }
 setInterval(renderStaking,100);
 
-// ==================== РЕФЕРАЛЫ / АУКЦИОН ====================
 function renderRefSale(){
   $('refSaleList').innerHTML=REF_SALE.map(r=>`
     <div class="item-card">
@@ -1005,7 +966,6 @@ function confirmCreateAuction(){
   closeModal2();renderAuctions();msg('🔨 Лот создан','success');
 }
 
-// ==================== АДМИН ====================
 function adminLogin(){
   if($('adPwd').value!=='admin'){msg('❌ Неверный пароль','error');return}
   $('adminLogin').classList.add('hide'); $('adminPanel').classList.remove('hide');
@@ -1023,6 +983,7 @@ function updateAdminStats(){
   $('statTUSD').textContent=fmt(bals.TUSD,2);
   $('statTG').textContent=fmt(bals.TG,2);
   $('statStaked').textContent=fmt(calcStakeUSD(),2);
+  const cl=$('adCurLevel'); if(cl) cl.textContent=calcLevel();
 }
 function syncAdmin(){
   const bals=get('USER_BALANCES');
@@ -1035,7 +996,6 @@ function syncAdmin(){
   const r=get('USER_RATING');
   $('adCertActive').value=r.isSeller?'1':'0';$('adStars').value=r.stars;
   const pr=get('PROGRESS');
-  $('adLevel').value=calcLevel();$('adStakeUSD').value=pr.stakeUSD||calcStakeUSD();
   $('adDeals').value=pr.deals;$('adRefs').value=pr.refs;$('adStarRef').value=pr.starRefLevel;
   const sel=$('adActiveTitle');
   if(sel){
@@ -1087,7 +1047,7 @@ function adminLevelUp(){
   ['weapon','body','legs'].forEach(s=>{if(eq[s]){inv.push(eq[s]);eq[s]=null}});
   set('EQUIPPED',eq); set('INVENTORY',inv);
   setKnightSpeech(`Я ${next.name}!`);
-  syncAdmin(); renderKnight(); renderGear(); renderInventory();
+  syncAdmin(); renderKnight(); renderGear();
   msg('⬆️ '+next.name+' — новый уровень!','success');
 }
 function adminLevelDown(){
@@ -1125,18 +1085,16 @@ function adminGiveGear(){
     eq[s]={...setG[s],slot:s,level:gl,atk:setG[s].atk,pow:setG[s].pow,rarity:'rare',price:0};
   });
   set('EQUIPPED',eq); set('INVENTORY',inv);
-  renderKnight();renderInventory();renderGear();
+  renderKnight();renderGear();
   msg('⚔️ Выдана амуниция ур.'+gl,'success');
 }
 
-// ==================== MODAL ====================
 function openModal2(title,body){
   $('modal2In').innerHTML=`<div class="card-title">${title}</div>${body}<div style="margin-top:12px"><button class="act sell" onclick="closeModal2()">Закрыть</button></div>`;
   $('modal2').classList.add('show');
 }
 function closeModal2(e){if(e&&e.target!==$('modal2'))return;$('modal2').classList.remove('show')}
 
-// ==================== RENDER ALL ====================
 function renderAll(){
   renderKnight();renderBalances();renderHistory();updatePortfolio();renderStaking();
   renderGear();renderTitles();renderArtifacts();renderCerts();renderRefSale();renderAuctions();
