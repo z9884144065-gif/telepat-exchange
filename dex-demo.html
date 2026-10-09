@@ -1,32 +1,20 @@
 <!DOCTYPE html><html lang="ru"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>TELEPAT Exchange — Демо</title>
+<title>TELEPAT — Демо</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 :root{--bg:#0b0e11;--card:#151a21;--line:#252b36;--gold:#f4cf70;--text:#fff;--muted:#8a94a6;--green:#26a17b;--red:#f6465d;--blue:#2f80ed;--purple:#a855f7;--cyan:#22d3ee}
-*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;min-height:100vh}
+*{box-sizing:border-box}html,body{margin:0;background:radial-gradient(circle at 50% -10%,#1a2535 0,#0b0e11 42%),#0b0e11;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;min-height:100vh}
 .app{max-width:520px;margin:auto;padding:14px 12px 90px}
 .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
 .top h1{color:var(--gold);margin:0;font-size:18px;font-weight:700}
 .wallet-btn{display:flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:7px 12px;color:#fff;font-size:11px;font-weight:600;cursor:pointer}
 .dot{width:7px;height:7px;border-radius:50%;background:var(--green)}
-.tabs-main{display:flex;gap:3px;margin-bottom:14px;background:var(--card);border-radius:12px;padding:4px}
-.tabs-main button{flex:1;padding:9px 4px;margin:0;background:transparent;color:var(--muted);border:0;font-size:11px;font-weight:700;cursor:pointer;border-radius:9px;transition:.2s}
-.tabs-main button.active{background:var(--bg);color:var(--text)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:10px}
+.card-title{color:var(--text);font-size:14px;font-weight:700;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
 .tabs-sub{display:flex;gap:3px;margin-bottom:12px;overflow-x:auto;padding-bottom:2px}
 .tabs-sub button{padding:8px 14px;margin:0;background:var(--card);color:var(--muted);border:1px solid var(--line);font-size:12px;font-weight:700;cursor:pointer;border-radius:20px;white-space:nowrap;flex:0 0 auto}
 .tabs-sub button.active{background:var(--blue);color:#fff;border-color:var(--blue)}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:10px}
-.card-title{color:var(--text);font-size:14px;font-weight:700;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
-.tbox{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:6px}
-.tbox .lbl{color:var(--muted);font-size:11px;margin-bottom:6px;display:flex;justify-content:space-between}
-.tbox .row{display:flex;align-items:center;gap:8px}
-.tbox input[type=number]{flex:1;background:transparent;border:0;color:#fff;font-size:22px;font-weight:700;padding:0;outline:none;min-width:0;font-family:inherit}
-.tok-btn{display:flex;align-items:center;gap:6px;background:#1e2530;border:1px solid var(--line);border-radius:10px;padding:7px 10px;cursor:pointer;white-space:nowrap;font-weight:700;font-size:13px;color:#fff}
-.tlogo{width:26px;height:26px;flex:0 0 26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;overflow:hidden;background:#2a323d}
-.tlogo.lg{width:38px;height:38px;flex:0 0 38px;font-size:17px}
-.swap-arrow{display:flex;justify-content:center;margin:-3px 0}
-.swap-arrow button{width:36px;height:36px;padding:0;margin:0;border-radius:50%;background:var(--card);border:3px solid var(--bg);color:var(--blue);font-size:16px;cursor:pointer}
 .info-row{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);padding:4px 0}
 .info-row b{color:#fff;font-weight:400}
 button.act{width:100%;padding:14px;margin:8px 0 0;border:0;border-radius:12px;background:var(--blue);color:#fff;font-weight:700;font-size:15px;cursor:pointer;transition:opacity .2s}
@@ -37,58 +25,64 @@ button.act.buy{background:var(--green)}button.act.sell{background:var(--red)}but
 .row-tbl .lft{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
 .row-tbl .rt{text-align:right}
 .row-tbl .price-b{color:var(--green);font-weight:600}
-.row-tbl .price-s{color:var(--red);font-weight:600}
-.order-book{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.order-side{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px;font-size:11px}
-.order-side .hdr{color:var(--muted);font-size:10px;margin-bottom:4px;font-weight:700}
-.order-side .line{display:flex;justify-content:space-between;padding:2px 0}
-.asks .line .p{color:var(--red)}
-.bids .line .p{color:var(--green)}
-.pool-row{display:flex;align-items:center;gap:10px;padding:12px;background:var(--bg);border:1px solid var(--line);border-radius:12px;margin-top:6px;cursor:pointer}
-.pool-row .info{flex:1;min-width:0}
-.pool-row .name{font-weight:700;color:#fff;font-size:14px}
-.pool-row .meta{color:var(--muted);font-size:11px;margin-top:2px}
-.pool-row .right{text-align:right}
-.pool-row .apr{color:var(--green);font-weight:700;font-size:13px}
-.pool-row .tvl{color:var(--muted);font-size:10px;margin-top:2px}
 .msg{position:fixed;z-index:8000;left:12px;right:12px;top:12px;padding:12px;border-radius:12px;background:#1e252f;border:1px solid var(--line);display:none;text-align:center;font-size:13px}
 .msg.show{display:block}
 .hint{color:var(--muted);font-size:11px;text-align:center;margin-top:8px}
 .hide{display:none!important}
-.modal{position:fixed;z-index:5000;inset:0;background:rgba(0,0,0,.7);display:none;align-items:flex-end;justify-content:center;padding:12px}
+.modal{position:fixed;z-index:5000;inset:0;background:rgba(0,0,0,.75);display:none;align-items:flex-end;justify-content:center;padding:12px}
 .modal.show{display:flex}
-.modal-in{width:100%;max-width:520px;max-height:80vh;overflow-y:auto;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px}
-.modal-in .tok-item{display:flex;align-items:center;gap:12px;padding:12px;border-radius:10px;cursor:pointer;margin-top:6px;background:var(--bg);border:1px solid var(--line)}
-.modal-in .tok-item .nm{flex:1;color:#fff;font-weight:700;font-size:14px}
+.modal-in{width:100%;max-width:520px;max-height:82vh;overflow-y:auto;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px}
 .nav{position:fixed;z-index:900;bottom:0;left:0;right:0;background:#0e131a;border-top:1px solid var(--line);padding:8px 6px calc(8px + env(safe-area-inset-bottom));display:flex;justify-content:center;gap:4px}
 .nav button{flex:1;max-width:110px;padding:8px 4px;margin:0;background:transparent;color:var(--muted);border:0;font-size:10px;font-weight:600;cursor:pointer;border-radius:10px;line-height:1.4}
 .nav button.active{color:var(--gold);background:#151a21}
 .nav button .ic{font-size:20px;display:block;margin-bottom:2px}
-.bal-panel{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px;margin-bottom:10px}
-.bal-panel .hdr{color:var(--gold);font-size:11px;font-weight:700;margin-bottom:6px}
-.bal-panel .row{display:flex;justify-content:space-between;font-size:12px;padding:3px 0}
-.bal-panel .row .k{color:var(--muted)}
-.bal-panel .row .v{color:#fff;font-weight:600}
-.faucet-btn{width:100%;background:#1e2530;color:var(--gold);border:1px solid var(--gold);padding:10px;border-radius:10px;font-weight:700;font-size:12px;cursor:pointer;margin-bottom:12px}
-.total-bal{text-align:center;padding:14px;background:linear-gradient(135deg,#1a212c,#10151c);border-radius:14px;margin-bottom:12px}
+.total-bal{text-align:center;padding:14px;background:linear-gradient(135deg,#1a212c,#10151c);border-radius:14px;margin-bottom:12px;border:1px solid #2a3242}
 .total-bal .lbl{color:var(--muted);font-size:11px;margin-bottom:4px}
-.total-bal .val{color:#fff;font-size:28px;font-weight:700;letter-spacing:-.5px}
-.hist-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);font-size:12px}
-.hist-item:last-child{border:0}
-.hist-item .desc{color:var(--muted);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:8px}
-.hist-item .amt{color:#fff;font-weight:600;white-space:nowrap}
+.total-bal .val{color:#fff;font-size:32px;font-weight:800;letter-spacing:-1px}
 
-/* SHOP */
-.shop-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.shop-btn{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:16px 12px;cursor:pointer;text-align:center;transition:.2s;display:flex;flex-direction:column;gap:6px;align-items:center;color:#fff}
-.shop-btn:hover{border-color:var(--blue);transform:translateY(-2px)}
-.shop-btn .em{font-size:26px}
-.shop-btn .tt{font-weight:700;font-size:13px}
-.shop-btn .sb{color:var(--muted);font-size:10px}
+/* ============ KNIGHT ============ */
+.knight-wrap{background:linear-gradient(135deg,#1a212c,#0e131a);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px;position:relative;overflow:hidden}
+.knight-wrap::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#2f80ed,#a855f7,#f4cf70)}
+.rank-badge{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding:10px;background:#0d1520;border:1px solid #2a3242;border-radius:12px}
+.rank-medal{width:48px;height:48px;flex:0 0 48px;border-radius:50%;background:linear-gradient(135deg,#80652d,#c99629);display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 0 18px #c9962977}
+.rank-info{flex:1;min-width:0}
+.rank-name-top{font-size:14px;font-weight:800;color:#fff}
+.rank-liga{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-top:2px}
+.rank-xp-bar{height:8px;background:#080b10;border-radius:99px;overflow:hidden;margin-top:6px}
+.rank-xp-fill{height:100%;background:linear-gradient(90deg,#c99629,#f5d477);border-radius:99px;transition:width .8s cubic-bezier(.4,0,.2,1)}
+.rank-xp-text{font-size:10px;color:var(--muted);margin-top:4px;text-align:right}
+
+.knight-scene{display:grid;grid-template-columns:70px 1fr 70px;gap:12px;align-items:center;margin:8px 0 16px}
+.slot-col{display:flex;flex-direction:column;gap:10px}
+.slot{width:70px;height:70px;background:#0d1520;border:2px solid #2a3242;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:30px;cursor:pointer;position:relative;transition:.2s}
+.slot:hover{border-color:var(--blue);transform:scale(1.03)}
+.slot.empty{color:#4a5563;font-size:22px}
+.slot.filled{border-color:var(--green);background:linear-gradient(135deg,#0d2818,#132b1f);box-shadow:0 0 14px #26a17b66}
+.slot.locked{opacity:.45;cursor:not-allowed;background:#0a0f15}
+.slot.locked::after{content:'🔒';position:absolute;top:2px;right:2px;font-size:11px;opacity:.7}
+.slot .slot-lbl{position:absolute;bottom:-16px;left:50%;transform:translateX(-50%);font-size:9px;color:var(--muted);white-space:nowrap;text-transform:uppercase;letter-spacing:.5px}
+.knight-body{position:relative;display:flex;align-items:center;justify-content:center;min-height:220px}
+.knight-avatar{font-size:130px;line-height:1;filter:drop-shadow(0 8px 24px rgba(0,0,0,.6));animation:idle 3s ease-in-out infinite}
+@keyframes idle{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-6px) rotate(-1deg)}}
+.knight-glow{position:absolute;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(79,140,255,.35) 0%,transparent 65%);animation:pulse-glow 2.5s ease-in-out infinite;z-index:-1}
+@keyframes pulse-glow{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.15);opacity:1}}
+.knight-speech{position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);background:#fff;color:#111;padding:8px 14px;border-radius:14px;font-size:12px;font-weight:600;white-space:nowrap;box-shadow:0 6px 18px rgba(0,0,0,.4);animation:speech-pop .4s ease}
+.knight-speech::before{content:'';position:absolute;top:-6px;left:50%;transform:translateX(-50%);border:6px solid transparent;border-bottom-color:#fff;border-top:0}
+@keyframes speech-pop{0%{transform:translateX(-50%) scale(.5);opacity:0}100%{transform:translateX(-50%) scale(1);opacity:1}}
+
+.knight-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:20px}
+.stat-box{background:#0d1520;border:1px solid #2a3242;border-radius:12px;padding:10px;text-align:center}
+.stat-val{font-size:20px;font-weight:800;color:var(--gold);line-height:1}
+.stat-lbl{font-size:10px;color:var(--muted);margin-top:6px;text-transform:uppercase;letter-spacing:.5px}
+.stat-box.atk .stat-val{color:#f6465d}
+.stat-box.pow .stat-val{color:#f4cf70}
+.stat-box.hp .stat-val{color:#26a17b}
+
+/* ============ ITEMS / SHOP ============ */
 .item-card{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px;margin-bottom:8px}
-.item-card .row1{display:flex;justify-content:space-between;align-items:center}
-.item-card .name{font-weight:700;font-size:14px;color:#fff}
-.item-card .eff{font-size:11px;color:var(--muted);min-height:28px}
+.item-card .row1{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.item-card .name{font-weight:700;font-size:14px;color:#fff;display:flex;align-items:center;gap:6px}
+.item-card .eff{font-size:11px;color:var(--muted)}
 .item-card .price{font-weight:800;color:var(--gold);font-size:15px}
 .item-card .row2{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .item-card button{padding:7px 12px;font-size:12px;font-weight:700;border-radius:8px;border:0;cursor:pointer;background:var(--blue);color:#fff}
@@ -98,10 +92,17 @@ button.act.buy{background:var(--green)}button.act.sell{background:var(--red)}but
 .r-common{background:#334155;color:#cbd5e1}.r-rare{background:#1e3a8a;color:#93c5fd}
 .r-epic{background:#4c1d95;color:#c4b5fd}.r-legend{background:linear-gradient(90deg,#b45309,#f59e0b);color:#fff}
 .r-mythic{background:linear-gradient(90deg,#a21caf,#ec4899,#f59e0b);color:#fff}
-.badge{font-size:9px;padding:3px 7px;border-radius:5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
-.b-seller{background:linear-gradient(90deg,#f59e0b,#eab308);color:#111}
-.b-common{background:#334155;color:#cbd5e1}
-.stars{color:var(--gold);font-size:11px;letter-spacing:1px}
+
+/* grid предметов для инвентаря */
+.inv-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.inv-cell{aspect-ratio:1;background:linear-gradient(145deg,#101a28,#0c121c);border:2px solid #2a3242;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:28px;cursor:pointer;position:relative;transition:.2s}
+.inv-cell:hover{transform:scale(1.05)}
+.inv-cell.eq{border-color:var(--green);box-shadow:0 0 14px #26a17b88}
+.inv-cell.r-rare{border-color:#2f80ed}.inv-cell.r-epic{border-color:#a855f7}
+.inv-cell.r-legend{border-color:#f59e0b;box-shadow:0 0 12px #f59e0b88}
+.inv-cell.r-mythic{border-color:#ec4899;box-shadow:0 0 16px #ec489988}
+.inv-cell .inv-badge{position:absolute;top:-4px;right:-4px;width:18px;height:18px;background:var(--green);color:#0d280d;font-size:11px;font-weight:800;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px #000}
+.inv-cell .inv-star{position:absolute;bottom:2px;left:0;right:0;text-align:center;font-size:8px;color:var(--gold);letter-spacing:-1px}
 
 /* STAKING COUNTER */
 .stake-counter{background:linear-gradient(135deg,#0d2818,#132b1f);border:1px solid #1d5a3a;border-radius:14px;padding:14px;margin-bottom:12px}
@@ -111,39 +112,23 @@ button.act.buy{background:var(--green)}button.act.sell{background:var(--red)}but
 .stake-counter .row .v{color:#26a17b;font-weight:700;font-variant-numeric:tabular-nums}
 .stake-counter .total{color:var(--gold);font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;text-align:center;margin-top:8px;padding-top:8px;border-top:1px solid #1d5a3a}
 
-/* LEVEL CARD */
-.level-card{background:linear-gradient(135deg,#1a212c,#10151c);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px}
-.level-header{display:flex;align-items:center;gap:12px;margin-bottom:14px}
-.level-icon{width:56px;height:56px;border-radius:14px;background:linear-gradient(135deg,#2f80ed,#a855f7);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;box-shadow:0 0 20px rgba(79,140,255,.4)}
-.level-info{flex:1;min-width:0}
-.level-name{font-size:18px;font-weight:800;color:var(--gold)}
-.level-sub{color:var(--muted);font-size:11px;margin-top:2px}
-.level-xp{color:#fff;font-size:12px;font-weight:600;margin-top:4px}
-.bar-wrap{margin-bottom:10px}
-.bar-label{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:4px}
-.bar-label b{color:#fff}
-.bar-bg{height:12px;background:#1e2530;border-radius:6px;overflow:hidden;position:relative}
-.bar-fill{height:100%;border-radius:6px;transition:width .8s cubic-bezier(.4,0,.2,1);position:relative;overflow:hidden}
-.bar-fill.blue{background:linear-gradient(90deg,#2f80ed,#4f8cff)}
-.bar-fill.green{background:linear-gradient(90deg,#26a17b,#39d98a)}
-.bar-fill.gold{background:linear-gradient(90deg,#f4cf70,#f5d477)}
-.bar-fill::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);transform:translateX(-100%);animation:shimmer 2.5s infinite}
-@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
-.level-up{animation:pulse 1s ease}
-@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05);box-shadow:0 0 30px rgba(244,207,112,.8)}}
-
 /* AUCTION */
 .auc-card{background:linear-gradient(145deg,#151a21,#10151c);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:10px;position:relative;overflow:hidden}
 .auc-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#2f80ed,#a855f7,#f4cf70)}
 .auc-timer{color:var(--cyan);font-weight:700;font-variant-numeric:tabular-nums}
 .auc-row{display:flex;justify-content:space-between;font-size:12px;padding:4px 0;color:var(--muted)}
 .auc-row b{color:#fff}
-
-/* ADMIN */
+.badge{font-size:9px;padding:3px 7px;border-radius:5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+.b-seller{background:linear-gradient(90deg,#f59e0b,#eab308);color:#111}
+.b-common{background:#334155;color:#cbd5e1}
+.stars{color:var(--gold);font-size:11px;letter-spacing:1px}
+.shop-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.shop-btn{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:16px 12px;cursor:pointer;text-align:center;transition:.2s;display:flex;flex-direction:column;gap:6px;align-items:center;color:#fff}
+.shop-btn:hover{border-color:var(--blue);transform:translateY(-2px)}
+.shop-btn .em{font-size:26px}.shop-btn .tt{font-weight:700;font-size:13px}.shop-btn .sb{color:var(--muted);font-size:10px}
 .field{margin-bottom:10px}
 .field label{display:block;font-size:11px;color:var(--muted);margin-bottom:5px}
 .field input,.field select{width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:9px 11px;border-radius:8px;outline:none;font-family:inherit;font-size:13px}
-.field input:focus{border-color:var(--blue)}
 .admin-card{border-color:#8a6b28}
 .admin-tabs{display:flex;gap:4px;margin-bottom:12px;overflow-x:auto;padding-bottom:2px}
 .admin-tabs button{padding:8px 12px;margin:0;background:var(--card);color:var(--muted);border:1px solid var(--line);font-size:11px;font-weight:700;cursor:pointer;border-radius:16px;white-space:nowrap;flex:0 0 auto}
@@ -153,222 +138,144 @@ button.act.buy{background:var(--green)}button.act.sell{background:var(--red)}but
 <div class="app">
 
 <div class="top">
-<h1>💎 TELEPAT</h1>
+<h1>⚔️ ТЕЛЕПАТ</h1>
 <button class="wallet-btn" onclick="toggleWallet()">
 <span class="dot" id="dot"></span><span id="walletLabel">Connect</span>
 </button>
 </div>
 
-<!-- =============== КОШЕЛЁК =============== -->
+<!-- =============== ГЛАВНАЯ =============== -->
 <div id="s-wallet">
 <div class="total-bal">
-<div class="lbl">Portfolio Value</div>
+<div class="lbl">Портфель</div>
 <div class="val">$<span id="portVal">0.00</span></div>
 </div>
 
-<!-- LEVEL CARD -->
-<div class="level-card" id="levelCard">
-<div class="level-header">
-<div class="level-icon" id="lvlIcon">⚔️</div>
-<div class="level-info">
-<div class="level-name" id="lvlName">Мечник</div>
-<div class="level-sub" id="lvlSub">Уровень 1 из 8</div>
-<div class="level-xp">⚡ XP: <span id="lvlXP">0%</span></div>
+<!-- KNIGHT SCENE -->
+<div class="knight-wrap" id="knightWrap">
+<div class="rank-badge">
+<div class="rank-medal" id="rankMedal">⚔️</div>
+<div class="rank-info">
+<div class="rank-name-top" id="rankName">Мечник</div>
+<div class="rank-liga" id="rankLiga">Уровень 1 из 8</div>
+<div class="rank-xp-bar"><div class="rank-xp-fill" id="rankXpFill" style="width:0%"></div></div>
+<div class="rank-xp-text" id="rankXpText">0 / 100 XP</div>
 </div>
-</div>
-<div class="bar-wrap">
-<div class="bar-label"><span>🔵 Сделки</span><b id="barDealsTxt">0 / 10</b></div>
-<div class="bar-bg"><div class="bar-fill blue" id="barDeals" style="width:0%"></div></div>
-</div>
-<div class="bar-wrap">
-<div class="bar-label"><span>🟢 Рефералы</span><b id="barRefsTxt">0 / 3</b></div>
-<div class="bar-bg"><div class="bar-fill green" id="barRefs" style="width:0%"></div></div>
-</div>
-<div class="bar-wrap">
-<div class="bar-label"><span>🟡 Заработок</span><b id="barEarnTxt">$0 / $100</b></div>
-<div class="bar-bg"><div class="bar-fill gold" id="barEarn" style="width:0%"></div></div>
-</div>
-<div style="text-align:center;font-size:11px;color:var(--muted);margin-top:8px" id="lvlHint">🎯 Заполни все три шкалы до 100% для апа</div>
 </div>
 
-<!-- STAKING COUNTER -->
-<div class="stake-counter" id="stakeBox">
-<div class="lbl">💎 Staking Rewards (LIVE)</div>
+<div class="knight-scene">
+<div class="slot-col">
+  <div class="slot" id="slot-weapon" onclick="clickSlot('weapon')"><span class="slot-lbl">Меч</span></div>
+  <div class="slot locked" id="slot-helmet"><span class="slot-lbl">Шлем</span></div>
+  <div class="slot locked" id="slot-cloak"><span class="slot-lbl">Плащ</span></div>
+</div>
+<div class="knight-body">
+  <div class="knight-glow"></div>
+  <div class="knight-avatar" id="knightAvatar">🛡️</div>
+  <div class="knight-speech" id="knightSpeech">Славный путь начинается!</div>
+</div>
+<div class="slot-col">
+  <div class="slot" id="slot-body" onclick="clickSlot('body')"><span class="slot-lbl">Рубашка</span></div>
+  <div class="slot locked" id="slot-shield"><span class="slot-lbl">Щит</span></div>
+  <div class="slot locked" id="slot-pet"><span class="slot-lbl">Питомец</span></div>
+</div>
+</div>
+
+<!-- второй ряд слотов (брюки + 6 заблокированных) -->
+<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:20px">
+  <div class="slot" id="slot-legs" onclick="clickSlot('legs')" style="width:100%;height:60px"><span class="slot-lbl">Брюки</span></div>
+  <div class="slot locked" style="width:100%;height:60px"><span class="slot-lbl">Кольцо</span></div>
+  <div class="slot locked" style="width:100%;height:60px"><span class="slot-lbl">Сумка</span></div>
+  <div class="slot locked" style="width:100%;height:60px"><span class="slot-lbl">Титул</span></div>
+  <div class="slot locked" style="width:100%;height:60px"><span class="slot-lbl">Аура</span></div>
+</div>
+
+<div class="knight-stats">
+  <div class="stat-box atk"><div class="stat-val" id="statAtk">0</div><div class="stat-lbl">⚔️ Сила</div></div>
+  <div class="stat-box pow"><div class="stat-val" id="statPow">0</div><div class="stat-lbl">💪 Мощь</div></div>
+  <div class="stat-box hp"><div class="stat-val" id="statHp">100</div><div class="stat-lbl">❤️ Защита</div></div>
+</div>
+
+<div class="hint" style="margin-top:14px" id="equipHint">Надень меч, рубашку и брюки, чтобы апать уровень</div>
+</div>
+
+<!-- STAKING -->
+<div class="stake-counter">
+<div class="lbl">💎 Staking (LIVE)</div>
 <div id="stakeRows"></div>
 <div class="total">$<span id="stakeUSD">0,00000000</span></div>
-<div style="text-align:center;color:#7dd3a0;font-size:10px;margin-top:4px">APR 24% • начисляется каждую секунду</div>
+<div style="text-align:center;color:#7dd3a0;font-size:10px;margin-top:4px">2% в месяц по каждой монете</div>
 </div>
 
 <div class="card">
-<div class="card-title">💰 Balances</div>
+<div class="card-title">💰 Балансы</div>
 <div id="balList"></div>
 </div>
 
 <div class="card">
-<div class="card-title">📌 Quick Actions</div>
+<div class="card-title">📌 Быстрые действия</div>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-<button class="tok-btn" style="justify-content:center;padding:14px" onclick="goMain('exchange');switchSub('dex')">🔁 Swap</button>
-<button class="tok-btn" style="justify-content:center;padding:14px" onclick="goMain('exchange');switchSub('pools')">💧 Pools</button>
-<button class="tok-btn" style="justify-content:center;padding:14px" onclick="goMain('exchange');switchSub('p2p')">🤝 P2P</button>
-<button class="tok-btn" style="justify-content:center;padding:14px" onclick="goMain('exchange');switchSub('shop')">🛒 Shop</button>
+<button class="tok-btn" style="justify-content:center;padding:14px;background:#1e2530;border:1px solid var(--line);border-radius:10px;color:#fff;font-weight:700;cursor:pointer" onclick="goMain('shop')">🏪 Магазин</button>
+<button class="tok-btn" style="justify-content:center;padding:14px;background:#1e2530;border:1px solid var(--line);border-radius:10px;color:#fff;font-weight:700;cursor:pointer" onclick="goMain('auction')">🔨 Аукцион</button>
+<button class="tok-btn" style="justify-content:center;padding:14px;background:#1e2530;border:1px solid var(--line);border-radius:10px;color:#fff;font-weight:700;cursor:pointer" onclick="goMain('friends')">👥 Друзья</button>
+<button class="tok-btn" style="justify-content:center;padding:14px;background:#1e2530;border:1px solid var(--line);border-radius:10px;color:#fff;font-weight:700;cursor:pointer" onclick="goMain('inventory')">🎒 Инвентарь</button>
 </div>
 </div>
 
 <div class="card">
-<div class="card-title">📜 Recent Activity</div>
-<div id="histList"><div class="hint">No transactions yet</div></div>
+<div class="card-title">📜 История</div>
+<div id="histList"><div class="hint">Пока пусто</div></div>
 </div>
 
-<button class="faucet-btn" onclick="faucet()">🚰 GET TEST TOKENS</button>
+<button class="act buy" onclick="faucet()">🚰 Получить тестовые токены</button>
 </div>
 
-<!-- =============== БИРЖА =============== -->
-<div id="s-exchange" class="hide">
+<!-- =============== МАГАЗИН =============== -->
+<div id="s-shop" class="hide">
 <div class="tabs-sub">
-<button id="sub-p2p" onclick="switchSub('p2p')">🤝 P2P</button>
-<button id="sub-dex" class="active" onclick="switchSub('dex')">⚡ DEX</button>
-<button id="sub-pools" onclick="switchSub('pools')">💧 Pools</button>
-<button id="sub-charts" onclick="switchSub('charts')">📈 Charts</button>
-<button id="sub-shop" onclick="switchSub('shop')">🛒 SHOP</button>
+<button id="sub-gear" class="active" onclick="switchSub('gear')">⚔️ Амуниция</button>
+<button id="sub-titles" onclick="switchSub('titles')">🏷️ Титулы</button>
+<button id="sub-artifacts" onclick="switchSub('artifacts')">💎 Артефакты</button>
+<button id="sub-certs" onclick="switchSub('certs')">📜 Сертификаты</button>
 </div>
 
-<!-- DEX -->
-<div id="sub-s-dex">
+<div id="sub-s-gear">
 <div class="card">
-<div class="card-title">Swap <span style="color:var(--muted);font-size:11px;font-weight:400">Slippage: 0.5% ⚙️</span></div>
-<div class="tbox">
-<div class="lbl"><span>You send</span><span id="balFrom">—</span></div>
-<div class="row">
-<input type="number" id="amtFrom" placeholder="0.0" oninput="calcSwap()">
-<button class="tok-btn" onclick="openTokModal('from')"><span class="tlogo" id="icoFrom">💵</span><span id="symFrom">TUSD</span>▼</button>
+<div class="card-title">⚔️ АМУНИЦИЯ — УРОВЕНЬ <span id="gearLevelLabel">1</span></div>
+<div class="hint" style="margin-bottom:12px">Купи все 3 предмета текущего уровня, надень — откроется ап</div>
+<div id="gearList"></div>
 </div>
 </div>
-<div class="swap-arrow"><button onclick="flipSwap()">⇅</button></div>
-<div class="tbox">
-<div class="lbl"><span>You receive</span><span id="balTo">—</span></div>
-<div class="row">
-<input type="number" id="amtTo" placeholder="0.0" readonly>
-<button class="tok-btn" onclick="openTokModal('to')"><span class="tlogo" id="icoTo">🥇</span><span id="symTo">TG</span>▼</button>
+<div id="sub-s-titles" class="hide">
+<div class="card"><div class="card-title">🏷️ ТИТУЛЫ</div><div id="titlesList"></div></div>
 </div>
+<div id="sub-s-artifacts" class="hide">
+<div class="card"><div class="card-title">💎 АРТЕФАКТЫ</div><div id="artifactsList"></div></div>
 </div>
-<div style="margin-top:8px">
-<div class="info-row"><span>Rate</span><b id="rateInfo">—</b></div>
-<div class="info-row"><span>Price Impact</span><b id="impactInfo">—</b></div>
-<div class="info-row"><span>Fee (0.3%)</span><b id="feeInfo">—</b></div>
-<div class="info-row"><span>Min. received</span><b id="minRecv">—</b></div>
-</div>
-<button class="act" id="btnSwap" onclick="doSwap()" disabled>Connect Wallet</button>
+<div id="sub-s-certs" class="hide">
+<div class="card"><div class="card-title">📜 СЕРТИФИКАТЫ ПРОДАВЦА</div><div id="certsList"></div></div>
 </div>
 </div>
 
-<!-- POOLS -->
-<div id="sub-s-pools" class="hide">
+<!-- =============== ИНВЕНТАРЬ =============== -->
+<div id="s-inventory" class="hide">
 <div class="card">
-<div class="card-title">💧 Liquidity Pools</div>
-<div id="poolsList"></div>
+<div class="card-title">🎒 МОИ ПРЕДМЕТЫ</div>
+<div class="hint" style="margin-bottom:12px">Клик по предмету — надеть, продать или выставить на аукцион</div>
+<div id="invGrid" class="inv-grid"></div>
 </div>
-<div class="card">
-<div class="card-title">📊 My Positions</div>
-<div id="myLpList"></div>
-</div>
-</div>
-
-<!-- CHARTS -->
-<div id="sub-s-charts" class="hide">
-<div class="card">
-<div class="card-title">📈 Price Chart <span style="color:var(--muted);font-size:11px;font-weight:400" id="chartSym">TG/TUSD</span></div>
-<div style="display:flex;gap:6px;margin-bottom:10px;overflow-x:auto">
-<div id="chartTabs"></div>
-</div>
-<svg id="priceChart" viewBox="0 0 500 200" style="width:100%;height:200px;background:#0b0e11;border-radius:10px"></svg>
-<div style="display:flex;justify-content:space-between;margin-top:10px;font-size:12px">
-<div><span style="color:var(--muted)">Current: </span><b id="chartCurrent" style="color:var(--green)">—</b></div>
-<div><span style="color:var(--muted)">24h: </span><b id="chartChange">—</b></div>
-</div>
-</div>
-</div>
-
-<!-- P2P -->
-<div id="sub-s-p2p" class="hide">
-<div class="card">
-<div class="card-title">📖 Order Book <span style="color:var(--muted);font-size:11px;font-weight:400">TG / TUSD</span></div>
-<div class="order-book">
-<div class="order-side bids">
-<div class="hdr">🟢 BUY TG</div>
-<div class="line"><span>0.0132</span><span class="p">1.50 TG</span></div>
-<div class="line"><span>0.0131</span><span class="p">2.30 TG</span></div>
-<div class="line"><span>0.0130</span><span class="p">3.10 TG</span></div>
-<div class="line"><span>0.0128</span><span class="p">5.00 TG</span></div>
-</div>
-<div class="order-side asks">
-<div class="hdr">🔴 SELL TG</div>
-<div class="line"><span>0.0134</span><span class="p">2.10 TG</span></div>
-<div class="line"><span>0.0135</span><span class="p">1.20 TG</span></div>
-<div class="line"><span>0.0137</span><span class="p">4.80 TG</span></div>
-<div class="line"><span>0.0139</span><span class="p">6.00 TG</span></div>
-</div>
-</div>
-</div>
-
-<div class="card">
-<div class="card-title">📋 Active Orders (P2P)</div>
-<div id="p2pList"></div>
-</div>
-
-<div class="card">
-<div class="card-title">➕ Create Order</div>
-<div class="tbox">
-<div class="lbl"><span>You send</span></div>
-<div class="row">
-<input type="number" id="p2pFrom" placeholder="0.0">
-<button class="tok-btn"><span class="tlogo">💵</span>TUSD▼</button>
-</div>
-</div>
-<div class="swap-arrow"><button>⇅</button></div>
-<div class="tbox">
-<div class="lbl"><span>You receive</span></div>
-<div class="row">
-<input type="number" id="p2pTo" placeholder="0.0">
-<button class="tok-btn"><span class="tlogo">🥇</span>TG▼</button>
-</div>
-</div>
-<button class="act" onclick="msg('✅ Order created (demo)','success')">🚀 Create Order</button>
-</div>
-</div>
-
-<!-- SHOP -->
-<div id="sub-s-shop" class="hide">
-<div class="card">
-<div class="card-title">🛒 Магазин</div>
-<div class="shop-grid" id="shopMenu"></div>
-</div>
-<div class="card hide" id="shopContentCard">
-<div class="card-title" id="shopTitle">— <span style="color:var(--blue);font-size:12px;cursor:pointer" onclick="closeShop()">← назад</span></div>
-<div id="shopContent"></div>
-</div>
-</div>
-
 </div>
 
 <!-- =============== ДРУЗЬЯ =============== -->
 <div id="s-friends" class="hide">
 <div class="card">
-<div class="card-title">👥 Invite Friends</div>
-<div class="info-row"><span>🥇 Level 1</span><b>10%</b></div>
-<div class="info-row"><span>🥈 Level 2</span><b>5%</b></div>
-<div class="info-row"><span>🥉 Level 3</span><b>3%</b></div>
+<div class="card-title">👥 ДРУЗЬЯ</div>
+<div class="info-row"><span>🥇 1 уровень</span><b>10%</b></div>
+<div class="info-row"><span>🥈 2 уровень</span><b>5%</b></div>
+<div class="info-row"><span>🥉 3 уровень</span><b>3%</b></div>
 <input id="refLink" readonly value="https://t.me/TELEPATp2p_bot?start=demo" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:10px;border-radius:8px;margin-top:10px;font-size:12px">
-<button class="act" onclick="msg('📋 Скопировано','success')">📋 Copy Referral Link</button>
+<button class="act" onclick="msg('📋 Скопировано','success')">📋 Скопировать</button>
 </div>
-<div class="card">
-<div class="card-title">📊 My Referrals</div>
-<div class="info-row"><span>Level 1</span><b>3</b></div>
-<div class="info-row"><span>Level 2</span><b>1</b></div>
-<div class="info-row"><span>Level 3</span><b>0</b></div>
-<div class="info-row"><span>Earned TG</span><b style="color:var(--green)">+0.45</b></div>
-<div class="info-row"><span>Earned TUSD</span><b style="color:var(--green)">+12.30</b></div>
-</div>
-
 <div class="card">
 <div class="card-title">💱 Рефералы на продажу</div>
 <div id="refSaleList"></div>
@@ -388,25 +295,19 @@ button.act.buy{background:var(--green)}button.act.sell{background:var(--red)}but
 <!-- =============== ЗАРАБОТОК =============== -->
 <div id="s-earn" class="hide">
 <div class="card">
-<div class="card-title">🔥 Check-in</div>
+<div class="card-title">🔥 ЧЕКИН</div>
 <div style="text-align:center;padding:10px 0">
-<div style="font-size:44px;font-weight:700;color:var(--gold)">12</div>
-<div style="color:var(--muted);font-size:11px">days in a row</div>
+<div style="font-size:44px;font-weight:800;color:var(--gold)">12</div>
+<div class="hint">дней подряд</div>
 </div>
-<button class="act" onclick="msg('🔥 Day 13 reward claimed (demo)','success')">🔥 CLAIM DAY 13</button>
+<button class="act" onclick="msg('🔥 День 13 получен','success')">🔥 ЗАБРАТЬ ДЕНЬ 13</button>
 </div>
-
 <div class="card">
-<div class="card-title">📺 Watch Ad</div>
-<div class="hint">Watch a short video, get rewarded</div>
-<button class="act" onclick="msg('📺 Ad watched, +0.01 TUSD (demo)','success')">▶️ Watch</button>
-</div>
-
-<div class="card">
-<div class="card-title">📋 Tasks</div>
-<div class="row-tbl"><div class="lft">📢 Subscribe to channel</div><div class="rt price-b">+0.5 TUSD</div></div>
-<div class="row-tbl"><div class="lft">🤖 Subscribe to bot</div><div class="rt price-b">+1 TUSD</div></div>
-<button class="act" onclick="msg('✅ Task completed (demo)','success')">Complete</button>
+<div class="card-title">📋 ЗАДАНИЯ</div>
+<div class="row-tbl"><div class="lft">📢 Подписаться на канал</div><div class="rt price-b">+0.5 TUSD</div></div>
+<div class="row-tbl"><div class="lft">🤖 Подписаться на бота</div><div class="rt price-b">+1 TUSD</div></div>
+<div class="row-tbl"><div class="lft">👥 Пригласить друга</div><div class="rt price-b">+2 TUSD</div></div>
+<button class="act" onclick="msg('✅ Задание выполнено','success')">Выполнить</button>
 </div>
 </div>
 
@@ -422,50 +323,44 @@ button.act.buy{background:var(--green)}button.act.sell{background:var(--red)}but
 </div>
 
 <div id="adminPanel" class="hide">
-<div class="admin-tabs" id="adminTabs">
-<button class="active" onclick="adminTab('stats')">📊 Статистика</button>
-<button onclick="adminTab('level')">🎖️ Уровни</button>
-<button onclick="adminTab('balance')">💰 Балансы</button>
-<button onclick="adminTab('stake')">💎 Стейкинг</button>
-<button onclick="adminTab('prices')">📜 Сертификаты</button>
-<button onclick="adminTab('tokens')">🪙 Курсы</button>
-<button onclick="adminTab('users')">👥 Юзеры</button>
-<button onclick="adminTab('actions')">⚙️ Действия</button>
+<div class="admin-tabs">
+<button class="active" onclick="adminTab('stats',this)">📊 Стата</button>
+<button onclick="adminTab('knight',this)">⚔️ Рыцарь</button>
+<button onclick="adminTab('balance',this)">💰 Балансы</button>
+<button onclick="adminTab('stake',this)">💎 Стейк</button>
+<button onclick="adminTab('prices',this)">📜 Цены</button>
+<button onclick="adminTab('actions',this)">⚙️ Действия</button>
 </div>
 
-<!-- STATS -->
 <div id="at-stats" class="admin-tab-content">
 <div class="card admin-card">
-<div class="card-title">📊 СТАТИСТИКА СИСТЕМЫ</div>
-<div class="row-tbl"><div class="lft">👥 Пользователей</div><div class="rt"><b id="statUsers">124</b></div></div>
-<div class="row-tbl"><div class="lft">📦 Ордеров открыто</div><div class="rt"><b id="statOrders">18</b></div></div>
-<div class="row-tbl"><div class="lft">💧 Пулов</div><div class="rt"><b id="statPools">3</b></div></div>
+<div class="card-title">📊 СТАТИСТИКА</div>
+<div class="row-tbl"><div class="lft">👥 Пользователей</div><div class="rt"><b>124</b></div></div>
+<div class="row-tbl"><div class="lft">⚔️ Рыцарей</div><div class="rt"><b>87</b></div></div>
+<div class="row-tbl"><div class="lft">💧 Пулов</div><div class="rt"><b>3</b></div></div>
 <div class="row-tbl"><div class="lft">💰 Общий TUSD</div><div class="rt"><b id="statTUSD">0</b></div></div>
 <div class="row-tbl"><div class="lft">🥇 Общий TG</div><div class="rt"><b id="statTG">0</b></div></div>
-<div class="row-tbl"><div class="lft">🤖 Общий AI</div><div class="rt"><b id="statAI">0</b></div></div>
 <div class="row-tbl"><div class="lft">💎 Застейкано USD</div><div class="rt"><b id="statStaked">0</b></div></div>
-<div class="row-tbl"><div class="lft">🎁 Фондов наград</div><div class="rt"><b>3 активных</b></div></div>
 </div>
 </div>
 
-<!-- LEVEL -->
-<div id="at-level" class="admin-tab-content hide">
+<div id="at-knight" class="admin-tab-content hide">
 <div class="card admin-card">
-<div class="card-title">🎖️ УРОВЕНЬ И ПРОГРЕСС</div>
+<div class="card-title">⚔️ РЫЦАРЬ И УРОВНИ</div>
 <div class="field"><label>Текущий уровень (1-8)</label><input id="adLevel" type="number" min="1" max="8" value="1"></div>
 <div class="field"><label>Сделок сделано</label><input id="adDeals" type="number" value="3"></div>
-<div class="field"><label>Рефералов приглашено</label><input id="adRefs" type="number" value="1"></div>
+<div class="field"><label>Рефералов</label><input id="adRefs" type="number" value="1"></div>
 <div class="field"><label>Заработано USD</label><input id="adEarned" type="number" value="45"></div>
 <div style="display:flex;gap:8px;margin-top:8px">
 <button class="act" style="flex:1;margin:0" onclick="adminLevelUp()">⬆️ Апнуть</button>
 <button class="act sell" style="flex:1;margin:0" onclick="adminLevelDown()">⬇️ Понизить</button>
 </div>
 <button class="act gold" style="margin-top:8px" onclick="adminFillMax()">🎯 Заполнить по максимуму</button>
-<div class="hint" style="margin-top:10px">Все три шкалы на главной заполнятся — проверишь анимацию</div>
+<button class="act buy" style="margin-top:8px" onclick="adminGiveGear()">⚔️ Выдать всю амуницию уровня</button>
+<div class="hint" style="margin-top:8px">Смена уровня — рыцарь переодевается, характеристики пересчитываются</div>
 </div>
 </div>
 
-<!-- BALANCE -->
 <div id="at-balance" class="admin-tab-content hide">
 <div class="card admin-card">
 <div class="card-title">💰 МОИ БАЛАНСЫ</div>
@@ -474,25 +369,21 @@ button.act.buy{background:var(--green)}button.act.sell{background:var(--red)}but
 <div class="field"><label>AI</label><input id="adAI" type="number" value="1000000"></div>
 <div class="field"><label>VKCOIN</label><input id="adVK" type="number" value="10000000"></div>
 <div class="field"><label>BBK</label><input id="adBBK" type="number" value="100000"></div>
-<div class="hint" style="margin-top:10px">Меняй — на главной сразу обновится Portfolio Value</div>
 </div>
 </div>
 
-<!-- STAKE -->
 <div id="at-stake" class="admin-tab-content hide">
 <div class="card admin-card">
-<div class="card-title">💎 СТЕЙКИНГ (что застейкано)</div>
-<div class="hint" style="margin-bottom:12px">2% в месяц по каждой монете. Счётчик на главной ускорится.</div>
+<div class="card-title">💎 СТЕЙКИНГ</div>
 <div class="field"><label>TUSD staked</label><input id="stTUSD" type="number" value="1000"></div>
 <div class="field"><label>TG staked</label><input id="stTG" type="number" value="50"></div>
 <div class="field"><label>AI staked</label><input id="stAI" type="number" value="10000"></div>
 </div>
 </div>
 
-<!-- PRICES -->
 <div id="at-prices" class="admin-tab-content hide">
 <div class="card admin-card">
-<div class="card-title">📜 ЦЕНЫ СЕРТИФИКАТОВ (USD)</div>
+<div class="card-title">📜 ЦЕНЫ СЕРТИФИКАТОВ</div>
 <div class="field"><label>3 месяца</label><input id="c3m" type="number" value="25"></div>
 <div class="field"><label>6 месяцев</label><input id="c6m" type="number" value="50"></div>
 <div class="field"><label>1 год</label><input id="c1y" type="number" value="100"></div>
@@ -501,41 +392,18 @@ button.act.buy{background:var(--green)}button.act.sell{background:var(--red)}but
 <div class="card admin-card">
 <div class="card-title">⭐ СТАТУС ПРОДАВЦА</div>
 <div class="field"><label>Сертификат активен</label><select id="adCertActive"><option value="0">Нет</option><option value="1">Да</option></select></div>
-<div class="field"><label>Мой рейтинг (звёзды 0-5)</label><input id="adStars" type="number" min="0" max="5" value="3"></div>
-<div class="field"><label>Всего сделок</label><input id="adDealsTotal" type="number" value="12"></div>
+<div class="field"><label>Рейтинг (0-5)</label><input id="adStars" type="number" min="0" max="5" value="3"></div>
+<div class="field"><label>Сделок всего</label><input id="adDealsTotal" type="number" value="12"></div>
 </div>
 </div>
 
-<!-- TOKENS -->
-<div id="at-tokens" class="admin-tab-content hide">
-<div class="card admin-card">
-<div class="card-title">🪙 КУРСЫ ТОКЕНОВ</div>
-<div class="field"><label>TG → USD</label><input id="rateTG" type="number" step="0.01" value="100"></div>
-<div class="field"><label>AI → USD</label><input id="rateAI" type="number" step="0.0001" value="0.01"></div>
-<div class="field"><label>TUSD → USD</label><input id="rateTUSD" type="number" step="0.01" value="1"></div>
-<div class="field"><label>VKCOIN → USD</label><input id="rateVKCOIN" type="number" step="0.0001" value="0.001"></div>
-<div class="field"><label>BBK → USD</label><input id="rateBBK" type="number" step="0.01" value="0.5"></div>
-</div>
-</div>
-
-<!-- USERS -->
-<div id="at-users" class="admin-tab-content hide">
-<div class="card admin-card">
-<div class="card-title">👥 ПОЛЬЗОВАТЕЛИ И РЕЙТИНГИ</div>
-<div id="adminUsersList"></div>
-</div>
-</div>
-
-<!-- ACTIONS -->
 <div id="at-actions" class="admin-tab-content hide">
 <div class="card admin-card">
 <div class="card-title">⚙️ ДЕЙСТВИЯ</div>
 <button class="act" onclick="adminSave()">💾 СОХРАНИТЬ ВСЁ</button>
-<button class="act sell" style="margin-top:10px" onclick="adminReset()">🔄 СБРОСИТЬ ДЕМО</button>
-<div class="hint" style="margin-top:10px">«Сохранить всё» применит все настройки с вкладок</div>
+<button class="act sell" style="margin-top:10px" onclick="if(confirm('Сбросить?'))location.reload()">🔄 СБРОСИТЬ ДЕМО</button>
 </div>
 </div>
-
 </div>
 </div>
 
@@ -543,19 +411,13 @@ button.act.buy{background:var(--green)}button.act.sell{background:var(--red)}but
 
 <!-- NAV -->
 <div class="nav">
-<button id="n-wallet" class="active" onclick="goMain('wallet')"><span class="ic">🏠</span>Wallet</button>
-<button id="n-exchange" onclick="goMain('exchange')"><span class="ic">💱</span>Exchange</button>
-<button id="n-friends" onclick="goMain('friends')"><span class="ic">👥</span>Friends</button>
-<button id="n-auction" onclick="goMain('auction')"><span class="ic">🔨</span>Auction</button>
-<button id="n-earn" onclick="goMain('earn')"><span class="ic">🎯</span>Earn</button>
-<button id="n-admin" onclick="goMain('admin')"><span class="ic">👑</span>Admin</button>
-</div>
-
-<div id="tokModal" class="modal" onclick="closeTokModal(event)">
-<div class="modal-in" onclick="event.stopPropagation()">
-<div class="card-title">Select Token</div>
-<div id="tokList"></div>
-</div>
+<button id="n-wallet" class="active" onclick="goMain('wallet')"><span class="ic">🏠</span>Главная</button>
+<button id="n-shop" onclick="goMain('shop')"><span class="ic">🏪</span>Магазин</button>
+<button id="n-inventory" onclick="goMain('inventory')"><span class="ic">🎒</span>Инвентарь</button>
+<button id="n-auction" onclick="goMain('auction')"><span class="ic">🔨</span>Аукцион</button>
+<button id="n-friends" onclick="goMain('friends')"><span class="ic">👥</span>Друзья</button>
+<button id="n-earn" onclick="goMain('earn')"><span class="ic">🎯</span>Доход</button>
+<button id="n-admin" onclick="goMain('admin')"><span class="ic">👑</span></button>
 </div>
 
 <div id="modal2" class="modal" onclick="closeModal2(event)">
@@ -564,619 +426,516 @@ button.act.buy{background:var(--green)}button.act.sell{background:var(--red)}but
 
 <script>
 // ==================== STATE ====================
-const DEMO_TOKENS=[{symbol:'TG',name:'Telepat Gold',price:100},{symbol:'AI',name:'AI Token',price:0.01},{symbol:'TUSD',name:'Telepat Dollar',price:1},{symbol:'VKCOIN',name:'VK Coin',price:0.001},{symbol:'BBK',name:'Bbk Token',price:0.5}];
-const DEMO_POOLS=[{symbol:'TG',reserve_token:12.5,reserve_tusd:1250,total_lp:125,tvl:2500,apr:42.5},{symbol:'AI',reserve_token:45000,reserve_tusd:450,total_lp:4500,tvl:900,apr:18.2},{symbol:'VKCOIN',reserve_token:8500000,reserve_tusd:8500,total_lp:85000,tvl:17000,apr:64.8}];
-const DEMO_MY_LP=[{symbol:'TG',lp_tokens:25},{symbol:'AI',lp_tokens:500}];
-let FROM='TUSD',TO='TG',MODAL_TARGET='from',SLIPPAGE=0.5,WALLET=false;
-let ALL_TOKENS=[...DEMO_TOKENS];
 let USER_BALANCES={TUSD:100000,TG:100,AI:1000000,VKCOIN:10000000,BBK:100000};
-let POOLS=[...DEMO_POOLS];
-let MY_LP=[...DEMO_MY_LP];
-let HISTORY=[];
-
-let STAKED={TUSD:1000, TG:50, AI:10000, VKCOIN:0, BBK:0};
-let REWARDS={TUSD:0, TG:0, AI:0, VKCOIN:0, BBK:0};
+let STAKED={TUSD:1000,TG:50,AI:10000,VKCOIN:0,BBK:0};
+let REWARDS={TUSD:0,TG:0,AI:0,VKCOIN:0,BBK:0};
 const MONTHLY_APR=0.02;
 const SECONDS_IN_MONTH=30*24*3600;
+let WALLET=false;
+let HISTORY=[];
 
-let SHOP_PRICES={c3m:25, c6m:50, c1y:100, cinf:250};
-let INVENTORY=[];
+const RATES={TG:100,AI:0.01,TUSD:1,VKCOIN:0.001,BBK:0.5};
+const TOKEN_ICONS={TG:'🥇',AI:'🤖',TUSD:'💵',VKCOIN:'🎮',BBK:'🪙'};
+
+let SHOP_PRICES={c3m:25,c6m:50,c1y:100,cinf:250};
+let USER_RATING={stars:3,deals:12,isSeller:false};
 let SELLER_CERT=null;
-let USER_RATING={stars:3, deals:12, isSeller:false};
 
+// УРОВНИ РЫЦАРЯ
 const LEVELS=[
-  {n:1, name:'Мечник', icon:'⚔️', deals:10, refs:3, earn:100},
-  {n:2, name:'Рыцарь', icon:'🛡️', deals:25, refs:8, earn:300},
-  {n:3, name:'Лорд', icon:'🏰', deals:50, refs:15, earn:700},
-  {n:4, name:'Барон', icon:'🎩', deals:100, refs:30, earn:1500},
-  {n:5, name:'Граф', icon:'💎', deals:200, refs:60, earn:3000},
-  {n:6, name:'Герцог', icon:'🔥', deals:400, refs:120, earn:6000},
-  {n:7, name:'Король', icon:'👑', deals:800, refs:250, earn:12000},
-  {n:8, name:'Император', icon:'🌟', deals:1500, refs:500, earn:25000},
+  {n:1,name:'Мечник',icon:'⚔️',deals:10,refs:3,earn:100,gearPrice:50},
+  {n:2,name:'Рыцарь',icon:'🛡️',deals:25,refs:8,earn:300,gearPrice:150},
+  {n:3,name:'Лорд',icon:'🏰',deals:50,refs:15,earn:700,gearPrice:400},
+  {n:4,name:'Барон',icon:'🎩',deals:100,refs:30,earn:1500,gearPrice:900},
+  {n:5,name:'Граф',icon:'💎',deals:200,refs:60,earn:3000,gearPrice:2000},
+  {n:6,name:'Герцог',icon:'🔥',deals:400,refs:120,earn:6000,gearPrice:4000},
+  {n:7,name:'Король',icon:'👑',deals:800,refs:250,earn:12000,gearPrice:8000},
+  {n:8,name:'Император',icon:'🌟',deals:1500,refs:500,earn:25000,gearPrice:15000},
 ];
-let USER_PROGRESS={ level:1, deals:3, refs:1, earned:45 };
+let USER_PROGRESS={level:1,deals:3,refs:1,earned:45};
+
+// АМУНИЦИЯ по уровням (3 слота для надевания: weapon, body, legs)
+const GEAR_SETS={
+  1:{weapon:{icon:'🗡️',name:'Ржавый меч',atk:5,pow:10},body:{icon:'👕',name:'Кожаная рубаха',atk:0,pow:15},legs:{icon:'👖',name:'Кожаные штаны',atk:0,pow:10}},
+  2:{weapon:{icon:'⚔️',name:'Стальной меч',atk:12,pow:25},body:{icon:'🥋',name:'Кольчуга',atk:2,pow:35},legs:{icon:'👖',name:'Стальные поножи',atk:0,pow:25}},
+  3:{weapon:{icon:'🗡️',name:'Рыцарский меч',atk:22,pow:45},body:{icon:'🛡️',name:'Кираса',atk:5,pow:60},legs:{icon:'👖',name:'Латные ноги',atk:2,pow:45}},
+  4:{weapon:{icon:'⚔️',name:'Клинок барона',atk:35,pow:70},body:{icon:'🥋',name:'Мифриловый доспех',atk:8,pow:95},legs:{icon:'👖',name:'Мифриловые поножи',atk:3,pow:70}},
+  5:{weapon:{icon:'🗡️',name:'Клинок графа',atk:50,pow:110},body:{icon:'🛡️',name:'Доспех дракона',atk:12,pow:150},legs:{icon:'👖',name:'Поножи дракона',atk:6,pow:110}},
+  6:{weapon:{icon:'⚔️',name:'Клинок герцога',atk:70,pow:160},body:{icon:'🥋',name:'Доспех бездны',atk:18,pow:220},legs:{icon:'👖',name:'Поножи бездны',atk:8,pow:160}},
+  7:{weapon:{icon:'🗡️',name:'Меч короля',atk:100,pow:240},body:{icon:'🛡️',name:'Королевский доспех',atk:25,pow:320},legs:{icon:'👖',name:'Королевские поножи',atk:12,pow:240}},
+  8:{weapon:{icon:'⚔️',name:'Экскалибур',atk:150,pow:350},body:{icon:'🥋',name:'Доспех императора',atk:40,pow:500},legs:{icon:'👖',name:'Поножи императора',atk:20,pow:350}},
+};
+const EQUIPPED={weapon:null,body:null,legs:null};
+let INVENTORY=[]; // {slot, level, icon, name, atk, pow, rarity}
 
 const TITLES=[
-  {id:'t1', name:'Лорд', rarity:'rare', eff:'+1% к рефералке', price:30},
-  {id:'t2', name:'Барон', rarity:'epic', eff:'+2% к рефералке, приоритет', price:80},
-  {id:'t3', name:'Король Севера', rarity:'legend', eff:'+5% к рефералке, статус', price:300, limited:10},
-  {id:'t4', name:'Император', rarity:'mythic', eff:'+10% ко всем наградам', price:1500, limited:5},
+  {id:'t1',name:'Лорд',icon:'🎩',price:30,eff:'+1% к рефералке',rarity:'rare'},
+  {id:'t2',name:'Барон',icon:'🎩',price:80,eff:'+2% к рефералке',rarity:'epic'},
+  {id:'t3',name:'Король Севера',icon:'👑',price:300,eff:'+5% к рефералке',rarity:'legend'},
+  {id:'t4',name:'Император',icon:'🌟',price:1500,eff:'+10% ко всему',rarity:'mythic'},
 ];
 const ARTIFACTS=[
-  {id:'a1', name:'Камень дохода', rarity:'common', eff:'+5% к стейкингу', price:10, cat:'Камни'},
-  {id:'a2', name:'Камень сети', rarity:'rare', eff:'+10% к реферальным', price:40, cat:'Камни'},
-  {id:'a3', name:'Зелье усиления I', rarity:'common', eff:'+10% APR, 24ч', price:5, cat:'Зелья'},
-  {id:'a4', name:'Зелье усиления III', rarity:'epic', eff:'+50% APR, 12ч', price:25, cat:'Зелья'},
-  {id:'a5', name:'Безграничное хранилище', rarity:'legend', eff:'Снимает лимит слотов', price:150, cat:'Волшебные'},
-];
-const WEAPONS=[
-  {id:'w1', name:'Клинок сделки', rarity:'rare', eff:'+10% к прибыли PvP', price:50},
-  {id:'w2', name:'Щит торговца', rarity:'epic', eff:'Защита от скам-сделок', price:70},
-  {id:'w3', name:'Экскалибур', rarity:'mythic', eff:'×2 к PvP-наградам, 14д', price:250},
-];
-const AMMO=[
-  {id:'am1', name:'Стрелы точности ×10', rarity:'common', eff:'+5% к точности', price:20},
-  {id:'am2', name:'Броня стойкости ×5', rarity:'rare', eff:'Блокирует штраф', price:30},
-  {id:'am3', name:'Свитки телепорта ×3', rarity:'epic', eff:'Мгновенный вывод', price:45},
+  {id:'ar1',name:'Камень дохода',icon:'💎',price:10,eff:'+5% к стейку',rarity:'common'},
+  {id:'ar2',name:'Зелье мощи',icon:'🧪',price:25,eff:'+50 APR, 12ч',rarity:'epic'},
+  {id:'ar3',name:'Сфера бездны',icon:'🔮',price:150,eff:'+10% ко всему',rarity:'legend'},
 ];
 const REF_SALE=[
-  {id:'r1', login:'@ref_1024', level:3, earned:120, days:45, price:40, owner:'@seller_X', stars:4},
-  {id:'r2', login:'@ref_2048', level:5, earned:430, days:120, price:150, owner:'@whale_777', stars:5},
-  {id:'r3', login:'@ref_4096', level:2, earned:18, days:12, price:8, owner:'@noob_42', stars:1},
+  {id:'r1',login:'@ref_1024',level:3,earned:120,days:45,price:40,owner:'@seller_X',stars:4},
+  {id:'r2',login:'@ref_2048',level:5,earned:430,days:120,price:150,owner:'@whale_777',stars:5},
+  {id:'r3',login:'@ref_4096',level:2,earned:18,days:12,price:8,owner:'@noob_42',stars:1},
 ];
-
-const P2P_ORDERS=[
-  {id:'p1', seller:'@seller_X', stars:5, isSeller:true, price:100, qty:5, item:'TG → TUSD'},
-  {id:'p2', seller:'@whale_777', stars:4, isSeller:true, price:200, qty:2, item:'AI → TUSD'},
-  {id:'p3', seller:'@noob_42', stars:1, isSeller:false, price:70, qty:1, item:'TG → TUSD (скидка)'},
-];
-
-const ADMIN_USERS=[
-  {login:'@seller_X', stars:5, deals:127, earned:1240, days:320, cert:'Бессрочный', level:12},
-  {login:'@whale_777', stars:4, deals:58, earned:830, days:210, cert:'Бизнес', level:10},
-  {login:'@king_maker', stars:5, deals:214, earned:2100, days:400, cert:'Элитный', level:15},
-  {login:'@noob_42', stars:1, deals:3, earned:12, days:12, cert:'—', level:3},
-  {login:'@player_V', stars:3, deals:24, earned:180, days:88, cert:'Профи', level:7},
-];
-
 let AUCTIONS=[
-  { id:'au1', item:'👑 Корона Императора', rarity:'mythic', seller:'@king_maker', stars:5, start:1000, current:1250, step:2.5, round:2, maxRound:5, leader:'@whale_777', bids:14, endsAt: Date.now()+6*3600000, effect:'+10% ко всем наградам' },
-  { id:'au2', item:'🏷️ Титул: Король Севера', rarity:'legend', seller:'@seller_X', stars:5, start:300, current:342, step:2.5, round:1, maxRound:5, leader:'@player_V', bids:7, endsAt: Date.now()+22*3600000, effect:'+5% к рефералке' },
-  { id:'au3', item:'🗡️ Экскалибур', rarity:'mythic', seller:'@seller_X', stars:5, start:250, current:280, step:2.5, round:1, maxRound:5, leader:'—', bids:2, endsAt: Date.now()+12*3600000, effect:'×2 к PvP' },
+  {id:'a1',item:'👑 Корона Императора',rarity:'mythic',seller:'@king_maker',stars:5,start:1000,current:1250,step:2.5,round:2,maxRound:5,leader:'@whale_777',bids:14,endsAt:Date.now()+6*3600000,effect:'+10% ко всему'},
+  {id:'a2',item:'🗡️ Экскалибур',rarity:'mythic',seller:'@seller_X',stars:5,start:800,current:920,step:2.5,round:1,maxRound:5,leader:'@player_V',bids:5,endsAt:Date.now()+12*3600000,effect:'+150 ATK'},
 ];
 
-const ICONS={'TG':{e:'🥇',b:'#f5d477'},'AI':{e:'🤖',b:'#8b5cf6'},'TUSD':{e:'💵',b:'#39d98a'},'VKCOIN':{e:'🎮',b:'#4f8cff'},'BBK':{e:'🪙',b:'#c99629'},'DEFAULT':{e:'🪙',b:'#7f8c9f'}};
+// ==================== HELPERS ====================
+const $=id=>document.getElementById(id);
+const fmt=(v,m=2)=>Number(v||0).toLocaleString('ru-RU',{maximumFractionDigits:m});
+const esc=v=>String(v??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
 const n=v=>{const x=Number(v);return Number.isFinite(x)?x:0};
-const f=(v,m=6)=>n(v).toLocaleString('ru-RU',{maximumFractionDigits:m});
-const esc=v=>String(v??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
-function msg(t,ty='info'){const e=document.getElementById('msg');e.textContent=t;e.style.borderColor=ty==='error'?'#8b3f4c':ty==='success'?'#397b5b':'#4c5b70';e.classList.add('show');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('show'),3000)}
-function ticon(sym){return ICONS[sym]||ICONS.DEFAULT}
-function ticonHTML(sym,lg){const ic=ticon(sym);return `<span class="tlogo${lg?' lg':''}" style="background:${ic.b}">${ic.e}</span>`}
-function setIcon(id,sym){const ic=ticon(sym);const el=document.getElementById(id);if(!el)return;el.style.background=ic.b;el.textContent=ic.e}
-function getBalance(sym){return n(USER_BALANCES[sym])}
-function tokenPrice(sym){const t=ALL_TOKENS.find(x=>x.symbol===sym);return t?n(t.price):1}
-function starsHTML(nn){nn=Math.max(0,Math.min(5,Math.round(nn)));return `<span class="stars">${'★'.repeat(nn)}${'☆'.repeat(5-nn)}</span>`}
-function rarityClass(r){return ({common:'r-common',rare:'r-rare',epic:'r-epic',legend:'r-legend',mythic:'r-mythic'})[r]||'r-common'}
-function rarityLabel(r){return ({common:'Common',rare:'Rare',epic:'Epic',legend:'Legendary',mythic:'Mythic'})[r]||r}
+const stars=n=>'★'.repeat(Math.max(0,Math.min(5,Math.round(n))))+'☆'.repeat(5-Math.max(0,Math.min(5,Math.round(n))));
+const rarityCls=r=>({common:'r-common',rare:'r-rare',epic:'r-epic',legend:'r-legend',mythic:'r-mythic'})[r]||'r-common';
+const rarityLbl=r=>({common:'Common',rare:'Rare',epic:'Epic',legend:'Legendary',mythic:'Mythic'})[r]||r;
+function msg(t,ty='info'){const e=$('msg');e.textContent=t;e.style.borderColor=ty==='error'?'#8b3f4c':ty==='success'?'#397b5b':'#4c5b70';e.classList.add('show');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('show'),2800)}
 
 // ==================== NAV ====================
-function toggleWallet(){
-  WALLET=!WALLET;
-  document.getElementById('walletLabel').textContent=WALLET?'UQ...7x9':'Connect';
-  document.getElementById('dot').style.background=WALLET?'var(--green)':'var(--muted)';
-  if(WALLET)msg('✅ Wallet connected (demo)','success');
-  calcSwap();
-}
+function toggleWallet(){WALLET=!WALLET;$('walletLabel').textContent=WALLET?'UQ...7x9':'Connect';$('dot').style.background=WALLET?'var(--green)':'var(--muted)';if(WALLET)msg('✅ Кошелёк подключён','success')}
 function goMain(t){
-  ['wallet','exchange','friends','auction','earn','admin'].forEach(x=>{
-    document.getElementById('s-'+x).classList.toggle('hide',x!==t);
-    document.getElementById('n-'+x).classList.toggle('active',x===t);
+  ['wallet','shop','inventory','friends','auction','earn','admin'].forEach(x=>{
+    const el=$('s-'+x);if(el)el.classList.toggle('hide',x!==t);
+    const nb=$('n-'+x);if(nb)nb.classList.toggle('active',x===t);
   });
-  if(t==='wallet'){renderBalances();renderHistory();updatePortfolio();renderLevel();}
-  if(t==='exchange'){renderPools();renderMyLp();calcSwap();renderChart();renderShopMenu();renderP2P();}
+  if(t==='wallet'){renderKnight();renderBalances();renderHistory();updatePortfolio();renderStaking();}
+  if(t==='shop'){renderGear();renderTitles();renderArtifacts();renderCerts();}
+  if(t==='inventory'){renderInventory();}
   if(t==='friends'){renderRefSale();}
   if(t==='auction'){renderAuctions();}
-  if(t==='admin'){renderAdminUsers();}
   window.scrollTo({top:0,behavior:'smooth'});
 }
 function switchSub(t){
-  ['p2p','dex','pools','charts','shop'].forEach(x=>{
-    document.getElementById('sub-s-'+x).classList.toggle('hide',x!==t);
-    document.getElementById('sub-'+x).classList.toggle('active',x===t);
+  ['gear','titles','artifacts','certs'].forEach(x=>{
+    $('sub-s-'+x).classList.toggle('hide',x!==t);
+    $('sub-'+x).classList.toggle('active',x===t);
   });
-  if(t==='pools'){renderPools();renderMyLp();}
-  if(t==='dex')calcSwap();
-  if(t==='charts')renderChart();
-  if(t==='shop'){renderShopMenu();closeShop();}
-  if(t==='p2p')renderP2P();
 }
 
-// ==================== SWAP ====================
-function renderSwapTokens(){
-  document.getElementById('symFrom').textContent=FROM;
-  document.getElementById('symTo').textContent=TO;
-  setIcon('icoFrom',FROM);setIcon('icoTo',TO);
-}
-function flipSwap(){const a=FROM;FROM=TO;TO=a;document.getElementById('amtFrom').value='';document.getElementById('amtTo').value='';renderSwapTokens();calcSwap()}
-function updateBalances(){
-  const elF=document.getElementById('balFrom'),elT=document.getElementById('balTo');
-  if(elF)elF.textContent='Balance: '+f(getBalance(FROM),4);
-  if(elT)elT.textContent='Balance: '+f(getBalance(TO),4);
-}
-function calcSwap(){
-  updateBalances();
-  const amt=n(document.getElementById('amtFrom')?.value);
-  const btn=document.getElementById('btnSwap');
-  if(!btn)return;
-  if(!WALLET){btn.disabled=true;btn.textContent='Connect Wallet';return}
-  if(amt<=0){btn.disabled=true;btn.textContent='Enter amount';['rateInfo','impactInfo','feeInfo','minRecv'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent='—'});return}
-  const isBuy=FROM==='TUSD'&&TO!=='TUSD',isSell=TO==='TUSD'&&FROM!=='TUSD';
-  if(!isBuy&&!isSell){btn.disabled=true;btn.textContent='Swap via TUSD only';document.getElementById('amtTo').value='';return}
-  const sym=isBuy?TO:FROM,pool=POOLS.find(p=>p.symbol===sym);
-  if(!pool||pool.reserve_token<=0||pool.reserve_tusd<=0){btn.disabled=true;btn.textContent='No pool for '+sym;return}
-  if(getBalance(FROM)<amt){btn.disabled=true;btn.textContent='Insufficient '+FROM;return}
-  const rTok=pool.reserve_token,rTusd=pool.reserve_tusd,feeBps=30,amtAfter=amt*(1-feeBps/10000);
-  let out;if(isBuy)out=(amtAfter*rTok)/(rTusd+amtAfter);else out=(amtAfter*rTusd)/(rTok+amtAfter);
-  const pB=rTusd/rTok,pA=isBuy?((rTusd+amt)/(rTok-out)):((rTusd-out)/(rTok+amt));
-  const impact=Math.abs((pA-pB)/pB)*100;
-  document.getElementById('amtTo').value=out.toFixed(8);
-  document.getElementById('rateInfo').textContent=`1 ${sym} = ${f(pA,6)} TUSD`;
-  const impEl=document.getElementById('impactInfo');impEl.textContent=impact.toFixed(2)+'%';
-  impEl.style.color=impact<1?'var(--green)':impact<5?'var(--gold)':'var(--red)';
-  document.getElementById('feeInfo').textContent=f(amt*0.003,6)+' '+FROM;
-  document.getElementById('minRecv').textContent=f(out*(1-SLIPPAGE/100),6)+' '+TO;
-  btn.disabled=false;btn.textContent='Swap';
-}
-function doSwap(){
-  const amt=n(document.getElementById('amtFrom').value);
-  if(amt<=0){msg('Enter amount','error');return}
-  const isBuy=FROM==='TUSD'&&TO!=='TUSD',isSell=TO==='TUSD'&&FROM!=='TUSD';
-  if(!isBuy&&!isSell){msg('Swap via TUSD only','error');return}
-  if(getBalance(FROM)<amt){msg('Insufficient balance','error');return}
-  const sym=isBuy?TO:FROM,out=n(document.getElementById('amtTo').value),pool=POOLS.find(p=>p.symbol===sym);
-  USER_BALANCES[FROM]=getBalance(FROM)-amt;USER_BALANCES[TO]=getBalance(TO)+out;
-  if(isBuy){pool.reserve_tusd+=amt;pool.reserve_token-=out}else{pool.reserve_tusd-=out;pool.reserve_token+=amt}
-  pool.tvl=pool.reserve_tusd*2;
-  HISTORY.unshift({desc:`Swap ${FROM}→${TO}`,amt:`${f(out,4)} ${TO}`,time:new Date().toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})});
-  if(HISTORY.length>10)HISTORY.pop();
-  msg(`✅ Swapped: ${f(amt,4)} ${FROM} → ${f(out,4)} ${TO}`,'success');
-  document.getElementById('amtFrom').value='';document.getElementById('amtTo').value='';
-  renderBalances();renderHistory();updatePortfolio();calcSwap();
-}
-function openTokModal(target){
-  MODAL_TARGET=target;
-  const box=document.getElementById('tokList');let list=ALL_TOKENS;
-  box.innerHTML=list.map(t=>`<div class="tok-item" onclick="pickTok('${esc(t.symbol)}')">${ticonHTML(t.symbol,true)}<span class="nm">${esc(t.symbol)}</span><span style="color:var(--muted);font-size:12px">${f(t.price,4)} $</span></div>`).join('');
-  document.getElementById('tokModal').classList.add('show');
-}
-function closeTokModal(e){if(e&&e.target!==document.getElementById('tokModal'))return;document.getElementById('tokModal').classList.remove('show')}
-function pickTok(sym){
-  if(MODAL_TARGET==='from'){FROM=sym;if(TO===sym)TO=sym==='TUSD'?'TG':'TUSD'}
-  else if(MODAL_TARGET==='to'){TO=sym;if(FROM===sym)FROM=sym==='TUSD'?'TG':'TUSD'}
-  document.getElementById('tokModal').classList.remove('show');
-  renderSwapTokens();calcSwap();
-}
-
-// ==================== POOLS / CHARTS / BALANCES ====================
-function renderPools(){
-  const box=document.getElementById('poolsList');if(!box)return;
-  if(!POOLS.length){box.innerHTML='<div class="hint">No pools</div>';return}
-  box.innerHTML=POOLS.map(p=>{return `<div class="pool-row">${ticonHTML(p.symbol,true)}<div class="info"><div class="name">${esc(p.symbol)} / TUSD</div><div class="meta">${f(p.reserve_token,2)} ${esc(p.symbol)} • ${f(p.reserve_tusd,2)} TUSD</div></div><div class="right"><div class="apr">${p.apr}% APR</div><div class="tvl">TVL ${f(p.tvl,2)}</div></div></div>`}).join('');
-}
-function renderMyLp(){
-  const box=document.getElementById('myLpList');if(!box)return;
-  if(!MY_LP.length){box.innerHTML='<div class="hint">No LP positions</div>';return}
-  box.innerHTML=MY_LP.map(x=>{const pool=POOLS.find(p=>p.symbol===x.symbol);if(!pool)return'';const ts=(x.lp_tokens/pool.total_lp)*pool.reserve_tusd,tk=(x.lp_tokens/pool.total_lp)*pool.reserve_token;return `<div class="pool-row">${ticonHTML(x.symbol,true)}<div class="info"><div class="name">${esc(x.symbol)} / TUSD</div><div class="meta">LP: ${f(x.lp_tokens,4)}</div><div class="meta" style="color:var(--green);margin-top:2px">≈ ${f(ts,4)} TUSD + ${f(tk,4)} ${esc(x.symbol)}</div></div></div>`}).join('');
-}
-function renderBalances(){
-  const box=document.getElementById('balList');if(!box)return;
-  box.innerHTML=ALL_TOKENS.map(t=>{const b=n(USER_BALANCES[t.symbol]);const v=b*n(t.price);const rew=n(REWARDS[t.symbol])*n(t.price);return `<div class="row"><span class="k">${ticonHTML(t.symbol)} ${esc(t.symbol)}</span><span class="v">${f(b,4)} <span style="color:var(--muted);font-weight:400">≈$${f(v,2)}</span>${rew>0?` <span style="color:var(--green);font-size:10px">+$${f(rew,4)}</span>`:''}</span></div>`}).join('');
-}
-function updatePortfolio(){
-  let total=0;ALL_TOKENS.forEach(t=>{total+=n(USER_BALANCES[t.symbol])*n(t.price)});
-  ALL_TOKENS.forEach(t=>{total+=n(REWARDS[t.symbol])*n(t.price)});
-  const el=document.getElementById('portVal');if(el)el.textContent=f(total,2);
-}
-function renderHistory(){
-  const box=document.getElementById('histList');if(!box)return;
-  if(!HISTORY.length){box.innerHTML='<div class="hint">No transactions yet</div>';return}
-  box.innerHTML=HISTORY.map(h=>`<div class="hist-item"><div class="desc">${esc(h.desc)} • ${h.time}</div><div class="amt">${esc(h.amt)}</div></div>`).join('');
-}
-function faucet(){
-  USER_BALANCES.TUSD+=10000;USER_BALANCES.TG+=10;USER_BALANCES.AI+=100000;USER_BALANCES.VKCOIN+=1000000;USER_BALANCES.BBK+=10000;
-  msg('🚰 +10 000 TUSD, +10 TG, +100 000 AI, +1 000 000 VKCOIN, +10 000 BBK','success');
-  renderBalances();updatePortfolio();calcSwap();
-}
-
-let CHART_SYM='TG';
-function renderChartTabs(){
-  const box=document.getElementById('chartTabs');if(!box)return;
-  box.innerHTML=ALL_TOKENS.filter(t=>t.symbol!=='TUSD').map(t=>`<button class="tok-btn" style="padding:6px 12px;font-size:12px;${CHART_SYM===t.symbol?'background:var(--blue);border-color:var(--blue)':''}" onclick="setChart('${esc(t.symbol)}')">${esc(t.symbol)}</button>`).join('');
-}
-function setChart(sym){CHART_SYM=sym;renderChart()}
-function renderChart(){
-  renderChartTabs();
-  const sym=CHART_SYM;const pool=POOLS.find(p=>p.symbol===sym);
-  if(!pool||pool.reserve_token<=0){document.getElementById('priceChart').innerHTML='';return}
-  const basePrice=pool.reserve_tusd/pool.reserve_token;
-  document.getElementById('chartSym').textContent=sym+'/TUSD';
-  const points=[];let p=basePrice*0.85;
-  for(let i=0;i<24;i++){p=p*(1+(Math.random()-0.48)*0.08);points.push(p)}
-  points[points.length-1]=basePrice;
-  const min=Math.min(...points),max=Math.max(...points),range=max-min||1;
-  const W=500,H=200,pad=20;
-  const path=points.map((v,i)=>{const x=pad+(i/(points.length-1))*(W-pad*2);const y=H-pad-((v-min)/range)*(H-pad*2);return `${i===0?'M':'L'}${x.toFixed(1)},${y.toFixed(1)}`}).join(' ');
-  const area=`${path} L${W-pad},${H-pad} L${pad},${H-pad} Z`;
-  const change=((points[points.length-1]-points[0])/points[0]*100);
-  document.getElementById('priceChart').innerHTML=`<defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${change>=0?'#26a17b':'#f6465d'}" stop-opacity=".4"/><stop offset="100%" stop-color="${change>=0?'#26a17b':'#f6465d'}" stop-opacity="0"/></linearGradient></defs><path d="${area}" fill="url(#g)"/><path d="${path}" fill="none" stroke="${change>=0?'#26a17b':'#f6465d'}" stroke-width="2"/>`;
-  document.getElementById('chartCurrent').textContent=f(basePrice,4)+' TUSD';
-  document.getElementById('chartCurrent').style.color=change>=0?'var(--green)':'var(--red)';
-  document.getElementById('chartChange').textContent=(change>=0?'+':'')+change.toFixed(2)+'%';
-  document.getElementById('chartChange').style.color=change>=0?'var(--green)':'var(--red)';
-}
-
-// ==================== STAKING ====================
-let lastTick=Date.now();
-function tickStaking(){
-  const now=Date.now();const dt=(now-lastTick)/1000;lastTick=now;
-  let totalUSD=0;
-  const rows=[];
-  Object.keys(STAKED).forEach(sym=>{
-    const staked=n(STAKED[sym]);
-    if(staked<=0)return;
-    const rewardPerSec=staked*MONTHLY_APR/SECONDS_IN_MONTH;
-    REWARDS[sym]=n(REWARDS[sym])+rewardPerSec*dt;
-    const usd=n(REWARDS[sym])*tokenPrice(sym);
-    totalUSD+=usd;
-    rows.push(`<div class="row"><span class="k">${ticonHTML(sym)} ${esc(sym)} (${f(staked,2)})</span><span class="v">+$${f(usd,8)}</span></div>`);
-  });
-  const sRows=document.getElementById('stakeRows');
-  const sUSD=document.getElementById('stakeUSD');
-  if(sRows)sRows.innerHTML=rows.join('')||'<div class="hint" style="color:#7dd3a0">Нет активных стейков. Застейкай в админке.</div>';
-  if(sUSD)sUSD.textContent=f(totalUSD,8);
-  if(!document.getElementById('s-wallet').classList.contains('hide')){
-    if(Math.floor(now/500)%2===0){updatePortfolio();renderBalances();}
-  }
-}
-setInterval(tickStaking,100);
-
-// ==================== LEVEL ====================
-function renderLevel(){
-  const lv=LEVELS[USER_PROGRESS.level-1];if(!lv)return;
-  const next=LEVELS[USER_PROGRESS.level];
-  const iconEl=document.getElementById('lvlIcon');if(!iconEl)return;
-  iconEl.textContent=lv.icon;
-  document.getElementById('lvlName').textContent=lv.name;
-  document.getElementById('lvlSub').textContent=`Уровень ${lv.n} из ${LEVELS.length}`;
+// ==================== KNIGHT ====================
+function renderKnight(){
+  const lv=LEVELS[USER_PROGRESS.level-1];
+  $('rankMedal').textContent=lv.icon;
+  $('rankName').textContent=lv.name;
+  $('rankLiga').textContent=`Уровень ${lv.n} из ${LEVELS.length}`;
   const pD=Math.min(100,(USER_PROGRESS.deals/lv.deals)*100);
   const pR=Math.min(100,(USER_PROGRESS.refs/lv.refs)*100);
   const pE=Math.min(100,(USER_PROGRESS.earned/lv.earn)*100);
   const xp=Math.round((pD+pR+pE)/3);
-  document.getElementById('lvlXP').textContent=xp+'%';
-  document.getElementById('barDeals').style.width=pD+'%';
-  document.getElementById('barRefs').style.width=pR+'%';
-  document.getElementById('barEarn').style.width=pE+'%';
-  document.getElementById('barDealsTxt').textContent=`${USER_PROGRESS.deals} / ${lv.deals}`;
-  document.getElementById('barRefsTxt').textContent=`${USER_PROGRESS.refs} / ${lv.refs}`;
-  document.getElementById('barEarnTxt').textContent=`$${f(USER_PROGRESS.earned,0)} / $${f(lv.earn,0)}`;
-  const hint=document.getElementById('lvlHint');
-  if(!next){hint.innerHTML='<span style="color:var(--gold);font-weight:700">🌟 Максимальный уровень достигнут</span>';return}
-  if(pD>=100&&pR>=100&&pE>=100){hint.innerHTML='<span style="color:var(--gold);font-weight:700">🎉 Готов к апу! Жми в админке «Апнуть»</span>';}
-  else{const m=[];if(pD<100)m.push(`сделки ${USER_PROGRESS.deals}/${lv.deals}`);if(pR<100)m.push(`рефералы ${USER_PROGRESS.refs}/${lv.refs}`);if(pE<100)m.push(`$${f(USER_PROGRESS.earned,0)}/$${f(lv.earn,0)}`);hint.textContent='До апа: '+m.join(' • ');}
+  $('rankXpFill').style.width=xp+'%';
+  $('rankXpText').textContent=`${USER_PROGRESS.deals}/${lv.deals} сделок • ${USER_PROGRESS.refs}/${lv.refs} реф • $${USER_PROGRESS.earned}/$${lv.earn}`;
+
+  // слоты
+  renderSlot('slot-weapon','weapon','🗡️');
+  renderSlot('slot-body','body','👕');
+  renderSlot('slot-legs','legs','👖');
+
+  // характеристики
+  let atk=10, pow=0;
+  ['weapon','body','legs'].forEach(s=>{
+    const it=EQUIPPED[s]; if(!it) return;
+    atk+=it.atk; pow+=it.pow;
+  });
+  $('statAtk').textContent=atk;
+  $('statPow').textContent=pow;
+  $('statHp').textContent=100+Math.round(pow/2);
+
+  // подсказка
+  const allEquipped=EQUIPPED.weapon&&EQUIPPED.body&&EQUIPPED.legs;
+  const allCurrentLv=allEquipped&&EQUIPPED.weapon.level===lv.n&&EQUIPPED.body.level===lv.n&&EQUIPPED.legs.level===lv.n;
+  if(allCurrentLv&&xp>=100){
+    $('equipHint').innerHTML='<span style="color:var(--gold);font-weight:bold">🎉 Готов к апу! Жми в админке ⬆️</span>';
+  } else if(allCurrentLv){
+    $('equipHint').textContent='Амуниция уровня надета. Заполни шкалы до 100% для апа';
+  } else if(!allEquipped){
+    $('equipHint').textContent='Надень меч, рубашку и брюки, чтобы апать уровень';
+  } else {
+    $('equipHint').textContent='Амуниция не текущего уровня. Купи сет уровня '+lv.n+' в магазине';
+  }
 }
-function adminLevelUp(){
-  if(USER_PROGRESS.level>=LEVELS.length){msg('Максимальный уровень','error');return}
-  USER_PROGRESS.level++;
+function renderSlot(id,slot,defIcon){
+  const el=$(id);if(!el)return;
+  const it=EQUIPPED[slot];
+  el.classList.toggle('empty',!it);
+  el.classList.toggle('filled',!!it);
+  el.innerHTML=`<span class="slot-lbl">${slot==='weapon'?'Меч':slot==='body'?'Рубашка':'Брюки'}</span>${it?it.icon:defIcon}`;
+}
+function clickSlot(slot){
+  const it=EQUIPPED[slot];
+  if(it){ openEquipModal(slot); return; }
+  // если не надет - ищем подходящий в инвентаре
   const lv=LEVELS[USER_PROGRESS.level-1];
-  USER_PROGRESS.deals=lv.deals;USER_PROGRESS.refs=lv.refs;USER_PROGRESS.earned=lv.earn;
-  const card=document.getElementById('levelCard');card.classList.add('level-up');
-  setTimeout(()=>card.classList.remove('level-up'),1000);
-  syncAdminInputs();renderLevel();msg('⬆️ '+lv.name+' — новый уровень!','success');
+  const candidate=INVENTORY.find(x=>x.slot===slot&&x.level===lv.n);
+  if(candidate){ equipItem(candidate); return; }
+  msg('❌ Сначала купи предмет в магазине','error');
 }
-function adminLevelDown(){
-  if(USER_PROGRESS.level<=1){msg('Уже минимальный уровень','error');return}
-  USER_PROGRESS.level--;syncAdminInputs();renderLevel();msg('⬇️ Уровень понижен');
+function equipItem(item){
+  EQUIPPED[item.slot]=item;
+  INVENTORY=INVENTORY.filter(x=>x!==item);
+  // снимем предыдущий - вернём в инвентарь
+  msg(`✅ Надето: ${item.icon} ${item.name}`,'success');
+  setKnightSpeech('Облачение воина!');
+  renderKnight();
+  renderInventory();
 }
-function adminFillMax(){
-  const lv=LEVELS[USER_PROGRESS.level-1];
-  USER_PROGRESS.deals=lv.deals;USER_PROGRESS.refs=lv.refs;USER_PROGRESS.earned=lv.earn;
-  syncAdminInputs();renderLevel();msg('🎯 Шкалы заполнены','success');
+function unequipItem(slot){
+  const it=EQUIPPED[slot];
+  if(!it) return;
+  INVENTORY.push(it);
+  EQUIPPED[slot]=null;
+  closeModal2();
+  msg(`Снято: ${it.icon} ${it.name}`);
+  renderKnight();
+  renderInventory();
+}
+function openEquipModal(slot){
+  const it=EQUIPPED[slot];
+  openModal2(`⚔️ ${it.icon} ${it.name}`,`
+    <div style="text-align:center;font-size:64px;margin:8px 0">${it.icon}</div>
+    <div class="row-tbl"><div class="lft">Уровень</div><div class="rt"><b>${it.level}</b></div></div>
+    <div class="row-tbl"><div class="lft">⚔️ ATK</div><div class="rt"><b style="color:var(--red)">+${it.atk}</b></div></div>
+    <div class="row-tbl"><div class="lft">💪 POW</div><div class="rt"><b style="color:var(--gold)">+${it.pow}</b></div></div>
+    <div class="row-tbl"><div class="lft">Редкость</div><div class="rt"><span class="rarity ${rarityCls(it.rarity)}">${rarityLbl(it.rarity)}</span></div></div>
+    <button class="act sell" style="margin-top:12px" onclick="unequipItem('${slot}')">Снять</button>
+  `);
+}
+function setKnightSpeech(text){
+  const el=$('knightSpeech');if(!el)return;
+  el.textContent=text;
+  el.style.animation='none';void el.offsetWidth;el.style.animation='speech-pop .4s ease';
 }
 
 // ==================== SHOP ====================
-function renderShopMenu(){
-  const box=document.getElementById('shopMenu');if(!box)return;
+function renderGear(){
+  const lv=LEVELS[USER_PROGRESS.level-1];
+  $('gearLevelLabel').textContent=lv.n;
+  const set=GEAR_SETS[lv.n];
+  const priceEach=Math.round(lv.gearPrice/3);
   const items=[
-    {id:'certs', em:'📜', tt:'Сертификаты', sb:'Продавца'},
-    {id:'titles', em:'🏷️', tt:'Титулы', sb:'Lore, Baron, King'},
-    {id:'artifacts', em:'⚔️', tt:'Артефакты', sb:'Камни, зелья'},
-    {id:'weapons', em:'🗡️', tt:'Оружие', sb:'Клинки, щиты'},
-    {id:'ammo', em:'🛡️', tt:'Амуниция', sb:'Стрелы, броня'},
-    {id:'refs', em:'💱', tt:'Рефералы', sb:'Купить/продать'},
-    {id:'warehouse', em:'📦', tt:'Склад', sb:'Мои вещи'},
-    {id:'rating', em:'⭐', tt:'Мой рейтинг', sb:`${USER_RATING.stars}★ / ${USER_RATING.deals} сделок`},
+    {slot:'weapon',...set.weapon,price:priceEach,rarity:lv.n<=2?'common':lv.n<=4?'rare':lv.n<=6?'epic':'legend'},
+    {slot:'body',...set.body,price:priceEach,rarity:lv.n<=2?'common':lv.n<=4?'rare':lv.n<=6?'epic':'legend'},
+    {slot:'legs',...set.legs,price:priceEach,rarity:lv.n<=2?'common':lv.n<=4?'rare':lv.n<=6?'epic':'legend'},
   ];
-  box.innerHTML=items.map(x=>`<div class="shop-btn" onclick="openShop('${x.id}')"><div class="em">${x.em}</div><div class="tt">${x.tt}</div><div class="sb">${x.sb}</div></div>`).join('');
-}
-function closeShop(){document.getElementById('shopContentCard').classList.add('hide')}
-function openShop(tab){
-  document.getElementById('shopContentCard').classList.remove('hide');
-  const title=document.getElementById('shopTitle');
-  const c=document.getElementById('shopContent');
-  const back=`<span style="color:var(--blue);font-size:12px;cursor:pointer" onclick="closeShop()">← назад</span>`;
-  if(tab==='certs'){
-    title.innerHTML='📜 Сертификаты продавца '+back;
-    c.innerHTML=`
-      <div class="item-card"><div class="rarity r-legend">ЛИЦЕНЗИЯ</div><div class="name">Старт</div><div class="eff">3 месяца • до 5 лотов • комиссия 5%</div><div class="row2"><div class="price">$${SHOP_PRICES.c3m}</div><button onclick="buyCert('3m')">Купить</button></div></div>
-      <div class="item-card"><div class="rarity r-legend">ЛИЦЕНЗИЯ</div><div class="name">Профи</div><div class="eff">6 месяцев • до 20 лотов • комиссия 3.5%</div><div class="row2"><div class="price">$${SHOP_PRICES.c6m}</div><button onclick="buyCert('6m')">Купить</button></div></div>
-      <div class="item-card"><div class="rarity r-legend">ЛИЦЕНЗИЯ</div><div class="name">Бизнес</div><div class="eff">1 год • до 100 лотов • комиссия 2%</div><div class="row2"><div class="price">$${SHOP_PRICES.c1y}</div><button onclick="buyCert('1y')">Купить</button></div></div>
-      <div class="item-card"><div class="rarity r-mythic">VIP</div><div class="name">Бессрочный</div><div class="eff">Навсегда • без лимита • комиссия 1% • VIP-поддержка</div><div class="row2"><div class="price">$${SHOP_PRICES.cinf}</div><button class="gold" onclick="buyCert('inf')">Купить</button></div></div>
-      ${SELLER_CERT?`<div class="item-card" style="background:#0d2818;border-color:#1d5a3a"><div class="name" style="color:#7dd3a0">✅ Активен: ${SELLER_CERT.tier}</div><div class="eff">Действует до ${SELLER_CERT.expiry}</div></div>`:''}
-    `;
-  }
-  if(tab==='titles'){
-    title.innerHTML='🏷️ Титулы '+back;
-    c.innerHTML=TITLES.map(x=>`<div class="item-card"><div class="rarity ${rarityClass(x.rarity)}">${rarityLabel(x.rarity)}${x.limited?' • лимит '+x.limited:''}</div><div class="name">${x.name}</div><div class="eff">${x.eff}</div><div class="row2"><div class="price">$${x.price}</div><button onclick="buyItem('title','${x.id}')">Купить</button></div></div>`).join('');
-  }
-  if(tab==='artifacts'){
-    title.innerHTML='⚔️ Артефакты '+back;
-    c.innerHTML=ARTIFACTS.map(x=>`<div class="item-card"><div class="rarity ${rarityClass(x.rarity)}">${rarityLabel(x.rarity)} • ${x.cat}</div><div class="name">${x.name}</div><div class="eff">${x.eff}</div><div class="row2"><div class="price">$${x.price}</div><button onclick="buyItem('artifact','${x.id}')">Купить</button></div></div>`).join('');
-  }
-  if(tab==='weapons'){
-    title.innerHTML='🗡️ Оружие '+back;
-    c.innerHTML=WEAPONS.map(x=>`<div class="item-card"><div class="rarity ${rarityClass(x.rarity)}">${rarityLabel(x.rarity)}</div><div class="name">${x.name}</div><div class="eff">${x.eff}</div><div class="row2"><div class="price">$${x.price}</div><button onclick="buyItem('weapon','${x.id}')">Купить</button></div></div>`).join('');
-  }
-  if(tab==='ammo'){
-    title.innerHTML='🛡️ Амуниция '+back;
-    c.innerHTML=AMMO.map(x=>`<div class="item-card"><div class="rarity ${rarityClass(x.rarity)}">${rarityLabel(x.rarity)}</div><div class="name">${x.name}</div><div class="eff">${x.eff}</div><div class="row2"><div class="price">$${x.price}</div><button onclick="buyItem('ammo','${x.id}')">Купить</button></div></div>`).join('');
-  }
-  if(tab==='refs'){
-    title.innerHTML='💱 Рефералы на продажу '+back;
-    c.innerHTML=REF_SALE.map(r=>`<div class="item-card"><div class="row1"><span class="badge ${r.stars>=4?'b-seller':'b-common'}">${r.owner}</span>${starsHTML(r.stars)}</div><div class="name">👤 ${r.login}</div><div class="eff">Уровень ${r.level} • заработал $${r.earned} • дней: ${r.days}</div><div class="row2"><div class="price">$${r.price}</div><button onclick="buyRef('${r.id}')">Купить</button></div></div>`).join('');
-  }
-  if(tab==='warehouse'){
-    title.innerHTML='📦 Склад '+back;
-    if(!INVENTORY.length){c.innerHTML='<div class="hint">Склад пуст. Купи предметы — появятся здесь.</div>';return}
-    c.innerHTML=INVENTORY.map((x,i)=>`<div class="item-card"><div class="rarity ${rarityClass(x.rarity)}">${x.cat}</div><div class="name">${x.name}</div><div class="eff">Куплено за $${x.price}</div><div class="row2"><button class="gold" onclick="listOnAuction(${i})">🔨 На аукцион</button><button onclick="listOnMarket(${i})">🏪 На маркет</button></div></div>`).join('');
-  }
-  if(tab==='rating'){
-    title.innerHTML='⭐ Мой рейтинг '+back;
-    c.innerHTML=`
-      <div class="item-card" style="text-align:center;padding:20px">
-        <div style="font-size:36px;color:var(--gold)">${'★'.repeat(USER_RATING.stars)}${'☆'.repeat(5-USER_RATING.stars)}</div>
-        <div style="font-size:22px;font-weight:800;margin:8px 0">${USER_RATING.stars}.0 / 5.0</div>
-        <div style="color:var(--muted);font-size:12px">${USER_RATING.deals} успешных сделок</div>
-        <div style="color:var(--muted);font-size:11px;margin-top:8px">${USER_RATING.isSeller?'✅ Сертифицированный продавец':'Обычный пользователь'}</div>
+  $('gearList').innerHTML=items.map(it=>{
+    const has=EQUIPPED[it.slot]?.level===lv.n;
+    const inInv=INVENTORY.find(x=>x.slot===it.slot&&x.level===lv.n);
+    return `<div class="item-card">
+      <div class="row1">
+        <span class="rarity ${rarityCls(it.rarity)}">Уровень ${lv.n}</span>
+        <span style="font-size:26px">${it.icon}</span>
       </div>
-    `;
-  }
+      <div class="name">${it.name}</div>
+      <div class="eff">⚔️ +${it.atk} ATK • 💪 +${it.pow} POW</div>
+      <div class="row2">
+        <div class="price">$${it.price}</div>
+        ${has?`<button class="green" onclick="goMain('inventory')">✅ Надето</button>`:
+          inInv?`<button class="gold" onclick="equipItem(INVENTORY.find(x=>x.slot==='${it.slot}'&&x.level===${lv.n}))">Надеть</button>`:
+          `<button onclick="buyGear('${it.slot}',${lv.n})">Купить</button>`}
+      </div>
+    </div>`;
+  }).join('');
+}
+function buyGear(slot,lvN){
+  const lv=LEVELS[lvN-1];
+  const set=GEAR_SETS[lvN];
+  const priceEach=Math.round(lv.gearPrice/3);
+  if(USER_BALANCES.TUSD<priceEach){msg('❌ Недостаточно TUSD','error');return}
+  USER_BALANCES.TUSD-=priceEach;
+  const it={...set[slot],slot,level:lvN,price:priceEach,rarity:lvN<=2?'common':lvN<=4?'rare':lvN<=6?'epic':'legend'};
+  INVENTORY.push(it);
+  HISTORY.unshift({desc:`Покупка ${it.icon} ${it.name}`,amt:`-$${priceEach}`,time:new Date().toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})});
+  msg(`✅ Куплено: ${it.icon} ${it.name}`,'success');
+  renderGear();renderBalances();updatePortfolio();
+}
+function renderTitles(){
+  $('titlesList').innerHTML=TITLES.map(t=>`
+    <div class="item-card">
+      <div class="row1"><span class="rarity ${rarityCls(t.rarity)}">${rarityLbl(t.rarity)}</span><span style="font-size:26px">${t.icon}</span></div>
+      <div class="name">${t.name}</div>
+      <div class="eff">${t.eff}</div>
+      <div class="row2"><div class="price">$${t.price}</div><button onclick="buySimple('title','${t.id}')">Купить</button></div>
+    </div>`).join('');
+}
+function renderArtifacts(){
+  $('artifactsList').innerHTML=ARTIFACTS.map(t=>`
+    <div class="item-card">
+      <div class="row1"><span class="rarity ${rarityCls(t.rarity)}">${rarityLbl(t.rarity)}</span><span style="font-size:26px">${t.icon}</span></div>
+      <div class="name">${t.name}</div>
+      <div class="eff">${t.eff}</div>
+      <div class="row2"><div class="price">$${t.price}</div><button onclick="buySimple('artifact','${t.id}')">Купить</button></div>
+    </div>`).join('');
+}
+function renderCerts(){
+  const certs=[
+    {id:'3m',name:'Старт',price:SHOP_PRICES.c3m,eff:'3 месяца • до 5 лотов • 5%'},
+    {id:'6m',name:'Профи',price:SHOP_PRICES.c6m,eff:'6 месяцев • до 20 лотов • 3.5%'},
+    {id:'1y',name:'Бизнес',price:SHOP_PRICES.c1y,eff:'1 год • до 100 лотов • 2%'},
+    {id:'inf',name:'Бессрочный',price:SHOP_PRICES.cinf,eff:'Навсегда • без лимита • 1%'},
+  ];
+  $('certsList').innerHTML=certs.map(c=>`
+    <div class="item-card">
+      <div class="row1"><span class="rarity r-legend">ЛИЦЕНЗИЯ</span></div>
+      <div class="name">${c.name}</div>
+      <div class="eff">${c.eff}</div>
+      <div class="row2"><div class="price">$${c.price}</div><button onclick="buyCert('${c.id}')">Купить</button></div>
+    </div>`).join('') + (SELLER_CERT?`<div class="item-card" style="border-color:#39d98a"><div class="name" style="color:#39d98a">✅ Активен: ${SELLER_CERT.tier}</div></div>`:'');
 }
 function buyCert(tier){
   const price=tier==='3m'?SHOP_PRICES.c3m:tier==='6m'?SHOP_PRICES.c6m:tier==='1y'?SHOP_PRICES.c1y:SHOP_PRICES.cinf;
-  if(USER_BALANCES.TUSD<price){msg('Недостаточно TUSD','error');return}
+  if(USER_BALANCES.TUSD<price){msg('❌ Недостаточно TUSD','error');return}
   USER_BALANCES.TUSD-=price;
-  const days=tier==='3m'?90:tier==='6m'?180:tier==='1y'?365:36500;
-  const expiry=new Date(Date.now()+days*86400000).toLocaleDateString('ru-RU');
-  SELLER_CERT={tier: tier==='3m'?'Старт':tier==='6m'?'Профи':tier==='1y'?'Бизнес':'Бессрочный', expiry};
+  SELLER_CERT={tier:tier==='3m'?'Старт':tier==='6m'?'Профи':tier==='1y'?'Бизнес':'Бессрочный'};
   USER_RATING.isSeller=true;
-  HISTORY.unshift({desc:`Покупка сертификата ${tier}`,amt:`-${price} TUSD`,time:new Date().toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})});
-  msg('✅ Сертификат '+SELLER_CERT.tier+' активирован!','success');
-  renderBalances();updatePortfolio();openShop('certs');
+  msg('✅ Сертификат активирован','success');
+  renderCerts();renderBalances();updatePortfolio();
 }
-function buyItem(cat, id){
-  const all=[...TITLES.map(x=>({...x,cat:'Титул'})),...ARTIFACTS.map(x=>({...x,cat:x.cat})),...WEAPONS.map(x=>({...x,cat:'Оружие'})),...AMMO.map(x=>({...x,cat:'Амуниция'}))];
-  const it=all.find(x=>x.id===id);if(!it)return;
-  const costUSD=it.price;
-  if(USER_BALANCES.TUSD<costUSD){msg('Недостаточно TUSD (нужно $'+costUSD+')','error');return}
-  USER_BALANCES.TUSD-=costUSD;
-  INVENTORY.push({name:it.name, rarity:it.rarity, price:it.price, cat:it.cat, itemId:id});
-  HISTORY.unshift({desc:`Покупка ${it.name}`,amt:`-${costUSD} TUSD`,time:new Date().toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})});
-  msg('✅ '+it.name+' куплено','success');
+function buySimple(cat,id){
+  const list=cat==='title'?TITLES:ARTIFACTS;
+  const it=list.find(x=>x.id===id);if(!it)return;
+  if(USER_BALANCES.TUSD<it.price){msg('❌ Недостаточно TUSD','error');return}
+  USER_BALANCES.TUSD-=it.price;
+  INVENTORY.push({...it,slot:cat,level:0,atk:0,pow:0});
+  msg(`✅ Куплено: ${it.icon} ${it.name}`,'success');
   renderBalances();updatePortfolio();
 }
-function listOnMarket(i){
-  const it=INVENTORY[i];if(!it)return;
-  const p=Math.round(it.price*1.2);
-  msg('✅ Выставлено на маркет за $'+p+' (демо)','success');
-  INVENTORY.splice(i,1);
-  openShop('warehouse');
+
+// ==================== INVENTORY ====================
+function renderInventory(){
+  const all=[...INVENTORY];
+  // добавим надетое
+  ['weapon','body','legs'].forEach(s=>{ if(EQUIPPED[s]) all.push({...EQUIPPED[s],equipped:true}); });
+  if(!all.length){ $('invGrid').innerHTML='<div class="hint" style="grid-column:1/-1;padding:20px">Пусто. Купи предметы в магазине</div>'; return; }
+  $('invGrid').innerHTML=all.map((it,i)=>{
+    const eq=it.equipped?'eq':'';
+    const rc=it.rarity||'common';
+    return `<div class="inv-cell ${rc} ${eq}" onclick="invClick(${i})">${it.icon}${eq?'<div class="inv-badge">✓</div>':''}</div>`;
+  }).join('');
+  window._invAll=all;
 }
-function listOnAuction(i){
-  const it=INVENTORY[i];if(!it)return;
-  if(!USER_RATING.isSeller){msg('Нужен сертификат продавца','error');return}
-  const start=Math.round(it.price*1.5);
-  AUCTIONS.unshift({id:'au'+Math.random().toString(36).slice(2,7), item:it.name, rarity:it.rarity, seller:'@you', stars:USER_RATING.stars, start, current:start, step:2.5, round:1, maxRound:5, leader:'—', bids:0, endsAt:Date.now()+24*3600000, effect:'Из моего склада'});
-  INVENTORY.splice(i,1);
-  msg('🔨 Лот выставлен на аукцион','success');
-  renderAuctions();
-  openShop('warehouse');
+function invClick(i){
+  const it=window._invAll[i];
+  if(!it) return;
+  if(it.equipped){ openEquipModal(it.slot); return; }
+  openModal2(`${it.icon} ${it.name}`,`
+    <div style="text-align:center;font-size:64px;margin:8px 0">${it.icon}</div>
+    ${it.atk||it.pow?`<div class="row-tbl"><div class="lft">⚔️ ATK</div><div class="rt"><b style="color:var(--red)">+${it.atk||0}</b></div></div>
+    <div class="row-tbl"><div class="lft">💪 POW</div><div class="rt"><b style="color:var(--gold)">+${it.pow||0}</b></div></div>`:''}
+    ${it.eff?`<div class="row-tbl"><div class="lft">Эффект</div><div class="rt">${it.eff}</div></div>`:''}
+    ${it.slot&&it.level?`<button class="act buy" style="margin-top:12px" onclick="equipItem(window._invAll[${i}])">Надеть</button>`:''}
+    <button class="act gold" style="margin-top:8px" onclick="sellFromInv(${i})">💰 Продать за $${Math.round((it.price||10)*0.7)}</button>
+  `);
 }
-function buyRef(id){
-  const r=REF_SALE.find(x=>x.id===id);if(!r)return;
-  if(USER_BALANCES.TUSD<r.price){msg('Недостаточно TUSD','error');return}
-  USER_BALANCES.TUSD-=r.price;
-  HISTORY.unshift({desc:`Покупка реферала ${r.login}`,amt:`-${r.price} TUSD`,time:new Date().toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})});
-  msg('✅ Реферал '+r.login+' куплен','success');
-  renderBalances();updatePortfolio();openShop('refs');
+function sellFromInv(i){
+  const it=window._invAll[i];
+  if(!it) return;
+  const refund=Math.round((it.price||10)*0.7);
+  USER_BALANCES.TUSD+=refund;
+  INVENTORY=INVENTORY.filter(x=>x!==it);
+  closeModal2();
+  msg(`💰 Возврат $${refund}`,'success');
+  renderBalances();updatePortfolio();renderInventory();
 }
+
+// ==================== BALANCES / STAKING ====================
+function renderBalances(){
+  const total=USER_BALANCES.TG*RATES.TG+USER_BALANCES.TUSD*RATES.TUSD+USER_BALANCES.AI*RATES.AI+USER_BALANCES.VKCOIN*RATES.VKCOIN+USER_BALANCES.BBK*RATES.BBK;
+  $('portVal').textContent=fmt(total,2);
+  $('balList').innerHTML=Object.keys(RATES).map(sym=>{
+    const amt=n(USER_BALANCES[sym]);
+    const usd=amt*RATES[sym];
+    return `<div class="row-tbl"><div class="lft">${TOKEN_ICONS[sym]||'🪙'} ${sym}</div><div class="rt">${fmt(amt,4)} <span style="color:var(--muted);font-weight:400">≈$${fmt(usd,2)}</span></div></div>`;
+  }).join('');
+}
+function updatePortfolio(){
+  let t=0;
+  Object.keys(RATES).forEach(sym=>{t+=n(USER_BALANCES[sym])*RATES[sym]});
+  Object.keys(REWARDS).forEach(sym=>{t+=n(REWARDS[sym])*RATES[sym]});
+  $('portVal').textContent=fmt(t,2);
+}
+function renderHistory(){
+  if(!HISTORY.length){$('histList').innerHTML='<div class="hint">Пока пусто</div>';return}
+  $('histList').innerHTML=HISTORY.slice(0,10).map(h=>`<div class="row-tbl"><div class="lft">${esc(h.desc)}</div><div class="rt">${esc(h.amt)}</div></div>`).join('');
+}
+function faucet(){
+  USER_BALANCES.TUSD+=10000;USER_BALANCES.TG+=10;USER_BALANCES.AI+=100000;
+  msg('🚰 +10 000 TUSD, +10 TG, +100 000 AI','success');
+  renderBalances();updatePortfolio();
+}
+let lastTick=Date.now();
+function renderStaking(){
+  const now=Date.now(),dt=(now-lastTick)/1000;lastTick=now;
+  let totalUSD=0;const rows=[];
+  Object.keys(STAKED).forEach(sym=>{
+    const st=n(STAKED[sym]);if(st<=0)return;
+    const rps=st*MONTHLY_APR/SECONDS_IN_MONTH;
+    REWARDS[sym]=n(REWARDS[sym])+rps*dt;
+    const usd=n(REWARDS[sym])*RATES[sym];
+    totalUSD+=usd;
+    rows.push(`<div class="row"><span class="k">${TOKEN_ICONS[sym]||'🪙'} ${sym} (${fmt(st,2)})</span><span class="v">+$${usd.toFixed(8)}</span></div>`);
+  });
+  $('stakeRows').innerHTML=rows.join('')||'<div class="hint" style="color:#7dd3a0">Нет стейков. Включи в админке</div>';
+  $('stakeUSD').textContent=totalUSD.toFixed(8);
+  updatePortfolio();
+}
+setInterval(renderStaking,100);
+
+// ==================== REF / AUCTION ====================
 function renderRefSale(){
-  const box=document.getElementById('refSaleList');if(!box)return;
-  box.innerHTML=REF_SALE.map(r=>`<div class="item-card"><div class="row1"><span class="badge ${r.stars>=4?'b-seller':'b-common'}">${r.owner}</span>${starsHTML(r.stars)}</div><div class="name">👤 ${r.login}</div><div class="eff">Lv.${r.level} • $${r.earned} • ${r.days} дней</div><div class="row2"><div class="price">$${r.price}</div><button onclick="buyRef('${r.id}')">Купить</button></div></div>`).join('');
+  $('refSaleList').innerHTML=REF_SALE.map(r=>`
+    <div class="item-card">
+      <div class="row1"><span class="badge b-seller">${esc(r.owner)}</span><span class="stars">${stars(r.stars)}</span></div>
+      <div class="name">👤 ${esc(r.login)}</div>
+      <div class="eff">Lv.${r.level} • $${r.earned} • ${r.days} дней</div>
+      <div class="row2"><div class="price">$${r.price}</div><button onclick="msg('✅ Куплено (демо)','success')">Купить</button></div>
+    </div>`).join('');
 }
-
-// ==================== P2P ====================
-function renderP2P(){
-  const box=document.getElementById('p2pList');if(!box)return;
-  box.innerHTML=P2P_ORDERS.map(o=>`<div class="item-card"><div class="row1"><span class="badge ${o.isSeller?'b-seller':'b-common'}">${o.isSeller?'Продавец':'Обычный'}</span>${starsHTML(o.stars)}</div><div class="name">${o.item}</div><div class="eff">Продавец: ${o.seller} • Кол-во: ${o.qty}</div><div class="row2"><div class="price">$${o.price}</div><button onclick="msg('✅ Сделка создана (демо)','success')">Купить</button></div></div>`).join('');
-}
-
-// ==================== AUCTION ====================
 function renderAuctions(){
-  const box=document.getElementById('auctionList');if(!box)return;
-  if(!AUCTIONS.length){box.innerHTML='<div class="card"><div class="hint" style="padding:20px">Нет активных аукционов</div></div>';return}
-  box.innerHTML=AUCTIONS.map(a=>{
+  if(!AUCTIONS.length){$('auctionList').innerHTML='<div class="card"><div class="hint" style="padding:20px">Нет аукционов</div></div>';return}
+  $('auctionList').innerHTML=AUCTIONS.map(a=>{
     const left=Math.max(0,a.endsAt-Date.now());
     const h=Math.floor(left/3600000),m=Math.floor((left%3600000)/60000),s=Math.floor((left%60000)/1000);
     const next=a.current*(1+a.step/100);
     return `<div class="auc-card">
       <div style="display:flex;justify-content:space-between;align-items:center">
-        <span class="rarity ${rarityClass(a.rarity)}">${rarityLabel(a.rarity)}</span>
+        <span class="rarity ${rarityCls(a.rarity)}">${rarityLbl(a.rarity)}</span>
         <span class="auc-timer">${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}</span>
       </div>
-      <div style="font-size:15px;font-weight:700;color:#fff;margin-top:8px">${esc(a.item)}</div>
-      <div style="font-size:11px;color:var(--muted);margin-top:4px">${esc(a.effect||'')}</div>
+      <div style="font-size:15px;font-weight:700;margin-top:8px">${esc(a.item)}</div>
+      <div class="hint" style="text-align:left;margin-top:4px">${esc(a.effect||'')}</div>
       <div style="height:1px;background:var(--line);margin:10px 0"></div>
-      <div class="auc-row"><span>Текущая ставка</span><b style="color:var(--gold);font-size:16px">$${f(a.current,2)}</b></div>
+      <div class="auc-row"><span>Ставка</span><b style="color:var(--gold);font-size:16px">$${fmt(a.current,2)}</b></div>
       <div class="auc-row"><span>Лидер</span><b>${esc(a.leader)}</b></div>
       <div class="auc-row"><span>Ставок</span><b>${a.bids}</b></div>
-      <div class="auc-row"><span>Круг</span><b>${a.round} из ${a.maxRound}</b></div>
       <div style="display:flex;gap:8px;margin-top:10px">
-        <button class="act" style="flex:1;margin:0;padding:9px;font-size:12px" onclick="bidAuction('${a.id}',${next})">Ставка $${f(next,2)}</button>
-        <button class="act gold" style="flex:1;margin:0;padding:9px;font-size:12px" onclick="buyNowAuction('${a.id}',${a.start*2})">Купить $${f(a.start*2,2)}</button>
+        <button class="act" style="flex:1;margin:0;padding:9px;font-size:12px" onclick="bid('${a.id}',${next})">Ставка $${fmt(next,2)}</button>
+        <button class="act gold" style="flex:1;margin:0;padding:9px;font-size:12px" onclick="buyNow('${a.id}',${a.start*2})">Купить $${fmt(a.start*2,2)}</button>
       </div>
-      <div style="font-size:11px;color:var(--muted);margin-top:8px">Продавец: ${esc(a.seller)} ${starsHTML(a.stars)}</div>
     </div>`;
   }).join('');
 }
-function bidAuction(id,amt){
+function bid(id,amt){
   const a=AUCTIONS.find(x=>x.id===id);if(!a)return;
-  if(USER_BALANCES.TUSD<amt){msg('Недостаточно TUSD','error');return}
+  if(USER_BALANCES.TUSD<amt){msg('❌ Недостаточно TUSD','error');return}
   a.current=amt;a.leader='@you';a.bids++;
-  msg('✅ Ставка $'+f(amt,2)+' принята','success');
-  renderAuctions();
+  msg('✅ Ставка принята','success');renderAuctions();
 }
-function buyNowAuction(id,price){
+function buyNow(id,price){
   const a=AUCTIONS.find(x=>x.id===id);if(!a)return;
-  if(USER_BALANCES.TUSD<price){msg('Недостаточно TUSD','error');return}
+  if(USER_BALANCES.TUSD<price){msg('❌ Недостаточно TUSD','error');return}
   USER_BALANCES.TUSD-=price;
-  INVENTORY.push({name:a.item,rarity:a.rarity,price,cat:'Аукцион'});
+  INVENTORY.push({icon:'🏆',name:a.item,slot:'auction',level:0,price,atk:0,pow:0,rarity:a.rarity});
   AUCTIONS=AUCTIONS.filter(x=>x.id!==id);
   msg('🏆 Куплено: '+a.item,'success');
   renderBalances();updatePortfolio();renderAuctions();
 }
 function createAuctionDemo(){
-  if(!USER_RATING.isSeller){msg('❌ Нужен сертификат продавца','error');return}
+  if(!USER_RATING.isSeller){msg('❌ Нужен сертификат','error');return}
   openModal2('🔨 НОВЫЙ ЛОТ',`
-    <div class="field"><label>Название</label><input id="cAName" value="🏷️ Новый лот"></div>
-    <div class="field"><label>Редкость</label><select id="cARar"><option value="common">Common</option><option value="rare">Rare</option><option value="epic">Epic</option><option value="legend" selected>Legendary</option><option value="mythic">Mythic</option></select></div>
+    <div class="field"><label>Название</label><input id="cAName" value="🗡️ Меч судьбы"></div>
+    <div class="field"><label>Редкость</label><select id="cARar"><option value="rare">Rare</option><option value="epic" selected>Epic</option><option value="legend">Legendary</option><option value="mythic">Mythic</option></select></div>
     <div class="field"><label>Старт (USD)</label><input id="cAStart" type="number" value="500"></div>
-    <div class="field"><label>Часов</label><input id="cADur" type="number" value="24"></div>
     <button class="act" onclick="confirmCreateAuction()">🔨 Создать</button>
   `);
 }
 function confirmCreateAuction(){
-  const name=document.getElementById('cAName').value;
-  const rar=document.getElementById('cARar').value;
-  const start=n(document.getElementById('cAStart').value);
-  const dur=n(document.getElementById('cADur').value)||24;
-  AUCTIONS.unshift({id:'au'+Math.random().toString(36).slice(2,7),item:name,rarity:rar,seller:'@you',stars:USER_RATING.stars,start,current:start,step:2.5,round:1,maxRound:5,leader:'—',bids:0,endsAt:Date.now()+dur*3600000,effect:''});
-  closeModal2();
-  renderAuctions();
-  msg('🔨 Лот создан','success');
+  const name=$('cAName').value,rar=$('cARar').value,start=n($('cAStart').value);
+  AUCTIONS.unshift({id:'a'+Math.random().toString(36).slice(2,6),item:name,rarity:rar,seller:'@you',stars:USER_RATING.stars,start,current:start,step:2.5,round:1,maxRound:5,leader:'—',bids:0,endsAt:Date.now()+24*3600000,effect:'Из моего склада'});
+  closeModal2();renderAuctions();msg('🔨 Лот создан','success');
 }
 
 // ==================== ADMIN ====================
-let ADMIN_LOGGED=false;
 function adminLogin(){
-  const p=document.getElementById('adPwd').value;
-  if(p!=='admin'){msg('Неверный пароль','error');return}
-  ADMIN_LOGGED=true;
-  document.getElementById('adminLogin').classList.add('hide');
-  document.getElementById('adminPanel').classList.remove('hide');
-  syncAdminInputs();
-  renderAdminUsers();
-  updateAdminStats();
-  msg('✅ Добро пожаловать в админку','success');
+  if($('adPwd').value!=='admin'){msg('❌ Неверный пароль','error');return}
+  $('adminLogin').classList.add('hide');
+  $('adminPanel').classList.remove('hide');
+  syncAdmin();updateAdminStats();
+  msg('✅ Добро пожаловать','success');
 }
-function adminTab(t){
-  document.querySelectorAll('#adminTabs button').forEach((b,i)=>b.classList.remove('active'));
-  event.target.classList.add('active');
+function adminTab(t,btn){
+  document.querySelectorAll('.admin-tabs button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
   document.querySelectorAll('.admin-tab-content').forEach(c=>c.classList.add('hide'));
-  document.getElementById('at-'+t).classList.remove('hide');
+  $('at-'+t).classList.remove('hide');
 }
 function updateAdminStats(){
-  document.getElementById('statTUSD').textContent=f(USER_BALANCES.TUSD,2);
-  document.getElementById('statTG').textContent=f(USER_BALANCES.TG,2);
-  document.getElementById('statAI').textContent=f(USER_BALANCES.AI,2);
-  const stakedUSD=n(STAKED.TG)*100+n(STAKED.TUSD)*1+n(STAKED.AI)*0.01;
-  document.getElementById('statStaked').textContent=f(stakedUSD,2);
-  document.getElementById('statPools').textContent=POOLS.length;
+  $('statTUSD').textContent=fmt(USER_BALANCES.TUSD,2);
+  $('statTG').textContent=fmt(USER_BALANCES.TG,2);
+  $('statStaked').textContent=fmt(n(STAKED.TG)*100+n(STAKED.TUSD)+n(STAKED.AI)*0.01,2);
 }
-function syncAdminInputs(){
-  document.getElementById('adTUSD').value=USER_BALANCES.TUSD;
-  document.getElementById('adTG').value=USER_BALANCES.TG;
-  document.getElementById('adAI').value=USER_BALANCES.AI;
-  document.getElementById('adVK').value=USER_BALANCES.VKCOIN;
-  document.getElementById('adBBK').value=USER_BALANCES.BBK;
-  document.getElementById('stTUSD').value=STAKED.TUSD;
-  document.getElementById('stTG').value=STAKED.TG;
-  document.getElementById('stAI').value=STAKED.AI;
-  document.getElementById('c3m').value=SHOP_PRICES.c3m;
-  document.getElementById('c6m').value=SHOP_PRICES.c6m;
-  document.getElementById('c1y').value=SHOP_PRICES.c1y;
-  document.getElementById('cinf').value=SHOP_PRICES.cinf;
-  document.getElementById('adCertActive').value=USER_RATING.isSeller?'1':'0';
-  document.getElementById('adStars').value=USER_RATING.stars;
-  document.getElementById('adDealsTotal').value=USER_RATING.deals;
-  document.getElementById('adLevel').value=USER_PROGRESS.level;
-  document.getElementById('adDeals').value=USER_PROGRESS.deals;
-  document.getElementById('adRefs').value=USER_PROGRESS.refs;
-  document.getElementById('adEarned').value=USER_PROGRESS.earned;
-  document.getElementById('rateTG').value=tokenPrice('TG');
-  document.getElementById('rateAI').value=tokenPrice('AI');
-  document.getElementById('rateTUSD').value=tokenPrice('TUSD');
-  document.getElementById('rateVKCOIN').value=tokenPrice('VKCOIN');
-  document.getElementById('rateBBK').value=tokenPrice('BBK');
+function syncAdmin(){
+  $('adTUSD').value=USER_BALANCES.TUSD;$('adTG').value=USER_BALANCES.TG;$('adAI').value=USER_BALANCES.AI;
+  $('adVK').value=USER_BALANCES.VKCOIN;$('adBBK').value=USER_BALANCES.BBK;
+  $('stTUSD').value=STAKED.TUSD;$('stTG').value=STAKED.TG;$('stAI').value=STAKED.AI;
+  $('c3m').value=SHOP_PRICES.c3m;$('c6m').value=SHOP_PRICES.c6m;$('c1y').value=SHOP_PRICES.c1y;$('cinf').value=SHOP_PRICES.cinf;
+  $('adCertActive').value=USER_RATING.isSeller?'1':'0';
+  $('adStars').value=USER_RATING.stars;$('adDealsTotal').value=USER_RATING.deals;
+  $('adLevel').value=USER_PROGRESS.level;$('adDeals').value=USER_PROGRESS.deals;
+  $('adRefs').value=USER_PROGRESS.refs;$('adEarned').value=USER_PROGRESS.earned;
 }
 function adminSave(){
-  USER_BALANCES.TUSD=n(document.getElementById('adTUSD').value);
-  USER_BALANCES.TG=n(document.getElementById('adTG').value);
-  USER_BALANCES.AI=n(document.getElementById('adAI').value);
-  USER_BALANCES.VKCOIN=n(document.getElementById('adVK').value);
-  USER_BALANCES.BBK=n(document.getElementById('adBBK').value);
-  STAKED.TUSD=n(document.getElementById('stTUSD').value);
-  STAKED.TG=n(document.getElementById('stTG').value);
-  STAKED.AI=n(document.getElementById('stAI').value);
-  SHOP_PRICES.c3m=n(document.getElementById('c3m').value);
-  SHOP_PRICES.c6m=n(document.getElementById('c6m').value);
-  SHOP_PRICES.c1y=n(document.getElementById('c1y').value);
-  SHOP_PRICES.cinf=n(document.getElementById('cinf').value);
-  USER_RATING.isSeller=document.getElementById('adCertActive').value==='1';
-  USER_RATING.stars=n(document.getElementById('adStars').value);
-  USER_RATING.deals=n(document.getElementById('adDealsTotal').value);
-  USER_PROGRESS.level=Math.max(1,Math.min(LEVELS.length,parseInt(document.getElementById('adLevel').value)||1));
-  USER_PROGRESS.deals=n(document.getElementById('adDeals').value);
-  USER_PROGRESS.refs=n(document.getElementById('adRefs').value);
-  USER_PROGRESS.earned=n(document.getElementById('adEarned').value);
-  ALL_TOKENS.find(t=>t.symbol==='TG').price=n(document.getElementById('rateTG').value);
-  ALL_TOKENS.find(t=>t.symbol==='AI').price=n(document.getElementById('rateAI').value);
-  ALL_TOKENS.find(t=>t.symbol==='TUSD').price=n(document.getElementById('rateTUSD').value);
-  ALL_TOKENS.find(t=>t.symbol==='VKCOIN').price=n(document.getElementById('rateVKCOIN').value);
-  ALL_TOKENS.find(t=>t.symbol==='BBK').price=n(document.getElementById('rateBBK').value);
-  renderBalances();updatePortfolio();renderLevel();updateAdminStats();
+  USER_BALANCES.TUSD=n($('adTUSD').value);USER_BALANCES.TG=n($('adTG').value);USER_BALANCES.AI=n($('adAI').value);
+  USER_BALANCES.VKCOIN=n($('adVK').value);USER_BALANCES.BBK=n($('adBBK').value);
+  STAKED.TUSD=n($('stTUSD').value);STAKED.TG=n($('stTG').value);STAKED.AI=n($('stAI').value);
+  SHOP_PRICES.c3m=n($('c3m').value);SHOP_PRICES.c6m=n($('c6m').value);SHOP_PRICES.c1y=n($('c1y').value);SHOP_PRICES.cinf=n($('cinf').value);
+  USER_RATING.isSeller=$('adCertActive').value==='1';
+  USER_RATING.stars=n($('adStars').value);USER_RATING.deals=n($('adDealsTotal').value);
+  USER_PROGRESS.level=Math.max(1,Math.min(LEVELS.length,parseInt($('adLevel').value)||1));
+  USER_PROGRESS.deals=n($('adDeals').value);USER_PROGRESS.refs=n($('adRefs').value);USER_PROGRESS.earned=n($('adEarned').value);
+  renderKnight();renderBalances();renderGear();renderCerts();updateAdminStats();
   msg('💾 Сохранено','success');
 }
-function adminReset(){
-  if(!confirm('Сбросить всё демо?'))return;
-  location.reload();
+function adminLevelUp(){
+  if(USER_PROGRESS.level>=LEVELS.length){msg('Максимум','error');return}
+  USER_PROGRESS.level++;
+  const lv=LEVELS[USER_PROGRESS.level-1];
+  USER_PROGRESS.deals=lv.deals;USER_PROGRESS.refs=lv.refs;USER_PROGRESS.earned=lv.earn;
+  // снять старую амуницию - вернуть в инвентарь
+  ['weapon','body','legs'].forEach(s=>{if(EQUIPPED[s]){INVENTORY.push(EQUIPPED[s]);EQUIPPED[s]=null;}});
+  setKnightSpeech(`Я ${lv.name}!`);
+  syncAdmin();renderKnight();renderGear();
+  msg('⬆️ '+lv.name+' — новый уровень!','success');
 }
-function renderAdminUsers(){
-  const box=document.getElementById('adminUsersList');if(!box)return;
-  box.innerHTML=ADMIN_USERS.map(u=>`<div class="item-card"><div class="row1"><b style="color:#fff">${u.login}</b>${starsHTML(u.stars)}</div><div class="eff">Lv.${u.level} • ${u.deals} сделок • $${u.earned} • ${u.days} дней<br>Сертификат: <b style="color:var(--gold)">${u.cert}</b></div></div>`).join('');
+function adminLevelDown(){
+  if(USER_PROGRESS.level<=1){msg('Минимум','error');return}
+  USER_PROGRESS.level--;
+  ['weapon','body','legs'].forEach(s=>{if(EQUIPPED[s]){INVENTORY.push(EQUIPPED[s]);EQUIPPED[s]=null;}});
+  syncAdmin();renderKnight();renderGear();
+  msg('⬇️ Уровень понижен');
+}
+function adminFillMax(){
+  const lv=LEVELS[USER_PROGRESS.level-1];
+  USER_PROGRESS.deals=lv.deals;USER_PROGRESS.refs=lv.refs;USER_PROGRESS.earned=lv.earn;
+  syncAdmin();renderKnight();
+  msg('🎯 Заполнено','success');
+}
+function adminGiveGear(){
+  const lv=LEVELS[USER_PROGRESS.level-1];
+  const set=GEAR_SETS[lv.n];
+  ['weapon','body','legs'].forEach(s=>{
+    if(EQUIPPED[s]) INVENTORY.push(EQUIPPED[s]);
+    EQUIPPED[s]={...set[s],slot:s,level:lv.n,atk:set[s].atk,pow:set[s].pow,rarity:'rare',price:0};
+  });
+  renderKnight();renderInventory();renderGear();
+  msg('⚔️ Выдана вся амуниция уровня','success');
 }
 
-// ==================== MODAL2 ====================
+// ==================== MODAL ====================
 function openModal2(title,body){
-  document.getElementById('modal2In').innerHTML=`<div class="card-title">${title}</div>${body}<div style="margin-top:12px"><button class="act sell" onclick="closeModal2()">Закрыть</button></div>`;
-  document.getElementById('modal2').classList.add('show');
+  $('modal2In').innerHTML=`<div class="card-title">${title}</div>${body}<div style="margin-top:12px"><button class="act sell" onclick="closeModal2()">Закрыть</button></div>`;
+  $('modal2').classList.add('show');
 }
-function closeModal2(e){if(e&&e.target!==document.getElementById('modal2'))return;document.getElementById('modal2').classList.remove('show')}
+function closeModal2(e){if(e&&e.target!==$('modal2'))return;$('modal2').classList.remove('show')}
 
 // ==================== INIT ====================
-document.addEventListener('DOMContentLoaded',()=>{
-  renderSwapTokens();renderBalances();updateBalances();renderPools();renderMyLp();renderHistory();updatePortfolio();
-  calcSwap();renderShopMenu();renderP2P();renderLevel();
-});
-setInterval(()=>{ if(!document.getElementById('s-auction').classList.contains('hide')) renderAuctions(); }, 1000);
+renderKnight();renderBalances();updatePortfolio();renderStaking();
+setInterval(()=>{ if(!$('s-auction').classList.contains('hide')) renderAuctions(); }, 1000);
 </script>
 </body></html>
