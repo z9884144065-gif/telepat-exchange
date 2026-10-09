@@ -6,7 +6,7 @@
 <title>TELEPAT — Empire</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
-:root{--bg:#0b0e11;--bg-card:#151a21;--bg-card-2:#1a212c;--line:#252b36;--gold:#f4cf70;--text:#fff;--muted:#8a94a6;--green:#26a17b;--red:#f6465d;--blue:#2f80ed;--purple:#a855f7;--cyan:#22d3ee}
+:root{--bg:#0b0e11;--bg-card:#151a21;--line:#252b36;--gold:#f4cf70;--text:#fff;--muted:#8a94a6;--green:#26a17b;--red:#f6465d;--blue:#2f80ed;--purple:#a855f7;--cyan:#22d3ee}
 *{box-sizing:border-box}
 html,body{margin:0;padding:0;background:radial-gradient(circle at 50% -10%, #1a2535 0%, var(--bg) 42%), var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;min-height:100vh;-webkit-tap-highlight-color:transparent}
 .app{max-width:520px;margin:0 auto;padding:14px 12px 110px}
@@ -15,10 +15,6 @@ html,body{margin:0;padding:0;background:radial-gradient(circle at 50% -10%, #1a2
 .top-icons{display:flex;gap:6px}
 .icon-btn{width:34px;height:34px;border-radius:50%;background:var(--bg-card);border:1px solid var(--line);color:var(--muted);display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;transition:.2s}
 .icon-btn:hover{border-color:var(--gold);color:var(--gold)}
-.icon-btn.badge{position:relative}
-.icon-btn.badge::after{content:attr(data-badge);position:absolute;top:-3px;right:-3px;background:var(--red);color:#fff;font-size:9px;font-weight:700;padding:2px 5px;border-radius:8px;min-width:14px;text-align:center}
-
-/* ПРОФИЛЬ */
 .profile-card{background:linear-gradient(135deg,#1a212c,#0e131a);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px;position:relative;overflow:hidden}
 .profile-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--blue),var(--purple),var(--gold))}
 .profile-header{display:flex;align-items:center;gap:14px}
@@ -32,25 +28,19 @@ html,body{margin:0;padding:0;background:radial-gradient(circle at 50% -10%, #1a2
 .username .premium-badge{font-size:11px;background:linear-gradient(90deg,#a21caf,#ec4899);color:#fff;padding:2px 6px;border-radius:4px;font-weight:700}
 .user-stats{display:flex;gap:10px;margin-top:6px;font-size:11px;color:var(--muted);flex-wrap:wrap}
 .user-stats .rank-badge-top{color:var(--gold);font-weight:700}
-
-/* 3 ПЛИТКИ */
 .stats-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px}
 .stat-tile{background:var(--bg-card);border:1px solid var(--line);border-radius:12px;padding:12px 6px;text-align:center}
 .stat-tile .val{font-size:18px;font-weight:800;color:var(--gold);line-height:1.1}
 .stat-tile .lbl{font-size:10px;color:var(--muted);text-transform:uppercase;margin-top:4px;letter-spacing:.5px}
-
-/* РЫЦАРЬ */
 .knight-section{background:var(--bg-card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px}
 .rank-badge{display:flex;align-items:center;gap:10px;margin-bottom:16px;padding:10px;background:#0d1520;border:1px solid #2a3242;border-radius:12px}
-.rank-medal{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#80652d,#c99629);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;position:relative;overflow:hidden}
+.rank-medal{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#80652d,#c99629);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;overflow:hidden}
 .rank-medal img{width:100%;height:100%;object-fit:cover;object-position:top center;transform:scale(1.6);transform-origin:top center}
 .rank-info .rank-name{font-size:15px;font-weight:800;color:#fff}
 .rank-info .rank-sub{font-size:10px;color:var(--muted);margin-top:2px}
-
 .knight-layout{display:grid;grid-template-columns:68px 1fr 68px;gap:10px;align-items:center;margin-bottom:16px}
 .slot-col{display:flex;flex-direction:column;gap:10px}
 .slot{width:68px;height:68px;background:#0d1520;border:2px solid #2a3242;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:30px;cursor:pointer;position:relative;transition:.2s}
-.slot:hover{border-color:var(--blue);transform:scale(1.03)}
 .slot.filled{border-color:var(--green);background:linear-gradient(135deg,#0d2818,#132b1f);box-shadow:0 0 12px rgba(38,161,123,.4)}
 .slot.empty{color:#4a5563;font-size:22px}
 .slot.locked{opacity:.4;cursor:not-allowed}
@@ -63,8 +53,6 @@ html,body{margin:0;padding:0;background:radial-gradient(circle at 50% -10%, #1a2
 .knight-speech::before{content:'';position:absolute;top:-5px;left:50%;transform:translateX(-50%);border:5px solid transparent;border-bottom-color:#fff;border-top:0}
 .slots-row-bottom{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:18px}
 .slots-row-bottom .slot{width:100%;height:52px;font-size:22px;border-radius:12px}
-
-/* ШКАЛЫ */
 .scales-container{margin-top:20px;padding-top:16px;border-top:1px solid #2a3242}
 .scale-item{margin-bottom:10px}
 .scale-header{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:4px}
@@ -79,32 +67,24 @@ html,body{margin:0;padding:0;background:radial-gradient(circle at 50% -10%, #1a2
 .scale-bar-fill.purple{background:linear-gradient(90deg,#a855f7,#ec4899)}
 .rule-line{margin-top:10px;padding:8px;background:#0d1520;border:1px solid #2a3242;border-radius:10px;font-size:11px;color:var(--muted);text-align:center}
 .rule-line b{color:var(--gold)}
-
-/* КНОПКИ */
 .quick-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
 .quick-btn{background:#1e2530;border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;transition:.2s}
 .quick-btn:hover{border-color:var(--gold);transform:translateY(-2px)}
 .quick-btn .icon{font-size:24px}
-
-/* НАВИГАЦИЯ */
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(14,19,26,.95);backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:8px 6px calc(8px + env(safe-area-inset-bottom));display:flex;justify-content:center;gap:4px;z-index:900}
 .nav-btn{flex:1;max-width:100px;padding:10px 4px;background:transparent;border:0;color:var(--muted);font-size:10px;font-weight:600;cursor:pointer;border-radius:10px;line-height:1.3;display:flex;flex-direction:column;align-items:center;gap:4px;transition:.2s}
 .nav-btn.active{color:var(--gold);background:rgba(244,207,112,.1)}
 .nav-btn .nav-icon{font-size:22px}
-
-/* ТАБЫ */
 .tabs{display:flex;gap:4px;margin-bottom:12px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
 .tabs::-webkit-scrollbar{display:none}
 .tab{padding:8px 14px;background:var(--bg-card);border:1px solid var(--line);border-radius:20px;color:var(--muted);font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;flex:0 0 auto;transition:.2s}
 .tab.active{background:var(--blue);border-color:var(--blue);color:#fff}
-
-/* КАРТОЧКИ */
 .item-card{background:var(--bg-card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:8px;display:flex;flex-direction:column;gap:8px}
-.item-card.mine{border-color:var(--gold);box-shadow:0 0 12px rgba(244,207,112,.2);position:relative}
+.item-card.mine{border-color:var(--gold);box-shadow:0 0 12px rgba(244,207,112,.2);position:relative;margin-top:6px}
 .item-card.mine::before{content:'👤 МОЯ СДЕЛКА';position:absolute;top:-8px;left:12px;background:var(--gold);color:#111;font-size:9px;font-weight:800;padding:2px 8px;border-radius:6px;letter-spacing:.5px}
 .item-card .item-header{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .item-card .item-name{font-weight:700;font-size:14px;color:#fff}
-.item-card .item-desc{font-size:11px;color:var(--muted)}
+.item-card .item-desc{font-size:11px;color:var(--muted);line-height:1.5}
 .item-card .item-footer{display:flex;justify-content:space-between;align-items:center;margin-top:4px;gap:8px}
 .item-card .item-price{font-weight:800;color:var(--gold);font-size:15px}
 .item-card button{padding:7px 14px;font-size:12px;font-weight:700;border-radius:8px;border:0;cursor:pointer;background:var(--blue);color:#fff;transition:.2s}
@@ -118,8 +98,6 @@ html,body{margin:0;padding:0;background:radial-gradient(circle at 50% -10%, #1a2
 .rarity.epic{background:#4c1d95;color:#c4b5fd}
 .rarity.legend{background:linear-gradient(90deg,#b45309,#f59e0b);color:#fff}
 .rarity.mythic{background:linear-gradient(90deg,#a21caf,#ec4899,#f59e0b);color:#fff}
-
-/* АДМИН */
 .admin-section{background:var(--bg-card);border:1px solid #8a6b28;border-radius:14px;padding:16px;margin-bottom:12px}
 .admin-section .admin-title{color:var(--gold);font-size:14px;font-weight:700;margin-bottom:12px}
 .admin-field{margin-bottom:10px}
@@ -132,8 +110,22 @@ html,body{margin:0;padding:0;background:radial-gradient(circle at 50% -10%, #1a2
 .admin-btn.gold{background:var(--gold);color:#111}
 .admin-btn.danger{background:var(--red);color:#fff}
 .admin-btn.sec{background:#263345;color:#fff;border:1px solid var(--line)}
-
-/* УТИЛИТЫ */
+/* SWAP */
+.swap-box{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:8px}
+.swap-box .lbl{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:6px}
+.swap-box .row{display:flex;gap:8px;align-items:center}
+.swap-box input{flex:1;background:transparent;border:0;color:#fff;font-size:20px;font-weight:700;outline:none;min-width:0;font-family:inherit}
+.swap-box .token-badge{font-weight:700;font-size:13px;padding:6px 12px;background:#1e2530;border:1px solid var(--line);border-radius:10px;white-space:nowrap}
+.swap-arrow{text-align:center;color:var(--muted);margin:4px 0;font-size:16px}
+/* МОДАЛКА */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;padding:16px;z-index:1500}
+.modal-overlay.show{display:flex}
+.modal-box{background:linear-gradient(145deg,#1d2939,#101721);border:1px solid #68562a;border-radius:20px;padding:18px;max-width:440px;width:100%;max-height:85vh;overflow-y:auto}
+.modal-box .modal-title{color:var(--gold);font-size:16px;font-weight:800;margin-bottom:12px}
+.modal-box .modal-actions{display:flex;gap:8px;margin-top:14px}
+.slider{width:100%;height:8px;border-radius:4px;background:#0d1520;outline:none;margin-top:8px;appearance:none;-webkit-appearance:none}
+.slider::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:var(--gold);cursor:pointer;box-shadow:0 0 8px rgba(244,207,112,.6)}
+.slider::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:var(--gold);cursor:pointer;border:0}
 .hidden{display:none!important}
 .msg-toast{position:fixed;top:12px;left:12px;right:12px;padding:12px;border-radius:12px;background:#1e252f;border:1px solid var(--line);text-align:center;font-size:13px;z-index:2000;display:none}
 .msg-toast.show{display:block;animation:slideDown .3s}
@@ -141,6 +133,7 @@ html,body{margin:0;padding:0;background:radial-gradient(circle at 50% -10%, #1a2
 .msg-toast.success{border-color:var(--green)}
 .msg-toast.error{border-color:var(--red)}
 h2{margin-top:0}
+.timer-badge{font-size:10px;color:var(--cyan);font-weight:700;margin-left:6px}
 </style>
 </head>
 <body>
@@ -339,12 +332,6 @@ h2{margin-top:0}
 </div>
 
 <div class="admin-section">
-<div class="admin-title">🏷️ Продажа титулов</div>
-<div class="admin-field"><label>Роялти с перепродажи копий (%)</label><input type="number" id="adRoyalty" value="10"></div>
-<div class="admin-field"><label>Создание копий раз в (месяцев)</label><input type="number" id="adCopyInterval" value="3"></div>
-</div>
-
-<div class="admin-section">
 <div class="admin-title">⚙️ Действия</div>
 <button class="admin-btn primary" style="width:100%" onclick="adminSave()">💾 Сохранить всё</button>
 <button class="admin-btn danger" style="width:100%;margin-top:8px" onclick="resetDemo()">🔄 Сбросить демо</button>
@@ -352,6 +339,11 @@ h2{margin-top:0}
 </div>
 </div>
 
+</div>
+
+<!-- МОДАЛКА -->
+<div class="modal-overlay" id="modal" onclick="closeModal(event)">
+<div class="modal-box" id="modalBox" onclick="event.stopPropagation()"></div>
 </div>
 
 <!-- НАВИГАЦИЯ -->
@@ -364,8 +356,9 @@ h2{margin-top:0}
 </div>
 
 <script>
-const LS_KEY='telepat_empire_v2';
+const LS_KEY='telepat_empire_v3';
 const TG_PRICE=100;
+const DAY_MS=24*60*60*1000;
 
 const LEVELS=[
 {n:0,name:'Новичок',icon:'🗡️',stake:0,deals:0,refs:0,star:null,group:0},
@@ -393,10 +386,8 @@ const LEVELS=[
 ];
 
 const GROUP_IMAGE={0:'knight-0.png',1:'knight-4.png',2:'knight-9.png',3:'knight-14.png',4:'knight-18.png'};
-
 const LEVEL_FILTER={0:'sepia(0.6) brightness(0.85) saturate(0.8)',1:'none',2:'sepia(0.15) saturate(1.05)',3:'saturate(1.1)',4:'brightness(0.9) saturate(1.1)',5:'none',6:'brightness(0.85) contrast(1.05)',7:'hue-rotate(-10deg) saturate(1.1)',8:'hue-rotate(20deg) saturate(1.15) brightness(1.02)',9:'none',10:'grayscale(0.7) brightness(1.05)',11:'sepia(0.5) saturate(1.5)',12:'grayscale(0.4) brightness(1.1) contrast(1.05)',13:'sepia(0.4) saturate(1.8) brightness(1.1)',14:'none',15:'hue-rotate(180deg) saturate(1.2)',16:'hue-rotate(160deg) saturate(1.1)',17:'hue-rotate(120deg) saturate(1.2)',18:'none',19:'hue-rotate(-30deg) saturate(1.3)',20:'sepia(0.3) saturate(1.6) brightness(1.08)',21:'hue-rotate(45deg) saturate(1.4) brightness(1.1)'};
 
-// ТИТУЛЫ — только те, что можно купить (14-21)
 const TITLES=[
 {id:'baron',name:'Барон',level:14,icon:'👑',price:256,eff:'+1% к рефералке'},
 {id:'vicomte',name:'Виконт',level:15,icon:'💎',price:512,eff:'+2% к рефералке'},
@@ -408,35 +399,41 @@ const TITLES=[
 {id:'empereur',name:'Император',level:21,icon:'👑',price:32768,eff:'+20% к рефералке'},
 ];
 
-// Активные P2P-лоты (только токены)
-const P2P_TOKENS=[
-{id:'p1',my:false,seller:'@seller_X',stars:5,from:'TG',to:'TUSD',fromAmt:100,toAmt:10000,rate:100},
-{id:'p2',my:false,seller:'@whale_777',stars:4,from:'AI',to:'TUSD',fromAmt:100000,toAmt:1000,rate:0.01},
-{id:'p3',my:true,seller:'@you',stars:3,from:'TG',to:'TUSD',fromAmt:5,toAmt:500,rate:100},
-{id:'p4',my:false,seller:'@noob_42',stars:1,from:'VKCOIN',to:'TUSD',fromAmt:500000,toAmt:500,rate:0.001},
+let P2P_TOKENS=[
+{id:'p1',my:false,seller:'@seller_X',stars:5,from:'TG',to:'TUSD',fromAmt:100,toAmt:10000},
+{id:'p2',my:false,seller:'@whale_777',stars:4,from:'AI',to:'TUSD',fromAmt:100000,toAmt:1000},
+{id:'p3',my:true,seller:'@you',stars:3,from:'TG',to:'TUSD',fromAmt:5,toAmt:500},
+{id:'p4',my:false,seller:'@noob_42',stars:1,from:'VKCOIN',to:'TUSD',fromAmt:500000,toAmt:500},
 ];
 
-// Рефералы на продажу
 const REFS_SALE=[
 {id:'r1',login:'@ref_1024',level:3,earned:120,days:45,price:40,owner:'@seller_X',stars:4,avgMonth:40},
 {id:'r2',login:'@ref_2048',level:5,earned:430,days:120,price:150,owner:'@whale_777',stars:5,avgMonth:107},
 {id:'r3',login:'@ref_4096',level:2,earned:18,days:12,price:8,owner:'@noob_42',stars:1,avgMonth:1.5},
 ];
 
+let AUCTIONS=[
+{id:'a1',item:'👑 Корона Императора',rarity:'mythic',current:1250,leader:'@whale_777',endsAt:Date.now()+6*3600000},
+{id:'a2',item:'🗡️ Экскалибур',rarity:'mythic',current:920,leader:'@player_V',endsAt:Date.now()+12*3600000},
+];
+
 let state={
-user:{name:'@username',days:0,isPremium:false},
+user:{name:'@username',days:0,isPremium:false,activeCert:null},
 balances:{TUSD:100000,TG:100,AI:1000000,VKCOIN:10000000},
 staked:{TUSD:1000,TG:50,AI:10000,VKCOIN:0},
+lastClaim:{TG:0,TUSD:0,AI:0},
 progress:{stakeUSD:0,deals:3,refs:1,starRefLevel:-1},
 rating:1500,
 equipped:{weapon:null,body:null,legs:null},
 activeTitle:null,
+swapFrom:'TG',
+swapTo:'TUSD',
 adminSettings:{royalty:10,copyInterval:3}
 };
 
 function loadState(){
-const saved=localStorage.getItem(LS_KEY);
-if(saved){try{state=Object.assign(state,JSON.parse(saved))}catch(e){console.warn(e)}}
+const s=localStorage.getItem(LS_KEY);
+if(s){try{const p=JSON.parse(s);Object.assign(state,p)}catch(e){console.warn(e)}}
 }
 function saveState(){localStorage.setItem(LS_KEY,JSON.stringify(state))}
 
@@ -480,7 +477,6 @@ if(lv.star!=null){if(starRef==null||starRef<lv.star)break}
 maxLevel=lv.n;
 }else break;
 }
-// Если куплен титул — используем его уровень
 if(state.activeTitle){
 const t=TITLES.find(x=>x.id===state.activeTitle.id);
 if(t&&t.level>maxLevel)return t.level;
@@ -512,32 +508,32 @@ $('rankSub').textContent=`Уровень ${lv.n} из 21`;
 
 const img=$('knightImg');
 const imgSrc=GROUP_IMAGE[lv.group]||GROUP_IMAGE[0];
-if(!img.src.includes(imgSrc)){
+if(img&&!img.src.includes(imgSrc)){
 img.style.opacity='0';
 setTimeout(()=>{
 img.src=imgSrc;
 img.style.filter=LEVEL_FILTER[lv.n]||'none';
 img.style.opacity='1';
 },200);
-}else{
+}else if(img){
 img.style.filter=LEVEL_FILTER[lv.n]||'none';
 }
 
-// Слоты
 ['weapon','body','legs'].forEach(slot=>{
 const el=$('slot-'+slot);
 const it=state.equipped[slot];
+const defIcon=slot==='weapon'?'🗡️':slot==='body'?'👕':'👖';
+const label=slot==='weapon'?'Меч':slot==='body'?'Рубашка':'Брюки';
 if(it){
 el.classList.remove('empty','locked');
 el.classList.add('filled');
-el.innerHTML=`<span class="slot-label">${slot==='weapon'?'Меч':slot==='body'?'Рубашка':'Брюки'}</span>${it.icon}`;
+el.innerHTML=`<span class="slot-label">${label}</span>${it.icon}`;
 }else{
 el.classList.add('empty');
-el.innerHTML=`<span class="slot-label">${slot==='weapon'?'Меч':slot==='body'?'Рубашка':'Брюки'}</span>${slot==='weapon'?'🗡️':slot==='body'?'👕':'👖'}`;
+el.innerHTML=`<span class="slot-label">${label}</span>${defIcon}`;
 }
 });
 
-// Шкалы
 const stake=calcStakeUSD();
 const pr=state.progress;
 const stakeTarget=next?next.stake:lv.stake;
@@ -577,8 +573,22 @@ function setKnightSpeech(text){const el=$('knightSpeech');if(el)el.textContent=t
 
 function clickSlot(slot){
 const it=state.equipped[slot];
-if(it){msg(`${it.icon} ${it.name} — снять?`);return}
-msg('Купи в магазине','info');
+if(it){
+if(confirm(`Снять ${it.icon} ${it.name}?`)){
+state.equipped[slot]=null;
+saveState();renderHome();msg('Снято');
+}
+}else msg('Купи в магазине','info');
+}
+
+// МОДАЛКА
+function openModal(title,html){
+$('modalBox').innerHTML=`<div class="modal-title">${title}</div>${html}`;
+$('modal').classList.add('show');
+}
+function closeModal(e){
+if(e&&e.target!==$('modal'))return;
+$('modal').classList.remove('show');
 }
 
 // МАГАЗИН
@@ -607,42 +617,47 @@ const priceEach=Math.round((gearLv*50)/3);
 const slots=tab==='weapons'?['weapon']:['body','legs'];
 c.innerHTML=`
 <div class="item-card"><div class="item-header"><b>${tab==='weapons'?'🗡️ Оружие':'⚔️ Амуниция'} уровня ${gearLv}</b></div><div class="item-desc">Купи все 3 предмета и надень — откроется ап</div></div>
-${slots.map(slot=>`
+${slots.map(slot=>{
+const has=state.equipped[slot]&&state.equipped[slot].level===gearLv;
+return `
 <div class="item-card">
 <div class="item-header"><span class="item-name">${set[slot].icon} ${set[slot].name}</span><span class="rarity common">Ур. ${gearLv}</span></div>
 <div class="item-desc">⚔️ +${set[slot].atk} ATK • 💪 +${set[slot].pow} POW</div>
-<div class="item-footer"><span class="item-price">$${priceEach}</span><button onclick="buyGear('${slot}',${gearLv},${priceEach})">Купить</button></div>
-</div>`).join('')}
+<div class="item-footer">
+<span class="item-price">$${priceEach}</span>
+${has?`<button class="green" disabled>✅ Надето</button>`:`<button onclick="buyGear('${slot}',${gearLv},${priceEach})">Купить</button>`}
+</div>
+</div>`}).join('')}
 `;
 }else if(tab==='artifacts'){
 c.innerHTML=`
 <div class="item-card"><div class="item-header"><b>💎 Артефакты</b></div><div class="item-desc">Камни, зелья, сферы — усилители</div></div>
-<div class="item-card"><div class="item-header"><span class="item-name">💎 Камень дохода</span><span class="rarity common">Common</span></div><div class="item-desc">+5% к стейку</div><div class="item-footer"><span class="item-price">$10</span><button onclick="msg('Куплено','success')">Купить</button></div></div>
-<div class="item-card"><div class="item-header"><span class="item-name">🧪 Зелье мощи</span><span class="rarity epic">Epic</span></div><div class="item-desc">+50 APR, 12ч</div><div class="item-footer"><span class="item-price">$25</span><button onclick="msg('Куплено','success')">Купить</button></div></div>
-<div class="item-card"><div class="item-header"><span class="item-name">🔮 Сфера бездны</span><span class="rarity legend">Legendary</span></div><div class="item-desc">+10% ко всему</div><div class="item-footer"><span class="item-price">$150</span><button onclick="msg('Куплено','success')">Купить</button></div></div>
+<div class="item-card"><div class="item-header"><span class="item-name">💎 Камень дохода</span><span class="rarity common">Common</span></div><div class="item-desc">+5% к стейку</div><div class="item-footer"><span class="item-price">$10</span><button onclick="buyArtifact('Камень дохода',10)">Купить</button></div></div>
+<div class="item-card"><div class="item-header"><span class="item-name">🧪 Зелье мощи</span><span class="rarity epic">Epic</span></div><div class="item-desc">+50 APR, 12ч</div><div class="item-footer"><span class="item-price">$25</span><button onclick="buyArtifact('Зелье мощи',25)">Купить</button></div></div>
+<div class="item-card"><div class="item-header"><span class="item-name">🔮 Сфера бездны</span><span class="rarity legend">Legendary</span></div><div class="item-desc">+10% ко всему</div><div class="item-footer"><span class="item-price">$150</span><button onclick="buyArtifact('Сфера бездны',150)">Купить</button></div></div>
 `;
 }else if(tab==='titles'){
 c.innerHTML=`
-<div class="item-card"><div class="item-header"><b>🏷️ Титулы</b></div><div class="item-desc">Купил → перешёл на уровень. 90% денег админу, 10% в фонд</div></div>
+<div class="item-card"><div class="item-header"><b>🏷️ Титулы</b></div><div class="item-desc">Купил → перешёл на уровень. 90% админу, 10% в фонд</div></div>
 ${TITLES.map(t=>`
 <div class="item-card">
 <div class="item-header"><span class="item-name">${t.icon} ${t.name}</span><span class="rarity legend">Уровень ${t.level}</span></div>
 <div class="item-desc">${t.eff} • цена в системе</div>
-<div class="item-footer"><span class="item-price">$${t.price}</span><button onclick="buyTitle('${t.id}')">Купить</button></div>
+<div class="item-footer"><span class="item-price">$${t.price}</span><button onclick="openBuyTitle('${t.id}')">Купить</button></div>
 </div>`).join('')}
 `;
 }else if(tab==='certs'){
 const p={c3m:25,c6m:50,c1y:100,cinf:250};
 c.innerHTML=`
 <div class="item-card"><div class="item-header"><b>📜 Сертификаты продавца</b></div></div>
-<div class="item-card"><div class="item-header"><span class="item-name">📜 Старт</span><span class="rarity legend">3 мес</span></div><div class="item-desc">До 5 лотов • комиссия 5%</div><div class="item-footer"><span class="item-price">$${p.c3m}</span><button onclick="buyCert('Старт')">Купить</button></div></div>
-<div class="item-card"><div class="item-header"><span class="item-name">📜 Профи</span><span class="rarity legend">6 мес</span></div><div class="item-desc">До 20 лотов • комиссия 3.5% • продажа рефералов</div><div class="item-footer"><span class="item-price">$${p.c6m}</span><button onclick="buyCert('Профи')">Купить</button></div></div>
-<div class="item-card"><div class="item-header"><span class="item-name">📜 Бизнес</span><span class="rarity legend">1 год</span></div><div class="item-desc">До 100 лотов • комиссия 2% • продажа своего титула</div><div class="item-footer"><span class="item-price">$${p.c1y}</span><button onclick="buyCert('Бизнес')">Купить</button></div></div>
-<div class="item-card"><div class="item-header"><span class="item-name">📜 Вечный</span><span class="rarity mythic">VIP</span></div><div class="item-desc">∞ лотов • комиссия 1% • создание копий титула раз в 3 мес</div><div class="item-footer"><span class="item-price">$${p.cinf}</span><button class="gold" onclick="buyCert('Вечный')">Купить</button></div></div>
+<div class="item-card"><div class="item-header"><span class="item-name">📜 Старт</span><span class="rarity legend">3 мес</span></div><div class="item-desc">До 5 лотов • комиссия 5%</div><div class="item-footer"><span class="item-price">$${p.c3m}</span><button onclick="buyCert('Старт',${p.c3m})">Купить</button></div></div>
+<div class="item-card"><div class="item-header"><span class="item-name">📜 Профи</span><span class="rarity legend">6 мес</span></div><div class="item-desc">До 20 лотов • комиссия 3.5% • продажа рефералов</div><div class="item-footer"><span class="item-price">$${p.c6m}</span><button onclick="buyCert('Профи',${p.c6m})">Купить</button></div></div>
+<div class="item-card"><div class="item-header"><span class="item-name">📜 Бизнес</span><span class="rarity legend">1 год</span></div><div class="item-desc">До 100 лотов • комиссия 2% • продажа своего титула</div><div class="item-footer"><span class="item-price">$${p.c1y}</span><button onclick="buyCert('Бизнес',${p.c1y})">Купить</button></div></div>
+<div class="item-card"><div class="item-header"><span class="item-name">📜 Вечный</span><span class="rarity mythic">VIP</span></div><div class="item-desc">∞ лотов • комиссия 1% • создание копий титула раз в 3 мес</div><div class="item-footer"><span class="item-price">$${p.cinf}</span><button class="gold" onclick="buyCert('Вечный',${p.cinf})">Купить</button></div></div>
 `;
 }else if(tab==='refs'){
 c.innerHTML=`
-<div class="item-card"><div class="item-header"><b>👥 Рефералы на продажу</b></div><div class="item-desc">Живые рефералы с историей заработка. Покупка = смена владельца</div></div>
+<div class="item-card"><div class="item-header"><b>👥 Рефералы на продажу</b></div><div class="item-desc">Покупка = смена владельца. Уведомляем, но не спрашиваем</div></div>
 ${REFS_SALE.map(r=>`
 <div class="item-card">
 <div class="item-header"><span class="item-name">👤 ${r.login}</span><span class="rarity rare">Lv.${r.level}</span></div>
@@ -653,8 +668,16 @@ ${REFS_SALE.map(r=>`
 }else if(tab==='auction'){
 c.innerHTML=`
 <div class="item-card"><div class="item-header"><b>🔨 Аукцион</b></div><div class="item-desc">Только с сертификатом Профи и выше</div></div>
-<div class="item-card"><div class="item-header"><span class="item-name">👑 Корона Императора</span><span class="rarity mythic">Mythic</span></div><div class="item-desc">Текущая ставка: $1250 • Лидер: @whale_777 • 6ч</div><div class="item-footer"><span class="item-price">$1250</span><button onclick="msg('Ставка принята','success')">Ставка</button></div></div>
-<div class="item-card"><div class="item-header"><span class="item-name">🗡️ Экскалибур</span><span class="rarity mythic">Mythic</span></div><div class="item-desc">Текущая ставка: $920 • Лидер: @player_V • 12ч</div><div class="item-footer"><span class="item-price">$920</span><button onclick="msg('Ставка принята','success')">Ставка</button></div></div>
+${AUCTIONS.map(a=>{
+const left=Math.max(0,a.endsAt-Date.now());
+const h=Math.floor(left/3600000),m=Math.floor((left%3600000)/60000);
+const next=Math.round(a.current*1.025);
+return `
+<div class="item-card">
+<div class="item-header"><span class="item-name">${a.item}</span><span class="rarity ${a.rarity}">${a.rarity}</span></div>
+<div class="item-desc">Текущая ставка: $${fmt(a.current,0)} • Лидер: ${a.leader} <span class="timer-badge">${h}ч ${m}м</span></div>
+<div class="item-footer"><span class="item-price">$${fmt(a.current,0)}</span><button onclick="bidAuction('${a.id}',${next})">Ставка $${next}</button></div>
+</div>`}).join('')}
 `;
 }
 }
@@ -671,24 +694,50 @@ saveState();renderHome();showShopTab(currentShopTab);
 msg(`✅ ${set[slot].name} надето`,'success');
 }
 
-function buyTitle(id){
+function buyArtifact(name,price){
+if(state.balances.TUSD<price){msg('Недостаточно TUSD','error');return}
+state.balances.TUSD-=price;
+saveState();renderHome();
+msg(`✅ ${name} куплено`,'success');
+}
+
+function openBuyTitle(id){
+const t=TITLES.find(x=>x.id===id);
+if(!t)return;
+const toAdmin=(t.price*0.9).toFixed(2);
+const toFund=(t.price*0.1).toFixed(2);
+openModal(`🏷️ Купить титул ${t.name}`,`
+<div style="text-align:center;font-size:64px;margin:8px 0">${t.icon}</div>
+<div class="item-desc" style="text-align:center;margin-bottom:12px">${t.eff} • Уровень ${t.level}</div>
+<div class="item-card" style="margin:0 0 8px">
+<div class="item-desc">Цена: <b style="color:var(--gold)">$${t.price}</b></div>
+<div class="item-desc">→ Админу: <b>$${toAdmin}</b> (90%)</div>
+<div class="item-desc">→ В фонд наград: <b>$${toFund}</b> (10%)</div>
+</div>
+<div class="item-desc" style="text-align:center;font-size:11px">Вы сразу станете уровня ${t.level}. Амуниция будет сброшена.</div>
+<div class="modal-actions">
+<button class="admin-btn primary" style="flex:1" onclick="confirmBuyTitle('${id}')">✅ Купить за $${t.price}</button>
+<button class="admin-btn sec" style="flex:1" onclick="closeModal()">Отмена</button>
+</div>
+`);
+}
+
+function confirmBuyTitle(id){
 const t=TITLES.find(x=>x.id===id);
 if(!t)return;
 if(state.balances.TUSD<t.price){msg('Недостаточно TUSD','error');return}
-if(!confirm(`Купить титул ${t.name} за $${t.price}?\n\nВы сразу станете уровня ${t.level}.\n90% ($${(t.price*0.9).toFixed(2)}) уйдёт админу, 10% ($${(t.price*0.1).toFixed(2)}) в фонд.`))return;
 state.balances.TUSD-=t.price;
 state.activeTitle={id:t.id,name:t.name,level:t.level};
 state.user.isPremium=true;
-saveState();renderHome();
+state.equipped={weapon:null,body:null,legs:null};
+saveState();closeModal();renderHome();
 msg(`👑 Вы теперь ${t.name}!`,'success');
 }
 
-function buyCert(tier){
-const prices={'Старт':25,'Профи':50,'Бизнес':100,'Вечный':250};
-const p=prices[tier];
-if(state.balances.TUSD<p){msg('Недостаточно TUSD','error');return}
-state.balances.TUSD-=p;
-state.activeCert=tier;
+function buyCert(tier,price){
+if(state.balances.TUSD<price){msg('Недостаточно TUSD','error');return}
+state.balances.TUSD-=price;
+state.user.activeCert=tier;
 if(tier==='Вечный')state.user.isPremium=true;
 saveState();renderHome();
 msg(`✅ Сертификат "${tier}" активирован`,'success');
@@ -700,77 +749,296 @@ if(!r)return;
 if(state.balances.TUSD<r.price){msg('Недостаточно TUSD','error');return}
 state.balances.TUSD-=r.price;
 state.progress.refs+=1;
-saveState();renderHome();
+saveState();renderHome();showShopTab('refs');
 msg(`✅ Реферал ${r.login} куплен`,'success');
+}
+
+function bidAuction(id,amount){
+const a=AUCTIONS.find(x=>x.id===id);
+if(!a)return;
+if(state.balances.TUSD<amount){msg('Недостаточно TUSD','error');return}
+a.current=amount;
+a.leader='@you';
+saveState();showShopTab('auction');
+msg(`✅ Ставка $${amount} принята`,'success');
 }
 
 // ДОХОД
 let currentIncomeTab='p2p';
 function renderIncome(){showIncomeTab(currentIncomeTab)}
+
 function showIncomeTab(tab){
 currentIncomeTab=tab;
 document.querySelectorAll('#incomeTabs .tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
 const c=$('incomeContent');
 if(tab==='p2p'){
 c.innerHTML=`
-<div class="item-card"><div class="item-header"><b>💱 P2P Маркет</b></div><div class="item-desc">Только токены. Свои сделки подсвечены золотом</div></div>
+<div class="item-card"><div class="item-header"><b>💱 P2P Маркет</b></div><div class="item-desc">Только токены. Покупка/продажа = +1 к счётчику сделок</div></div>
+<button class="admin-btn gold" style="width:100%;margin-bottom:12px" onclick="openCreateOrder()">➕ Создать свой ордер</button>
 ${P2P_TOKENS.map(o=>`
 <div class="item-card ${o.my?'mine':''}">
 <div class="item-header"><span class="item-name">${o.from} → ${o.to}</span><span class="rarity rare">⭐${o.stars}</span></div>
-<div class="item-desc">Отдаю: ${fmt(o.fromAmt)} ${o.from} • Получаю: ${fmt(o.toAmt)} ${o.to}<br>Продавец: ${o.seller}</div>
-<div class="item-footer"><span class="item-price">$${fmt(o.toAmt,0)}</span>${o.my?`<button class="red" onclick="msg('Отменено')">Отменить</button>`:`<button onclick="msg('Сделка создана','success')">Купить</button>`}</div>
-</div>`).join('')}
+<div class="item-desc">Отдаю: ${fmt(o.fromAmt)} ${o.from}<br>Получаю: ${fmt(o.toAmt)} ${o.to}<br>Продавец: ${o.seller}</div>
+<div class="item-footer">
+<span class="item-price">$${fmt(o.toAmt,0)}</span>
+${o.my?`<button class="red" onclick="cancelP2POrder('${o.id}')">Отменить</button>`:`<button onclick="buyP2POrder('${o.id}')">Купить</button>`}
+</div>
+</div>`).join('')||'<div class="item-card"><div class="item-desc" style="text-align:center">Нет активных ордеров</div></div>'}
 `;
 }else if(tab==='swap'){
+const fromBal=n(state.balances[state.swapFrom]);
+const fromIcon=state.swapFrom==='TG'?'🥇':state.swapFrom==='TUSD'?'💵':state.swapFrom==='AI'?'🤖':'🪙';
+const toIcon=state.swapTo==='TG'?'🥇':state.swapTo==='TUSD'?'💵':state.swapTo==='AI'?'🤖':'🪙';
+const rate=calcRate(state.swapFrom,state.swapTo);
 c.innerHTML=`
-<div class="item-card"><div class="item-header"><b>🔄 Swap</b></div><div class="item-desc">Обмен токенов по курсу 1 TG = $100</div></div>
-<div style="background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:14px">
-<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px"><span>Отдаёте</span><span>Баланс: ${fmt(state.balances.TG)} TG</span></div>
-<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px"><input type="number" placeholder="0.0" style="flex:1;background:transparent;border:0;color:#fff;font-size:20px;font-weight:700;outline:none"><span style="font-weight:700">TG</span></div>
-<div style="text-align:center;color:var(--muted);margin:8px 0">⇅</div>
-<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px"><span>Получаете</span><span>≈ $0</span></div>
-<div style="display:flex;gap:8px;align-items:center"><input type="number" placeholder="0.0" readonly style="flex:1;background:transparent;border:0;color:#fff;font-size:20px;font-weight:700;outline:none"><span style="font-weight:700">TUSD</span></div>
+<div class="item-card"><div class="item-header"><b>🔄 Swap</b></div><div class="item-desc">Курс подтягивается автоматически: 1 TG = $100</div></div>
+<div class="swap-box">
+<div class="lbl"><span>Отдаёте</span><span>Баланс: ${fmt(fromBal,4)} ${state.swapFrom}</span></div>
+<div class="row">
+<input type="number" id="swapFromInput" placeholder="0.0" oninput="calcSwap()">
+<button class="token-badge" onclick="openTokenPicker('from')">${fromIcon} ${state.swapFrom} ▼</button>
 </div>
-<button class="admin-btn primary" style="width:100%;margin-top:12px" onclick="msg('Swap выполнен','success')">Обменять</button>
+</div>
+<div class="swap-arrow">⇅</div>
+<div class="swap-box">
+<div class="lbl"><span>Получаете</span><span id="swapToUsd">≈ $0.00</span></div>
+<div class="row">
+<input type="number" id="swapToInput" placeholder="0.0" readonly>
+<button class="token-badge" onclick="openTokenPicker('to')">${toIcon} ${state.swapTo} ▼</button>
+</div>
+</div>
+<div class="item-card" style="margin-top:8px">
+<div class="item-desc">Курс: 1 ${state.swapFrom} = ${fmt(rate,6)} ${state.swapTo}</div>
+<div class="item-desc">Комиссия: 0.5%</div>
+</div>
+<button class="admin-btn primary" style="width:100%;margin-top:12px" id="swapBtn" onclick="doSwap()" disabled>Обменять</button>
 `;
 }else if(tab==='staking'){
-c.innerHTML=`
-<div class="item-card"><div class="item-header"><b>💎 Стейкинг</b></div><div class="item-desc">2% в месяц • Сбор раз в 24 часа</div></div>
-${['TG','TUSD','AI'].map(sym=>{
+const rows=['TG','TUSD','AI'].map(sym=>{
 const staked=n(state.staked[sym]);
 const balance=n(state.balances[sym]);
-const daily=staked*0.02/30;
+const price=sym==='TG'?TG_PRICE:sym==='AI'?0.01:1;
+const dailyUSD=staked*0.02/30*price;
+const accumulated=(Date.now()-(state.lastClaim[sym]||0))/DAY_MS*dailyUSD;
+const canClaim=(Date.now()-(state.lastClaim[sym]||0))>=DAY_MS;
 const icon=sym==='TG'?'🥇':sym==='TUSD'?'💵':'🤖';
-return `<div class="item-card">
+const lastClaim=state.lastClaim[sym]||0;
+const nextClaim=lastClaim+DAY_MS;
+const remainMs=Math.max(0,nextClaim-Date.now());
+const h=Math.floor(remainMs/3600000),m=Math.floor((remainMs%3600000)/60000);
+const timerText=canClaim?'✅ Готово':`⏳ ${h}ч ${m}м`;
+return `
+<div class="item-card">
 <div class="item-header"><span class="item-name">${icon} ${sym}</span></div>
 <div class="item-desc">В кошельке: ${fmt(balance,4)} • В стейке: ${fmt(staked,4)}</div>
-<div style="font-size:11px;color:var(--green);margin-top:4px">+$${fmt(daily,8)} / день</div>
-<div class="item-footer" style="margin-top:8px"><button onclick="msg('Застейкано','success')">Застейкать</button><button class="gold" onclick="msg('Собрано','success')">Собрать</button></div>
-</div>`}).join('')}
+<div style="font-size:11px;color:var(--green);margin-top:4px">+$${fmt(dailyUSD,8)} / день</div>
+<div style="font-size:11px;color:var(--cyan);margin-top:2px">Накоплено: $${fmt(accumulated,8)} <span class="timer-badge">${timerText}</span></div>
+<div class="item-footer" style="margin-top:8px">
+<button onclick="openStakeModal('${sym}')">Застейкать</button>
+<button class="gold" ${canClaim?'':'disabled'} onclick="claimStake('${sym}')">Собрать</button>
+</div>
+</div>`}).join('');
+c.innerHTML=`
+<div class="item-card"><div class="item-header"><b>💎 Стейкинг</b></div><div class="item-desc">2% в месяц • Сбор раз в 24 часа</div></div>
+${rows}
 `;
 }else if(tab==='checkin'){
 c.innerHTML=`
-<div class="item-card"><div class="item-header"><b>🔥 Чекин — 30 дней</b></div><div class="item-desc">Заходи каждый день и получай награды</div><div style="text-align:center;font-size:36px;font-weight:800;color:var(--gold);margin:12px 0">12</div><div style="text-align:center;font-size:11px;color:var(--muted)">дней подряд</div><button class="admin-btn gold" style="width:100%;margin-top:12px" onclick="msg('День 13 получен','success')">🔥 Получить день 13</button></div>
+<div class="item-card"><div class="item-header"><b>🔥 Чекин — 30 дней</b></div><div class="item-desc">Заходи каждый день и получай награды</div><div style="text-align:center;font-size:36px;font-weight:800;color:var(--gold);margin:12px 0">12</div><div style="text-align:center;font-size:11px;color:var(--muted)">дней подряд</div><button class="admin-btn gold" style="width:100%;margin-top:12px" onclick="claimCheckin()">🔥 Получить день 13</button></div>
 `;
 }else if(tab==='tasks'){
 c.innerHTML=`
 <div class="item-card"><div class="item-header"><b>📋 Задания</b></div></div>
-<div class="item-card"><div class="item-header"><span class="item-name">📢 Подписаться на канал</span><span class="item-price">+0.5 TUSD</span></div><button class="admin-btn primary" style="width:100%;margin-top:8px" onclick="msg('Выполнено','success')">Выполнить</button></div>
-<div class="item-card"><div class="item-header"><span class="item-name">🤖 Подписаться на бота</span><span class="item-price">+1 TUSD</span></div><button class="admin-btn primary" style="width:100%;margin-top:8px" onclick="msg('Выполнено','success')">Выполнить</button></div>
-<div class="item-card"><div class="item-header"><span class="item-name">👥 Пригласить друга</span><span class="item-price">+2 TUSD</span></div><button class="admin-btn primary" style="width:100%;margin-top:8px" onclick="msg('Выполнено','success')">Выполнить</button></div>
+<div class="item-card"><div class="item-header"><span class="item-name">📢 Подписаться на канал</span><span class="item-price">+0.5 TUSD</span></div><button class="admin-btn primary" style="width:100%;margin-top:8px" onclick="claimTask(0.5)">Выполнить</button></div>
+<div class="item-card"><div class="item-header"><span class="item-name">🤖 Подписаться на бота</span><span class="item-price">+1 TUSD</span></div><button class="admin-btn primary" style="width:100%;margin-top:8px" onclick="claimTask(1)">Выполнить</button></div>
+<div class="item-card"><div class="item-header"><span class="item-name">👥 Пригласить друга</span><span class="item-price">+2 TUSD</span></div><button class="admin-btn primary" style="width:100%;margin-top:8px" onclick="claimTask(2)">Выполнить</button></div>
 `;
 }else if(tab==='ads'){
 c.innerHTML=`
 <div class="item-card"><div class="item-header"><b>📢 Реклама</b></div><div class="item-desc">Смотри и зарабатывай, или закажи свою</div></div>
-<div class="item-card"><div class="item-header"><span class="item-name">🎬 Смотреть видео</span><span class="item-price">+0.01 TUSD</span></div><button class="admin-btn primary" style="width:100%;margin-top:8px" onclick="msg('Реклама просмотрена','success')">Смотреть</button></div>
+<div class="item-card"><div class="item-header"><span class="item-name">🎬 Смотреть видео</span><span class="item-price">+0.01 TUSD</span></div><button class="admin-btn primary" style="width:100%;margin-top:8px" onclick="watchAd()">Смотреть</button></div>
 <div class="item-card"><div class="item-header"><b>📢 Заказать рекламу</b></div><div class="item-desc">Баннер, видео, задание или ссылка</div><button class="admin-btn gold" style="width:100%;margin-top:8px" onclick="msg('Открыть форму заказа')">Заказать</button></div>
 `;
 }
 }
 
+// P2P
+function buyP2POrder(id){
+const o=P2P_TOKENS.find(x=>x.id===id);
+if(!o)return;
+if(n(state.balances[o.to])<o.toAmt){
+msg(`Недостаточно ${o.to}. Нужно ${fmt(o.toAmt)}`,'error');return;
+}
+if(!confirm(`Купить ${fmt(o.fromAmt)} ${o.from} за ${fmt(o.toAmt)} ${o.to}?`))return;
+state.balances[o.to]-=o.toAmt;
+state.balances[o.from]+=o.fromAmt;
+state.progress.deals+=1;
+P2P_TOKENS=P2P_TOKENS.filter(x=>x.id!==id);
+saveState();renderHome();showIncomeTab('p2p');
+msg(`✅ Сделка совершена! +1 к счётчику`,'success');
+}
+
+function cancelP2POrder(id){
+if(!confirm('Отменить свой ордер?'))return;
+const o=P2P_TOKENS.find(x=>x.id===id);
+if(!o)return;
+state.balances[o.from]+=o.fromAmt;
+P2P_TOKENS=P2P_TOKENS.filter(x=>x.id!==id);
+saveState();renderHome();showIncomeTab('p2p');
+msg('Ордер отменён');
+}
+
+function openCreateOrder(){
+const tokens=['TG','TUSD','AI','VKCOIN'];
+openModal('➕ Создать ордер',`
+<div class="admin-field"><label>Отдаю</label><select id="newFrom">${tokens.map(t=>`<option value="${t}">${t}</option>`).join('')}</select></div>
+<div class="admin-field"><label>Количество</label><input type="number" id="newFromAmt" placeholder="0.0"></div>
+<div class="admin-field"><label>Получаю</label><select id="newTo">${tokens.map(t=>`<option value="${t}">${t}</option>`).join('')}</select></div>
+<div class="admin-field"><label>Количество</label><input type="number" id="newToAmt" placeholder="0.0"></div>
+<div class="modal-actions">
+<button class="admin-btn primary" style="flex:1" onclick="confirmCreateOrder()">✅ Создать</button>
+<button class="admin-btn sec" style="flex:1" onclick="closeModal()">Отмена</button>
+</div>
+`);
+}
+
+function confirmCreateOrder(){
+const from=$('newFrom').value;
+const to=$('newTo').value;
+const fromAmt=n($('newFromAmt').value);
+const toAmt=n($('newToAmt').value);
+if(from===to){msg('Токены должны различаться','error');return}
+if(fromAmt<=0||toAmt<=0){msg('Введите суммы','error');return}
+if(n(state.balances[from])<fromAmt){msg(`Недостаточно ${from}`,'error');return}
+state.balances[from]-=fromAmt;
+P2P_TOKENS.push({
+id:'p'+Date.now(),my:true,seller:'@you',stars:3,
+from,to,fromAmt,toAmt
+});
+saveState();closeModal();renderHome();showIncomeTab('p2p');
+msg('✅ Ордер создан','success');
+}
+
+// SWAP
+function calcRate(from,to){
+const priceMap={TG:100,TUSD:1,AI:0.01,VKCOIN:0.001};
+return priceMap[from]/priceMap[to];
+}
+
+function calcSwap(){
+const fromAmt=n($('swapFromInput').value);
+const rate=calcRate(state.swapFrom,state.swapTo);
+const toAmt=fromAmt*rate*0.995;
+const priceMap={TG:100,TUSD:1,AI:0.01,VKCOIN:0.001};
+$('swapToInput').value=toAmt.toFixed(8);
+$('swapToUsd').textContent='≈ $'+fmt(toAmt*priceMap[state.swapTo],2);
+const btn=$('swapBtn');
+if(fromAmt>0&&n(state.balances[state.swapFrom])>=fromAmt){
+btn.disabled=false;
+}else btn.disabled=true;
+}
+
+function doSwap(){
+const fromAmt=n($('swapFromInput').value);
+const toAmt=n($('swapToInput').value);
+if(fromAmt<=0){msg('Введите сумму','error');return}
+if(n(state.balances[state.swapFrom])<fromAmt){msg('Недостаточно средств','error');return}
+state.balances[state.swapFrom]-=fromAmt;
+state.balances[state.swapTo]+=toAmt;
+saveState();renderHome();showIncomeTab('swap');
+msg(`✅ Обменяно ${fmt(fromAmt,4)} ${state.swapFrom} → ${fmt(toAmt,4)} ${state.swapTo}`,'success');
+}
+
+function openTokenPicker(target){
+const tokens=['TG','TUSD','AI','VKCOIN'];
+openModal('Выбрать токен',`
+${tokens.map(t=>`<button class="admin-btn sec" style="width:100%;margin-bottom:6px" onclick="pickToken('${target}','${t}')">${t}</button>`).join('')}
+`);
+}
+function pickToken(target,t){
+if(target==='from'){state.swapFrom=t;if(state.swapTo===t)state.swapTo=t==='TUSD'?'TG':'TUSD'}
+else{state.swapTo=t;if(state.swapFrom===t)state.swapFrom=t==='TUSD'?'TG':'TUSD'}
+saveState();closeModal();showIncomeTab('swap');
+}
+
+// СТЕЙКИНГ
+function openStakeModal(sym){
+const balance=n(state.balances[sym]);
+const price=sym==='TG'?TG_PRICE:sym==='AI'?0.01:1;
+openModal(`💎 Застейкать ${sym}`,`
+<div class="item-desc" style="margin-bottom:10px">Баланс: ${fmt(balance,4)} ${sym}</div>
+<div class="admin-field"><label>Количество</label><input type="number" id="stakeAmt" placeholder="0.0" oninput="updateStakeSlider()"></div>
+<input type="range" class="slider" id="stakeSlider" min="0" max="${balance}" step="${balance/100}" value="0" oninput="updateStakeInput()">
+<div class="item-desc" id="stakePreview" style="margin-top:8px">+$0.00 / день</div>
+<div class="item-desc" style="margin-top:4px;font-size:11px">Примерно $0 в стейке</div>
+<div class="modal-actions">
+<button class="admin-btn primary" style="flex:1" onclick="confirmStake('${sym}')">✅ Застейкать</button>
+<button class="admin-btn sec" style="flex:1" onclick="closeModal()">Отмена</button>
+</div>
+`);
+}
+function updateStakeSlider(){
+const sym=state.swapFrom; // не используется, но оставил
+const val=parseFloat($('stakeAmt').value)||0;
+const slider=$('stakeSlider');
+if(slider)slider.value=val;
+updateStakePreview();
+}
+function updateStakeInput(){
+const val=parseFloat($('stakeSlider').value)||0;
+$('stakeAmt').value=val.toFixed(4);
+updateStakePreview();
+}
+function updateStakePreview(){
+const val=parseFloat($('stakeAmt').value)||0;
+const daily=val*0.02/30;
+const price=1; // упрощённо
+$('stakePreview').textContent=`+$${fmt(daily,8)} / день`;
+}
+function confirmStake(sym){
+const val=parseFloat($('stakeAmt').value)||0;
+if(val<=0){msg('Введите сумму','error');return}
+if(n(state.balances[sym])<val){msg('Недостаточно средств','error');return}
+state.balances[sym]-=val;
+state.staked[sym]=n(state.staked[sym])+val;
+saveState();closeModal();renderHome();showIncomeTab('staking');
+msg(`✅ Застейкано ${fmt(val,4)} ${sym}`,'success');
+}
+
+function claimStake(sym){
+const lastClaim=state.lastClaim[sym]||0;
+if(Date.now()-lastClaim<DAY_MS){msg('Собрать можно раз в 24 часа','error');return}
+const staked=n(state.staked[sym]);
+const price=sym==='TG'?TG_PRICE:sym==='AI'?0.01:1;
+const dailyUSD=staked*0.02/30*price;
+state.balances.TUSD+=dailyUSD;
+state.lastClaim[sym]=Date.now();
+saveState();renderHome();showIncomeTab('staking');
+msg(`💰 Собрано $${fmt(dailyUSD,8)}`,'success');
+}
+
+function claimCheckin(){
+state.balances.TUSD+=0.5;
+state.progress.deals+=0;
+saveState();renderHome();
+msg('🔥 День 13: +0.5 TUSD','success');
+}
+
+function claimTask(reward){
+state.balances.TUSD+=reward;
+saveState();renderHome();
+msg(`✅ Получено +${reward} TUSD`,'success');
+}
+
+function watchAd(){
+state.balances.TUSD+=0.01;
+saveState();renderHome();
+msg('📺 +0.01 TUSD','success');
+}
+
 // АДМИН
 function renderAdminPanel(){
-$('adStakeUSD').value=state.progress.stakeUSD||calcStakeUSD();
+$('adStakeUSD').value=calcStakeUSD();
 $('adDeals').value=state.progress.deals;
 $('adRefs').value=state.progress.refs;
 $('adStarRef').value=state.progress.starRefLevel;
@@ -781,10 +1049,6 @@ $('adVK').value=state.balances.VKCOIN;
 $('stTUSD').value=state.staked.TUSD;
 $('stTG').value=state.staked.TG;
 $('stAI').value=state.staked.AI;
-if(state.adminSettings){
-$('adRoyalty').value=state.adminSettings.royalty;
-$('adCopyInterval').value=state.adminSettings.copyInterval;
-}
 }
 
 function adminLogin(){
@@ -808,7 +1072,6 @@ state.balances.VKCOIN=n($('adVK').value);
 state.staked.TUSD=n($('stTUSD').value);
 state.staked.TG=n($('stTG').value);
 state.staked.AI=n($('stAI').value);
-state.adminSettings={royalty:n($('adRoyalty').value),copyInterval:n($('adCopyInterval').value)};
 saveState();renderHome();
 msg('💾 Сохранено','success');
 }
@@ -859,11 +1122,17 @@ location.reload();
 }
 }
 
-// ИНИЦИАЛИЗАЦИЯ
+// СТАРТ
 function init(){
 loadState();
 renderHome();
 goView('home');
+// Автообновление таймеров стейкинга
+setInterval(()=>{
+if(!$('view-income').classList.contains('hidden')&&currentIncomeTab==='staking'){
+showIncomeTab('staking');
+}
+},30000);
 }
 
 document.addEventListener('DOMContentLoaded',init);
