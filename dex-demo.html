@@ -99,6 +99,7 @@ html,body{margin:0;padding:0;background:radial-gradient(circle at 50% -10%, #1a2
 .item-card button.green{background:var(--green);color:#fff}
 .item-card button.red{background:var(--red);color:#fff}
 .item-card button.purple{background:linear-gradient(135deg,#a855f7,#ec4899);color:#fff}
+.item-card button:disabled{opacity:.5;cursor:not-allowed}
 .rarity{font-size:9px;text-transform:uppercase;letter-spacing:.8px;font-weight:700;padding:3px 7px;border-radius:4px;white-space:nowrap}
 .rarity.common{background:#334155;color:#cbd5e1}
 .rarity.rare{background:#1e3a8a;color:#93c5fd}
@@ -156,8 +157,6 @@ h2{margin-top:0}
 .history-row{display:flex;justify-content:space-between;padding:6px 8px;border-bottom:1px solid var(--line);font-size:11px;color:var(--muted)}
 .history-row:last-child{border-bottom:0}
 .history-row b{color:var(--gold)}
-
-/* ИНВЕНТАРЬ — в стиле существующих слотов */
 .inventory-section{margin-top:26px;padding-top:14px;border-top:1px solid #2a3242}
 .inventory-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
 .inventory-header .title{font-size:13px;font-weight:800;color:var(--gold)}
@@ -243,7 +242,6 @@ h2{margin-top:0}
 <div class="slot" id="slot-aura" data-slot="aura" onclick="clickSlot('aura')"><span class="slot-label">Аура</span>✨</div>
 </div>
 
-<!-- ИНВЕНТАРЬ -->
 <div class="inventory-section">
 <div class="inventory-header">
 <span class="title">🎒 Инвентарь</span>
@@ -323,11 +321,7 @@ h2{margin-top:0}
 <button class="gold" onclick="copyRef()">Копировать</button>
 </div>
 </div>
-<div class="item-card">
-<div class="item-header"><b>Мои рефералы</b></div>
-<div style="font-size:12px;color:var(--muted);padding:8px 0;border-bottom:1px solid var(--line)">👤 @friend_1 • Lv.2 • +$12</div>
-<div style="font-size:12px;color:var(--muted);padding:8px 0">👤 @friend_2 • Lv.4 • +$88</div>
-</div>
+<div id="friendsContent"></div>
 </div>
 
 <div id="view-admin" class="hidden">
@@ -348,13 +342,12 @@ h2{margin-top:0}
 <div class="lbl">Заработано с покупок</div>
 </div>
 <div class="item-desc" style="text-align:center;margin-bottom:10px">Всего покупок: <b id="adPurchasesCount">0</b></div>
-<button class="admin-btn danger" style="width:100%" onclick="adminClearRevenue()">🗑️ Очистить счётчик (вывел в TON)</button>
+<button class="admin-btn danger" style="width:100%" onclick="adminClearRevenue()">🗑️ Очистить счётчик</button>
 <div id="adPurchaseHistory" style="margin-top:10px"></div>
 </div>
 
 <div class="admin-section">
 <div class="admin-title">🏪 Управление магазином</div>
-<div class="item-desc" style="margin-bottom:10px">Создавай лоты в любой категории — они появятся у юзеров с бейджем 👑 ADMIN</div>
 <div class="admin-field">
 <label>Категория</label>
 <select id="adShopCat" onchange="renderAdminListings()">
@@ -441,9 +434,8 @@ const TG_PRICE=100;
 const DAY_MS=24*60*60*1000;
 const PRICE_MAP={TG:100,TUSD:1,AI:0.01,VKCOIN:0.001};
 const SWAP_FEE=0.005;
-const GEAR_SELL_DISCOUNT=0.2; // -20%
+const GEAR_SELL_DISCOUNT=0.2;
 
-// Сертификаты: цена / срок / слоты хранилища / лимит листингов
 const CERTS={
   start:   {name:'Старт',   price:25,  days:90,    storage:20, listings:5,   commission:0.05},
   pro:     {name:'Профи',   price:50,  days:180,   storage:30, listings:20,  commission:0.035},
@@ -493,7 +485,6 @@ const ALL_SLOTS={
   aura:     {icon:'✨',label:'Аура',      name:'Аура',        level:21, price:32768,  bonus:'Божественная защита'},
 };
 
-// Иконки для 21 сета амуниции — чередование
 const GEAR_ICONS={
   weapon:['🗡️','⚔️','🪓','🔪','⚒️','🔨','⚡','🔥','❄️','💠','🌪️','🌟','💫','👑','🔮','💎','🌈','⭐','✨','🏆','☄️'],
   body:  ['👕','🥋','🧥','🦺','👘','🎽','🛡️','🥼','🧤','🧣','🩱','👔','🎩','💎','🌟','🔮','👑','🌈','✨','🏆','☄️'],
@@ -501,12 +492,11 @@ const GEAR_ICONS={
 };
 const GEAR_NAMES=['Ржавый','Кожаный','Стальной','Железный','Рыцарский','Клинковый','Мифриловый','Драконий','Бездны','Королевский','Императорский','Божественный','Титанический','Демонический','Ангельский','Космический','Древний','Легендарный','Мифический','Вечный','Абсолютный'];
 
-// Генерация сета для уровня N (1-21)
 function getGearSet(level){
   if(level<1) level=1;
   if(level>21) level=21;
   const idx=level-1;
-  const price=level*5; // базовая цена за предмет
+  const price=level*5;
   const atk=5+level*10;
   const pow=10+level*25;
   const nm=GEAR_NAMES[idx];
@@ -568,17 +558,20 @@ let state={
   checkinDay:0,
   rating:1500,
   equipped:makeDefaultEquipped(),
-  gearInventory:[],          // массив предметов {id,slot,level,name,icon,atk,pow,price}
+  gearInventory:[],
   activeTitle:null,
-  cert:null,                 // {tier, expiresAt}
+  cert:null,
   swapFrom:'TG',
   swapTo:'TUSD',
   shopListings:makeDefaultShopListings(),
   p2pTokens:makeDefaultP2PTokens(),
-  p2pGear:[],                // листинги амуниции
+  p2pGear:[],
   auctions:makeDefaultAuctions(),
   refsSale:makeDefaultRefsSale(),
-  adminPool:{revenue:0, purchases:[]}
+  adminPool:{revenue:0, purchases:[]},
+  myReferrals:[],
+  refIncomePool:0,
+  lastRefPayout:Date.now()
 };
 
 function loadState(){
@@ -599,6 +592,9 @@ function loadState(){
       state.refsSale=state.refsSale||makeDefaultRefsSale();
       state.adminPool=Object.assign({revenue:0, purchases:[]},state.adminPool||{});
       state.progress.completedTasks=state.progress.completedTasks||{};
+      state.myReferrals=state.myReferrals||[];
+      state.refIncomePool=state.refIncomePool||0;
+      state.lastRefPayout=state.lastRefPayout||Date.now();
     }catch(e){console.warn(e)}
   }
 }
@@ -627,10 +623,9 @@ function addRevenue(amount, itemName){
   saveState();
 }
 
-// ── Сертификаты ──
 function getActiveCert(){
   if(!state.cert) return null;
-  if(state.cert.expiresAt && Date.now() > state.cert.expiresAt){
+  if(state.cert.expiresAt && state.cert.expiresAt!==Infinity && Date.now() > state.cert.expiresAt){
     state.cert = null; saveState();
     return null;
   }
@@ -641,7 +636,6 @@ function getStorageLimit(){
   return c ? CERTS[c.tier].storage : 6;
 }
 function getInventoryLimit(){
-  // 3 слота занято экипировкой → лимит инвентаря = storage - 3
   return Math.max(0, getStorageLimit() - 3);
 }
 function getListingLimit(){
@@ -673,6 +667,7 @@ function goView(viewName){
   if(viewName==='income') renderIncome();
   if(viewName==='admin') renderAdminPanel();
   if(viewName==='home') renderHome();
+  if(viewName==='friends') renderFriends();
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -681,7 +676,6 @@ function calcStakeUSD(){
        + n(state.staked.AI)*0.01 + n(state.staked.VKCOIN)*0.001;
 }
 
-// Полный сет одного уровня надет?
 function getEquippedGearTier(){
   const eq=state.equipped;
   if(!eq.weapon || !eq.body || !eq.legs) return 0;
@@ -717,7 +711,6 @@ function getNextLevel(levelNum){
   return idx>=0 && idx<LEVELS.length-1 ? LEVELS[idx+1] : null;
 }
 
-// ── Отрисовка слотов ──
 function renderSlots(){
   const curLevel=calcLevel();
   Object.keys(ALL_SLOTS).forEach(slot=>{
@@ -749,13 +742,11 @@ function renderSlots(){
   });
 }
 
-// ── Инвентарь ──
 function renderInventory(){
   const limit=getInventoryLimit();
   const inv=state.gearInventory;
   $('invCount').textContent = `${inv.length} / ${limit}`;
 
-  // Баннер сертификата
   const certWrap=$('certBannerWrap');
   const activeCert=getActiveCert();
   if(activeCert){
@@ -765,11 +756,7 @@ function renderInventory(){
       const daysLeft=Math.max(0,Math.ceil((activeCert.expiresAt-Date.now())/DAY_MS));
       timeText=`⏳ ${daysLeft} дн.`;
     } else timeText='♾️';
-    certWrap.innerHTML=`
-      <div class="cert-banner">
-        <span class="cert-name">📜 ${c.name}</span>
-        <span class="cert-time">${timeText} • ${c.storage} слотов</span>
-      </div>`;
+    certWrap.innerHTML=`<div class="cert-banner"><span class="cert-name">📜 ${c.name}</span><span class="cert-time">${timeText} • ${c.storage} слотов</span></div>`;
   } else {
     certWrap.innerHTML='';
   }
@@ -777,7 +764,6 @@ function renderInventory(){
   const grid=$('invGrid');
   if(!grid) return;
   grid.innerHTML='';
-  // Показываем минимум 6 слотов, максимум — limit (но не больше 12 для компактности)
   const displayCount=Math.max(6, Math.min(limit, 12));
   for(let i=0;i<displayCount;i++){
     const item=inv[i];
@@ -799,7 +785,6 @@ function renderInventory(){
     grid.appendChild(slot);
   }
   if(limit>12){
-    // Показать "..." если мест больше 12
     const more=document.createElement('div');
     more.className='slot';
     more.style.opacity='0.6';
@@ -838,13 +823,9 @@ function equipFromInventory(idx){
   if(!item) return;
   const slot=item.slot;
   if(!slot){msg('Ошибка: слот неизвестен','error');return}
-  // Если в экипировке что-то есть — оно идёт в инвентарь
   const old=state.equipped[slot];
-  // Удаляем новый из инвентаря
   state.gearInventory.splice(idx,1);
-  // Надеваем
   state.equipped[slot]={icon:item.icon,name:item.name,slot,level:item.level,atk:item.atk,pow:item.pow,price:item.price};
-  // Старый в инвентарь
   if(old){
     state.gearInventory.push({...old, id:uid(), price:old.price||Math.round(old.level*5)});
   }
@@ -884,7 +865,6 @@ function sellGearToP2P(idx){
   msg(`✅ Выставлено на P2P за $${sellPrice}`,'success');
 }
 
-// ── Покупка амуниции ──
 function clickSlot(slot){
   const cfg=ALL_SLOTS[slot];
   if(!cfg) return;
@@ -902,11 +882,9 @@ function clickSlot(slot){
     }
     return;
   }
-  // Амуниция (weapon/body/legs) — особая логика
   if(slot==='weapon'||slot==='body'||slot==='legs'){
     const it=state.equipped[slot];
     if(it){
-      // Снять → в инвентарь
       const limit=getInventoryLimit();
       if(state.gearInventory.length>=limit){
         msg('Инвентарь полон. Продай что-то или купи сертификат','error');
@@ -920,7 +898,6 @@ function clickSlot(slot){
       }
       return;
     }
-    // Пустой слот — купить следующий уровень
     const targetLevel=curLevel+1;
     if(targetLevel>21){
       msg('Максимальный уровень амуниции','info');return;
@@ -930,7 +907,6 @@ function clickSlot(slot){
     openBuyGearModal(item, targetLevel);
     return;
   }
-  // Остальные слоты (helmet/shield/cloak/ring/bag/pet/aura) — как раньше
   const it=state.equipped[slot];
   if(it){
     if(confirm(`Снять ${it.icon} ${it.name}?`)){
@@ -979,10 +955,7 @@ function confirmBuyGear(slot, level){
   if(n(state.balances.TUSD)<price){msg('Недостаточно TUSD','error');return}
   if(state.gearInventory.length>=getInventoryLimit()){msg('Инвентарь полон','error');return}
   state.balances.TUSD-=price;
-  state.gearInventory.push({
-    id:uid(), slot, level, name:item.name, icon:item.icon,
-    atk:item.atk, pow:item.pow, price
-  });
+  state.gearInventory.push({id:uid(), slot, level, name:item.name, icon:item.icon, atk:item.atk, pow:item.pow, price});
   addRevenue(price, `${item.icon} ${item.name}`);
   saveState();closeModal();renderHome();
   msg(`✅ Куплено: ${item.name}. Надень в инвентаре!`,'success');
@@ -1020,7 +993,6 @@ function buyExtraSlot(slot){
   msg(`✅ ${cfg.name} надет`,'success');
 }
 
-// ── Модалка ──
 function openModal(title,html){
   $('modalBox').innerHTML=`<div class="modal-title">${title}</div>${html}`;
   $('modal').classList.add('show');
@@ -1030,9 +1002,7 @@ function closeModal(e){
   $('modal').classList.remove('show');
 }
 
-// ── Главная ──
 function renderHome(){
-  // дни
   if(!state.user.registeredAt) state.user.registeredAt=Date.now();
   state.user.days=Math.floor((Date.now()-state.user.registeredAt)/DAY_MS);
 
@@ -1110,7 +1080,65 @@ function renderHome(){
 }
 function setKnightSpeech(text){const el=$('knightSpeech');if(el)el.textContent=text}
 
-// ── Магазин ──
+/* ─── РЕФЕРАЛЫ ─── */
+function calcRefIncomePerDay(){
+  return (state.myReferrals||[]).reduce((s,r)=>s + n(r.avgMonth)/30, 0);
+}
+function calcPendingRefIncome(){
+  const perDay=calcRefIncomePerDay();
+  if(perDay<=0) return 0;
+  const days=Math.min((Date.now()-(state.lastRefPayout||Date.now()))/DAY_MS, 30);
+  return perDay*days;
+}
+function claimRefIncome(){
+  const pending=calcPendingRefIncome();
+  if(pending<0.01){msg('Пока нечего собирать','info');return}
+  state.balances.TUSD=n(state.balances.TUSD)+pending;
+  state.lastRefPayout=Date.now();
+  saveState();renderHome();renderFriends();
+  msg(`💰 Собрано $${fmt(pending,4)} с рефералов`,'success');
+}
+function renderFriends(){
+  const c=$('friendsContent');
+  if(!c) return;
+  const refs=state.myReferrals||[];
+  const perDay=calcRefIncomePerDay();
+  const pending=calcPendingRefIncome();
+
+  let html=`
+<div class="item-card">
+  <div class="item-header"><b>💰 Доход с рефералов</b></div>
+  <div class="revenue-box">
+    <div class="num">$${fmt(pending,4)}</div>
+    <div class="lbl">Накоплено к сбору</div>
+  </div>
+  <div class="item-desc" style="text-align:center;margin-top:6px">+$${fmt(perDay,4)} / день</div>
+  <button class="admin-btn gold" style="width:100%;margin-top:10px" ${pending>=0.01?'':'disabled'} onclick="claimRefIncome()">💰 Собрать $${fmt(pending,4)}</button>
+</div>
+`;
+
+  if(!refs.length){
+    html+=`<div class="item-card"><div class="item-desc" style="text-align:center;padding:16px">Пока нет рефералов.<br>Купи в 🏪 Магазин → 👥 Рефералы</div></div>`;
+  } else {
+    html+=`<div class="item-card"><div class="item-header"><b>Мои рефералы (${refs.length})</b></div></div>`;
+    html+=refs.map(r=>`
+      <div class="item-card">
+        <div class="item-header">
+          <span class="item-name">👤 ${escapeHtml(r.login)}</span>
+          <span class="rarity rare">Lv.${r.level}</span>
+        </div>
+        <div class="item-desc">
+          Заработал всего: $${fmt(r.earned)}<br>
+          Дней в системе: ${r.days}<br>
+          Доход: <b style="color:var(--green)">+$${fmt(n(r.avgMonth)/30,4)} / день</b>
+        </div>
+      </div>
+    `).join('');
+  }
+  c.innerHTML=html;
+}
+
+/* ─── МАГАЗИН ─── */
 let currentShopTab='gear';
 function renderShop(){showShopTab(currentShopTab)}
 
@@ -1148,10 +1176,6 @@ function showShopTab(tab){
     const curLevel=calcLevel();
     const targetLevel=Math.min(21, curLevel+1);
     const set=getGearSet(targetLevel);
-    const allOwned=['weapon','body','legs'].every(s=>{
-      return state.equipped[s]?.level===targetLevel ||
-             state.gearInventory.some(g=>g.slot===s && g.level===targetLevel);
-    });
     c.innerHTML=`
 <div class="item-card">
   <div class="item-header"><b>⚔️ Сет уровня ${targetLevel} (${getLevelData(targetLevel).name})</b></div>
@@ -1258,18 +1282,18 @@ ${renderAdminListingsHTML('certs')}
 `;
   } else if(tab==='refs'){
     c.innerHTML=`
-<div class="item-card"><div class="item-header"><b>👥 Рефералы на продажу</b></div><div class="item-desc">Покупка = смена владельца</div></div>
+<div class="item-card"><div class="item-header"><b>👥 Рефералы на продажу</b></div><div class="item-desc">Покупка = смена владельца. Доход капает в «Друзьях».</div></div>
 ${state.refsSale.map(r=>`
 <div class="item-card">
 <div class="item-header"><span class="item-name">👤 ${escapeHtml(r.login)}</span><span class="rarity rare">Lv.${r.level}</span></div>
 <div class="item-desc">Владелец: ${escapeHtml(r.owner)} ⭐${r.stars}<br>Заработал: $${r.earned} • ${r.days} дней • ~$${r.avgMonth}/мес</div>
 <div class="item-footer"><span class="item-price">$${r.price}</span><button onclick="buyRef('${r.id}')">Купить</button></div>
-</div>`).join('')}
+</div>`).join('')||'<div class="item-card"><div class="item-desc" style="text-align:center">Рефералы раскуплены</div></div>'}
 ${renderAdminListingsHTML('refs')}
 `;
   } else if(tab==='auction'){
     c.innerHTML=`
-<div class="item-card"><div class="item-header"><b>🔨 Аукцион</b></div><div class="item-desc">Ставки списываются с баланса. Проиграл — вернём (в след. итерации).</div></div>
+<div class="item-card"><div class="item-header"><b>🔨 Аукцион</b></div><div class="item-desc">Ставки списываются с баланса.</div></div>
 ${state.auctions.map(a=>{
   const left=Math.max(0,a.endsAt-Date.now());
   const h=Math.floor(left/3600000), m=Math.floor((left%3600000)/60000);
@@ -1308,7 +1332,6 @@ function buyAdminListing(cat, id){
   if(cat==='titles'){
     state.activeTitle={id:l.id,name:l.name,level:n(l.level)||14,icon:l.icon||'👑'};
     state.user.isPremium=true;
-    // НЕ трогаем амуницию
   } else if(cat==='certs'){
     state.user.activeCertName=l.name;
   } else if(cat==='refs'){
@@ -1371,11 +1394,9 @@ function buyCert(tier){
   if(n(state.balances.TUSD)<c.price){msg('Недостаточно TUSD','error');return}
   const active=getActiveCert();
   if(active && active.tier===tier){
-    // Продление
     const base = active.expiresAt && active.expiresAt!==Infinity ? active.expiresAt : Date.now();
     state.cert={tier, expiresAt: c.days===Infinity?Infinity:base+c.days*DAY_MS};
   } else {
-    // Новая покупка
     state.cert={tier, expiresAt: c.days===Infinity?Infinity:Date.now()+c.days*DAY_MS};
   }
   if(tier==='eternal') state.user.isPremium=true;
@@ -1391,17 +1412,25 @@ function buyRef(id){
   if(n(state.balances.TUSD)<r.price){msg('Недостаточно TUSD','error');return}
   state.balances.TUSD-=r.price;
   state.progress.refs+=1;
+  state.myReferrals.push({
+    id: uid(),
+    login: r.login,
+    level: r.level,
+    earned: r.earned||0,
+    days: r.days||0,
+    avgMonth: r.avgMonth || 5,
+    boughtAt: Date.now()
+  });
   state.refsSale=state.refsSale.filter(x=>x.id!==id);
   addRevenue(r.price, `👤 Реферал ${r.login}`);
   saveState();renderHome();showShopTab('refs');
-  msg(`✅ Реферал ${r.login} куплен`,'success');
+  msg(`✅ Реферал ${r.login} куплен! Смотри во вкладке «Друзья»`,'success');
 }
 
 function bidAuction(id,amount){
   const a=state.auctions.find(x=>x.id===id);
   if(!a) return;
   if(n(state.balances.TUSD)<amount){msg('Недостаточно TUSD','error');return}
-  // вернуть предыдущую свою ставку
   if(a.leader===state.user.name && a.lastBid){
     state.balances.TUSD += a.lastBid;
   }
@@ -1413,7 +1442,7 @@ function bidAuction(id,amount){
   msg(`✅ Ставка $${amount} принята`,'success');
 }
 
-// ── Доход ──
+/* ─── ДОХОД ─── */
 let currentIncomeTab='p2p';
 function renderIncome(){showIncomeTab(currentIncomeTab)}
 
@@ -1507,7 +1536,7 @@ ${othersListings.length?othersListings.map(g=>`
 </div>
 </div>`}).join('');
     c.innerHTML=`
-<div class="item-card"><div class="item-header"><b>💎 Стейкинг</b></div><div class="item-desc">2% в месяц • Сбор раз в 24 часа • Макс 7 дней накопления</div></div>
+<div class="item-card"><div class="item-header"><b>💎 Стейкинг</b></div><div class="item-desc">2% в месяц • Сбор раз в 24 часа • Макс 7 дней</div></div>
 ${rows}
 `;
   } else if(tab==='checkin'){
@@ -1796,7 +1825,7 @@ function watchAd(){
   msg('📺 +0.01 TUSD','success');
 }
 
-// ── Админ ──
+/* ─── АДМИН ─── */
 function renderAdminPanel(){
   $('adStakeUSD').value=calcStakeUSD();
   $('adDeals').value=state.progress.deals;
@@ -1950,7 +1979,6 @@ function adminLevelUp(){
   const needUSD=next.stake;
   const haveUSD=calcStakeUSD();
   if(haveUSD<needUSD) state.staked.TUSD=Math.max(0, n(state.staked.TUSD)+(needUSD-haveUSD));
-  // Выдать сет следующего уровня
   const set=getGearSet(next.gearTier);
   ['weapon','body','legs'].forEach(slot=>{
     state.equipped[slot]={...set[slot], slot, price:set[slot].price};
@@ -2009,7 +2037,6 @@ function resetDemo(){
   }
 }
 
-// ── Telegram ──
 function initTelegram(){
   try{
     const tg=window.Telegram?.WebApp;
@@ -2040,6 +2067,9 @@ function init(){
   setInterval(()=>{
     if(!$('view-income').classList.contains('hidden') && currentIncomeTab==='staking'){
       showIncomeTab('staking');
+    }
+    if(!$('view-friends').classList.contains('hidden')){
+      renderFriends();
     }
   },1000);
 }
