@@ -39,20 +39,24 @@ html,body{margin:0;padding:0;background:radial-gradient(circle at 50% -10%, #1a2
 .rank-info .rank-name{font-size:15px;font-weight:800;color:#fff}
 .rank-info .rank-sub{font-size:10px;color:var(--muted);margin-top:2px}
 .knight-layout{display:grid;grid-template-columns:68px 1fr 68px;gap:10px;align-items:center;margin-bottom:16px}
-.slot-col{display:flex;flex-direction:column;gap:10px}
-.slot{width:68px;height:68px;background:#0d1520;border:2px solid #2a3242;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:30px;cursor:pointer;position:relative;transition:.2s}
+.slot-col{display:flex;flex-direction:column;gap:18px}
+.slot{width:68px;height:68px;background:#0d1520;border:2px solid #2a3242;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:30px;cursor:pointer;position:relative;transition:.25s}
+.slot:hover{border-color:var(--gold)}
 .slot.filled{border-color:var(--green);background:linear-gradient(135deg,#0d2818,#132b1f);box-shadow:0 0 12px rgba(38,161,123,.4)}
 .slot.empty{color:#4a5563;font-size:22px}
-.slot.locked{opacity:.4;cursor:not-allowed}
+.slot.locked{opacity:.35;cursor:not-allowed;background:#0a0d12}
 .slot.locked::after{content:'🔒';position:absolute;top:2px;right:2px;font-size:11px}
+.slot.unlocked-empty{border-color:#3a4553;color:#94a3b8}
+.slot.unlocked-empty::after{content:'+';position:absolute;top:2px;right:5px;font-size:14px;font-weight:800;color:var(--gold)}
 .slot-label{position:absolute;bottom:-16px;left:50%;transform:translateX(-50%);font-size:8px;color:var(--muted);white-space:nowrap;text-transform:uppercase;letter-spacing:.3px}
+.slot-badge{position:absolute;top:-6px;right:-6px;font-size:9px;background:var(--gold);color:#111;font-weight:800;padding:1px 5px;border-radius:6px;border:1px solid #111}
 .knight-avatar{position:relative;display:flex;align-items:flex-end;justify-content:center;min-height:260px}
 .knight-img{height:260px;width:auto;max-width:100%;object-fit:contain;filter:drop-shadow(0 8px 24px rgba(0,0,0,.7));animation:idle 3.5s ease-in-out infinite;transition:opacity .3s}
 @keyframes idle{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
 .knight-speech{position:absolute;bottom:0;left:50%;transform:translateX(-50%);background:#fff;color:#111;padding:6px 12px;border-radius:10px;font-size:10px;font-weight:700;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,.4)}
 .knight-speech::before{content:'';position:absolute;top:-5px;left:50%;transform:translateX(-50%);border:5px solid transparent;border-bottom-color:#fff;border-top:0}
-.slots-row-bottom{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:18px}
-.slots-row-bottom .slot{width:100%;height:52px;font-size:22px;border-radius:12px}
+.slots-row-bottom{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:26px}
+.slots-row-bottom .slot{width:100%;height:60px;font-size:22px;border-radius:12px}
 .scales-container{margin-top:20px;padding-top:16px;border-top:1px solid #2a3242}
 .scale-item{margin-bottom:10px}
 .scale-header{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:4px}
@@ -82,6 +86,8 @@ html,body{margin:0;padding:0;background:radial-gradient(circle at 50% -10%, #1a2
 .item-card{background:var(--bg-card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:8px;display:flex;flex-direction:column;gap:8px}
 .item-card.mine{border-color:var(--gold);box-shadow:0 0 12px rgba(244,207,112,.2);position:relative;margin-top:6px}
 .item-card.mine::before{content:'👤 МОЯ СДЕЛКА';position:absolute;top:-8px;left:12px;background:var(--gold);color:#111;font-size:9px;font-weight:800;padding:2px 8px;border-radius:6px;letter-spacing:.5px}
+.item-card.admin-lot{border-color:var(--purple);position:relative;margin-top:8px;box-shadow:0 0 12px rgba(168,85,247,.15)}
+.item-card.admin-lot::before{content:'👑 ADMIN';position:absolute;top:-8px;left:12px;background:linear-gradient(90deg,#a855f7,#ec4899);color:#fff;font-size:9px;font-weight:800;padding:2px 8px;border-radius:6px;letter-spacing:.5px}
 .item-card .item-header{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .item-card .item-name{font-weight:700;font-size:14px;color:#fff}
 .item-card .item-desc{font-size:11px;color:var(--muted);line-height:1.5}
@@ -92,6 +98,7 @@ html,body{margin:0;padding:0;background:radial-gradient(circle at 50% -10%, #1a2
 .item-card button.gold{background:var(--gold);color:#111}
 .item-card button.green{background:var(--green);color:#fff}
 .item-card button.red{background:var(--red);color:#fff}
+.item-card button.purple{background:linear-gradient(135deg,#a855f7,#ec4899);color:#fff}
 .rarity{font-size:9px;text-transform:uppercase;letter-spacing:.8px;font-weight:700;padding:3px 7px;border-radius:4px;white-space:nowrap}
 .rarity.common{background:#334155;color:#cbd5e1}
 .rarity.rare{background:#1e3a8a;color:#93c5fd}
@@ -102,8 +109,9 @@ html,body{margin:0;padding:0;background:radial-gradient(circle at 50% -10%, #1a2
 .admin-section .admin-title{color:var(--gold);font-size:14px;font-weight:700;margin-bottom:12px}
 .admin-field{margin-bottom:10px}
 .admin-field label{display:block;font-size:11px;color:var(--muted);margin-bottom:4px}
-.admin-field input,.admin-field select{width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px 10px;border-radius:8px;outline:none;font-family:inherit;font-size:13px}
-.admin-field input:focus,.admin-field select:focus{border-color:var(--gold)}
+.admin-field input,.admin-field select,.admin-field textarea{width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px 10px;border-radius:8px;outline:none;font-family:inherit;font-size:13px}
+.admin-field textarea{resize:vertical;min-height:60px}
+.admin-field input:focus,.admin-field select:focus,.admin-field textarea:focus{border-color:var(--gold)}
 .admin-btn-row{display:flex;gap:8px;margin-top:10px}
 .admin-btn{flex:1;padding:10px;border-radius:10px;border:0;font-weight:700;font-size:13px;cursor:pointer;transition:.2s}
 .admin-btn.primary{background:var(--blue);color:#fff}
@@ -111,8 +119,6 @@ html,body{margin:0;padding:0;background:radial-gradient(circle at 50% -10%, #1a2
 .admin-btn.danger{background:var(--red);color:#fff}
 .admin-btn.sec{background:#263345;color:#fff;border:1px solid var(--line)}
 .admin-btn:disabled{background:#263345!important;color:var(--muted)!important;cursor:not-allowed!important;opacity:.6;border:1px solid var(--line)!important}
-
-/* SWAP */
 .swap-box{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:0}
 .swap-box .lbl{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:6px}
 .swap-box .row{display:flex;gap:8px;align-items:center}
@@ -128,8 +134,6 @@ html,body{margin:0;padding:0;background:radial-gradient(circle at 50% -10%, #1a2
 .swap-btn.active{background:linear-gradient(135deg,#2f80ed,#4f8cff);color:#fff;box-shadow:0 4px 16px rgba(47,128,237,.35);cursor:pointer}
 .swap-btn.active:hover{transform:translateY(-2px);box-shadow:0 6px 22px rgba(47,128,237,.5)}
 .swap-btn:disabled{cursor:not-allowed}
-
-/* МОДАЛКА */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;padding:16px;z-index:1500}
 .modal-overlay.show{display:flex}
 .modal-box{background:linear-gradient(145deg,#1d2939,#101721);border:1px solid #68562a;border-radius:20px;padding:18px;max-width:440px;width:100%;max-height:85vh;overflow-y:auto}
@@ -139,21 +143,38 @@ html,body{margin:0;padding:0;background:radial-gradient(circle at 50% -10%, #1a2
 .slider::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:var(--gold);cursor:pointer;box-shadow:0 0 8px rgba(244,207,112,.6)}
 .slider::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:var(--gold);cursor:pointer;border:0}
 .hidden{display:none!important}
-.msg-toast{position:fixed;top:12px;left:12px;right:12px;padding:12px;border-radius:12px;background:#1e252f;border:1px solid var(--line);text-align:center;font-size:13px;z-index:2000;display:none}
+.msg-toast{position:fixed;top:60px;left:12px;right:12px;padding:12px;border-radius:12px;background:#1e252f;border:1px solid var(--line);text-align:center;font-size:13px;z-index:2000;display:none}
 .msg-toast.show{display:block;animation:slideDown .3s}
 @keyframes slideDown{from{transform:translateY(-20px);opacity:0}to{transform:translateY(0);opacity:1}}
 .msg-toast.success{border-color:var(--green)}
 .msg-toast.error{border-color:var(--red)}
 h2{margin-top:0}
 .timer-badge{font-size:10px;color:var(--cyan);font-weight:700;margin-left:6px}
-.stake-empty{text-align:center;color:var(--muted);font-size:11px;padding:6px 0}
+.revenue-box{background:linear-gradient(135deg,#1a2e1a,#0d1f0d);border:1px solid var(--green);border-radius:12px;padding:14px;margin-bottom:8px;text-align:center}
+.revenue-box .num{font-size:26px;font-weight:800;color:var(--green);line-height:1.1}
+.revenue-box .lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:4px}
+.history-row{display:flex;justify-content:space-between;padding:6px 8px;border-bottom:1px solid var(--line);font-size:11px;color:var(--muted)}
+.history-row:last-child{border-bottom:0}
+.history-row b{color:var(--gold)}
+
+/* ИНВЕНТАРЬ — в стиле существующих слотов */
+.inventory-section{margin-top:26px;padding-top:14px;border-top:1px solid #2a3242}
+.inventory-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.inventory-header .title{font-size:13px;font-weight:800;color:var(--gold)}
+.inventory-header .count{font-size:11px;color:var(--muted)}
+.inventory-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.inventory-grid .slot{width:100%;height:52px;font-size:20px;border-radius:10px}
+.inventory-grid .slot .slot-label{display:none}
+.inventory-grid .slot.small-badge::after{content:attr(data-lv);position:absolute;top:2px;right:4px;font-size:8px;font-weight:800;color:var(--gold)}
+.cert-banner{background:linear-gradient(135deg,#2a1f0d,#1a1206);border:1px solid #8a6b28;border-radius:12px;padding:10px 12px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;font-size:11px}
+.cert-banner .cert-name{color:var(--gold);font-weight:800}
+.cert-banner .cert-time{color:var(--muted)}
 </style>
 </head>
 <body>
 <div id="msg" class="msg-toast"></div>
 <div class="app">
 
-<!-- ГЛАВНАЯ -->
 <div id="view-home">
 <div class="top-bar">
 <div class="logo">⚔️ Empire Telepat</div>
@@ -170,7 +191,7 @@ h2{margin-top:0}
 <div class="profile-header">
 <div class="avatar-wrapper">
 <div class="avatar-spin-ring"></div>
-<img class="avatar-img" src="https://i.pravatar.cc/150?u=telepat" alt="Avatar">
+<img class="avatar-img" id="avatarImg" src="https://i.pravatar.cc/150?u=telepat" alt="Avatar">
 </div>
 <div class="profile-info">
 <div class="username" id="userName">@username</div>
@@ -199,27 +220,37 @@ h2{margin-top:0}
 
 <div class="knight-layout">
 <div class="slot-col">
-<div class="slot" id="slot-weapon" onclick="clickSlot('weapon')"><span class="slot-label">Меч</span>🗡️</div>
-<div class="slot" id="slot-body" onclick="clickSlot('body')"><span class="slot-label">Рубашка</span>👕</div>
-<div class="slot" id="slot-legs" onclick="clickSlot('legs')"><span class="slot-label">Брюки</span>👖</div>
+<div class="slot" id="slot-weapon" data-slot="weapon" onclick="clickSlot('weapon')"><span class="slot-label">Меч</span>🗡️</div>
+<div class="slot" id="slot-body" data-slot="body" onclick="clickSlot('body')"><span class="slot-label">Рубашка</span>👕</div>
+<div class="slot" id="slot-legs" data-slot="legs" onclick="clickSlot('legs')"><span class="slot-label">Брюки</span>👖</div>
 </div>
 <div class="knight-avatar">
-<img class="knight-img" id="knightImg" src="knight-0.png" alt="Knight" onerror="this.style.display='none'">
+<img class="knight-img" id="knightImg" src="knight-0.png" alt="Knight" onerror="this.style.display='none';this.parentElement.insertAdjacentHTML('beforeend','<div style=\'font-size:140px;line-height:1\'>⚔️</div>')">
 <div class="knight-speech" id="knightSpeech">Славный путь начинается!</div>
 </div>
 <div class="slot-col">
-<div class="slot empty locked"><span class="slot-label">Шлем</span>⛑️</div>
-<div class="slot empty locked"><span class="slot-label">Щит</span>🛡️</div>
-<div class="slot empty locked"><span class="slot-label">Плащ</span>🧥</div>
+<div class="slot" id="slot-helmet" data-slot="helmet" onclick="clickSlot('helmet')"><span class="slot-label">Шлем</span>⛑️</div>
+<div class="slot" id="slot-shield" data-slot="shield" onclick="clickSlot('shield')"><span class="slot-label">Щит</span>🛡️</div>
+<div class="slot" id="slot-cloak" data-slot="cloak" onclick="clickSlot('cloak')"><span class="slot-label">Плащ</span>🧥</div>
 </div>
 </div>
 
 <div class="slots-row-bottom">
-<div class="slot empty locked"><span class="slot-label">Кольцо</span>💍</div>
-<div class="slot empty locked"><span class="slot-label">Сумка</span>🎒</div>
-<div class="slot empty locked"><span class="slot-label">Питомец</span>🐺</div>
-<div class="slot empty locked"><span class="slot-label">Титул</span>🏷️</div>
-<div class="slot empty locked"><span class="slot-label">Аура</span>✨</div>
+<div class="slot" id="slot-ring" data-slot="ring" onclick="clickSlot('ring')"><span class="slot-label">Кольцо</span>💍</div>
+<div class="slot" id="slot-bag" data-slot="bag" onclick="clickSlot('bag')"><span class="slot-label">Сумка</span>🎒</div>
+<div class="slot" id="slot-pet" data-slot="pet" onclick="clickSlot('pet')"><span class="slot-label">Питомец</span>🐺</div>
+<div class="slot" id="slot-titleSlot" data-slot="titleSlot" onclick="clickSlot('titleSlot')"><span class="slot-label">Титул</span>🏷️</div>
+<div class="slot" id="slot-aura" data-slot="aura" onclick="clickSlot('aura')"><span class="slot-label">Аура</span>✨</div>
+</div>
+
+<!-- ИНВЕНТАРЬ -->
+<div class="inventory-section">
+<div class="inventory-header">
+<span class="title">🎒 Инвентарь</span>
+<span class="count" id="invCount">0 / 3</span>
+</div>
+<div id="certBannerWrap"></div>
+<div class="inventory-grid" id="invGrid"></div>
 </div>
 
 <div class="scales-container">
@@ -239,8 +270,12 @@ h2{margin-top:0}
 <div class="scale-header"><span>⭐ Звёздный</span><b id="scStarTxt">—</b></div>
 <div class="scale-bar-bg"><div class="scale-bar-fill purple" id="scStar" style="width:0%"></div></div>
 </div>
+<div class="scale-item">
+<div class="scale-header"><span>🛡️ Амуниция</span><b id="scGearTxt">—</b></div>
+<div class="scale-bar-bg"><div class="scale-bar-fill gold" id="scGear" style="width:0%"></div></div>
 </div>
-<div class="rule-line">📜 Правило: <b>уровень = минимум из 4 шкал</b>.</div>
+</div>
+<div class="rule-line">📜 Правило: <b>уровень = минимум из 5 шкал</b>.</div>
 </div>
 
 <div class="quick-actions">
@@ -251,12 +286,11 @@ h2{margin-top:0}
 </div>
 </div>
 
-<!-- МАГАЗИН -->
 <div id="view-shop" class="hidden">
 <h2 style="color:var(--gold)">🏪 Магазин</h2>
 <div class="tabs" id="shopTabs">
 <button class="tab active" data-tab="gear" onclick="showShopTab('gear')">⚔️ Амуниция</button>
-<button class="tab" data-tab="weapons" onclick="showShopTab('weapons')">🗡️ Оружие</button>
+<button class="tab" data-tab="extras" onclick="showShopTab('extras')">🛡️ Доп. снаряжение</button>
 <button class="tab" data-tab="artifacts" onclick="showShopTab('artifacts')">💎 Артефакты</button>
 <button class="tab" data-tab="titles" onclick="showShopTab('titles')">🏷️ Титулы</button>
 <button class="tab" data-tab="certs" onclick="showShopTab('certs')">📜 Сертификаты</button>
@@ -266,11 +300,11 @@ h2{margin-top:0}
 <div id="shopContent"></div>
 </div>
 
-<!-- ДОХОД -->
 <div id="view-income" class="hidden">
 <h2 style="color:var(--gold)">🎯 Доход</h2>
 <div class="tabs" id="incomeTabs">
 <button class="tab active" data-tab="p2p" onclick="showIncomeTab('p2p')">💱 P2P</button>
+<button class="tab" data-tab="gear-p2p" onclick="showIncomeTab('gear-p2p')">🛡️ Амуниция</button>
 <button class="tab" data-tab="swap" onclick="showIncomeTab('swap')">🔄 Swap</button>
 <button class="tab" data-tab="staking" onclick="showIncomeTab('staking')">💎 Стейкинг</button>
 <button class="tab" data-tab="checkin" onclick="showIncomeTab('checkin')">🔥 Чекин</button>
@@ -280,13 +314,12 @@ h2{margin-top:0}
 <div id="incomeContent"></div>
 </div>
 
-<!-- ДРУЗЬЯ -->
 <div id="view-friends" class="hidden">
 <h2 style="color:var(--gold)">👥 Друзья</h2>
 <div class="item-card">
 <div class="item-header"><b>Пригласительная ссылка</b></div>
 <div style="display:flex;gap:8px">
-<input type="text" readonly value="https://t.me/TELEPATp2p_bot?start=demo" style="flex:1;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px;font-size:12px">
+<input type="text" id="refLink" readonly value="https://t.me/TELEPATp2p_bot?start=demo" style="flex:1;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px;font-size:12px">
 <button class="gold" onclick="copyRef()">Копировать</button>
 </div>
 </div>
@@ -297,7 +330,6 @@ h2{margin-top:0}
 </div>
 </div>
 
-<!-- АДМИН -->
 <div id="view-admin" class="hidden">
 <h2 style="color:var(--gold)">👑 Админ-панель</h2>
 <div id="adminLogin">
@@ -308,6 +340,35 @@ h2{margin-top:0}
 </div>
 </div>
 <div id="adminPanel" class="hidden">
+
+<div class="admin-section">
+<div class="admin-title">💰 Доход магазина</div>
+<div class="revenue-box">
+<div class="num" id="adRevenue">$0</div>
+<div class="lbl">Заработано с покупок</div>
+</div>
+<div class="item-desc" style="text-align:center;margin-bottom:10px">Всего покупок: <b id="adPurchasesCount">0</b></div>
+<button class="admin-btn danger" style="width:100%" onclick="adminClearRevenue()">🗑️ Очистить счётчик (вывел в TON)</button>
+<div id="adPurchaseHistory" style="margin-top:10px"></div>
+</div>
+
+<div class="admin-section">
+<div class="admin-title">🏪 Управление магазином</div>
+<div class="item-desc" style="margin-bottom:10px">Создавай лоты в любой категории — они появятся у юзеров с бейджем 👑 ADMIN</div>
+<div class="admin-field">
+<label>Категория</label>
+<select id="adShopCat" onchange="renderAdminListings()">
+<option value="artifacts">💎 Артефакты</option>
+<option value="titles">🏷️ Титулы</option>
+<option value="certs">📜 Сертификаты</option>
+<option value="refs">👥 Рефералы</option>
+<option value="extras">🛡️ Доп. снаряжение</option>
+</select>
+</div>
+<button class="admin-btn gold" style="width:100%" onclick="openAddListing()">➕ Добавить лот</button>
+<div id="adListingsList" style="margin-top:10px"></div>
+</div>
+
 <div class="admin-section">
 <div class="admin-title">🎖️ Уровень и Прогресс</div>
 <div class="admin-field"><label>Стейк (USD)</label><input type="number" id="adStakeUSD" step="0.01" value="0"></div>
@@ -337,11 +398,19 @@ h2{margin-top:0}
 </div>
 
 <div class="admin-section">
-<div class="admin-title">📜 Цены сертификатов</div>
-<div class="admin-field"><label>Старт (3 мес)</label><input type="number" id="c3m" value="25"></div>
-<div class="admin-field"><label>Профи (6 мес)</label><input type="number" id="c6m" value="50"></div>
-<div class="admin-field"><label>Бизнес (1 год)</label><input type="number" id="c1y" value="100"></div>
-<div class="admin-field"><label>Вечный</label><input type="number" id="cinf" value="250"></div>
+<div class="admin-title">📜 Выдать сертификат</div>
+<div class="admin-field">
+<select id="adCertTier">
+<option value="start">Старт ($25, 3 мес, 20 слотов)</option>
+<option value="pro">Профи ($50, 6 мес, 30 слотов)</option>
+<option value="business">Бизнес ($100, 1 год, 40 слотов)</option>
+<option value="eternal">Вечный ($250, ∞, 50 слотов)</option>
+</select>
+</div>
+<div class="admin-btn-row">
+<button class="admin-btn gold" onclick="adminGrantCert()">✅ Выдать</button>
+<button class="admin-btn danger" onclick="adminRevokeCert()">❌ Забрать</button>
+</div>
 </div>
 
 <div class="admin-section">
@@ -354,12 +423,10 @@ h2{margin-top:0}
 
 </div>
 
-<!-- МОДАЛКА -->
 <div class="modal-overlay" id="modal" onclick="closeModal(event)">
 <div class="modal-box" id="modalBox" onclick="event.stopPropagation()"></div>
 </div>
 
-<!-- НАВИГАЦИЯ -->
 <div class="bottom-nav">
 <button class="nav-btn active" id="nav-home" onclick="goView('home')"><span class="nav-icon">🏠</span> Дом</button>
 <button class="nav-btn" id="nav-shop" onclick="goView('shop')"><span class="nav-icon">🏪</span> Магазин</button>
@@ -369,51 +436,86 @@ h2{margin-top:0}
 </div>
 
 <script>
-const LS_KEY='telepat_empire_v3';
+const LS_KEY='telepat_empire_v4';
 const TG_PRICE=100;
 const DAY_MS=24*60*60*1000;
 const PRICE_MAP={TG:100,TUSD:1,AI:0.01,VKCOIN:0.001};
 const SWAP_FEE=0.005;
+const GEAR_SELL_DISCOUNT=0.2; // -20%
+
+// Сертификаты: цена / срок / слоты хранилища / лимит листингов
+const CERTS={
+  start:   {name:'Старт',   price:25,  days:90,    storage:20, listings:5,   commission:0.05},
+  pro:     {name:'Профи',   price:50,  days:180,   storage:30, listings:20,  commission:0.035},
+  business:{name:'Бизнес',  price:100, days:365,   storage:40, listings:100, commission:0.02},
+  eternal: {name:'Вечный',  price:250, days:Infinity, storage:50, listings:Infinity, commission:0.01},
+};
 
 const LEVELS=[
-{n:0,name:'Новичок',icon:'🗡️',stake:0,deals:0,refs:0,star:null,group:0},
-{n:1,name:'Крестьянин',icon:'🌾',stake:0.5,deals:1,refs:0,star:null,group:0},
-{n:2,name:'Вольный',icon:'🪶',stake:1,deals:2,refs:1,star:null,group:0},
-{n:3,name:'Гражданин',icon:'🎩',stake:2,deals:5,refs:2,star:null,group:0},
-{n:4,name:'Оруженосец',icon:'⚔️',stake:3,deals:10,refs:4,star:null,group:1},
-{n:5,name:'Мечник',icon:'🗡️',stake:4,deals:15,refs:6,star:null,group:1},
-{n:6,name:'Десятник',icon:'🛡️',stake:5,deals:20,refs:8,star:2,group:1},
-{n:7,name:'Сотник',icon:'⚔️',stake:6,deals:25,refs:10,star:3,group:1},
-{n:8,name:'Тысячник',icon:'🪓',stake:7,deals:30,refs:13,star:4,group:1},
-{n:9,name:'Рыцарь',icon:'🛡️',stake:8,deals:40,refs:16,star:5,group:2},
-{n:10,name:'Железный',icon:'⚙️',stake:16,deals:50,refs:19,star:6,group:2},
-{n:11,name:'Бронзовый',icon:'🛡️',stake:32,deals:70,refs:22,star:7,group:2},
-{n:12,name:'Серебряный',icon:'🛡️',stake:64,deals:90,refs:25,star:8,group:2},
-{n:13,name:'Золотой',icon:'👑',stake:128,deals:120,refs:29,star:9,group:2},
-{n:14,name:'Барон',icon:'👑',stake:256,deals:150,refs:33,star:10,group:3},
-{n:15,name:'Виконт',icon:'💎',stake:512,deals:200,refs:37,star:11,group:3},
-{n:16,name:'Граф',icon:'⭐',stake:1024,deals:250,refs:42,star:12,group:3},
-{n:17,name:'Маркиз',icon:'🔮',stake:2048,deals:350,refs:47,star:13,group:3},
-{n:18,name:'Герцог',icon:'🌹',stake:4096,deals:500,refs:52,star:14,group:4},
-{n:19,name:'Князь',icon:'👑',stake:8192,deals:750,refs:57,star:15,group:4},
-{n:20,name:'Король',icon:'👑',stake:16384,deals:1000,refs:62,star:16,group:4},
-{n:21,name:'Император',icon:'👑',stake:32768,deals:1500,refs:67,star:17,group:4},
+{n:0,name:'Новичок',icon:'🗡️',stake:0,deals:0,refs:0,star:null,gearTier:0,group:0},
+{n:1,name:'Крестьянин',icon:'🌾',stake:0.5,deals:1,refs:0,star:null,gearTier:1,group:0},
+{n:2,name:'Вольный',icon:'🪶',stake:1,deals:2,refs:1,star:null,gearTier:2,group:0},
+{n:3,name:'Гражданин',icon:'🎩',stake:2,deals:5,refs:2,star:null,gearTier:3,group:0},
+{n:4,name:'Оруженосец',icon:'⚔️',stake:3,deals:10,refs:4,star:null,gearTier:4,group:1},
+{n:5,name:'Мечник',icon:'🗡️',stake:4,deals:15,refs:6,star:null,gearTier:5,group:1},
+{n:6,name:'Десятник',icon:'🛡️',stake:5,deals:20,refs:8,star:2,gearTier:6,group:1},
+{n:7,name:'Сотник',icon:'⚔️',stake:6,deals:25,refs:10,star:3,gearTier:7,group:1},
+{n:8,name:'Тысячник',icon:'🪓',stake:7,deals:30,refs:13,star:4,gearTier:8,group:1},
+{n:9,name:'Рыцарь',icon:'🛡️',stake:8,deals:40,refs:16,star:5,gearTier:9,group:2},
+{n:10,name:'Железный',icon:'⚙️',stake:16,deals:50,refs:19,star:6,gearTier:10,group:2},
+{n:11,name:'Бронзовый',icon:'🛡️',stake:32,deals:70,refs:22,star:7,gearTier:11,group:2},
+{n:12,name:'Серебряный',icon:'🛡️',stake:64,deals:90,refs:25,star:8,gearTier:12,group:2},
+{n:13,name:'Золотой',icon:'👑',stake:128,deals:120,refs:29,star:9,gearTier:13,group:2},
+{n:14,name:'Барон',icon:'👑',stake:256,deals:150,refs:33,star:10,gearTier:14,group:3},
+{n:15,name:'Виконт',icon:'💎',stake:512,deals:200,refs:37,star:11,gearTier:15,group:3},
+{n:16,name:'Граф',icon:'⭐',stake:1024,deals:250,refs:42,star:12,gearTier:16,group:3},
+{n:17,name:'Маркиз',icon:'🔮',stake:2048,deals:350,refs:47,star:13,gearTier:17,group:3},
+{n:18,name:'Герцог',icon:'🌹',stake:4096,deals:500,refs:52,star:14,gearTier:18,group:4},
+{n:19,name:'Князь',icon:'👑',stake:8192,deals:750,refs:57,star:15,gearTier:19,group:4},
+{n:20,name:'Король',icon:'👑',stake:16384,deals:1000,refs:62,star:16,gearTier:20,group:4},
+{n:21,name:'Император',icon:'👑',stake:32768,deals:1500,refs:67,star:17,gearTier:21,group:4},
 ];
 
 const GROUP_IMAGE={0:'knight-0.png',1:'knight-4.png',2:'knight-9.png',3:'knight-14.png',4:'knight-18.png'};
 const LEVEL_FILTER={0:'sepia(0.6) brightness(0.85) saturate(0.8)',1:'none',2:'sepia(0.15) saturate(1.05)',3:'saturate(1.1)',4:'brightness(0.9) saturate(1.1)',5:'none',6:'brightness(0.85) contrast(1.05)',7:'hue-rotate(-10deg) saturate(1.1)',8:'hue-rotate(20deg) saturate(1.15) brightness(1.02)',9:'none',10:'grayscale(0.7) brightness(1.05)',11:'sepia(0.5) saturate(1.5)',12:'grayscale(0.4) brightness(1.1) contrast(1.05)',13:'sepia(0.4) saturate(1.8) brightness(1.1)',14:'none',15:'hue-rotate(180deg) saturate(1.2)',16:'hue-rotate(160deg) saturate(1.1)',17:'hue-rotate(120deg) saturate(1.2)',18:'none',19:'hue-rotate(-30deg) saturate(1.3)',20:'sepia(0.3) saturate(1.6) brightness(1.08)',21:'hue-rotate(45deg) saturate(1.4) brightness(1.1)'};
 
-// ОБЩИЙ НАБОР АМУНИЦИИ (для магазина и для покупки)
-const GEAR_SETS={
-1:{weapon:{icon:'🗡️',name:'Ржавый меч',atk:5,pow:10},body:{icon:'👕',name:'Кожаная рубаха',atk:0,pow:15},legs:{icon:'👖',name:'Кожаные штаны',atk:0,pow:10}},
-2:{weapon:{icon:'⚔️',name:'Стальной меч',atk:12,pow:25},body:{icon:'🥋',name:'Кольчуга',atk:2,pow:35},legs:{icon:'👖',name:'Стальные поножи',atk:0,pow:25}},
-3:{weapon:{icon:'🗡️',name:'Рыцарский меч',atk:22,pow:45},body:{icon:'🛡️',name:'Кираса',atk:5,pow:60},legs:{icon:'👖',name:'Латные ноги',atk:2,pow:45}},
-4:{weapon:{icon:'⚔️',name:'Клинок барона',atk:35,pow:70},body:{icon:'🥋',name:'Мифриловый доспех',atk:8,pow:95},legs:{icon:'👖',name:'Мифриловые поножи',atk:3,pow:70}},
-5:{weapon:{icon:'🗡️',name:'Клинок графа',atk:50,pow:110},body:{icon:'🛡️',name:'Доспех дракона',atk:12,pow:150},legs:{icon:'👖',name:'Поножи дракона',atk:6,pow:110}},
-6:{weapon:{icon:'⚔️',name:'Клинок герцога',atk:70,pow:160},body:{icon:'🥋',name:'Доспех бездны',atk:18,pow:220},legs:{icon:'👖',name:'Поножи бездны',atk:8,pow:160}},
-7:{weapon:{icon:'🗡️',name:'Меч короля',atk:100,pow:240},body:{icon:'🛡️',name:'Королевский доспех',atk:25,pow:320},legs:{icon:'👖',name:'Королевские поножи',atk:12,pow:240}},
-8:{weapon:{icon:'⚔️',name:'Экскалибур',atk:150,pow:350},body:{icon:'🥋',name:'Доспех императора',atk:40,pow:500},legs:{icon:'👖',name:'Поножи императора',atk:20,pow:350}},
+const ALL_SLOTS={
+  weapon:   {icon:'🗡️',label:'Меч',       name:'Меч',         level:0,  price:null},
+  body:     {icon:'👕',label:'Рубашка',   name:'Рубашка',     level:0,  price:null},
+  legs:     {icon:'👖',label:'Брюки',     name:'Брюки',       level:0,  price:null},
+  helmet:   {icon:'⛑️',label:'Шлем',      name:'Шлем',        level:4,  price:3,      bonus:'+3% к защите'},
+  shield:   {icon:'🛡️',label:'Щит',       name:'Щит',         level:6,  price:5,      bonus:'+5% к стейку'},
+  cloak:    {icon:'🧥',label:'Плащ',      name:'Плащ',        level:9,  price:8,      bonus:'+7% к рефералке'},
+  ring:     {icon:'💍',label:'Кольцо',    name:'Кольцо',      level:12, price:64,     bonus:'+10% к доходу'},
+  titleSlot:{icon:'🏷️',label:'Титул',     name:'Титул',       level:14, price:null,   special:'title'},
+  bag:      {icon:'🎒',label:'Сумка',     name:'Сумка',       level:15, price:512,    bonus:'+15% к лимитам'},
+  pet:      {icon:'🐺',label:'Питомец',   name:'Питомец',     level:17, price:2048,   bonus:'+20% ко всему'},
+  aura:     {icon:'✨',label:'Аура',      name:'Аура',        level:21, price:32768,  bonus:'Божественная защита'},
 };
+
+// Иконки для 21 сета амуниции — чередование
+const GEAR_ICONS={
+  weapon:['🗡️','⚔️','🪓','🔪','⚒️','🔨','⚡','🔥','❄️','💠','🌪️','🌟','💫','👑','🔮','💎','🌈','⭐','✨','🏆','☄️'],
+  body:  ['👕','🥋','🧥','🦺','👘','🎽','🛡️','🥼','🧤','🧣','🩱','👔','🎩','💎','🌟','🔮','👑','🌈','✨','🏆','☄️'],
+  legs:  ['👖','🩳','🦵','🩲','👢','🥾','🦿','🧦','👠','🥿','🩴','👟','🎿','⛸️','🥇','🌟','💫','👑','🔮','🏆','☄️'],
+};
+const GEAR_NAMES=['Ржавый','Кожаный','Стальной','Железный','Рыцарский','Клинковый','Мифриловый','Драконий','Бездны','Королевский','Императорский','Божественный','Титанический','Демонический','Ангельский','Космический','Древний','Легендарный','Мифический','Вечный','Абсолютный'];
+
+// Генерация сета для уровня N (1-21)
+function getGearSet(level){
+  if(level<1) level=1;
+  if(level>21) level=21;
+  const idx=level-1;
+  const price=level*5; // базовая цена за предмет
+  const atk=5+level*10;
+  const pow=10+level*25;
+  const nm=GEAR_NAMES[idx];
+  return {
+    weapon:{icon:GEAR_ICONS.weapon[idx], name:`${nm} меч`, level, slot:'weapon', atk, pow, price},
+    body:  {icon:GEAR_ICONS.body[idx],   name:`${nm} рубаха`, level, slot:'body', atk:Math.floor(atk/3), pow:Math.floor(pow*1.2), price},
+    legs:  {icon:GEAR_ICONS.legs[idx],   name:`${nm} штаны`, level, slot:'legs', atk:Math.floor(atk/4), pow:Math.floor(pow*0.9), price},
+  };
+}
 
 const TITLES=[
 {id:'baron',name:'Барон',level:14,icon:'👑',price:256,eff:'+1% к рефералке'},
@@ -426,38 +528,57 @@ const TITLES=[
 {id:'empereur',name:'Император',level:21,icon:'👑',price:32768,eff:'+20% к рефералке'},
 ];
 
-let P2P_TOKENS=[
-{id:'p1',my:false,seller:'@seller_X',stars:5,from:'TG',to:'TUSD',fromAmt:100,toAmt:10000},
-{id:'p2',my:false,seller:'@whale_777',stars:4,from:'AI',to:'TUSD',fromAmt:100000,toAmt:1000},
-{id:'p3',my:true,seller:'@you',stars:3,from:'TG',to:'TUSD',fromAmt:5,toAmt:500},
-{id:'p4',my:false,seller:'@noob_42',stars:1,from:'VKCOIN',to:'TUSD',fromAmt:500000,toAmt:500},
-];
-
-const REFS_SALE=[
-{id:'r1',login:'@ref_1024',level:3,earned:120,days:45,price:40,owner:'@seller_X',stars:4,avgMonth:40},
-{id:'r2',login:'@ref_2048',level:5,earned:430,days:120,price:150,owner:'@whale_777',stars:5,avgMonth:107},
-{id:'r3',login:'@ref_4096',level:2,earned:18,days:12,price:8,owner:'@noob_42',stars:1,avgMonth:1.5},
-];
-
-let AUCTIONS=[
-{id:'a1',item:'👑 Корона Императора',rarity:'mythic',current:1250,leader:'@whale_777',endsAt:Date.now()+6*3600000},
-{id:'a2',item:'🗡️ Экскалибур',rarity:'mythic',current:920,leader:'@player_V',endsAt:Date.now()+12*3600000},
-];
+function makeDefaultEquipped(){
+  const eq={};
+  Object.keys(ALL_SLOTS).forEach(k=>{eq[k]=null});
+  return eq;
+}
+function makeDefaultShopListings(){
+  return {artifacts:[], titles:[], certs:[], refs:[], extras:[]};
+}
+function makeDefaultP2PTokens(){
+  return [
+    {id:'p1',my:false,seller:'@seller_X',stars:5,from:'TG',to:'TUSD',fromAmt:100,toAmt:10000},
+    {id:'p2',my:false,seller:'@whale_777',stars:4,from:'AI',to:'TUSD',fromAmt:100000,toAmt:1000},
+    {id:'p4',my:false,seller:'@noob_42',stars:1,from:'VKCOIN',to:'TUSD',fromAmt:500000,toAmt:500},
+  ];
+}
+function makeDefaultAuctions(){
+  return [
+    {id:'a1',item:'👑 Корона Императора',rarity:'mythic',current:1250,leader:'@whale_777',endsAt:Date.now()+6*3600000,lastBid:0},
+    {id:'a2',item:'🗡️ Экскалибур',rarity:'mythic',current:920,leader:'@player_V',endsAt:Date.now()+12*3600000,lastBid:0},
+  ];
+}
+function makeDefaultRefsSale(){
+  return [
+    {id:'r1',login:'@ref_1024',level:3,earned:120,days:45,price:40,owner:'@seller_X',stars:4,avgMonth:40},
+    {id:'r2',login:'@ref_2048',level:5,earned:430,days:120,price:150,owner:'@whale_777',stars:5,avgMonth:107},
+    {id:'r3',login:'@ref_4096',level:2,earned:18,days:12,price:8,owner:'@noob_42',stars:1,avgMonth:1.5},
+  ];
+}
 
 let state={
-user:{name:'@username',days:0,isPremium:false,activeCert:null},
-balances:{TUSD:100000,TG:100,AI:1000000,VKCOIN:10000000},
-staked:{TUSD:1000,TG:50,AI:10000,VKCOIN:0},
-lastClaim:{TG:0,TUSD:0,AI:0,VKCOIN:0},
-progress:{deals:3,refs:1,starRefLevel:-1},
-rating:1500,
-equipped:{weapon:null,body:null,legs:null},
-activeTitle:null,
-swapFrom:'TG',
-swapTo:'TUSD',
-checkinDay:0,
-lastCheckin:0,
-adminSettings:{royalty:10,copyInterval:3}
+  user:{name:'@username',days:0,isPremium:false,registeredAt:0,tgId:null},
+  balances:{TUSD:100000,TG:100,AI:1000000,VKCOIN:10000000},
+  staked:{TUSD:1000,TG:50,AI:10000,VKCOIN:0},
+  lastClaim:{TG:0,TUSD:0,AI:0,VKCOIN:0},
+  progress:{deals:3,refs:1,starRefLevel:-1,completedTasks:{}},
+  lastAd:0,
+  lastCheckin:0,
+  checkinDay:0,
+  rating:1500,
+  equipped:makeDefaultEquipped(),
+  gearInventory:[],          // массив предметов {id,slot,level,name,icon,atk,pow,price}
+  activeTitle:null,
+  cert:null,                 // {tier, expiresAt}
+  swapFrom:'TG',
+  swapTo:'TUSD',
+  shopListings:makeDefaultShopListings(),
+  p2pTokens:makeDefaultP2PTokens(),
+  p2pGear:[],                // листинги амуниции
+  auctions:makeDefaultAuctions(),
+  refsSale:makeDefaultRefsSale(),
+  adminPool:{revenue:0, purchases:[]}
 };
 
 function loadState(){
@@ -466,11 +587,18 @@ function loadState(){
     try{
       const p=JSON.parse(s);
       Object.assign(state,p);
-      // Гарантируем наличие всех ключей после старых версий
-      state.lastClaim=Object.assign({TG:0,TUSD:0,AI:0,VKCOIN:0},state.lastClaim||{});
-      state.staked=Object.assign({TUSD:0,TG:0,AI:0,VKCOIN:0},state.staked||{});
       state.balances=Object.assign({TUSD:0,TG:0,AI:0,VKCOIN:0},state.balances||{});
-      state.equipped=Object.assign({weapon:null,body:null,legs:null},state.equipped||{});
+      state.staked=Object.assign({TUSD:0,TG:0,AI:0,VKCOIN:0},state.staked||{});
+      state.lastClaim=Object.assign({TG:0,TUSD:0,AI:0,VKCOIN:0},state.lastClaim||{});
+      state.equipped=Object.assign(makeDefaultEquipped(),state.equipped||{});
+      state.gearInventory=state.gearInventory||[];
+      state.shopListings=Object.assign(makeDefaultShopListings(),state.shopListings||{});
+      state.p2pTokens=state.p2pTokens||makeDefaultP2PTokens();
+      state.p2pGear=state.p2pGear||[];
+      state.auctions=state.auctions||makeDefaultAuctions();
+      state.refsSale=state.refsSale||makeDefaultRefsSale();
+      state.adminPool=Object.assign({revenue:0, purchases:[]},state.adminPool||{});
+      state.progress.completedTasks=state.progress.completedTasks||{};
     }catch(e){console.warn(e)}
   }
 }
@@ -480,6 +608,8 @@ const $=id=>document.getElementById(id);
 const fmt=(v,m=2)=>Number(v||0).toLocaleString('ru-RU',{maximumFractionDigits:m});
 const n=v=>{const x=Number(v);return Number.isFinite(x)?x:0};
 const tokenIcon=s=>s==='TG'?'🥇':s==='TUSD'?'💵':s==='AI'?'🤖':'🪙';
+const uid=()=>'x'+Date.now()+Math.floor(Math.random()*99999);
+const escapeHtml=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
 function msg(text,type='info'){
   const el=$('msg');
@@ -489,10 +619,49 @@ function msg(text,type='info'){
   el._t=setTimeout(()=>el.classList.remove('show'),2800);
 }
 
+function addRevenue(amount, itemName){
+  state.adminPool.revenue = n(state.adminPool.revenue) + amount;
+  state.adminPool.purchases = state.adminPool.purchases || [];
+  state.adminPool.purchases.unshift({item:itemName, amount:amount, time:Date.now()});
+  if(state.adminPool.purchases.length > 50) state.adminPool.purchases.length = 50;
+  saveState();
+}
+
+// ── Сертификаты ──
+function getActiveCert(){
+  if(!state.cert) return null;
+  if(state.cert.expiresAt && Date.now() > state.cert.expiresAt){
+    state.cert = null; saveState();
+    return null;
+  }
+  return state.cert;
+}
+function getStorageLimit(){
+  const c = getActiveCert();
+  return c ? CERTS[c.tier].storage : 6;
+}
+function getInventoryLimit(){
+  // 3 слота занято экипировкой → лимит инвентаря = storage - 3
+  return Math.max(0, getStorageLimit() - 3);
+}
+function getListingLimit(){
+  const c = getActiveCert();
+  return c ? CERTS[c.tier].listings : 3;
+}
+
 function copyRef(){
-  const inp=document.querySelector('#view-friends input[readonly]');
-  if(inp){inp.select();try{document.execCommand('copy')}catch(e){}}
-  msg('Скопировано','success');
+  const inp = $('refLink');
+  if(!inp) return;
+  const val = inp.value;
+  if(navigator.clipboard?.writeText){
+    navigator.clipboard.writeText(val).then(
+      ()=>msg('Скопировано','success'),
+      ()=>{inp.select();document.execCommand('copy');msg('Скопировано','success');}
+    );
+  } else {
+    inp.select(); try{document.execCommand('copy')}catch(e){}
+    msg('Скопировано','success');
+  }
 }
 
 function goView(viewName){
@@ -500,14 +669,24 @@ function goView(viewName){
     $(`view-${v}`).classList.toggle('hidden',v!==viewName);
     $(`nav-${v}`).classList.toggle('active',v===viewName);
   });
-  if(viewName==='shop')renderShop();
-  if(viewName==='income')renderIncome();
-  if(viewName==='admin')renderAdminPanel();
+  if(viewName==='shop') renderShop();
+  if(viewName==='income') renderIncome();
+  if(viewName==='admin') renderAdminPanel();
+  if(viewName==='home') renderHome();
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
 function calcStakeUSD(){
-  return n(state.staked.TG)*TG_PRICE+n(state.staked.TUSD)+n(state.staked.AI)*0.01+n(state.staked.VKCOIN)*0.001;
+  return n(state.staked.TG)*TG_PRICE + n(state.staked.TUSD)
+       + n(state.staked.AI)*0.01 + n(state.staked.VKCOIN)*0.001;
+}
+
+// Полный сет одного уровня надет?
+function getEquippedGearTier(){
+  const eq=state.equipped;
+  if(!eq.weapon || !eq.body || !eq.legs) return 0;
+  if(eq.weapon.level !== eq.body.level || eq.body.level !== eq.legs.level) return 0;
+  return eq.weapon.level;
 }
 
 function calcLevel(){
@@ -515,37 +694,357 @@ function calcLevel(){
   const deals=state.progress.deals;
   const refs=state.progress.refs;
   const starRef=state.progress.starRefLevel;
+  const gearTier=getEquippedGearTier();
   let maxLevel=0;
   for(let i=0;i<LEVELS.length;i++){
     const lv=LEVELS[i];
-    if(stake>=lv.stake&&deals>=lv.deals&&refs>=lv.refs){
+    if(stake>=lv.stake && deals>=lv.deals && refs>=lv.refs && gearTier>=(lv.gearTier||0)){
       if(lv.star!=null){
-        if(starRef==null||starRef<lv.star)break;
+        if(starRef==null || starRef<lv.star) break;
       }
       maxLevel=lv.n;
-    }else break;
+    } else break;
   }
   if(state.activeTitle){
     const t=TITLES.find(x=>x.id===state.activeTitle.id);
-    if(t&&t.level>maxLevel)return t.level;
+    if(t && t.level>maxLevel) return t.level;
   }
   return maxLevel;
 }
 function getLevelData(levelNum){return LEVELS.find(l=>l.n===levelNum)||LEVELS[0]}
 function getNextLevel(levelNum){
   const idx=LEVELS.findIndex(l=>l.n===levelNum);
-  return idx>=0&&idx<LEVELS.length-1?LEVELS[idx+1]:null;
+  return idx>=0 && idx<LEVELS.length-1 ? LEVELS[idx+1] : null;
 }
 
+// ── Отрисовка слотов ──
+function renderSlots(){
+  const curLevel=calcLevel();
+  Object.keys(ALL_SLOTS).forEach(slot=>{
+    const cfg=ALL_SLOTS[slot];
+    const el=$('slot-'+slot);
+    if(!el) return;
+    const locked=curLevel<cfg.level;
+    let it=state.equipped[slot];
+    if(cfg.special==='title'){
+      it=state.activeTitle ? {icon:state.activeTitle.icon||'🏷️',name:state.activeTitle.name} : null;
+    }
+    el.classList.remove('empty','locked','filled','unlocked-empty');
+    let inner=`<span class="slot-label">${cfg.label}</span>`;
+    if(locked){
+      el.classList.add('locked','empty');
+      inner+=cfg.icon;
+      el.title=`Откроется на уровне ${cfg.level}`;
+      inner+=`<span class="slot-badge">ур.${cfg.level}</span>`;
+    } else if(it){
+      el.classList.add('filled');
+      inner+=it.icon;
+      el.title=`${it.name} — нажми чтобы снять`;
+    } else {
+      el.classList.add('unlocked-empty');
+      inner+=cfg.icon;
+      el.title=cfg.price?`Купить ${cfg.name} за $${cfg.price}`:`${cfg.name} — пусто`;
+    }
+    el.innerHTML=inner;
+  });
+}
+
+// ── Инвентарь ──
+function renderInventory(){
+  const limit=getInventoryLimit();
+  const inv=state.gearInventory;
+  $('invCount').textContent = `${inv.length} / ${limit}`;
+
+  // Баннер сертификата
+  const certWrap=$('certBannerWrap');
+  const activeCert=getActiveCert();
+  if(activeCert){
+    const c=CERTS[activeCert.tier];
+    let timeText;
+    if(activeCert.expiresAt && activeCert.expiresAt!==Infinity){
+      const daysLeft=Math.max(0,Math.ceil((activeCert.expiresAt-Date.now())/DAY_MS));
+      timeText=`⏳ ${daysLeft} дн.`;
+    } else timeText='♾️';
+    certWrap.innerHTML=`
+      <div class="cert-banner">
+        <span class="cert-name">📜 ${c.name}</span>
+        <span class="cert-time">${timeText} • ${c.storage} слотов</span>
+      </div>`;
+  } else {
+    certWrap.innerHTML='';
+  }
+
+  const grid=$('invGrid');
+  if(!grid) return;
+  grid.innerHTML='';
+  // Показываем минимум 6 слотов, максимум — limit (но не больше 12 для компактности)
+  const displayCount=Math.max(6, Math.min(limit, 12));
+  for(let i=0;i<displayCount;i++){
+    const item=inv[i];
+    const slot=document.createElement('div');
+    slot.className='slot';
+    if(item){
+      slot.classList.add('filled','small-badge');
+      slot.setAttribute('data-lv','ур.'+item.level);
+      slot.innerHTML=item.icon;
+      slot.title=`${item.name} • ур.${item.level}`;
+      slot.onclick=()=>openInventoryItemModal(i);
+    } else {
+      slot.classList.add('unlocked-empty');
+      slot.innerHTML='🎒';
+      slot.style.opacity = i < limit ? '1' : '0.25';
+      slot.title = i < limit ? 'Свободный слот' : 'Нужен сертификат больше';
+      slot.onclick = ()=>msg(`Место ${i+1} из ${limit}. Купи сертификат для расширения`,'info');
+    }
+    grid.appendChild(slot);
+  }
+  if(limit>12){
+    // Показать "..." если мест больше 12
+    const more=document.createElement('div');
+    more.className='slot';
+    more.style.opacity='0.6';
+    more.innerHTML='…';
+    more.title=`Ещё ${limit-12}`;
+    grid.appendChild(more);
+  }
+}
+
+function openInventoryItemModal(idx){
+  const item=state.gearInventory[idx];
+  if(!item) return;
+  const listingLimit=getListingLimit();
+  const myListings=state.p2pGear.filter(g=>g.seller===state.user.name).length;
+  const canSell=myListings<listingLimit;
+  const sellPrice=Math.round(item.price*(1-GEAR_SELL_DISCOUNT));
+
+  openModal(`${item.icon} ${escapeHtml(item.name)}`,`
+    <div style="text-align:center;font-size:64px;margin:8px 0">${item.icon}</div>
+    <div class="item-desc" style="text-align:center;margin-bottom:12px">Уровень ${item.level} • ⚔️ ${item.atk} ATK • 💪 ${item.pow} POW</div>
+    <div class="item-card" style="margin:0 0 8px">
+      <div class="item-desc">Базовая цена: <b style="color:var(--gold)">$${item.price}</b></div>
+      <div class="item-desc">Продажа на P2P (-20%): <b style="color:var(--gold)">$${sellPrice}</b></div>
+      <div class="item-desc">Твои листинги: ${myListings} / ${listingLimit===Infinity?'∞':listingLimit}</div>
+    </div>
+    <div class="modal-actions">
+      <button class="admin-btn primary" style="flex:1" onclick="equipFromInventory(${idx})">🎽 Надеть</button>
+      <button class="admin-btn gold" style="flex:1" ${canSell?'':'disabled'} onclick="sellGearToP2P(${idx})">💰 Продать $${sellPrice}</button>
+    </div>
+    <button class="admin-btn sec" style="width:100%;margin-top:8px" onclick="closeModal()">Отмена</button>
+  `);
+}
+
+function equipFromInventory(idx){
+  const item=state.gearInventory[idx];
+  if(!item) return;
+  const slot=item.slot;
+  if(!slot){msg('Ошибка: слот неизвестен','error');return}
+  // Если в экипировке что-то есть — оно идёт в инвентарь
+  const old=state.equipped[slot];
+  // Удаляем новый из инвентаря
+  state.gearInventory.splice(idx,1);
+  // Надеваем
+  state.equipped[slot]={icon:item.icon,name:item.name,slot,level:item.level,atk:item.atk,pow:item.pow,price:item.price};
+  // Старый в инвентарь
+  if(old){
+    state.gearInventory.push({...old, id:uid(), price:old.price||Math.round(old.level*5)});
+  }
+  const beforeLevel=parseInt($('statLevel').textContent)||0;
+  saveState();
+  renderHome();
+  const afterLevel=calcLevel();
+  closeModal();
+  if(afterLevel>beforeLevel){
+    msg(`⬆️ Повышение: ${getLevelData(afterLevel).name}!`,'success');
+  } else {
+    msg(`✅ Надето: ${item.name}`,'success');
+  }
+}
+
+function sellGearToP2P(idx){
+  const item=state.gearInventory[idx];
+  if(!item) return;
+  const limit=getListingLimit();
+  const myListings=state.p2pGear.filter(g=>g.seller===state.user.name).length;
+  if(myListings>=limit){msg('Лимит листингов исчерпан','error');return}
+  const sellPrice=Math.round(item.price*(1-GEAR_SELL_DISCOUNT));
+  state.gearInventory.splice(idx,1);
+  state.p2pGear.push({
+    id:uid(),
+    seller:state.user.name,
+    slot:item.slot,
+    level:item.level,
+    name:item.name,
+    icon:item.icon,
+    atk:item.atk||0,
+    pow:item.pow||0,
+    price:sellPrice,
+    listedAt:Date.now()
+  });
+  saveState();closeModal();renderHome();
+  msg(`✅ Выставлено на P2P за $${sellPrice}`,'success');
+}
+
+// ── Покупка амуниции ──
+function clickSlot(slot){
+  const cfg=ALL_SLOTS[slot];
+  if(!cfg) return;
+  const curLevel=calcLevel();
+  if(curLevel<cfg.level){
+    msg(`🔒 Откроется на уровне ${cfg.level} (${getLevelData(cfg.level).name})`,'info');
+    return;
+  }
+  if(cfg.special==='title'){
+    if(state.activeTitle){
+      msg(`👑 Активный титул: ${state.activeTitle.name}. Смена — в магазине.`,'info');
+    } else {
+      msg('🏪 Купи титул в магазине (вкладка Титулы)','info');
+      goView('shop');showShopTab('titles');
+    }
+    return;
+  }
+  // Амуниция (weapon/body/legs) — особая логика
+  if(slot==='weapon'||slot==='body'||slot==='legs'){
+    const it=state.equipped[slot];
+    if(it){
+      // Снять → в инвентарь
+      const limit=getInventoryLimit();
+      if(state.gearInventory.length>=limit){
+        msg('Инвентарь полон. Продай что-то или купи сертификат','error');
+        return;
+      }
+      if(confirm(`Снять ${it.icon} ${it.name}?`)){
+        state.gearInventory.push({...it, id:uid(), price:it.price||Math.round(it.level*5)});
+        state.equipped[slot]=null;
+        saveState();renderHome();
+        msg('Снято в инвентарь','info');
+      }
+      return;
+    }
+    // Пустой слот — купить следующий уровень
+    const targetLevel=curLevel+1;
+    if(targetLevel>21){
+      msg('Максимальный уровень амуниции','info');return;
+    }
+    const set=getGearSet(targetLevel);
+    const item=set[slot];
+    openBuyGearModal(item, targetLevel);
+    return;
+  }
+  // Остальные слоты (helmet/shield/cloak/ring/bag/pet/aura) — как раньше
+  const it=state.equipped[slot];
+  if(it){
+    if(confirm(`Снять ${it.icon} ${it.name}?`)){
+      state.equipped[slot]=null;
+      saveState();renderHome();msg('Снято');
+    }
+    return;
+  }
+  if(cfg.price===null){
+    msg('🏪 Купи в магазине','info');
+    goView('shop');
+    return;
+  }
+  openSlotBuyModal(slot);
+}
+
+function openBuyGearModal(item, targetLevel){
+  const price=item.price;
+  const limit=getInventoryLimit();
+  const canFit=state.gearInventory.length < limit;
+  const canBuy=n(state.balances.TUSD)>=price;
+  const nextName=getLevelData(targetLevel).name;
+  openModal(`${item.icon} ${escapeHtml(item.name)}`,`
+    <div style="text-align:center;font-size:64px;margin:8px 0">${item.icon}</div>
+    <div class="item-desc" style="text-align:center;margin-bottom:12px">Уровень ${targetLevel} • ${nextName}</div>
+    <div class="item-card" style="margin:0 0 8px">
+      <div class="item-desc">⚔️ +${item.atk} ATK • 💪 +${item.pow} POW</div>
+      <div class="item-desc">Цена: <b style="color:var(--gold)">$${price}</b></div>
+      <div class="item-desc">Баланс TUSD: <b>$${fmt(state.balances.TUSD)}</b></div>
+      <div class="item-desc">Инвентарь: ${state.gearInventory.length} / ${limit}</div>
+    </div>
+    ${!canFit?'<div class="item-desc" style="color:var(--red);text-align:center">⚠️ Инвентарь полон. Продай что-то или купи сертификат</div>':''}
+    ${!canBuy?'<div class="item-desc" style="color:var(--red);text-align:center">Недостаточно TUSD</div>':''}
+    <div class="item-desc" style="color:var(--cyan);text-align:center;font-size:10px">💡 Купленный предмет попадёт в ИНВЕНТАРЬ. Надень его через инвентарь — тогда уровень пересчитается.</div>
+    <div class="modal-actions">
+      <button class="admin-btn primary" style="flex:1" ${(canBuy&&canFit)?'':'disabled'} onclick="confirmBuyGear('${item.slot}',${targetLevel})">✅ Купить за $${price}</button>
+      <button class="admin-btn sec" style="flex:1" onclick="closeModal()">Отмена</button>
+    </div>
+  `);
+}
+
+function confirmBuyGear(slot, level){
+  const set=getGearSet(level);
+  const item=set[slot];
+  const price=item.price;
+  if(n(state.balances.TUSD)<price){msg('Недостаточно TUSD','error');return}
+  if(state.gearInventory.length>=getInventoryLimit()){msg('Инвентарь полон','error');return}
+  state.balances.TUSD-=price;
+  state.gearInventory.push({
+    id:uid(), slot, level, name:item.name, icon:item.icon,
+    atk:item.atk, pow:item.pow, price
+  });
+  addRevenue(price, `${item.icon} ${item.name}`);
+  saveState();closeModal();renderHome();
+  msg(`✅ Куплено: ${item.name}. Надень в инвентаре!`,'success');
+}
+
+function openSlotBuyModal(slot){
+  const cfg=ALL_SLOTS[slot];
+  const price=cfg.price;
+  const canBuy=n(state.balances.TUSD)>=price;
+  openModal(`${cfg.icon} ${cfg.name}`,`
+    <div style="text-align:center;font-size:64px;margin:8px 0">${cfg.icon}</div>
+    <div class="item-desc" style="text-align:center;margin-bottom:12px">Открыт на уровне ${cfg.level} • ${getLevelData(cfg.level).name}</div>
+    ${cfg.bonus?`<div class="item-card" style="margin:0 0 8px"><div class="item-desc">✨ Бонус: <b style="color:var(--gold)">${cfg.bonus}</b></div></div>`:''}
+    <div class="item-card" style="margin:0 0 8px">
+      <div class="item-desc">Цена: <b style="color:var(--gold)">$${fmt(price)}</b></div>
+      <div class="item-desc">Баланс TUSD: <b>$${fmt(state.balances.TUSD)}</b></div>
+    </div>
+    ${canBuy?'':`<div class="item-desc" style="color:var(--red);text-align:center">Недостаточно TUSD</div>`}
+    <div class="modal-actions">
+      <button class="admin-btn primary" style="flex:1" ${canBuy?'':'disabled'} onclick="buyExtraSlot('${slot}')">✅ Купить за $${fmt(price)}</button>
+      <button class="admin-btn sec" style="flex:1" onclick="closeModal()">Отмена</button>
+    </div>
+  `);
+}
+
+function buyExtraSlot(slot){
+  const cfg=ALL_SLOTS[slot];
+  if(!cfg||cfg.price==null) return;
+  if(n(state.balances.TUSD)<cfg.price){msg('Недостаточно TUSD','error');return}
+  state.balances.TUSD-=cfg.price;
+  state.equipped[slot]={icon:cfg.icon,name:cfg.name,slot,level:cfg.level};
+  addRevenue(cfg.price, `${cfg.icon} ${cfg.name}`);
+  saveState();closeModal();renderHome();
+  if(currentShopTab==='extras') showShopTab('extras');
+  msg(`✅ ${cfg.name} надет`,'success');
+}
+
+// ── Модалка ──
+function openModal(title,html){
+  $('modalBox').innerHTML=`<div class="modal-title">${title}</div>${html}`;
+  $('modal').classList.add('show');
+}
+function closeModal(e){
+  if(e && e.target!==$('modal')) return;
+  $('modal').classList.remove('show');
+}
+
+// ── Главная ──
 function renderHome(){
+  // дни
+  if(!state.user.registeredAt) state.user.registeredAt=Date.now();
+  state.user.days=Math.floor((Date.now()-state.user.registeredAt)/DAY_MS);
+
   const currentLevel=calcLevel();
   const lv=getLevelData(currentLevel);
   const next=getNextLevel(currentLevel);
 
-  $('userName').innerHTML=`${state.user.name}${state.user.isPremium?' <span class="premium-badge">VIP</span>':''}`;
+  $('userName').innerHTML=`${escapeHtml(state.user.name)}${state.user.isPremium?' <span class="premium-badge">VIP</span>':''}`;
   $('userRank').textContent='👑 '+lv.name;
   $('userDays').textContent='📅 '+state.user.days+' дней';
   $('statLevel').textContent=currentLevel;
+  state.rating = 1500 + state.progress.deals*10 + currentLevel*100;
   $('statRating').textContent=state.rating;
   const totalUSD=n(state.balances.TG)*TG_PRICE+n(state.balances.TUSD)+n(state.balances.AI)*0.01+n(state.balances.VKCOIN)*0.001;
   $('statBalance').textContent='$'+fmt(totalUSD,0);
@@ -555,7 +1054,7 @@ function renderHome(){
   $('rankSub').textContent=`Уровень ${lv.n} из 21`;
 
   const img=$('knightImg');
-  if(img){
+  if(img && img.style.display!=='none'){
     const imgSrc=GROUP_IMAGE[lv.group]||GROUP_IMAGE[0];
     if(img.dataset.src!==imgSrc){
       img.dataset.src=imgSrc;
@@ -564,42 +1063,34 @@ function renderHome(){
         img.src=imgSrc;
         img.style.filter=LEVEL_FILTER[lv.n]||'none';
         img.style.opacity='1';
-        img.style.display='';
       },200);
-    }else{
+    } else {
       img.style.filter=LEVEL_FILTER[lv.n]||'none';
     }
   }
 
-  ['weapon','body','legs'].forEach(slot=>{
-    const el=$('slot-'+slot);
-    const it=state.equipped[slot];
-    const defIcon=slot==='weapon'?'🗡️':slot==='body'?'👕':'👖';
-    const label=slot==='weapon'?'Меч':slot==='body'?'Рубашка':'Брюки';
-    el.classList.remove('empty','locked');
-    if(it){
-      el.classList.add('filled');
-      el.innerHTML=`<span class="slot-label">${label}</span>${it.icon}`;
-    }else{
-      el.classList.add('empty');
-      el.innerHTML=`<span class="slot-label">${label}</span>${defIcon}`;
-    }
-  });
+  renderSlots();
+  renderInventory();
 
   const stake=calcStakeUSD();
   const pr=state.progress;
   const stakeTarget=next?next.stake:lv.stake;
   const dealsTarget=next?next.deals:lv.deals;
   const refsTarget=next?next.refs:lv.refs;
+  const gearTierNow=getEquippedGearTier();
+  const gearTarget=next?next.gearTier:lv.gearTier;
   const pStake=stakeTarget>0?Math.min(100,(stake/stakeTarget)*100):100;
   const pDeals=dealsTarget>0?Math.min(100,(pr.deals/dealsTarget)*100):100;
   const pRefs=refsTarget>0?Math.min(100,(pr.refs/refsTarget)*100):100;
+  const pGear=gearTarget>0?Math.min(100,(gearTierNow/gearTarget)*100):100;
   $('scStake').style.width=pStake+'%';
   $('scDeals').style.width=pDeals+'%';
   $('scRefs').style.width=pRefs+'%';
+  $('scGear').style.width=pGear+'%';
   $('scStakeTxt').textContent=`$${fmt(stake,2)} / $${fmt(stakeTarget,2)}`;
   $('scDealsTxt').textContent=`${pr.deals} / ${dealsTarget}`;
   $('scRefsTxt').textContent=`${pr.refs} / ${refsTarget}`;
+  $('scGearTxt').textContent=gearTarget>0?`${gearTierNow} / ${gearTarget}`:'✅';
 
   const starWrap=$('scStarWrap');
   if(currentLevel>=6||(next&&next.star!=null)){
@@ -609,140 +1100,241 @@ function renderHome(){
     const pStar=starTarget>0?Math.min(100,(currentStar/starTarget)*100):100;
     $('scStar').style.width=pStar+'%';
     $('scStarTxt').textContent=starTarget>0?`${currentStar} / ${starTarget}`:'✅';
-  }else starWrap.classList.add('hidden');
+  } else starWrap.classList.add('hidden');
 
-  const eq=state.equipped;
-  const gearLv=currentLevel>=1?Math.min(8,Math.max(1,Math.ceil(currentLevel/3))):1;
-  const allEquipped=eq.weapon&&eq.body&&eq.legs;
-  const allCurrentLv=allEquipped&&eq.weapon.level===gearLv&&eq.body.level===gearLv&&eq.legs.level===gearLv;
-  const ready=pStake>=100&&pDeals>=100&&pRefs>=100;
-  if(!next)setKnightSpeech('Я — Император!');
-  else if(ready&&allCurrentLv)setKnightSpeech('Готов к апу!');
-  else if(ready&&!allCurrentLv)setKnightSpeech(`Купи амуницию ур.${gearLv}`);
-  else setKnightSpeech('Нужны все 4 шкалы 100%');
+  const ready=pStake>=100&&pDeals>=100&&pRefs>=100&&pGear>=100;
+  if(!next) setKnightSpeech('Я — Император!');
+  else if(ready) setKnightSpeech('Готов к апу!');
+  else if(pGear<100) setKnightSpeech(`Надень сет ур.${gearTarget}`);
+  else setKnightSpeech('Нужны все 5 шкал 100%');
 }
 function setKnightSpeech(text){const el=$('knightSpeech');if(el)el.textContent=text}
 
-function clickSlot(slot){
-  const it=state.equipped[slot];
-  if(it){
-    if(confirm(`Снять ${it.icon} ${it.name}?`)){
-      state.equipped[slot]=null;
-      saveState();renderHome();msg('Снято');
-    }
-  }else msg('Купи в магазине','info');
-}
-
-// МОДАЛКА
-function openModal(title,html){
-  $('modalBox').innerHTML=`<div class="modal-title">${title}</div>${html}`;
-  $('modal').classList.add('show');
-}
-function closeModal(e){
-  if(e&&e.target!==$('modal'))return;
-  $('modal').classList.remove('show');
-}
-
-// МАГАЗИН
+// ── Магазин ──
 let currentShopTab='gear';
 function renderShop(){showShopTab(currentShopTab)}
+
+function renderAdminListingsHTML(cat){
+  const list=state.shopListings[cat]||[];
+  if(!list.length) return '';
+  return list.map(l=>{
+    let extra='';
+    if(cat==='artifacts') extra=`<div class="item-desc">${escapeHtml(l.desc||'')}</div>`;
+    if(cat==='titles') extra=`<div class="item-desc">${escapeHtml(l.eff||'')} • Уровень ${l.level}</div>`;
+    if(cat==='certs') extra=`<div class="item-desc">${escapeHtml(l.desc||'')} • ${escapeHtml(l.duration||'')}</div>`;
+    if(cat==='refs') extra=`<div class="item-desc">${escapeHtml(l.login||'')} • Lv.${l.level} • заработал $${l.earned||0}</div>`;
+    if(cat==='extras') extra=`<div class="item-desc">${escapeHtml(l.bonus||'')} • Слот: ${l.slot}</div>`;
+    return `
+<div class="item-card admin-lot">
+  <div class="item-header">
+    <span class="item-name">${l.icon} ${escapeHtml(l.name)}</span>
+    <span class="rarity ${l.rarity||'mythic'}">${(l.rarity||'admin').toUpperCase()}</span>
+  </div>
+  ${extra}
+  <div class="item-footer">
+    <span class="item-price">$${fmt(l.price)}</span>
+    <button class="purple" onclick="buyAdminListing('${cat}','${l.id}')">Купить</button>
+  </div>
+</div>`;
+  }).join('');
+}
 
 function showShopTab(tab){
   currentShopTab=tab;
   document.querySelectorAll('#shopTabs .tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
   const c=$('shopContent');
-  if(tab==='gear'||tab==='weapons'){
-    const currentLevel=calcLevel();
-    const gearLv=currentLevel>=1?Math.min(8,Math.max(1,Math.ceil(currentLevel/3))):1;
-    const set=GEAR_SETS[gearLv]||GEAR_SETS[1];
-    const priceEach=Math.round((gearLv*50)/3);
-    const slots=tab==='weapons'?['weapon']:['body','legs'];
+
+  if(tab==='gear'){
+    const curLevel=calcLevel();
+    const targetLevel=Math.min(21, curLevel+1);
+    const set=getGearSet(targetLevel);
+    const allOwned=['weapon','body','legs'].every(s=>{
+      return state.equipped[s]?.level===targetLevel ||
+             state.gearInventory.some(g=>g.slot===s && g.level===targetLevel);
+    });
     c.innerHTML=`
-<div class="item-card"><div class="item-header"><b>${tab==='weapons'?'🗡️ Оружие':'⚔️ Амуниция'} уровня ${gearLv}</b></div><div class="item-desc">Купи все 3 предмета и надень — откроется ап</div></div>
-${slots.map(slot=>{
-  const has=state.equipped[slot]&&state.equipped[slot].level===gearLv;
+<div class="item-card">
+  <div class="item-header"><b>⚔️ Сет уровня ${targetLevel} (${getLevelData(targetLevel).name})</b></div>
+  <div class="item-desc">Купи все 3 предмета → надень → уровень пересчитается автоматически.</div>
+</div>
+${['weapon','body','legs'].map(slot=>{
+  const item=set[slot];
+  const ownedEquipped=state.equipped[slot]?.level===targetLevel;
+  const ownedInv=state.gearInventory.some(g=>g.slot===slot && g.level===targetLevel);
+  let btn;
+  if(ownedEquipped) btn=`<button class="green" disabled>✅ Надето</button>`;
+  else if(ownedInv) btn=`<button class="gold" onclick="goView('home');msg('Надень через инвентарь','info')">🎒 В инвентаре</button>`;
+  else btn=`<button onclick="buyGearFromShop('${slot}',${targetLevel})">Купить</button>`;
   return `
 <div class="item-card">
-<div class="item-header"><span class="item-name">${set[slot].icon} ${set[slot].name}</span><span class="rarity common">Ур. ${gearLv}</span></div>
-<div class="item-desc">⚔️ +${set[slot].atk} ATK • 💪 +${set[slot].pow} POW</div>
+  <div class="item-header">
+    <span class="item-name">${item.icon} ${escapeHtml(item.name)}</span>
+    <span class="rarity common">Ур. ${targetLevel}</span>
+  </div>
+  <div class="item-desc">⚔️ +${item.atk} ATK • 💪 +${item.pow} POW</div>
+  <div class="item-footer">
+    <span class="item-price">$${item.price}</span>
+    ${btn}
+  </div>
+</div>`;
+}).join('')}
+<div class="item-card" style="margin-top:8px;border-color:var(--gold)">
+  <div class="item-desc">💡 Уровни: <b>${curLevel}</b> → <b>${targetLevel}</b> (${getLevelData(targetLevel).name})</div>
+</div>
+`;
+  } else if(tab==='extras'){
+    const curLevel=calcLevel();
+    const extras=['helmet','shield','cloak','ring','bag','pet','aura'];
+    c.innerHTML=`
+<div class="item-card"><div class="item-header"><b>🛡️ Доп. снаряжение</b></div><div class="item-desc">Открывается по мере роста уровня. Текущий: ${curLevel}</div></div>
+${extras.map(slot=>{
+  const cfg=ALL_SLOTS[slot];
+  const locked=curLevel<cfg.level;
+  const has=!!state.equipped[slot];
+  return `
+<div class="item-card">
+<div class="item-header">
+  <span class="item-name">${cfg.icon} ${cfg.name}</span>
+  ${locked?`<span class="rarity common">🔒 Ур.${cfg.level}</span>`:`<span class="rarity rare">Открыт</span>`}
+</div>
+<div class="item-desc">${cfg.bonus||''}</div>
 <div class="item-footer">
-<span class="item-price">$${priceEach}</span>
-${has?`<button class="green" disabled>✅ Надето</button>`:`<button onclick="buyGear('${slot}',${gearLv},${priceEach})">Купить</button>`}
+  <span class="item-price">${locked?`Нужен ур. ${cfg.level}`:`$${fmt(cfg.price)}`}</span>
+  ${locked?`<button disabled>🔒</button>`
+    : has?`<button class="green" disabled>✅ Надето</button>`
+    : `<button onclick="buyExtraSlot('${slot}')">Купить</button>`}
 </div>
 </div>`}).join('')}
+${renderAdminListingsHTML('extras')}
 `;
-  }else if(tab==='artifacts'){
+  } else if(tab==='artifacts'){
     c.innerHTML=`
-<div class="item-card"><div class="item-header"><b>💎 Артефакты</b></div><div class="item-desc">Камни, зелья, сферы — усилители</div></div>
+<div class="item-card"><div class="item-header"><b>💎 Артефакты</b></div><div class="item-desc">Усилители</div></div>
 <div class="item-card"><div class="item-header"><span class="item-name">💎 Камень дохода</span><span class="rarity common">Common</span></div><div class="item-desc">+5% к стейку</div><div class="item-footer"><span class="item-price">$10</span><button onclick="buyArtifact('Камень дохода',10)">Купить</button></div></div>
 <div class="item-card"><div class="item-header"><span class="item-name">🧪 Зелье мощи</span><span class="rarity epic">Epic</span></div><div class="item-desc">+50 APR, 12ч</div><div class="item-footer"><span class="item-price">$25</span><button onclick="buyArtifact('Зелье мощи',25)">Купить</button></div></div>
 <div class="item-card"><div class="item-header"><span class="item-name">🔮 Сфера бездны</span><span class="rarity legend">Legendary</span></div><div class="item-desc">+10% ко всему</div><div class="item-footer"><span class="item-price">$150</span><button onclick="buyArtifact('Сфера бездны',150)">Купить</button></div></div>
+${renderAdminListingsHTML('artifacts')}
 `;
-  }else if(tab==='titles'){
+  } else if(tab==='titles'){
     c.innerHTML=`
-<div class="item-card"><div class="item-header"><b>🏷️ Титулы</b></div><div class="item-desc">Купил → перешёл на уровень. 90% админу, 10% в фонд</div></div>
+<div class="item-card"><div class="item-header"><b>🏷️ Титулы</b></div><div class="item-desc">Купил → отображаемый титул. Не влияет на амуницию.</div></div>
 ${TITLES.map(t=>`
 <div class="item-card">
 <div class="item-header"><span class="item-name">${t.icon} ${t.name}</span><span class="rarity legend">Уровень ${t.level}</span></div>
 <div class="item-desc">${t.eff} • цена в системе</div>
 <div class="item-footer"><span class="item-price">$${t.price}</span><button onclick="openBuyTitle('${t.id}')">Купить</button></div>
 </div>`).join('')}
+${renderAdminListingsHTML('titles')}
 `;
-  }else if(tab==='certs'){
-    const p={c3m:25,c6m:50,c1y:100,cinf:250};
+  } else if(tab==='certs'){
+    const activeCert=getActiveCert();
     c.innerHTML=`
-<div class="item-card"><div class="item-header"><b>📜 Сертификаты продавца</b></div></div>
-<div class="item-card"><div class="item-header"><span class="item-name">📜 Старт</span><span class="rarity legend">3 мес</span></div><div class="item-desc">До 5 лотов • комиссия 5%</div><div class="item-footer"><span class="item-price">$${p.c3m}</span><button onclick="buyCert('Старт',${p.c3m})">Купить</button></div></div>
-<div class="item-card"><div class="item-header"><span class="item-name">📜 Профи</span><span class="rarity legend">6 мес</span></div><div class="item-desc">До 20 лотов • комиссия 3.5% • продажа рефералов</div><div class="item-footer"><span class="item-price">$${p.c6m}</span><button onclick="buyCert('Профи',${p.c6m})">Купить</button></div></div>
-<div class="item-card"><div class="item-header"><span class="item-name">📜 Бизнес</span><span class="rarity legend">1 год</span></div><div class="item-desc">До 100 лотов • комиссия 2% • продажа своего титула</div><div class="item-footer"><span class="item-price">$${p.c1y}</span><button onclick="buyCert('Бизнес',${p.c1y})">Купить</button></div></div>
-<div class="item-card"><div class="item-header"><span class="item-name">📜 Вечный</span><span class="rarity mythic">VIP</span></div><div class="item-desc">∞ лотов • комиссия 1% • создание копий титула раз в 3 мес</div><div class="item-footer"><span class="item-price">$${p.cinf}</span><button class="gold" onclick="buyCert('Вечный',${p.cinf})">Купить</button></div></div>
-`;
-  }else if(tab==='refs'){
-    c.innerHTML=`
-<div class="item-card"><div class="item-header"><b>👥 Рефералы на продажу</b></div><div class="item-desc">Покупка = смена владельца. Уведомляем, но не спрашиваем</div></div>
-${REFS_SALE.map(r=>`
 <div class="item-card">
-<div class="item-header"><span class="item-name">👤 ${r.login}</span><span class="rarity rare">Lv.${r.level}</span></div>
-<div class="item-desc">Владелец: ${r.owner} ⭐${r.stars}<br>Заработал: $${r.earned} • ${r.days} дней • ~$${r.avgMonth}/мес</div>
+  <div class="item-header"><b>📜 Сертификаты продавца</b></div>
+  <div class="item-desc">Расширяют хранилище и лимит листингов на P2P.</div>
+  ${activeCert?`<div class="item-desc" style="color:var(--gold);margin-top:6px">✅ Активен: <b>${CERTS[activeCert.tier].name}</b></div>`:''}
+</div>
+${Object.entries(CERTS).map(([tier,c])=>{
+  const isActive=activeCert && activeCert.tier===tier;
+  const durText = c.days===Infinity?'∞':(c.days+' дней');
+  return `
+<div class="item-card">
+<div class="item-header">
+  <span class="item-name">📜 ${c.name}</span>
+  <span class="rarity ${tier==='eternal'?'mythic':tier==='business'?'legend':tier==='pro'?'epic':'rare'}">${durText}</span>
+</div>
+<div class="item-desc">
+  🎒 Хранилище: <b>${c.storage}</b> предметов<br>
+  📤 Листингов на P2P: <b>${c.listings===Infinity?'∞':c.listings}</b><br>
+  💸 Комиссия продаж: <b>${(c.commission*100).toFixed(1)}%</b>
+</div>
+<div class="item-footer">
+  <span class="item-price">$${c.price}</span>
+  ${isActive?`<button class="green" disabled>✅ Активен</button>`:`<button onclick="buyCert('${tier}')">Купить</button>`}
+</div>
+</div>`;
+}).join('')}
+${renderAdminListingsHTML('certs')}
+`;
+  } else if(tab==='refs'){
+    c.innerHTML=`
+<div class="item-card"><div class="item-header"><b>👥 Рефералы на продажу</b></div><div class="item-desc">Покупка = смена владельца</div></div>
+${state.refsSale.map(r=>`
+<div class="item-card">
+<div class="item-header"><span class="item-name">👤 ${escapeHtml(r.login)}</span><span class="rarity rare">Lv.${r.level}</span></div>
+<div class="item-desc">Владелец: ${escapeHtml(r.owner)} ⭐${r.stars}<br>Заработал: $${r.earned} • ${r.days} дней • ~$${r.avgMonth}/мес</div>
 <div class="item-footer"><span class="item-price">$${r.price}</span><button onclick="buyRef('${r.id}')">Купить</button></div>
 </div>`).join('')}
+${renderAdminListingsHTML('refs')}
 `;
-  }else if(tab==='auction'){
+  } else if(tab==='auction'){
     c.innerHTML=`
-<div class="item-card"><div class="item-header"><b>🔨 Аукцион</b></div><div class="item-desc">Только с сертификатом Профи и выше</div></div>
-${AUCTIONS.map(a=>{
+<div class="item-card"><div class="item-header"><b>🔨 Аукцион</b></div><div class="item-desc">Ставки списываются с баланса. Проиграл — вернём (в след. итерации).</div></div>
+${state.auctions.map(a=>{
   const left=Math.max(0,a.endsAt-Date.now());
-  const h=Math.floor(left/3600000),m=Math.floor((left%3600000)/60000);
+  const h=Math.floor(left/3600000), m=Math.floor((left%3600000)/60000);
   const next=Math.round(a.current*1.025);
   return `
 <div class="item-card">
-<div class="item-header"><span class="item-name">${a.item}</span><span class="rarity ${a.rarity}">${a.rarity}</span></div>
-<div class="item-desc">Текущая ставка: $${fmt(a.current,0)} • Лидер: ${a.leader} <span class="timer-badge">${h}ч ${m}м</span></div>
+<div class="item-header"><span class="item-name">${escapeHtml(a.item)}</span><span class="rarity ${a.rarity}">${a.rarity}</span></div>
+<div class="item-desc">Текущая: $${fmt(a.current,0)} • Лидер: ${escapeHtml(a.leader)} <span class="timer-badge">${h}ч ${m}м</span></div>
 <div class="item-footer"><span class="item-price">$${fmt(a.current,0)}</span><button onclick="bidAuction('${a.id}',${next})">Ставка $${next}</button></div>
 </div>`}).join('')}
 `;
   }
 }
 
-function buyGear(slot,lvN,price){
+function buyGearFromShop(slot, level){
+  const set=getGearSet(level);
+  const item=set[slot];
+  const price=item.price;
   if(n(state.balances.TUSD)<price){msg('Недостаточно TUSD','error');return}
+  if(state.gearInventory.length>=getInventoryLimit()){msg('Инвентарь полон. Продай старое или купи сертификат','error');return}
   state.balances.TUSD-=price;
-  const set=GEAR_SETS[lvN]||GEAR_SETS[1];
-  state.equipped[slot]={...set[slot],slot,level:lvN,atk:set[slot].atk,pow:set[slot].pow};
-  saveState();renderHome();showShopTab(currentShopTab);
-  msg(`✅ ${set[slot].name} надето`,'success');
+  state.gearInventory.push({id:uid(),slot,level,name:item.name,icon:item.icon,atk:item.atk,pow:item.pow,price});
+  addRevenue(price, `${item.icon} ${item.name}`);
+  saveState();renderHome();showShopTab('gear');
+  msg(`✅ Куплено: ${item.name}. Надень в инвентаре!`,'success');
+}
+
+function buyAdminListing(cat, id){
+  const list=state.shopListings[cat]||[];
+  const l=list.find(x=>x.id===id);
+  if(!l) return;
+  const price=n(l.price);
+  if(n(state.balances.TUSD)<price){msg('Недостаточно TUSD','error');return}
+  if(!confirm(`Купить "${l.icon} ${l.name}" за $${fmt(price)}?`)) return;
+  state.balances.TUSD -= price;
+  if(cat==='titles'){
+    state.activeTitle={id:l.id,name:l.name,level:n(l.level)||14,icon:l.icon||'👑'};
+    state.user.isPremium=true;
+    // НЕ трогаем амуницию
+  } else if(cat==='certs'){
+    state.user.activeCertName=l.name;
+  } else if(cat==='refs'){
+    state.progress.refs += 1;
+  } else if(cat==='extras'){
+    const slot=l.slot;
+    if(slot && ALL_SLOTS[slot]){
+      state.equipped[slot]={icon:l.icon||ALL_SLOTS[slot].icon, name:l.name, slot, level:n(l.level)||ALL_SLOTS[slot].level};
+    }
+  }
+  addRevenue(price, `${l.icon} ${l.name}`);
+  saveState();renderHome();showShopTab(cat);
+  msg(`✅ Куплено: ${l.name}`,'success');
 }
 
 function buyArtifact(name,price){
   if(n(state.balances.TUSD)<price){msg('Недостаточно TUSD','error');return}
   state.balances.TUSD-=price;
+  addRevenue(price, name);
   saveState();renderHome();
   msg(`✅ ${name} куплено`,'success');
 }
 
 function openBuyTitle(id){
   const t=TITLES.find(x=>x.id===id);
-  if(!t)return;
+  if(!t) return;
   const toAdmin=(t.price*0.9).toFixed(2);
   const toFund=(t.price*0.1).toFixed(2);
   openModal(`🏷️ Купить титул ${t.name}`,`
@@ -751,9 +1343,9 @@ function openBuyTitle(id){
 <div class="item-card" style="margin:0 0 8px">
 <div class="item-desc">Цена: <b style="color:var(--gold)">$${t.price}</b></div>
 <div class="item-desc">→ Админу: <b>$${toAdmin}</b> (90%)</div>
-<div class="item-desc">→ В фонд наград: <b>$${toFund}</b> (10%)</div>
+<div class="item-desc">→ В фонд: <b>$${toFund}</b> (10%)</div>
 </div>
-<div class="item-desc" style="text-align:center;font-size:11px">Вы сразу станете уровня ${t.level}. Амуниция будет сброшена.</div>
+<div class="item-desc" style="color:var(--cyan);font-size:10px;text-align:center">💡 Титул — только отображение. Амуниция не сбрасывается.</div>
 <div class="modal-actions">
 <button class="admin-btn primary" style="flex:1" onclick="confirmBuyTitle('${id}')">✅ Купить за $${t.price}</button>
 <button class="admin-btn sec" style="flex:1" onclick="closeModal()">Отмена</button>
@@ -763,46 +1355,65 @@ function openBuyTitle(id){
 
 function confirmBuyTitle(id){
   const t=TITLES.find(x=>x.id===id);
-  if(!t)return;
+  if(!t) return;
   if(n(state.balances.TUSD)<t.price){msg('Недостаточно TUSD','error');return}
   state.balances.TUSD-=t.price;
-  state.activeTitle={id:t.id,name:t.name,level:t.level};
+  state.activeTitle={id:t.id,name:t.name,level:t.level,icon:t.icon};
   state.user.isPremium=true;
-  state.equipped={weapon:null,body:null,legs:null};
+  addRevenue(t.price, `👑 Титул ${t.name}`);
   saveState();closeModal();renderHome();
   msg(`👑 Вы теперь ${t.name}!`,'success');
 }
 
-function buyCert(tier,price){
-  if(n(state.balances.TUSD)<price){msg('Недостаточно TUSD','error');return}
-  state.balances.TUSD-=price;
-  state.user.activeCert=tier;
-  if(tier==='Вечный')state.user.isPremium=true;
-  saveState();renderHome();
-  msg(`✅ Сертификат "${tier}" активирован`,'success');
+function buyCert(tier){
+  const c=CERTS[tier];
+  if(!c) return;
+  if(n(state.balances.TUSD)<c.price){msg('Недостаточно TUSD','error');return}
+  const active=getActiveCert();
+  if(active && active.tier===tier){
+    // Продление
+    const base = active.expiresAt && active.expiresAt!==Infinity ? active.expiresAt : Date.now();
+    state.cert={tier, expiresAt: c.days===Infinity?Infinity:base+c.days*DAY_MS};
+  } else {
+    // Новая покупка
+    state.cert={tier, expiresAt: c.days===Infinity?Infinity:Date.now()+c.days*DAY_MS};
+  }
+  if(tier==='eternal') state.user.isPremium=true;
+  state.balances.TUSD-=c.price;
+  addRevenue(c.price, `📜 Сертификат ${c.name}`);
+  saveState();renderHome();showShopTab('certs');
+  msg(`✅ Сертификат "${c.name}" активирован (${c.storage} слотов)`,'success');
 }
 
 function buyRef(id){
-  const r=REFS_SALE.find(x=>x.id===id);
-  if(!r)return;
+  const r=state.refsSale.find(x=>x.id===id);
+  if(!r) return;
   if(n(state.balances.TUSD)<r.price){msg('Недостаточно TUSD','error');return}
   state.balances.TUSD-=r.price;
   state.progress.refs+=1;
+  state.refsSale=state.refsSale.filter(x=>x.id!==id);
+  addRevenue(r.price, `👤 Реферал ${r.login}`);
   saveState();renderHome();showShopTab('refs');
   msg(`✅ Реферал ${r.login} куплен`,'success');
 }
 
 function bidAuction(id,amount){
-  const a=AUCTIONS.find(x=>x.id===id);
-  if(!a)return;
+  const a=state.auctions.find(x=>x.id===id);
+  if(!a) return;
   if(n(state.balances.TUSD)<amount){msg('Недостаточно TUSD','error');return}
-  a.current=amount;
-  a.leader='@you';
-  saveState();showShopTab('auction');
+  // вернуть предыдущую свою ставку
+  if(a.leader===state.user.name && a.lastBid){
+    state.balances.TUSD += a.lastBid;
+  }
+  state.balances.TUSD -= amount;
+  a.lastBid = amount;
+  a.current = amount;
+  a.leader = state.user.name;
+  saveState();renderHome();showShopTab('auction');
   msg(`✅ Ставка $${amount} принята`,'success');
 }
 
-// ДОХОД
+// ── Доход ──
 let currentIncomeTab='p2p';
 function renderIncome(){showIncomeTab(currentIncomeTab)}
 
@@ -810,40 +1421,80 @@ function showIncomeTab(tab){
   currentIncomeTab=tab;
   document.querySelectorAll('#incomeTabs .tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
   const c=$('incomeContent');
+
   if(tab==='p2p'){
     c.innerHTML=`
-<div class="item-card"><div class="item-header"><b>💱 P2P Маркет</b></div><div class="item-desc">Только токены. Покупка/продажа = +1 к счётчику сделок</div></div>
+<div class="item-card"><div class="item-header"><b>💱 P2P Токены</b></div><div class="item-desc">Покупка = +1 к счётчику сделок</div></div>
 <button class="admin-btn gold" style="width:100%;margin-bottom:12px" onclick="openCreateOrder()">➕ Создать свой ордер</button>
-${P2P_TOKENS.map(o=>`
+${state.p2pTokens.map(o=>`
 <div class="item-card ${o.my?'mine':''}">
 <div class="item-header"><span class="item-name">${o.from} → ${o.to}</span><span class="rarity rare">⭐${o.stars}</span></div>
-<div class="item-desc">Отдаю: ${fmt(o.fromAmt)} ${o.from}<br>Получаю: ${fmt(o.toAmt)} ${o.to}<br>Продавец: ${o.seller}</div>
+<div class="item-desc">Отдаю: ${fmt(o.fromAmt)} ${o.from}<br>Получаю: ${fmt(o.toAmt)} ${o.to}<br>Продавец: ${escapeHtml(o.seller)}</div>
 <div class="item-footer">
 <span class="item-price">$${fmt(o.toAmt,0)}</span>
 ${o.my?`<button class="red" onclick="cancelP2POrder('${o.id}')">Отменить</button>`:`<button onclick="buyP2POrder('${o.id}')">Купить</button>`}
 </div>
 </div>`).join('')||'<div class="item-card"><div class="item-desc" style="text-align:center">Нет активных ордеров</div></div>'}
 `;
-  }else if(tab==='swap'){
+  } else if(tab==='gear-p2p'){
+    const limit=getListingLimit();
+    const myListings=state.p2pGear.filter(g=>g.seller===state.user.name);
+    const othersListings=state.p2pGear.filter(g=>g.seller!==state.user.name);
+    const invCount=state.gearInventory.length;
+    c.innerHTML=`
+<div class="item-card">
+  <div class="item-header"><b>🛡️ P2P Амуниция</b></div>
+  <div class="item-desc">Продавать можно только из инвентаря. Скидка -20% от базовой цены.</div>
+  <div class="item-desc" style="margin-top:6px">📤 Твои листинги: <b>${myListings.length} / ${limit===Infinity?'∞':limit}</b></div>
+  <div class="item-desc">🎒 В инвентаре: <b>${invCount} предметов</b></div>
+</div>
+<button class="admin-btn gold" style="width:100%;margin-bottom:12px" onclick="goView('home');msg('Открой инвентарь на главной','info')">➕ Выставить из инвентаря</button>
+
+<div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:8px 0 6px">Твои листинги</div>
+${myListings.length?myListings.map(g=>`
+<div class="item-card mine">
+<div class="item-header">
+  <span class="item-name">${g.icon} ${escapeHtml(g.name)}</span>
+  <span class="rarity rare">Ур.${g.level}</span>
+</div>
+<div class="item-desc">⚔️ ${g.atk} ATK • 💪 ${g.pow} POW</div>
+<div class="item-footer">
+  <span class="item-price">$${g.price}</span>
+  <button class="red" onclick="cancelGearListing('${g.id}')">Снять</button>
+</div>
+</div>`).join(''):'<div class="item-card"><div class="item-desc" style="text-align:center">Нет твоих листингов</div></div>'}
+
+<div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin:14px 0 6px">Лоты других игроков</div>
+${othersListings.length?othersListings.map(g=>`
+<div class="item-card">
+<div class="item-header">
+  <span class="item-name">${g.icon} ${escapeHtml(g.name)}</span>
+  <span class="rarity rare">Ур.${g.level}</span>
+</div>
+<div class="item-desc">⚔️ ${g.atk} ATK • 💪 ${g.pow} POW<br>Продавец: ${escapeHtml(g.seller)}</div>
+<div class="item-footer">
+  <span class="item-price">$${g.price}</span>
+  <button onclick="buyGearListing('${g.id}')">Купить</button>
+</div>
+</div>`).join(''):'<div class="item-card"><div class="item-desc" style="text-align:center">Нет лотов других игроков</div></div>'}
+`;
+  } else if(tab==='swap'){
     renderSwap();
-  }else if(tab==='staking'){
-    const rows=['TG','TUSD','AI'].map(sym=>{
+  } else if(tab==='staking'){
+    const rows=['TG','TUSD','AI','VKCOIN'].map(sym=>{
       const staked=n(state.staked[sym]);
       const balance=n(state.balances[sym]);
       const price=PRICE_MAP[sym];
       const dailyUSD=staked*0.02/30*price;
       const hasStake=staked>0;
       const lastClaim=state.lastClaim[sym]||0;
-      const canClaim=hasStake && (Date.now()-lastClaim)>=DAY_MS;
-      const accumulated=hasStake
-        ? Math.min((Date.now()-lastClaim)/DAY_MS,1)*dailyUSD
-        : 0;
-      const nextClaim=lastClaim+DAY_MS;
-      const remainMs=hasStake?Math.max(0,nextClaim-Date.now()):0;
+      const daysElapsed=Math.min((Date.now()-lastClaim)/DAY_MS, 7);
+      const canClaim=hasStake && daysElapsed>=1;
+      const accumulated=hasStake?daysElapsed*dailyUSD:0;
+      const remainMs=hasStake?Math.max(0,(lastClaim+DAY_MS)-Date.now()):0;
       const h=Math.floor(remainMs/3600000),m=Math.floor((remainMs%3600000)/60000);
-      const timerText=!hasStake
-        ? '— нет стейка'
-        : (canClaim?'✅ Готово':`⏳ ${h}ч ${m}м`);
+      const s=Math.floor((remainMs%60000)/1000);
+      const timerText=!hasStake?'—':(canClaim?'✅ Готово':`⏳ ${h}ч ${m}м ${s}с`);
       return `
 <div class="item-card">
 <div class="item-header"><span class="item-name">${tokenIcon(sym)} ${sym}</span>${hasStake?`<span class="rarity rare">В стейке</span>`:''}</div>
@@ -856,35 +1507,69 @@ ${o.my?`<button class="red" onclick="cancelP2POrder('${o.id}')">Отменить
 </div>
 </div>`}).join('');
     c.innerHTML=`
-<div class="item-card"><div class="item-header"><b>💎 Стейкинг</b></div><div class="item-desc">2% в месяц • Сбор раз в 24 часа</div></div>
+<div class="item-card"><div class="item-header"><b>💎 Стейкинг</b></div><div class="item-desc">2% в месяц • Сбор раз в 24 часа • Макс 7 дней накопления</div></div>
 ${rows}
 `;
-  }else if(tab==='checkin'){
+  } else if(tab==='checkin'){
     const day=state.checkinDay||0;
     const canClaim=(Date.now()-(state.lastCheckin||0))>=DAY_MS;
     c.innerHTML=`
-<div class="item-card"><div class="item-header"><b>🔥 Чекин — 30 дней</b></div><div class="item-desc">Заходи каждый день и получай награды</div><div style="text-align:center;font-size:36px;font-weight:800;color:var(--gold);margin:12px 0">${day}</div><div style="text-align:center;font-size:11px;color:var(--muted)">дней подряд</div><button class="admin-btn gold" style="width:100%;margin-top:12px" ${canClaim?'':'disabled'} onclick="claimCheckin()">${canClaim?`🔥 Получить день ${day+1}`:'✅ Уже получено сегодня'}</button></div>
+<div class="item-card"><div class="item-header"><b>🔥 Чекин — 30 дней</b></div><div class="item-desc">Заходи каждый день</div><div style="text-align:center;font-size:36px;font-weight:800;color:var(--gold);margin:12px 0">${day}</div><div style="text-align:center;font-size:11px;color:var(--muted)">дней подряд</div><button class="admin-btn gold" style="width:100%;margin-top:12px" ${canClaim?'':'disabled'} onclick="claimCheckin()">${canClaim?`🔥 Получить день ${day+1}`:'✅ Уже получено сегодня'}</button></div>
 `;
-  }else if(tab==='tasks'){
+  } else if(tab==='tasks'){
+    const done=state.progress.completedTasks||{};
     c.innerHTML=`
 <div class="item-card"><div class="item-header"><b>📋 Задания</b></div></div>
-<div class="item-card"><div class="item-header"><span class="item-name">📢 Подписаться на канал</span><span class="item-price">+0.5 TUSD</span></div><button class="admin-btn primary" style="width:100%;margin-top:8px" onclick="claimTask(0.5)">Выполнить</button></div>
-<div class="item-card"><div class="item-header"><span class="item-name">🤖 Подписаться на бота</span><span class="item-price">+1 TUSD</span></div><button class="admin-btn primary" style="width:100%;margin-top:8px" onclick="claimTask(1)">Выполнить</button></div>
-<div class="item-card"><div class="item-header"><span class="item-name">👥 Пригласить друга</span><span class="item-price">+2 TUSD</span></div><button class="admin-btn primary" style="width:100%;margin-top:8px" onclick="claimTask(2)">Выполнить</button></div>
+<div class="item-card"><div class="item-header"><span class="item-name">📢 Подписаться на канал</span><span class="item-price">+0.5 TUSD</span></div><button class="admin-btn primary" style="width:100%;margin-top:8px" ${done.channel?'disabled':''} onclick="claimTask('channel',0.5)">${done.channel?'✅ Выполнено':'Выполнить'}</button></div>
+<div class="item-card"><div class="item-header"><span class="item-name">🤖 Подписаться на бота</span><span class="item-price">+1 TUSD</span></div><button class="admin-btn primary" style="width:100%;margin-top:8px" ${done.bot?'disabled':''} onclick="claimTask('bot',1)">${done.bot?'✅ Выполнено':'Выполнить'}</button></div>
+<div class="item-card"><div class="item-header"><span class="item-name">👥 Пригласить друга</span><span class="item-price">+2 TUSD</span></div><button class="admin-btn primary" style="width:100%;margin-top:8px" ${done.friend?'disabled':''} onclick="claimTask('friend',2)">${done.friend?'✅ Выполнено':'Выполнить'}</button></div>
 `;
-  }else if(tab==='ads'){
+  } else if(tab==='ads'){
+    const lastAd=state.lastAd||0;
+    const canWatch=(Date.now()-lastAd)>=30000;
     c.innerHTML=`
-<div class="item-card"><div class="item-header"><b>📢 Реклама</b></div><div class="item-desc">Смотри и зарабатывай, или закажи свою</div></div>
-<div class="item-card"><div class="item-header"><span class="item-name">🎬 Смотреть видео</span><span class="item-price">+0.01 TUSD</span></div><button class="admin-btn primary" style="width:100%;margin-top:8px" onclick="watchAd()">Смотреть</button></div>
-<div class="item-card"><div class="item-header"><b>📢 Заказать рекламу</b></div><div class="item-desc">Баннер, видео, задание или ссылка</div><button class="admin-btn gold" style="width:100%;margin-top:8px" onclick="msg('Открыть форму заказа')">Заказать</button></div>
+<div class="item-card"><div class="item-header"><b>📢 Реклама</b></div><div class="item-desc">Смотри и зарабатывай</div></div>
+<div class="item-card"><div class="item-header"><span class="item-name">🎬 Смотреть видео</span><span class="item-price">+0.01 TUSD</span></div><button class="admin-btn primary" style="width:100%;margin-top:8px" ${canWatch?'':'disabled'} onclick="watchAd()">${canWatch?'Смотреть':'⏳ Подожди'}</button></div>
+<div class="item-card"><div class="item-header"><b>📢 Заказать рекламу</b></div><button class="admin-btn gold" style="width:100%;margin-top:8px" onclick="msg('Открыть форму заказа')">Заказать</button></div>
 `;
   }
 }
 
-// ============ SWAP ============
+function cancelGearListing(id){
+  const g=state.p2pGear.find(x=>x.id===id);
+  if(!g) return;
+  if(state.gearInventory.length>=getInventoryLimit()){
+    msg('Инвентарь полон. Не могу снять листинг','error');return;
+  }
+  state.p2pGear=state.p2pGear.filter(x=>x.id!==id);
+  state.gearInventory.push({
+    id:uid(), slot:g.slot, level:g.level, name:g.name,
+    icon:g.icon, atk:g.atk, pow:g.pow, price:Math.round(g.price/(1-GEAR_SELL_DISCOUNT))
+  });
+  saveState();renderHome();showIncomeTab('gear-p2p');
+  msg('Листинг снят','info');
+}
+
+function buyGearListing(id){
+  const g=state.p2pGear.find(x=>x.id===id);
+  if(!g) return;
+  if(g.seller===state.user.name){msg('Это твой листинг','error');return}
+  if(n(state.balances.TUSD)<g.price){msg('Недостаточно TUSD','error');return}
+  if(state.gearInventory.length>=getInventoryLimit()){msg('Инвентарь полон','error');return}
+  if(!confirm(`Купить "${g.icon} ${g.name}" за $${g.price}?`)) return;
+  state.balances.TUSD-=g.price;
+  state.gearInventory.push({
+    id:uid(), slot:g.slot, level:g.level, name:g.name,
+    icon:g.icon, atk:g.atk, pow:g.pow, price:Math.round(g.price/(1-GEAR_SELL_DISCOUNT))
+  });
+  state.p2pGear=state.p2pGear.filter(x=>x.id!==id);
+  state.progress.deals+=1;
+  saveState();renderHome();showIncomeTab('gear-p2p');
+  msg(`✅ Куплено: ${g.name}`,'success');
+}
+
 function renderSwap(){
   const fromBal=n(state.balances[state.swapFrom]);
-  const toBal=n(state.balances[state.swapTo]);
   const rate=calcRate(state.swapFrom,state.swapTo);
   const c=$('incomeContent');
   c.innerHTML=`
@@ -898,7 +1583,7 @@ function renderSwap(){
 </div>
 </div>
 <div class="swap-arrow-wrap">
-<button class="swap-arrow-btn" onclick="swapSwapTokens()" title="Поменять местами">⇅</button>
+<button class="swap-arrow-btn" onclick="swapSwapTokens()" title="Поменять">⇅</button>
 </div>
 <div class="swap-box">
 <div class="lbl"><span>Получаете</span><span id="swapToUsd">≈ $0.00</span></div>
@@ -909,29 +1594,23 @@ function renderSwap(){
 </div>
 <div class="item-card" style="margin-top:8px">
 <div class="item-desc">Курс: 1 ${state.swapFrom} = ${fmt(rate,6)} ${state.swapTo}</div>
-<div class="item-desc">Комиссия: ${(SWAP_FEE*100).toFixed(2)}%</div>
 </div>
 <button class="swap-btn" id="swapBtn" onclick="doSwap()" disabled>Обменять</button>
 `;
-  // Пересчёт после рендера (если был ввод — очистим)
   calcSwap();
 }
 
-function calcRate(from,to){
-  return PRICE_MAP[from]/PRICE_MAP[to];
-}
+function calcRate(from,to){return PRICE_MAP[from]/PRICE_MAP[to]}
 
 function calcSwap(){
-  const inp=$('swapFromInput');
-  const out=$('swapToInput');
-  const btn=$('swapBtn');
-  if(!inp||!out||!btn)return;
+  const inp=$('swapFromInput'), out=$('swapToInput'), btn=$('swapBtn');
+  if(!inp||!out||!btn) return;
   const fromAmt=n(inp.value);
   const rate=calcRate(state.swapFrom,state.swapTo);
   const toAmt=fromAmt*rate*(1-SWAP_FEE);
   out.value=fromAmt>0?toAmt.toFixed(8):'';
   const usd=$('swapToUsd');
-  if(usd)usd.textContent='≈ $'+fmt(toAmt*PRICE_MAP[state.swapTo],2);
+  if(usd) usd.textContent='≈ $'+fmt(toAmt*PRICE_MAP[state.swapTo],2);
   const enough=fromAmt>0 && n(state.balances[state.swapFrom])>=fromAmt;
   btn.disabled=!enough;
   btn.classList.toggle('active',enough);
@@ -939,7 +1618,7 @@ function calcSwap(){
 
 function setSwapMax(){
   const inp=$('swapFromInput');
-  if(!inp)return;
+  if(!inp) return;
   inp.value=n(state.balances[state.swapFrom]);
   calcSwap();
 }
@@ -948,8 +1627,7 @@ function swapSwapTokens(){
   const tmp=state.swapFrom;
   state.swapFrom=state.swapTo;
   state.swapTo=tmp;
-  saveState();
-  renderSwap();
+  saveState();renderSwap();
 }
 
 function doSwap(){
@@ -972,36 +1650,33 @@ ${tokens.map(t=>`<button class="admin-btn sec" style="width:100%;margin-bottom:6
 function pickToken(target,t){
   if(target==='from'){
     state.swapFrom=t;
-    if(state.swapTo===t)state.swapTo=t==='TUSD'?'TG':'TUSD';
-  }else{
+    if(state.swapTo===t) state.swapTo=t==='TUSD'?'TG':'TUSD';
+  } else {
     state.swapTo=t;
-    if(state.swapFrom===t)state.swapFrom=t==='TUSD'?'TG':'TUSD';
+    if(state.swapFrom===t) state.swapFrom=t==='TUSD'?'TG':'TUSD';
   }
   saveState();closeModal();renderSwap();
 }
 
-// ============ P2P ============
 function buyP2POrder(id){
-  const o=P2P_TOKENS.find(x=>x.id===id);
-  if(!o)return;
-  if(n(state.balances[o.to])<o.toAmt){
-    msg(`Недостаточно ${o.to}. Нужно ${fmt(o.toAmt)}`,'error');return;
-  }
-  if(!confirm(`Купить ${fmt(o.fromAmt)} ${o.from} за ${fmt(o.toAmt)} ${o.to}?`))return;
+  const o=state.p2pTokens.find(x=>x.id===id);
+  if(!o) return;
+  if(n(state.balances[o.to])<o.toAmt){msg(`Недостаточно ${o.to}`,'error');return}
+  if(!confirm(`Купить ${fmt(o.fromAmt)} ${o.from} за ${fmt(o.toAmt)} ${o.to}?`)) return;
   state.balances[o.to]-=o.toAmt;
   state.balances[o.from]=n(state.balances[o.from])+o.fromAmt;
   state.progress.deals+=1;
-  P2P_TOKENS=P2P_TOKENS.filter(x=>x.id!==id);
+  state.p2pTokens=state.p2pTokens.filter(x=>x.id!==id);
   saveState();renderHome();showIncomeTab('p2p');
-  msg(`✅ Сделка совершена! +1 к счётчику`,'success');
+  msg(`✅ Сделка! +1 к счётчику`,'success');
 }
 
 function cancelP2POrder(id){
-  if(!confirm('Отменить свой ордер?'))return;
-  const o=P2P_TOKENS.find(x=>x.id===id);
-  if(!o)return;
+  if(!confirm('Отменить свой ордер?')) return;
+  const o=state.p2pTokens.find(x=>x.id===id);
+  if(!o) return;
   state.balances[o.from]=n(state.balances[o.from])+o.fromAmt;
-  P2P_TOKENS=P2P_TOKENS.filter(x=>x.id!==id);
+  state.p2pTokens=state.p2pTokens.filter(x=>x.id!==id);
   saveState();renderHome();showIncomeTab('p2p');
   msg('Ордер отменён');
 }
@@ -1029,20 +1704,16 @@ function confirmCreateOrder(){
   if(fromAmt<=0||toAmt<=0){msg('Введите суммы','error');return}
   if(n(state.balances[from])<fromAmt){msg(`Недостаточно ${from}`,'error');return}
   state.balances[from]-=fromAmt;
-  P2P_TOKENS.push({
-    id:'p'+Date.now(),my:true,seller:'@you',stars:3,
-    from,to,fromAmt,toAmt
-  });
+  state.p2pTokens.push({id:'p'+Date.now(),my:true,seller:state.user.name,stars:3,from,to,fromAmt,toAmt});
   saveState();closeModal();renderHome();showIncomeTab('p2p');
   msg('✅ Ордер создан','success');
 }
 
-// ============ СТЕЙКИНГ ============
 let currentStakeSym=null;
 function openStakeModal(sym){
   currentStakeSym=sym;
   const balance=n(state.balances[sym]);
-  const safeStep=balance>0?balance/100:1;
+  const safeStep=balance>0?Math.max(balance/1000,0.0001):1;
   openModal(`💎 Застейкать ${sym}`,`
 <div class="item-desc" style="margin-bottom:10px">Баланс: ${fmt(balance,4)} ${sym}</div>
 <div class="admin-field"><label>Количество</label><input type="number" id="stakeAmt" placeholder="0.0" max="${balance}" oninput="updateStakeSlider()"></div>
@@ -1056,8 +1727,7 @@ function openStakeModal(sym){
 }
 function updateStakeSlider(){
   const val=parseFloat($('stakeAmt').value)||0;
-  const slider=$('stakeSlider');
-  if(slider)slider.value=val;
+  const slider=$('stakeSlider'); if(slider) slider.value=val;
   updateStakePreview();
 }
 function updateStakeInput(){
@@ -1067,11 +1737,11 @@ function updateStakeInput(){
 }
 function updateStakePreview(){
   const val=parseFloat($('stakeAmt').value)||0;
-  const sym=currentStakeSym||state.swapFrom;
+  const sym=currentStakeSym||'TUSD';
   const price=PRICE_MAP[sym]||1;
   const daily=val*0.02/30*price;
   const el=$('stakePreview');
-  if(el)el.textContent=`+$${fmt(daily,8)} / день`;
+  if(el) el.textContent=`+$${fmt(daily,8)} / день`;
 }
 function confirmStake(sym){
   const val=parseFloat($('stakeAmt').value)||0;
@@ -1079,23 +1749,24 @@ function confirmStake(sym){
   if(n(state.balances[sym])<val){msg('Недостаточно средств','error');return}
   state.balances[sym]-=val;
   state.staked[sym]=n(state.staked[sym])+val;
-  // ⬇️ ЗАПУСКАЕМ СЧЁТЧИК — если ещё не запущен
-  if(!state.lastClaim[sym])state.lastClaim[sym]=Date.now();
+  if(!state.lastClaim[sym]) state.lastClaim[sym]=Date.now();
   saveState();closeModal();renderHome();showIncomeTab('staking');
-  msg(`✅ Застейкано ${fmt(val,4)} ${sym}. Счётчик запущен ⏳`,'success');
+  msg(`✅ Застейкано ${fmt(val,4)} ${sym}`,'success');
 }
 
 function claimStake(sym){
-  if(n(state.staked[sym])<=0){msg('Нет стейка по этому токену','error');return}
+  if(n(state.staked[sym])<=0){msg('Нет стейка','error');return}
   const lastClaim=state.lastClaim[sym]||0;
-  if(Date.now()-lastClaim<DAY_MS){msg('Собрать можно раз в 24 часа','error');return}
+  const daysElapsed=Math.min((Date.now()-lastClaim)/DAY_MS, 7);
+  if(daysElapsed<1){msg('Собрать можно раз в 24 часа','error');return}
   const staked=n(state.staked[sym]);
   const price=PRICE_MAP[sym];
   const dailyUSD=staked*0.02/30*price;
-  state.balances.TUSD=n(state.balances.TUSD)+dailyUSD;
+  const totalUSD=dailyUSD*daysElapsed;
+  state.balances.TUSD=n(state.balances.TUSD)+totalUSD;
   state.lastClaim[sym]=Date.now();
   saveState();renderHome();showIncomeTab('staking');
-  msg(`💰 Собрано $${fmt(dailyUSD,8)}`,'success');
+  msg(`💰 Собрано $${fmt(totalUSD,6)} (${Math.floor(daysElapsed)} дн.)`,'success');
 }
 
 function claimCheckin(){
@@ -1107,19 +1778,25 @@ function claimCheckin(){
   msg(`🔥 День ${state.checkinDay}: +0.5 TUSD`,'success');
 }
 
-function claimTask(reward){
+function claimTask(id, reward){
+  state.progress.completedTasks=state.progress.completedTasks||{};
+  if(state.progress.completedTasks[id]){msg('Уже выполнено','info');return}
+  state.progress.completedTasks[id]=true;
   state.balances.TUSD=n(state.balances.TUSD)+reward;
-  saveState();renderHome();
-  msg(`✅ Получено +${reward} TUSD`,'success');
+  saveState();renderHome();showIncomeTab('tasks');
+  msg(`✅ +${reward} TUSD`,'success');
 }
 
 function watchAd(){
+  const now=Date.now();
+  if(now-(state.lastAd||0)<30000){msg('⏳ Подожди 30 сек','info');return}
+  state.lastAd=now;
   state.balances.TUSD=n(state.balances.TUSD)+0.01;
-  saveState();renderHome();
+  saveState();renderHome();showIncomeTab('ads');
   msg('📺 +0.01 TUSD','success');
 }
 
-// ============ АДМИН ============
+// ── Админ ──
 function renderAdminPanel(){
   $('adStakeUSD').value=calcStakeUSD();
   $('adDeals').value=state.progress.deals;
@@ -1132,6 +1809,30 @@ function renderAdminPanel(){
   $('stTUSD').value=state.staked.TUSD;
   $('stTG').value=state.staked.TG;
   $('stAI').value=state.staked.AI;
+  renderAdminRevenue();
+  renderAdminListings();
+}
+
+function renderAdminRevenue(){
+  const el=$('adRevenue'); if(!el) return;
+  el.textContent='$'+fmt(state.adminPool.revenue||0);
+  $('adPurchasesCount').textContent=(state.adminPool.purchases||[]).length;
+  const hist=$('adPurchaseHistory');
+  const list=(state.adminPool.purchases||[]).slice(0,10);
+  if(!list.length){hist.innerHTML='<div class="item-desc" style="text-align:center">Пока нет покупок</div>';return}
+  hist.innerHTML=list.map(p=>{
+    const d=new Date(p.time);
+    const t=`${d.getDate().toString().padStart(2,'0')}.${(d.getMonth()+1).toString().padStart(2,'0')} ${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
+    return `<div class="history-row"><span>${escapeHtml(p.item)}</span><b>+$${fmt(p.amount)}</b><span>${t}</span></div>`;
+  }).join('');
+}
+
+function adminClearRevenue(){
+  if(!confirm('Очистить счётчик?')) return;
+  state.adminPool.revenue=0;
+  state.adminPool.purchases=[];
+  saveState();renderAdminRevenue();
+  msg('💰 Очищено','success');
 }
 
 function adminLogin(){
@@ -1140,19 +1841,91 @@ function adminLogin(){
     $('adminPanel').classList.remove('hidden');
     renderAdminPanel();
     msg('Добро пожаловать','success');
-  }else msg('Неверный пароль','error');
+  } else msg('Неверный пароль','error');
+}
+
+function renderAdminListings(){
+  const cat=$('adShopCat').value;
+  const list=state.shopListings[cat]||[];
+  const c=$('adListingsList'); if(!c) return;
+  if(!list.length){c.innerHTML='<div class="item-desc" style="text-align:center">Лотов нет</div>';return}
+  c.innerHTML=list.map(l=>`
+    <div class="item-card" style="margin:0 0 6px">
+      <div class="item-header">
+        <span class="item-name">${l.icon} ${escapeHtml(l.name)}</span>
+        <span class="item-price">$${fmt(l.price)}</span>
+      </div>
+      <div class="item-desc">${escapeHtml(l.desc||l.eff||l.bonus||('Ур. '+(l.level||'-')))}</div>
+      <div class="item-footer" style="justify-content:flex-end">
+        <button class="red" style="padding:5px 10px;font-size:11px" onclick="adminDeleteListing('${cat}','${l.id}')">🗑️ Удалить</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function adminDeleteListing(cat,id){
+  if(!confirm('Удалить лот?')) return;
+  state.shopListings[cat]=(state.shopListings[cat]||[]).filter(x=>x.id!==id);
+  saveState();renderAdminListings();
+  msg('🗑️ Удалено');
+}
+
+function openAddListing(){
+  const cat=$('adShopCat').value;
+  let fields='';
+  const F=(label,id,val='',type='text')=>`<div class="admin-field"><label>${label}</label><input type="${type}" id="${id}" value="${val}"></div>`;
+  const S=(label,id,opts)=>`<div class="admin-field"><label>${label}</label><select id="${id}">${opts.map(o=>`<option value="${o}">${o}</option>`).join('')}</select></div>`;
+
+  if(cat==='artifacts'){
+    fields=F('Иконка','alIcon','💎')+F('Название','alName','')+S('Редкость','alRarity',['common','rare','epic','legend','mythic'])+F('Описание','alDesc','')+F('Цена ($)','alPrice','0','number');
+  } else if(cat==='titles'){
+    fields=F('Иконка','alIcon','👑')+F('Название','alName','')+F('Уровень','alLevel','14','number')+F('Эффект','alEff','+1% к рефералке')+F('Цена ($)','alPrice','0','number');
+  } else if(cat==='certs'){
+    fields=F('Иконка','alIcon','📜')+F('Название','alName','')+F('Срок','alDuration','3 мес')+F('Описание','alDesc','')+F('Цена ($)','alPrice','0','number');
+  } else if(cat==='refs'){
+    fields=F('Логин','alLogin','@ref_new')+F('Уровень','alLevel','1','number')+F('Заработал ($)','alEarned','0','number')+F('Дней','alDays','0','number')+F('Звёзд','alStars','3','number')+F('Цена ($)','alPrice','0','number');
+  } else if(cat==='extras'){
+    fields=S('Слот','alSlot',['helmet','shield','cloak','ring','bag','pet','aura'])+F('Иконка','alIcon','🛡️')+F('Название','alName','')+F('Уровень','alLevel','4','number')+F('Бонус','alBonus','+5% к стейку')+F('Цена ($)','alPrice','0','number');
+  }
+
+  openModal('➕ Новый лот',`
+    <div class="item-desc" style="margin-bottom:10px">Категория: <b>${cat}</b></div>
+    ${fields}
+    <div class="modal-actions">
+      <button class="admin-btn gold" style="flex:1" onclick="confirmAddListing('${cat}')">✅ Создать</button>
+      <button class="admin-btn sec" style="flex:1" onclick="closeModal()">Отмена</button>
+    </div>
+  `);
+}
+
+function confirmAddListing(cat){
+  const g=id=>{const e=$(id);return e?e.value:''};
+  const gn=id=>n(g(id));
+  let item={id:uid(), icon:g('alIcon')||'✨', name:g('alName')||'Без названия', price:gn('alPrice')};
+  if(cat==='artifacts'){item.rarity=g('alRarity')||'epic';item.desc=g('alDesc')||'';}
+  else if(cat==='titles'){item.level=gn('alLevel')||14;item.eff=g('alEff')||'';}
+  else if(cat==='certs'){item.duration=g('alDuration')||'';item.desc=g('alDesc')||'';}
+  else if(cat==='refs'){item.login=g('alLogin')||'@ref';item.level=gn('alLevel')||1;item.earned=gn('alEarned');item.days=gn('alDays');item.stars=gn('alStars')||3;}
+  else if(cat==='extras'){item.slot=g('alSlot')||'helmet';item.level=gn('alLevel')||4;item.bonus=g('alBonus')||'';}
+  if(item.price<=0){msg('Укажи цену','error');return}
+  state.shopListings[cat]=state.shopListings[cat]||[];
+  state.shopListings[cat].push(item);
+  saveState();closeModal();renderAdminListings();
+  msg('✅ Лот создан','success');
 }
 
 function adminSave(){
   state.progress.deals=n($('adDeals').value);
   state.progress.refs=n($('adRefs').value);
-  state.progress.starRefLevel=parseInt($('adStarRef').value);
-  // Стейк задаётся в USD — пересобираем через TG
+  const starRaw=$('adStarRef').value.trim();
+  state.progress.starRefLevel = starRaw==='' ? -1 : parseInt(starRaw,10);
+  if(!Number.isFinite(state.progress.starRefLevel)) state.progress.starRefLevel=-1;
+
   const targetStakeUSD=n($('adStakeUSD').value);
   const currentStakeUSD=calcStakeUSD();
-  // Докидываем/урезаем разницу через TG
   const diffUSD=targetStakeUSD-currentStakeUSD;
-  state.staked.TG=Math.max(0,n(state.staked.TG)+diffUSD/TG_PRICE);
+  state.staked.TUSD=Math.max(0, n(state.staked.TUSD)+diffUSD);
+
   state.balances.TUSD=n($('adTUSD').value);
   state.balances.TG=n($('adTG').value);
   state.balances.AI=n($('adAI').value);
@@ -1160,9 +1933,8 @@ function adminSave(){
   state.staked.TUSD=n($('stTUSD').value);
   state.staked.TG=n($('stTG').value);
   state.staked.AI=n($('stAI').value);
-  // Если у токена появился стейк и нет lastClaim — стартуем счётчик
   ['TG','TUSD','AI'].forEach(sym=>{
-    if(n(state.staked[sym])>0 && !state.lastClaim[sym])state.lastClaim[sym]=Date.now();
+    if(n(state.staked[sym])>0 && !state.lastClaim[sym]) state.lastClaim[sym]=Date.now();
   });
   saveState();renderHome();
   msg('💾 Сохранено','success');
@@ -1174,11 +1946,16 @@ function adminLevelUp(){
   if(!next){msg('Максимум','error');return}
   state.progress.deals=Math.max(state.progress.deals,next.deals);
   state.progress.refs=Math.max(state.progress.refs,next.refs);
-  if(next.star!=null)state.progress.starRefLevel=Math.max(state.progress.starRefLevel,next.star);
+  if(next.star!=null) state.progress.starRefLevel=Math.max(state.progress.starRefLevel,next.star);
   const needUSD=next.stake;
   const haveUSD=calcStakeUSD();
-  if(haveUSD<needUSD)state.staked.TG=n(state.staked.TG)+(needUSD-haveUSD)/TG_PRICE;
-  if(!state.lastClaim.TG)state.lastClaim.TG=Date.now();
+  if(haveUSD<needUSD) state.staked.TUSD=Math.max(0, n(state.staked.TUSD)+(needUSD-haveUSD));
+  // Выдать сет следующего уровня
+  const set=getGearSet(next.gearTier);
+  ['weapon','body','legs'].forEach(slot=>{
+    state.equipped[slot]={...set[slot], slot, price:set[slot].price};
+  });
+  if(!state.lastClaim.TG) state.lastClaim.TG=Date.now();
   saveState();renderHome();renderAdminPanel();
   msg(`⬆️ ${next.name}!`,'success');
 }
@@ -1189,7 +1966,7 @@ function adminLevelDown(){
   const prev=getLevelData(cur-1);
   state.progress.deals=prev.deals;
   state.progress.refs=prev.refs;
-  state.progress.starRefLevel=prev.star==null?0:prev.star;
+  state.progress.starRefLevel=prev.star==null?-1:prev.star;
   saveState();renderHome();renderAdminPanel();
   msg('Уровень понижен');
 }
@@ -1200,13 +1977,29 @@ function adminFillMax(){
   if(!next){msg('Максимум','error');return}
   state.progress.deals=next.deals;
   state.progress.refs=next.refs;
-  if(next.star!=null)state.progress.starRefLevel=next.star;
+  if(next.star!=null) state.progress.starRefLevel=next.star;
   const needUSD=next.stake;
   const haveUSD=calcStakeUSD();
-  if(haveUSD<needUSD)state.staked.TG=n(state.staked.TG)+(needUSD-haveUSD)/TG_PRICE;
-  if(!state.lastClaim.TG)state.lastClaim.TG=Date.now();
+  if(haveUSD<needUSD) state.staked.TUSD=Math.max(0, n(state.staked.TUSD)+(needUSD-haveUSD));
+  if(!state.lastClaim.TG) state.lastClaim.TG=Date.now();
   saveState();renderHome();renderAdminPanel();
   msg('🎯 Заполнено','success');
+}
+
+function adminGrantCert(){
+  const tier=$('adCertTier').value;
+  const c=CERTS[tier];
+  if(!c) return;
+  state.cert={tier, expiresAt:c.days===Infinity?Infinity:Date.now()+c.days*DAY_MS};
+  if(tier==='eternal') state.user.isPremium=true;
+  saveState();renderHome();
+  msg(`✅ Выдан: ${c.name}`,'success');
+}
+
+function adminRevokeCert(){
+  state.cert=null;
+  saveState();renderHome();
+  msg('❌ Сертификат забран','info');
 }
 
 function resetDemo(){
@@ -1216,17 +2009,34 @@ function resetDemo(){
   }
 }
 
-// ============ СТАРТ ============
+// ── Telegram ──
+function initTelegram(){
+  try{
+    const tg=window.Telegram?.WebApp;
+    if(!tg) return;
+    tg.ready(); tg.expand();
+    const u=tg.initDataUnsafe?.user;
+    if(u){
+      state.user.name = u.username ? '@'+u.username : (u.first_name||'Игрок');
+      state.user.tgId = u.id;
+      state.user.isPremium = !!u.is_premium;
+      if(u.photo_url){
+        const img=$('avatarImg');
+        if(img) img.src=u.photo_url;
+      }
+    }
+  }catch(e){console.warn('TG init failed',e)}
+}
+
 function init(){
   loadState();
-  // Инициализация lastClaim при первом запуске
+  initTelegram();
   ['TG','TUSD','AI','VKCOIN'].forEach(sym=>{
-    if(state.staked[sym]>0 && !state.lastClaim[sym])state.lastClaim[sym]=Date.now();
+    if(state.staked[sym]>0 && !state.lastClaim[sym]) state.lastClaim[sym]=Date.now();
   });
   saveState();
   renderHome();
   goView('home');
-  // Плавное обновление таймеров стейкинга
   setInterval(()=>{
     if(!$('view-income').classList.contains('hidden') && currentIncomeTab==='staking'){
       showIncomeTab('staking');
