@@ -31,10 +31,18 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 .rname{font-size:22px;font-weight:bold;color:var(--gold)}
 .prg{height:8px;background:#080b10;border-radius:99px;overflow:hidden;margin-top:10px}
 .prg>div{height:100%;background:linear-gradient(90deg,#b98b27,#ffe38a);transition:width .5s}
-.egrid{display:grid;grid-template-columns:1fr 34px 1fr;gap:8px;align-items:end}
-.swap{width:34px;height:34px;padding:0;border-radius:50%;margin:0 0 5px;font-size:17px}
-.aw{margin-top:9px}.av{color:#7f8c9f;font-size:11px;margin-top:5px}
-.prev{margin-top:12px;background:#0c141f;border:1px solid #3d4a5d;border-radius:14px;padding:12px}
+.egrid{display:grid;grid-template-columns:1fr 48px 1fr;gap:10px;align-items:center}
+.swap{width:48px;height:48px;padding:0;border-radius:50%;margin:0;font-size:22px;background:linear-gradient(135deg,#f5d477,#c99629);color:#17120a;border:0;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(244,207,112,.4);transition:transform .35s;display:flex;align-items:center;justify-content:center}
+.swap:hover{transform:rotate(180deg)}
+.swap:active{transform:scale(.92) rotate(180deg)}
+.aw{margin-top:9px}
+.aw input{background:#0d1520;border:1px solid #3d4a5d;border-radius:12px;padding:13px 12px;font-size:14px;font-weight:600;color:#fff;width:100%;outline:none;font-family:inherit;transition:border-color .2s}
+.aw input::placeholder{color:#4a5963;font-weight:400}
+.aw input:focus{border-color:#f4cf70}
+.av{color:#8f9bab;font-size:11px;margin-top:6px}
+.prev{margin-top:14px;background:#0d1520;border:1px solid #3d4a5d;border-radius:14px;padding:14px}
+.prev .info:first-child{font-size:10px;letter-spacing:1px;font-weight:700;color:#8f9bab;text-transform:uppercase;margin-bottom:0}
+#ratePreview{color:#fff;font-size:15px;font-weight:700;margin-top:6px;min-height:20px}
 .srow{display:flex;align-items:center;gap:8px}.srow label{margin:0;white-space:nowrap}.srow select{max-width:190px}
 .order{border:1px solid var(--rc,#435166);border-radius:15px;margin-top:9px;overflow:hidden;background:linear-gradient(145deg,#151e2b,#101721);box-shadow:0 0 16px var(--rg,transparent)}
 .oh{padding:12px;cursor:pointer}
@@ -272,19 +280,33 @@ label{display:block;color:#aeb8c6;font-size:12px;margin-bottom:6px}
 <button class="sh-tab" data-tab="inventory" onclick="showShopTab('inventory')">🎒 Мои</button>
 </div>
 <div class="card gold">
-<div class="title">🔄 СОЗДАТЬ P2P-ОРДЕР</div>
+<div class="title" style="display:flex;align-items:center;gap:8px;font-size:16px">🔄 СОЗДАТЬ P2P-ОРДЕР</div>
 <div class="egrid">
-<div><label>Отдаю</label><select id="fromToken" onchange="updateOrderForm()"></select>
-<div class="aw"><input id="fromAmount" type="number" min="0" step="any" placeholder="Количество" oninput="updateOrderForm()"></div>
-<div class="av" id="availableBalance">Доступно: 0</div></div>
-<button class="swap" onclick="swapTokens()">⇄</button>
-<div><label>Получаю</label><select id="toToken" onchange="updateOrderForm()"></select>
-<div class="aw"><input id="toAmount" type="number" min="0" step="any" placeholder="Количество" oninput="updateOrderForm()"></div>
-<div class="av">Цена ваша</div></div>
+<div>
+  <label>Отдаю</label>
+  <select id="fromToken" onchange="updateOrderForm()"></select>
+  <div class="aw">
+    <input id="fromAmount" type="number" min="0" step="any" placeholder="Количество" oninput="updateOrderForm()">
+  </div>
+  <div class="av" id="availableBalance">Доступно: 0</div>
 </div>
-<div class="prev"><div class="info">КУРС</div><div id="ratePreview">Укажите количество</div><div class="info" id="reverseRate" style="margin-top:6px"></div></div>
-<button onclick="createP2POrder()">🚀 СОЗДАТЬ ОРДЕР</button>
-<div class="info" style="margin-top:9px">Комиссия 0.1% в пул.</div>
+<button class="swap" onclick="swapTokens()" title="Поменять">⇄</button>
+<div>
+  <label>Получаю</label>
+  <select id="toToken" onchange="updateOrderForm()"></select>
+  <div class="aw">
+    <input id="toAmount" type="number" min="0" step="any" placeholder="Количество" oninput="updateOrderForm()">
+  </div>
+  <div class="av">Цена ваша</div>
+</div>
+</div>
+<div class="prev">
+  <div class="info">КУРС</div>
+  <div id="ratePreview">Укажите количество</div>
+  <div class="info" id="reverseRate" style="margin-top:6px"></div>
+</div>
+<button onclick="createP2POrder()" style="padding:15px;font-size:15px;letter-spacing:.5px;font-weight:800">🚀 СОЗДАТЬ ОРДЕР</button>
+<div class="info" style="margin-top:10px;text-align:center">Комиссия 0.1% в пул.</div>
 </div>
 <div class="card" id="poolsCard">
 <div class="title">💧 ПУЛЫ</div>
