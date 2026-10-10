@@ -946,7 +946,7 @@ let HISTORY_WALLET='',HISTORY_OFFSET=0,HISTORY_ITEMS=[];
 let ADMIN_USER=null,BANNER_SETTINGS={height:110,radius:14,title_size:17,sub_size:13,padding:16,count:1};
 let AD_PRICES={banner_price_per_day:10,video_price_per_view:0.001,task_price_per_sub:0.5,link_price_per_click:0.3};
 let AD_CURRENT_TYPE=null,_adModalMode='topup',AD=null,ADT=null,ADR=false;
-let STAKE_STATE=null,STAKE_TIMER=null,STAKE_LAST_TS=0,STAKE_RATE_SEC=0,STAKE_DISPLAY=0;
+let STAKE_STATE=null,STAKE_TIMER=null,STAKE_LAST_TS=0,STAKE_RATE_SEC=0,STAKE_DISPLAY=0,STAKE_RENDER_TS=0;
 let ACT=[],ACC=null,ACR=[],ATC=null,LFT=0,LSP=10;
 let __PENDING_TASK=null,__RETURN_TIMER=null,DONATE_TOKEN=null,ADMIN_REWARD_TOKEN=null,LB_TAB='profit';
 let __START_ORDER_ID=null,ORDER_CACHE={},__BUY_ORDER=null;
@@ -971,8 +971,8 @@ function getKnightGroup(level){
 
 const BUY_ERR={not_found:'Ордер не найден',already_taken:'Ордер выкуплен',own_order:'Нельзя выкупить свой',invalid_amount:'Некорректная сумма',too_much:'Слишком большая сумма',banned:'Заблокирован',creator_insufficient:'У продавца мало средств',taker_insufficient:'У вас мало средств'};
 const TOKEN_ICONS={'TG':{emoji:'🥇',bg:'linear-gradient(135deg,#f5d477,#c99629)'},'AI':{emoji:'🤖',bg:'linear-gradient(135deg,#8b5cf6,#6d28d9)'},'TUSD':{emoji:'💵',bg:'linear-gradient(135deg,#39d98a,#2ba86a)'},'VKCOIN':{emoji:'🎮',bg:'linear-gradient(135deg,#4f8cff,#2563eb)'},'RUB':{emoji:'₽',bg:'linear-gradient(135deg,#4caf50,#2e7d32)'},'DEFAULT':{emoji:'🪙',bg:'linear-gradient(135deg,#7f8c9f,#4a596d)'}};
-const OP_ICONS={ad_view:'📺',checkin:'🔥',task_reward:'📋',task_commission:'👑',staking_claim:'💧',welcome_bonus:'🎁',transfer_in:'⬇️',transfer_out:'⬆️',transfer_fee:'💸',p2p_trade:'🤝',test:'🧪',fund_deposit:'➕',reward_share_claim:'💵',reward_fund_share:'🎁',swap:'🔄'};
-const OP_LABELS={ad_view:'Реклама',checkin:'Чекин',task_reward:'Задание',task_commission:'Комиссия',staking_claim:'Стейкинг',welcome_bonus:'Бонус',transfer_in:'Входящий',transfer_out:'Исходящий',transfer_fee:'Комиссия перевода',p2p_trade:'P2P сделка',test:'Тест',fund_deposit:'Взнос в фонд',reward_share_claim:'Сбор награды',reward_fund_share:'Награда из фонда',swap:'Обмен'};
+const OP_ICONS={ad_view:'📺',checkin:'🔥',task_reward:'📋',task_commission:'👑',staking_claim:'💧',welcome_bonus:'🎁',transfer_in:'⬇️',transfer_out:'⬆️',transfer_fee:'💸',p2p_trade:'🤝',test:'🧪',fund_deposit:'➕',reward_share_claim:'💵',reward_fund_share:'🎁',swap:'🔄',license_purchase:'📜'};
+const OP_LABELS={ad_view:'Реклама',checkin:'Чекин',task_reward:'Задание',task_commission:'Комиссия',staking_claim:'Стейкинг',welcome_bonus:'Бонус',transfer_in:'Входящий',transfer_out:'Исходящий',transfer_fee:'Комиссия перевода',p2p_trade:'P2P сделка',test:'Тест',fund_deposit:'Взнос в фонд',reward_share_claim:'Сбор награды',reward_fund_share:'Награда из фонда',swap:'Обмен',license_purchase:'Грамота'};
 const SLOT_LABEL={body:'👕 Торс',legs:'👖 Ноги',weapon:'🗡 Оружие',armor:'🛡 Броня',helmet:'🪖 Шлем',shield:'🛡 Щит',cloak:'🧥 Плащ',ring:'💍 Кольцо',bag:'🎒 Сумка',pet:'🐺 Питомец',titleSlot:'🏷 Титул',aura:'✨ Аура',license:'📜 Грамота'};
 
 const $=id=>document.getElementById(id);
@@ -981,7 +981,7 @@ const f=(v,m=8)=>n(v).toLocaleString('ru-RU',{maximumFractionDigits:m});
 const esc=v=>String(v??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');
 const tokenIcon=s=>s==='TG'?'🥇':s==='TUSD'?'💵':s==='AI'?'🤖':s==='VKCOIN'?'🎮':'🪙';
 const tb=t=>{if(!CU) return 0;if(t==='TG') return n(CU.tg_balance);if(t==='AI') return n(CU.ai_balance);if(t==='TUSD') return n(CU.tusd_balance);return n(CB[t]);};
-const fmtAccumBig=v=>{const x=Number(v)||0;if(x===0) return '0.000000000000';return x.toFixed(12);};
+const fmtAccumBig=v=>{const x=Number(v)||0;if(x===0) return '0.000000';return x.toFixed(6);};
 const fmtAccum=(v,rateSec)=>{const x=Number(v)||0;if(x===0) return '0.00000000';let d=8;if(rateSec&&rateSec>0){const p=rateSec*0.1;if(p>0){const nd=Math.ceil(-Math.log10(p))+1;d=Math.max(8,Math.min(12,nd));}}return x.toFixed(d);};
 
 function msg(text,type='info'){
@@ -1105,21 +1105,10 @@ async function loadMyItems(){
 async function loadShopItems(){
   try{
     const{data,error}=await sb.rpc('get_shop_items',{p_min_rank:0});
-    if(error){
-      console.error('[loadShopItems] RPC error:',error);
-      SHOP_ITEMS=[];
-      return;
-    }
-    if(!data||data.ok===false){
-      console.error('[loadShopItems] bad data:',data);
-      SHOP_ITEMS=[];
-      return;
-    }
+    if(error){console.error('[loadShopItems] RPC error:',error);SHOP_ITEMS=[];return;}
+    if(!data||data.ok===false){console.error('[loadShopItems] bad data:',data);SHOP_ITEMS=[];return;}
     SHOP_ITEMS=Array.isArray(data.items)?data.items:[];
-  }catch(e){
-    console.error('[loadShopItems] exception:',e);
-    SHOP_ITEMS=[];
-  }
+  }catch(e){console.error('[loadShopItems] exception:',e);SHOP_ITEMS=[];}
 }
 async function loadStakeState(){
   if(!UID) return;
@@ -1134,25 +1123,37 @@ function recalcStakeRate(){
   let totalPerHour=0;
   (REWARD_FUNDS||[]).forEach(fd=>{totalPerHour+=Number(fd.my_per_hour)||0;});
   STAKE_RATE_SEC=totalPerHour/3600;
-  startStakeTimer();
+  if(!STAKE_TIMER) startStakeTimer();
 }
 function startStakeTimer(){
-  if(STAKE_TIMER) clearInterval(STAKE_TIMER);
+  if(STAKE_TIMER) cancelAnimationFrame(STAKE_TIMER);
   STAKE_LAST_TS=performance.now();
-  STAKE_TIMER=setInterval(()=>{
-    const now=performance.now();
+  const tick=now=>{
     const dt=(now-STAKE_LAST_TS)/1000;
     STAKE_LAST_TS=now;
-    STAKE_DISPLAY+=STAKE_RATE_SEC*dt;
-    renderStake();
-  },50);
+    if(dt>0&&dt<2) STAKE_DISPLAY+=STAKE_RATE_SEC*dt;
+    if(now-STAKE_RENDER_TS>=250){
+      STAKE_RENDER_TS=now;
+      renderStake();
+    }
+    STAKE_TIMER=requestAnimationFrame(tick);
+  };
+  STAKE_TIMER=requestAnimationFrame(tick);
 }
 function renderStake(){
-  let totalPerDayTusd=0;const parts=[];
-  (REWARD_FUNDS||[]).forEach(fd=>{const dT=Number(fd.my_per_day_tusd)||0;const dTok=Number(fd.my_per_day)||0;if(dTok>0){totalPerDayTusd+=dT;parts.push(`${fd.token_symbol}: +${dTok.toFixed(6)} (≈$${dT.toFixed(6)})`);}});
+  let totalPerDayTusd=0;
+  (REWARD_FUNDS||[]).forEach(fd=>{totalPerDayTusd+=Number(fd.my_per_day_tusd)||0;});
   if(currentIncomeTab==='staking' && !$('view-income').classList.contains('hidden')){
-    if($('stakeAccum')) $('stakeAccum').innerHTML=`${fmtAccumBig(STAKE_DISPLAY)} <span style="font-size:14px;color:#7fc97f;font-weight:normal">TUSD</span>`;
-    if($('stakeTick')) $('stakeTick').innerHTML=`<span style="color:#39d98a;font-weight:bold">+$${totalPerDayTusd.toFixed(4)}</span> <span style="font-size:11px;color:#7fc97f;font-weight:normal">в день</span>`;
+    const numEl=$('stakeAccumValue');
+    if(numEl){
+      const next=fmtAccumBig(STAKE_DISPLAY);
+      if(numEl.textContent!==next) numEl.textContent=next;
+    }
+    const tick=$('stakeTick');
+    if(tick){
+      const next=`+$${totalPerDayTusd.toFixed(4)}/день`;
+      if(tick.textContent!==next) tick.textContent=next;
+    }
   }
 }
 async function loadRewardFunds(){
@@ -1357,15 +1358,10 @@ ${slotsNeeded.map(slot=>{
   const icon=slot==='weapon'?'🗡️':slot==='body'?'👕':slot==='legs'?'👖':'⛑️';
   const slotName=slot==='weapon'?'Оружие':slot==='body'?'Броня':slot==='legs'?'Поножи':'Шлем';
   let btn;
-  if(!cfg){
-    btn=`<button disabled>Нет в продаже</button>`;
-  }else if(have&&have.is_equipped){
-    btn=`<button class="green" disabled>✅ Надето</button>`;
-  }else if(have){
-    btn=`<button class="gold" onclick="equipItem('${have.id}')">🎽 Надеть</button>`;
-  }else{
-    btn=`<button onclick="buyGearItem('${esc(cfg.symbol)}')">Купить $${f(price,2)}</button>`;
-  }
+  if(!cfg){btn=`<button disabled>Нет в продаже</button>`;}
+  else if(have&&have.is_equipped){btn=`<button class="green" disabled>✅ Надето</button>`;}
+  else if(have){btn=`<button class="gold" onclick="equipItem('${have.id}')">🎽 Надеть</button>`;}
+  else{btn=`<button onclick="buyGearItem('${esc(cfg.symbol)}')">Купить $${f(price,2)}</button>`;}
   const priceLabel=cfg?`$${f(price,2)}`:'—';
   return `<div class="item-card">
     <div class="item-header">
@@ -1414,12 +1410,51 @@ ${extras.map(slot=>{
 <div class="item-card"><div class="item-header"><span class="item-name">💎 Виконт</span><span class="rarity legend">Ур.15</span></div><div class="item-desc">+2% к рефералке</div><div class="item-footer"><span class="item-price">$512</span><button onclick="msg('Скоро')">Купить</button></div></div>`;
   }
   else if(tab==='certs'){
+    const{data,error}=await sb.rpc('get_shop_licenses',{p_test_user_id:UID});
+    const hasLic=!!(CU?.merchant_license_until&&new Date(CU.merchant_license_until)>new Date());
+    const curTier=Number(CU?.merchant_license_tier||0);
+    const until=CU?.merchant_license_until?new Date(CU.merchant_license_until).toLocaleDateString('ru-RU'):'—';
+    const items=(data&&data.ok)?(data.items||[]):[];
+    const tierLabel=t=>t===1?'Базовый':t===2?'Профи':t===3?'Вечный':'—';
+    let statusHtml='';
+    if(hasLic){
+      statusHtml=`<div class="item-card" style="border-color:#39d98a">
+        <div class="item-header"><b>✅ Активная грамота</b></div>
+        <div class="item-desc">Уровень: <b style="color:var(--gold)">${tierLabel(curTier)}</b></div>
+        <div class="item-desc">Действует до: <b>${until}</b></div>
+        <div class="item-desc">🎩 Скидка на покупки: <b style="color:#39d98a">-20%</b></div>
+      </div>`;
+    }
     c.innerHTML=`
-<div class="item-card"><div class="item-header"><b>📜 Сертификаты продавца</b></div></div>
-<div class="item-card"><div class="item-header"><span class="item-name">📜 Старт</span><span class="rarity rare">90 дней</span></div><div class="item-desc">🎒 20 слотов • 📤 5 листингов</div><div class="item-footer"><span class="item-price">$25</span><button onclick="msg('Скоро')">Купить</button></div></div>
-<div class="item-card"><div class="item-header"><span class="item-name">📜 Профи</span><span class="rarity epic">180 дней</span></div><div class="item-desc">🎒 30 слотов • 📤 20 листингов</div><div class="item-footer"><span class="item-price">$50</span><button onclick="msg('Скоро')">Купить</button></div></div>
-<div class="item-card"><div class="item-header"><span class="item-name">📜 Бизнес</span><span class="rarity legend">365 дней</span></div><div class="item-desc">🎒 40 слотов • 📤 100 листингов</div><div class="item-footer"><span class="item-price">$100</span><button onclick="msg('Скоро')">Купить</button></div></div>
-<div class="item-card"><div class="item-header"><span class="item-name">📜 Вечный</span><span class="rarity mythic">∞</span></div><div class="item-desc">🎒 50 слотов • 📤 ∞ листингов</div><div class="item-footer"><span class="item-price">$250</span><button onclick="msg('Скоро')">Купить</button></div></div>`;
+${statusHtml}
+<div class="item-card"><div class="item-header"><b>📜 Грамоты торговца</b></div><div class="item-desc">Дают скидку -20% на всю амуницию и поднимают лимит склада.</div></div>
+${items.length?items.map(l=>{
+  const price=Number(l.price_final||l.price_usd||0);
+  const basePrice=Number(l.price_usd||0);
+  const disc=hasLic&&basePrice>price;
+  const dur=l.duration_days?`${l.duration_days} дн.`:'∞ навсегда';
+  const tierName=tierLabel(l.license_tier);
+  const sameTier=Number(l.license_tier)===curTier;
+  let btn;
+  if(curTier===3){btn=`<button disabled>🏆 Уже максимум</button>`;}
+  else if(sameTier&&hasLic){btn=`<button class="gold" onclick="buyLicense('${esc(l.symbol)}',${price})">➕ Продлить $${f(price,2)}</button>`;}
+  else{btn=`<button onclick="buyLicense('${esc(l.symbol)}',${price})">Купить $${f(price,2)}</button>`;}
+  return `<div class="item-card">
+    <div class="item-header">
+      <span class="item-name">📜 ${esc(l.name)}</span>
+      <span class="rarity ${l.license_tier===3?'mythic':l.license_tier===2?'legend':'epic'}">${tierName}</span>
+    </div>
+    <div class="item-desc">🎒 Срок: <b>${dur}</b></div>
+    <div class="item-desc">🎩 Скидка: <b>-20%</b> на амуницию</div>
+    <div class="item-footer">
+      <span class="item-price">${disc?`<s style="color:#666;font-size:11px">$${f(basePrice,2)}</s> $${f(price,2)}`:`$${f(price,2)}`}</span>
+      ${btn}
+    </div>
+  </div>`;
+}).join(''):'<div class="item-card"><div class="item-desc">Грамоты не найдены</div></div>'}
+<div class="item-card" style="border-color:#2d3a4c">
+<div class="item-desc">💰 TUSD: <b style="color:var(--gold)">$${f(CU?.tusd_balance||0,2)}</b></div>
+</div>`;
   }
   else if(tab==='refs'){c.innerHTML=`<div class="item-card"><div class="item-header"><b>👥 Рефералы на продажу</b></div><div class="item-desc">Скоро</div></div>`;}
   else if(tab==='auction'){c.innerHTML=`<div class="item-card"><div class="item-header"><b>🔨 Аукцион</b></div><div class="item-desc">Скоро</div></div>`;}
@@ -1437,6 +1472,17 @@ async function buyGearItem(symbol){
   msg(`✅ Куплено: ${cfg.name}`,'success');
   await refreshAll();
   if(!$('view-shop').classList.contains('hidden')) showShopTab('gear');
+}
+async function buyLicense(symbol,price){
+  const bal=n(CU?.tusd_balance);
+  if(bal<price){msg(`Недостаточно TUSD (нужно $${f(price,2)}, у тебя $${f(bal,2)})`,'error');return;}
+  if(!confirm(`Купить грамоту за $${f(price,2)}?`)) return;
+  const{data,error}=await sb.rpc('buy_item',{p_item_symbol:symbol,p_pay_token:'TUSD'});
+  if(error){msg(error.message,'error');return;}
+  if(!data||data.ok===false){msg(data?.error||'Ошибка покупки','error');return;}
+  msg('✅ Грамота активирована','success');
+  await refreshAll();
+  if(!$('view-shop').classList.contains('hidden')) showShopTab('certs');
 }
 
 /* ═══════ INCOME ═══════ */
@@ -1508,7 +1554,7 @@ ${inv.length?inv.map(i=>`
 <div class="item-card"><div class="item-header"><b>💎 Стейкинг</b></div>
 <div style="text-align:center;margin:12px 0">
 <div style="font-size:11px;color:#8a94a6">НАКОПЛЕНО</div>
-<div id="stakeAccum" style="font-size:28px;font-weight:800;color:#39d98a">$${fmtAccumBig(acc)}</div>
+<div style="font-size:28px;font-weight:800;color:#39d98a;font-variant-numeric:tabular-nums;font-feature-settings:'tnum' 1;line-height:1.15">$<span id="stakeAccumValue">${fmtAccumBig(acc)}</span></div>
 <div id="stakeTick" style="font-size:12px;color:#39d98a;margin-top:6px">+$${dailyUSD.toFixed(4)}/день</div>
 </div>
 <button class="stake-collect" onclick="claimStaking()">💵 СОБРАТЬ В TUSD</button>
@@ -1833,16 +1879,10 @@ async function fetchSwapQuote(){
     return;
   }
   const bal=tb(state_swapFrom);
-  if(bal<amt){
-    if(errEl) errEl.textContent=`Недостаточно ${state_swapFrom} (у тебя ${f(bal,6)})`;
-  }
+  if(bal<amt){if(errEl) errEl.textContent=`Недостаточно ${state_swapFrom} (у тебя ${f(bal,6)})`;}
   if(btn){btn.disabled=true;btn.classList.remove('active');btn.textContent='⏳ Считаем...';}
   try{
-    const{data,error}=await sb.rpc('get_swap_quote',{
-      p_from_token:state_swapFrom,
-      p_to_token:state_swapTo,
-      p_amount:amt
-    });
+    const{data,error}=await sb.rpc('get_swap_quote',{p_from_token:state_swapFrom,p_to_token:state_swapTo,p_amount:amt});
     if(error||!data||data.ok===false){
       const m=data?.error||error?.message||'Ошибка расчёта';
       if(errEl) errEl.textContent=m;
@@ -1862,32 +1902,21 @@ async function fetchSwapQuote(){
     if(feeEl) feeEl.textContent=`${feeAmt.toFixed(8)} ${state_swapFrom} (${data.fee_pct}%)`;
     if($('swToUsd')) $('swToUsd').textContent='≈ $'+f(outAmt*priceOf(state_swapTo),4);
     const enough=bal>=amt;
-    if(btn){
-      btn.disabled=!enough;
-      btn.classList.toggle('active',enough);
-      btn.textContent=enough?'Обменять':`Мало ${state_swapFrom}`;
-    }
+    if(btn){btn.disabled=!enough;btn.classList.toggle('active',enough);btn.textContent=enough?'Обменять':`Мало ${state_swapFrom}`;}
   }catch(e){
     if(errEl) errEl.textContent=e.message||'Ошибка сети';
     SWAP_QUOTE=null;
     if(btn){btn.disabled=true;btn.classList.remove('active');btn.textContent='Обменять';}
   }
 }
-function setSwapMax(){
-  const inp=$('swFromAmt');if(!inp) return;
-  inp.value=String(tb(state_swapFrom));
-  calcSwap();
-}
+function setSwapMax(){const inp=$('swFromAmt');if(!inp) return;inp.value=String(tb(state_swapFrom));calcSwap();}
 function swapSwapTokens(){
   const amt=$('swFromAmt')?.value||'';
   const t=state_swapFrom;
   state_swapFrom=state_swapTo;
   state_swapTo=t;
   SWAP_QUOTE=null;
-  showIncomeTab('swap').then(()=>{
-    const inp=$('swFromAmt');
-    if(inp&&amt){inp.value=amt;calcSwap();}
-  });
+  showIncomeTab('swap').then(()=>{const inp=$('swFromAmt');if(inp&&amt){inp.value=amt;calcSwap();}});
 }
 function openTokenPicker(target){
   openModal('Выбрать токен',ALL_TOKENS.map(t=>`<button class="admin-btn sec" style="width:100%;margin-bottom:6px" onclick="pickToken('${target}','${t.symbol}')">${tokenIcon(t.symbol)} ${t.symbol} — ${esc(t.name||'')}</button>`).join(''));
@@ -1895,8 +1924,7 @@ function openTokenPicker(target){
 function pickToken(target,t){
   if(target==='from'){state_swapFrom=t;if(state_swapTo===t) state_swapTo=t==='TUSD'?'TG':'TUSD';}
   else{state_swapTo=t;if(state_swapFrom===t) state_swapFrom=t==='TUSD'?'TG':'TUSD';}
-  closeModal();
-  showIncomeTab('swap');
+  closeModal();showIncomeTab('swap');
 }
 async function doSwap(){
   if(SWAP_BUSY) return;
@@ -1909,28 +1937,11 @@ async function doSwap(){
   SWAP_BUSY=true;
   if(btn){btn.disabled=true;btn.textContent='⏳ Обмен...';}
   try{
-    const{data,error}=await sb.rpc('swap_execute',{
-      p_from_token:state_swapFrom,
-      p_to_token:state_swapTo,
-      p_amount:amt
-    });
-    if(error){
-      msg(error.message,'error');
-      SWAP_BUSY=false;
-      if(btn){btn.textContent='Обменять';}
-      calcSwap();
-      return;
-    }
-    if(!data||data.ok===false){
-      msg(data?.error||'Ошибка обмена','error');
-      SWAP_BUSY=false;
-      if(btn){btn.textContent='Обменять';}
-      calcSwap();
-      return;
-    }
+    const{data,error}=await sb.rpc('swap_execute',{p_from_token:state_swapFrom,p_to_token:state_swapTo,p_amount:amt});
+    if(error){msg(error.message,'error');SWAP_BUSY=false;if(btn){btn.textContent='Обменять';}calcSwap();return;}
+    if(!data||data.ok===false){msg(data?.error||'Ошибка обмена','error');SWAP_BUSY=false;if(btn){btn.textContent='Обменять';}calcSwap();return;}
     msg(`✅ ${f(data.amount_in,6)} ${data.from_token} → ${f(data.amount_out,6)} ${data.to_token}`,'success');
-    SWAP_QUOTE=null;
-    SWAP_BUSY=false;
+    SWAP_QUOTE=null;SWAP_BUSY=false;
     await refreshAll();
     await loadAllTokens();
     if(currentIncomeTab==='swap') await showIncomeTab('swap');
