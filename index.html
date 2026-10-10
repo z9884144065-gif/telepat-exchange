@@ -347,7 +347,7 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 <div class="slot" id="slot-legs" onclick="clickSlot('legs')"><span class="slot-label">Брюки</span>👖</div>
 </div>
 <div class="knight-avatar">
-<img class="knight-img" id="knightImg" src="https://placehold.co/260x400/1a2535/f4cf70?text=Knight" alt="Knight" onerror="this.style.display='none';this.parentElement.insertAdjacentHTML('beforeend','<div style=&quot;font-size:140px;line-height:1&quot;>⚔️</div>')">
+<img class="knight-img" id="knightImg" src="knight-0.png" alt="Knight" onerror="this.src='knight-9.png'">
 <div class="knight-speech" id="knightSpeech">Славный путь начинается!</div>
 </div>
 <div class="slot-col">
@@ -405,7 +405,6 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 <button class="quick-btn" onclick="goView('admin')"><span class="icon">👑</span> Админ</button>
 </div>
 </div>
-
 <!-- ═══════ SHOP ═══════ -->
 <div id="view-shop" class="hidden">
 <h2 style="color:var(--gold)">🏪 Магазин</h2>
@@ -420,6 +419,7 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 </div>
 <div id="shopContent"></div>
 </div>
+
 <!-- ═══════ INCOME ═══════ -->
 <div id="view-income" class="hidden">
 <h2 style="color:var(--gold)">🎯 Доход</h2>
@@ -447,7 +447,7 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 </div>
 <div class="item-card">
 <div class="title" style="font-size:12px;margin-bottom:8px">ЗАРАБОТАНО ПО ТОКЕНАМ</div>
-<div class="row" style="display:flex;gap:8px">
+<div style="display:flex;gap:8px">
 <div class="tbox" style="flex:1"><div class="tname">Заработано TG</div><div class="tval" id="refTG">0</div></div>
 <div class="tbox" style="flex:1"><div class="tname">Заработано TUSD</div><div class="tval" id="refTUSD">0</div></div>
 </div>
@@ -499,7 +499,7 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 <div class="admin-section">
 <div class="admin-title">📢 Заявки на рекламу</div>
 <button class="admin-btn sec" style="width:100%" onclick="adminAdLoad()">🔄 Загрузить все</button>
-<div class="row" style="display:flex;gap:6px;margin-top:8px">
+<div style="display:flex;gap:6px;margin-top:8px">
 <button class="admin-btn sm sec" onclick="adminAdLoad('pending')">⏳ На модерации</button>
 <button class="admin-btn sm sec" onclick="adminAdLoad('active')">✅ Активные</button>
 <button class="admin-btn sm sec" onclick="adminAdLoad('paused')">⏸ Пауза</button>
@@ -509,17 +509,17 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 
 <div class="admin-section">
 <div class="admin-title">🖼️ Настройки баннера</div>
-<label>Высота (px) — <span id="bnHS">110</span></label>
-<input type="range" id="bnH" min="60" max="260" value="110" oninput="document.getElementById('bnHS').textContent=this.value">
-<label style="margin-top:10px;display:block;font-size:11px;color:var(--muted)">Радиус (px) — <span id="bnRS">14</span></label>
-<input type="range" id="bnR" min="0" max="40" value="14" oninput="document.getElementById('bnRS').textContent=this.value">
-<label style="margin-top:10px;display:block;font-size:11px;color:var(--muted)">Заголовок (px) — <span id="bnTS">17</span></label>
-<input type="range" id="bnT" min="12" max="32" value="17" oninput="document.getElementById('bnTS').textContent=this.value">
-<label style="margin-top:10px;display:block;font-size:11px;color:var(--muted)">Подзаголовок (px) — <span id="bnSS">13</span></label>
-<input type="range" id="bnS" min="10" max="24" value="13" oninput="document.getElementById('bnSS').textContent=this.value">
-<label style="margin-top:10px;display:block;font-size:11px;color:var(--muted)">Отступ (px) — <span id="bnPS">16</span></label>
-<input type="range" id="bnP" min="6" max="36" value="16" oninput="document.getElementById('bnPS').textContent=this.value">
-<label style="margin-top:10px;display:block;font-size:11px;color:var(--muted)">Кол-во баннеров</label>
+<label style="display:block;font-size:11px;color:var(--muted)">Высота (px) — <span id="bnHS">110</span></label>
+<input type="range" id="bnH" min="60" max="260" value="110" oninput="document.getElementById('bnHS').textContent=this.value" style="width:100%">
+<label style="display:block;font-size:11px;color:var(--muted);margin-top:10px">Радиус (px) — <span id="bnRS">14</span></label>
+<input type="range" id="bnR" min="0" max="40" value="14" oninput="document.getElementById('bnRS').textContent=this.value" style="width:100%">
+<label style="display:block;font-size:11px;color:var(--muted);margin-top:10px">Заголовок (px) — <span id="bnTS">17</span></label>
+<input type="range" id="bnT" min="12" max="32" value="17" oninput="document.getElementById('bnTS').textContent=this.value" style="width:100%">
+<label style="display:block;font-size:11px;color:var(--muted);margin-top:10px">Подзаголовок (px) — <span id="bnSS">13</span></label>
+<input type="range" id="bnS" min="10" max="24" value="13" oninput="document.getElementById('bnSS').textContent=this.value" style="width:100%">
+<label style="display:block;font-size:11px;color:var(--muted);margin-top:10px">Отступ (px) — <span id="bnPS">16</span></label>
+<input type="range" id="bnP" min="6" max="36" value="16" oninput="document.getElementById('bnPS').textContent=this.value" style="width:100%">
+<label style="display:block;font-size:11px;color:var(--muted);margin-top:10px">Кол-во баннеров</label>
 <select id="bnCount" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
 <option value="1">1 баннер</option><option value="2">2 баннера</option><option value="3">3 баннера</option>
 </select>
@@ -532,14 +532,14 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 
 <div class="admin-section">
 <div class="admin-title">🎨 UI настройки</div>
-<button class="admin-btn sec" style="width:100%" onclick="loadUiSettings()">🔄 Загрузить настройки</button>
-<label style="margin-top:12px;display:block;font-size:11px;color:var(--muted)">Основной фон</label>
+<button class="admin-btn sec" style="width:100%" onclick="loadUiSettings()">🔄 Загрузить</button>
+<label style="display:block;font-size:11px;color:var(--muted);margin:12px 0 4px">Основной фон</label>
 <input type="color" id="ui-bg" value="#0b1018" style="width:100%;padding:4px;height:46px;cursor:pointer;background:var(--bg);border:1px solid var(--line);border-radius:8px">
-<label style="margin-top:12px;display:block;font-size:11px;color:var(--muted)">Свечение вверху</label>
+<label style="display:block;font-size:11px;color:var(--muted);margin:12px 0 4px">Свечение вверху</label>
 <input type="color" id="ui-bg-radial" value="#26334a" style="width:100%;padding:4px;height:46px;cursor:pointer;background:var(--bg);border:1px solid var(--line);border-radius:8px">
-<label style="margin-top:12px;display:block;font-size:11px;color:var(--muted)">Акцент (золотой)</label>
+<label style="display:block;font-size:11px;color:var(--muted);margin:12px 0 4px">Акцент (золотой)</label>
 <input type="color" id="ui-accent" value="#f4cf70" style="width:100%;padding:4px;height:46px;cursor:pointer;background:var(--bg);border:1px solid var(--line);border-radius:8px">
-<label style="margin-top:12px;display:block;font-size:11px;color:var(--muted)">Карточки</label>
+<label style="display:block;font-size:11px;color:var(--muted);margin:12px 0 4px">Карточки</label>
 <input type="color" id="ui-card" value="#141c28" style="width:100%;padding:4px;height:46px;cursor:pointer;background:var(--bg);border:1px solid var(--line);border-radius:8px">
 <div class="admin-btn-row">
 <button class="admin-btn gold" onclick="saveUiSettings()">💾 Сохранить</button>
@@ -582,9 +582,9 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 
 <div class="admin-section">
 <div class="admin-title">🔀 Перевод рефералов</div>
-<label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px">Кому перевести (новый реферер)</label>
+<label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px">Кому перевести</label>
 <input id="ref_transfer_target" placeholder="949707357 или @Vladimir_G17" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
-<label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">Кого перевести (список)</label>
+<label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">Кого перевести</label>
 <input id="ref_transfer_ids" placeholder="6335237242, @BellaDonnaSignorina" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
 <button class="admin-btn gold" style="width:100%;margin-top:8px" onclick="adminTransferReferrals()">🔀 ПЕРЕВЕСТИ</button>
 <div id="ref_transfer_status" class="info" style="margin-top:9px"></div>
@@ -650,7 +650,7 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 <div id="adminChatsList" style="margin-top:12px"></div>
 <div id="adminChatEdit" class="hidden" style="margin-top:16px;padding:12px;border:1px solid #4a596d;border-radius:13px;background:#0d1520">
 <div class="title" id="adminChatEditTitle">⚙️ ЧАТ</div>
-<label style="display:block;font-size:11px;color:var(--muted)">Вкл</label>
+<label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px">Вкл</label>
 <select id="ce_enabled" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px"><option value="true">Да</option><option value="false">Нет</option></select>
 <label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">Токен</label>
 <select id="ce_token" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px"></select>
@@ -957,6 +957,17 @@ const RANKS=['Новичок','Крестьянин','Вольный','Граж�
 const RANK_STAKE=[0,0.5,1,2,3,4,5,6,7,8,16,32,64,128,256,512,1024,2048,4096,8192,16384,32768];
 const RC=['#fff','#d8d8d8','#b9c5b9','#75c99a','#58b5e9','#4f8cff','#3974d9','#6673e8','#4169e1','#7389bd','#b87333','#bfc2c9','#e0bd45','#9b59b6','#8e44ad','#e0b72f','#e68a27','#24c8aa','#f5cf3d','#f7b83f','#ffd700'];
 const rk=l=>RC[Math.max(0,Math.min(20,Number(l||0)))];
+
+// ★★★ ПАТЧ: картинки рыцаря по группам уровней ★★★
+const GROUP_IMAGE={0:'knight-0.png',1:'knight-4.png',2:'knight-9.png',3:'knight-14.png',4:'knight-18.png'};
+function getKnightGroup(level){
+  if(level>=18) return 4;
+  if(level>=14) return 3;
+  if(level>=9) return 2;
+  if(level>=4) return 1;
+  return 0;
+}
+
 const BUY_ERR={not_found:'Ордер не найден',already_taken:'Ордер выкуплен',own_order:'Нельзя выкупить свой',invalid_amount:'Некорректная сумма',too_much:'Слишком большая сумма',banned:'Заблокирован',creator_insufficient:'У продавца мало средств',taker_insufficient:'У вас мало средств'};
 const TOKEN_ICONS={'TG':{emoji:'🥇',bg:'linear-gradient(135deg,#f5d477,#c99629)'},'AI':{emoji:'🤖',bg:'linear-gradient(135deg,#8b5cf6,#6d28d9)'},'TUSD':{emoji:'💵',bg:'linear-gradient(135deg,#39d98a,#2ba86a)'},'VKCOIN':{emoji:'🎮',bg:'linear-gradient(135deg,#4f8cff,#2563eb)'},'RUB':{emoji:'₽',bg:'linear-gradient(135deg,#4caf50,#2e7d32)'},'DEFAULT':{emoji:'🪙',bg:'linear-gradient(135deg,#7f8c9f,#4a596d)'}};
 const OP_ICONS={ad_view:'📺',checkin:'🔥',task_reward:'📋',task_commission:'👑',staking_claim:'💧',welcome_bonus:'🎁',transfer_in:'⬇️',transfer_out:'⬆️',transfer_fee:'💸',p2p_trade:'🤝',test:'🧪',fund_deposit:'➕',reward_share_claim:'💵',reward_fund_share:'🎁'};
@@ -971,11 +982,9 @@ const tokenIcon=s=>s==='TG'?'🥇':s==='TUSD'?'💵':s==='AI'?'🤖':s==='VKCOIN
 const tb=t=>{if(!CU) return 0;if(t==='TG') return n(CU.tg_balance);if(t==='AI') return n(CU.ai_balance);if(t==='TUSD') return n(CU.tusd_balance);return n(CB[t]);};
 const fmtAccumBig=v=>{const x=Number(v)||0;if(x===0) return '0.000000000000';return x.toFixed(12);};
 const fmtAccum=(v,rateSec)=>{const x=Number(v)||0;if(x===0) return '0.00000000';let d=8;if(rateSec&&rateSec>0){const p=rateSec*0.1;if(p>0){const nd=Math.ceil(-Math.log10(p))+1;d=Math.max(8,Math.min(12,nd));}}return x.toFixed(d);};
-const uid=()=>'x'+Date.now()+Math.floor(Math.random()*99999);
 
 function msg(text,type='info'){
-  const el=$('msg');
-  if(!el) return;
+  const el=$('msg');if(!el) return;
   el.textContent=text;
   el.className='msg-toast show '+type;
   clearTimeout(el._t);
@@ -1126,12 +1135,12 @@ function startStakeTimer(){
   },50);
 }
 function renderStake(){
-  if($('stakeAccum')) $('stakeAccum').innerHTML=`${fmtAccumBig(STAKE_DISPLAY)} <span style="font-size:14px;color:#7fc97f;font-weight:normal">TUSD</span>`;
   let totalPerDayTusd=0;const parts=[];
   (REWARD_FUNDS||[]).forEach(fd=>{const dT=Number(fd.my_per_day_tusd)||0;const dTok=Number(fd.my_per_day)||0;if(dTok>0){totalPerDayTusd+=dT;parts.push(`${fd.token_symbol}: +${dTok.toFixed(6)} (≈$${dT.toFixed(6)})`);}});
-  if($('stakeTick')) $('stakeTick').innerHTML=`<span style="color:#39d98a;font-weight:bold">+$${totalPerDayTusd.toFixed(4)}</span> <span style="font-size:11px;color:#7fc97f;font-weight:normal">в день из фондов</span>`;
-  if($('stakeMonth')) $('stakeMonth').innerHTML=`≈ <b>$${(totalPerDayTusd*30).toFixed(2)}</b> <span style="font-size:10px;color:#7fc97f;font-weight:normal">в месяц</span>`;
-  if($('stakeRate')) $('stakeRate').innerHTML=parts.length>0?`📊 ${parts.join(' • ')}`:'⏳ Начисляется из фондов наград';
+  if(currentIncomeTab==='staking' && !$('view-income').classList.contains('hidden')){
+    if($('stakeAccum')) $('stakeAccum').innerHTML=`${fmtAccumBig(STAKE_DISPLAY)} <span style="font-size:14px;color:#7fc97f;font-weight:normal">TUSD</span>`;
+    if($('stakeTick')) $('stakeTick').innerHTML=`<span style="color:#39d98a;font-weight:bold">+$${totalPerDayTusd.toFixed(4)}</span> <span style="font-size:11px;color:#7fc97f;font-weight:normal">в день</span>`;
+  }
 }
 async function loadRewardFunds(){
   if(!ALL_TOKENS.length) return;
@@ -1140,7 +1149,7 @@ async function loadRewardFunds(){
   }));
   REWARD_FUNDS=results.filter(Boolean);
   recalcStakeRate();
-  if(currentIncomeTab==='staking') showIncomeTab('staking');
+  if(currentIncomeTab==='staking' && !$('view-income').classList.contains('hidden')) showIncomeTab('staking');
 }
 
 /* ═══════ NAVIGATION ═══════ */
@@ -1169,7 +1178,6 @@ function openSettings(){if(UID===AID) goView('admin');else msg('⚙️ Скор�
 function copyRefLink(){const inp=$('refLink');if(!inp) return;navigator.clipboard?.writeText(inp.value).then(()=>msg('Скопировано','success'),()=>{inp.select();document.execCommand('copy');msg('Скопировано','success');});}
 
 /* ═══════ HOME ═══════ */
-function calcStakeUSD(){return CU?Number(CU.rank_weight||0):0;}
 function getEquippedGearLevel(){
   const eq=MY_ITEMS.filter(i=>i.is_equipped);
   if(!eq.length) return 0;
@@ -1181,7 +1189,6 @@ function renderHome(){
   if(!CU) return;
   const name=[tgu?.first_name||'',tgu?.last_name||''].join(' ').trim()||CU.first_name||tgu?.username||CU.username||'User';
   $('userName').textContent=name;
-  const uname=tgu?.username||CU.username;
   const rl=Number(CU.rank_level||0);
   const rn=CU.rank_name||RANKS[rl]||'Новичок';
   $('userRank').textContent='👑 '+rn;
@@ -1202,6 +1209,22 @@ function renderHome(){
   const reg=CU.created_at?new Date(CU.created_at):new Date();
   const days=Math.floor((Date.now()-reg.getTime())/DAY_MS);
   $('userDays').textContent='📅 '+days+' дней';
+
+  // ★★★ ПАТЧ: смена картинки рыцаря по группе уровня ★★★
+  const knightImgEl=$('knightImg');
+  if(knightImgEl){
+    const group=getKnightGroup(rl);
+    const newSrc=GROUP_IMAGE[group];
+    const currentFile=knightImgEl.src.split('/').pop();
+    if(currentFile!==newSrc){
+      knightImgEl.style.opacity='0';
+      setTimeout(()=>{
+        knightImgEl.src=newSrc;
+        knightImgEl.onerror=()=>{knightImgEl.src='knight-0.png';};
+        knightImgEl.style.opacity='1';
+      },150);
+    }
+  }
 
   const eq={};
   MY_ITEMS.filter(i=>i.is_equipped).forEach(i=>{eq[i.slot]=i;});
@@ -1354,30 +1377,26 @@ ${extras.map(slot=>{
   else if(tab==='artifacts'){
     c.innerHTML=`
 <div class="item-card"><div class="item-header"><b>💎 Артефакты</b></div><div class="item-desc">Усилители</div></div>
-<div class="item-card"><div class="item-header"><span class="item-name">💎 Камень дохода</span><span class="rarity common">Common</span></div><div class="item-desc">+5% к стейку</div><div class="item-footer"><span class="item-price">$10</span><button onclick="msg('Покупка скоро')">Купить</button></div></div>
-<div class="item-card"><div class="item-header"><span class="item-name">🧪 Зелье мощи</span><span class="rarity epic">Epic</span></div><div class="item-desc">+50 APR, 12ч</div><div class="item-footer"><span class="item-price">$25</span><button onclick="msg('Покупка скоро')">Купить</button></div></div>
-<div class="item-card"><div class="item-header"><span class="item-name">🔮 Сфера бездны</span><span class="rarity legend">Legendary</span></div><div class="item-desc">+10% ко всему</div><div class="item-footer"><span class="item-price">$150</span><button onclick="msg('Покупка скоро')">Купить</button></div></div>`;
+<div class="item-card"><div class="item-header"><span class="item-name">💎 Камень дохода</span><span class="rarity common">Common</span></div><div class="item-desc">+5% к стейку</div><div class="item-footer"><span class="item-price">$10</span><button onclick="msg('Скоро')">Купить</button></div></div>
+<div class="item-card"><div class="item-header"><span class="item-name">🧪 Зелье мощи</span><span class="rarity epic">Epic</span></div><div class="item-desc">+50 APR, 12ч</div><div class="item-footer"><span class="item-price">$25</span><button onclick="msg('Скоро')">Купить</button></div></div>
+<div class="item-card"><div class="item-header"><span class="item-name">🔮 Сфера бездны</span><span class="rarity legend">Legendary</span></div><div class="item-desc">+10% ко всему</div><div class="item-footer"><span class="item-price">$150</span><button onclick="msg('Скоро')">Купить</button></div></div>`;
   }
   else if(tab==='titles'){
     c.innerHTML=`
-<div class="item-card"><div class="item-header"><b>🏷️ Титулы</b></div><div class="item-desc">Отображаемый титул. Не влияет на амуницию.</div></div>
-<div class="item-card"><div class="item-header"><span class="item-name">👑 Барон</span><span class="rarity legend">Ур.14</span></div><div class="item-desc">+1% к рефералке</div><div class="item-footer"><span class="item-price">$256</span><button onclick="msg('Покупка скоро')">Купить</button></div></div>
-<div class="item-card"><div class="item-header"><span class="item-name">💎 Виконт</span><span class="rarity legend">Ур.15</span></div><div class="item-desc">+2% к рефералке</div><div class="item-footer"><span class="item-price">$512</span><button onclick="msg('Покупка скоро')">Купить</button></div></div>`;
+<div class="item-card"><div class="item-header"><b>🏷️ Титулы</b></div><div class="item-desc">Отображаемый титул.</div></div>
+<div class="item-card"><div class="item-header"><span class="item-name">👑 Барон</span><span class="rarity legend">Ур.14</span></div><div class="item-desc">+1% к рефералке</div><div class="item-footer"><span class="item-price">$256</span><button onclick="msg('Скоро')">Купить</button></div></div>
+<div class="item-card"><div class="item-header"><span class="item-name">💎 Виконт</span><span class="rarity legend">Ур.15</span></div><div class="item-desc">+2% к рефералке</div><div class="item-footer"><span class="item-price">$512</span><button onclick="msg('Скоро')">Купить</button></div></div>`;
   }
   else if(tab==='certs'){
     c.innerHTML=`
 <div class="item-card"><div class="item-header"><b>📜 Сертификаты продавца</b></div></div>
-<div class="item-card"><div class="item-header"><span class="item-name">📜 Старт</span><span class="rarity rare">90 дней</span></div><div class="item-desc">🎒 20 слотов • 📤 5 листингов</div><div class="item-footer"><span class="item-price">$25</span><button onclick="msg('Покупка скоро')">Купить</button></div></div>
-<div class="item-card"><div class="item-header"><span class="item-name">📜 Профи</span><span class="rarity epic">180 дней</span></div><div class="item-desc">🎒 30 слотов • 📤 20 листингов</div><div class="item-footer"><span class="item-price">$50</span><button onclick="msg('Покупка скоро')">Купить</button></div></div>
-<div class="item-card"><div class="item-header"><span class="item-name">📜 Бизнес</span><span class="rarity legend">365 дней</span></div><div class="item-desc">🎒 40 слотов • 📤 100 листингов</div><div class="item-footer"><span class="item-price">$100</span><button onclick="msg('Покупка скоро')">Купить</button></div></div>
-<div class="item-card"><div class="item-header"><span class="item-name">📜 Вечный</span><span class="rarity mythic">∞</span></div><div class="item-desc">🎒 50 слотов • 📤 ∞ листингов</div><div class="item-footer"><span class="item-price">$250</span><button onclick="msg('Покупка скоро')">Купить</button></div></div>`;
+<div class="item-card"><div class="item-header"><span class="item-name">📜 Старт</span><span class="rarity rare">90 дней</span></div><div class="item-desc">🎒 20 слотов • 📤 5 листингов</div><div class="item-footer"><span class="item-price">$25</span><button onclick="msg('Скоро')">Купить</button></div></div>
+<div class="item-card"><div class="item-header"><span class="item-name">📜 Профи</span><span class="rarity epic">180 дней</span></div><div class="item-desc">🎒 30 слотов • 📤 20 листингов</div><div class="item-footer"><span class="item-price">$50</span><button onclick="msg('Скоро')">Купить</button></div></div>
+<div class="item-card"><div class="item-header"><span class="item-name">📜 Бизнес</span><span class="rarity legend">365 дней</span></div><div class="item-desc">🎒 40 слотов • 📤 100 листингов</div><div class="item-footer"><span class="item-price">$100</span><button onclick="msg('Скоро')">Купить</button></div></div>
+<div class="item-card"><div class="item-header"><span class="item-name">📜 Вечный</span><span class="rarity mythic">∞</span></div><div class="item-desc">🎒 50 слотов • 📤 ∞ листингов</div><div class="item-footer"><span class="item-price">$250</span><button onclick="msg('Скоро')">Купить</button></div></div>`;
   }
-  else if(tab==='refs'){
-    c.innerHTML=`<div class="item-card"><div class="item-header"><b>👥 Рефералы на продажу</b></div><div class="item-desc">Скоро</div></div>`;
-  }
-  else if(tab==='auction'){
-    c.innerHTML=`<div class="item-card"><div class="item-header"><b>🔨 Аукцион</b></div><div class="item-desc">Скоро</div></div>`;
-  }
+  else if(tab==='refs'){c.innerHTML=`<div class="item-card"><div class="item-header"><b>👥 Рефералы на продажу</b></div><div class="item-desc">Скоро</div></div>`;}
+  else if(tab==='auction'){c.innerHTML=`<div class="item-card"><div class="item-header"><b>🔨 Аукцион</b></div><div class="item-desc">Скоро</div></div>`;}
 }
 async function buyGearItem(slot,level){
   const cfg=SHOP_ITEMS.find(i=>i.slot===slot&&n(i.min_rank)===level);
@@ -1427,7 +1446,7 @@ ${inv.length?inv.map(i=>`
 <div class="row">
 <input type="number" id="swFromAmt" placeholder="0.0" oninput="calcSwap()">
 <button class="max-btn" onclick="setSwapMax()">MAX</button>
-<button class="token-badge" onclick="openTokenPicker('from')">${tokenIcon(state_swapFrom())} ${state_swapFrom()} ▼</button>
+<button class="token-badge" onclick="openTokenPicker('from')">${tokenIcon(state_swapFrom)} ${state_swapFrom} ▼</button>
 </div>
 </div>
 <div class="swap-arrow-wrap"><button class="swap-arrow-btn" onclick="swapSwapTokens()">⇅</button></div>
@@ -1435,7 +1454,7 @@ ${inv.length?inv.map(i=>`
 <div class="lbl"><span>Получаете</span><span id="swToUsd">≈ $0.00</span></div>
 <div class="row">
 <input type="number" id="swToAmt" placeholder="0.0" readonly>
-<button class="token-badge" onclick="openTokenPicker('to')">${tokenIcon(state_swapTo())} ${state_swapTo()} ▼</button>
+<button class="token-badge" onclick="openTokenPicker('to')">${tokenIcon(state_swapTo)} ${state_swapTo} ▼</button>
 </div>
 </div>
 <button class="swap-btn" id="swapBtn" onclick="doSwap()" disabled>Обменять</button>`;
@@ -1451,8 +1470,8 @@ ${inv.length?inv.map(i=>`
 <div class="item-card"><div class="item-header"><b>💎 Стейкинг</b></div>
 <div style="text-align:center;margin:12px 0">
 <div style="font-size:11px;color:#8a94a6">НАКОПЛЕНО</div>
-<div style="font-size:28px;font-weight:800;color:#39d98a">$${fmtAccumBig(acc)}</div>
-<div style="font-size:12px;color:#39d98a;margin-top:6px">+$${dailyUSD.toFixed(4)}/день</div>
+<div id="stakeAccum" style="font-size:28px;font-weight:800;color:#39d98a">$${fmtAccumBig(acc)}</div>
+<div id="stakeTick" style="font-size:12px;color:#39d98a;margin-top:6px">+$${dailyUSD.toFixed(4)}/день</div>
 </div>
 <button class="stake-collect" onclick="claimStaking()">💵 СОБРАТЬ В TUSD</button>
 </div>
@@ -1507,7 +1526,7 @@ ${t.is_completed?'<span class="ok">✅ Выполнено</span>':`<div class="t
     c.innerHTML=`
 <div class="item-card"><div class="item-header"><b>⚡ Быстрые действия</b></div>
 <div class="qa">
-<button class="qb" onclick="goView('income');showIncomeTab('p2p')"><span class="qi">🔄</span>ОБМЕН</button>
+<button class="qb" onclick="showIncomeTab('p2p')"><span class="qi">🔄</span>ОБМЕН</button>
 <button class="qb" onclick="showIncomeTab('staking')"><span class="qi">💧</span>ПУЛЫ</button>
 <button class="qb gold" onclick="watchAd()"><span class="qi">📺</span>РЕКЛАМА</button>
 <button class="qb gold" onclick="openTasksModal()"><span class="qi">📋</span>ЗАДАНИЯ</button>
@@ -1519,7 +1538,7 @@ ${t.is_completed?'<span class="ok">✅ Выполнено</span>':`<div class="t
 <button class="qb" onclick="openAdMenu()"><span class="qi">📢</span>ЗАКАЗАТЬ</button>
 <button class="qb" onclick="openMyAds()"><span class="qi">📋</span>МОИ ЗАКАЗЫ</button>
 </div>
-<div id="adBalanceInfo" class="info" style="margin-top:10px;text-align:center">Баланс: $${f(CU?.tusd_balance||0,2)}</div>
+<div class="info" style="margin-top:10px;text-align:center">Баланс: $${f(CU?.tusd_balance||0,2)}</div>
 </div>`;
   }
 }
@@ -1635,7 +1654,7 @@ function showAdRewardPopup(reward,token,extra){
   overlay.onclick=e=>{if(e.target===overlay) overlay.remove();};
   const bonusLine=extra?`<div style="color:#f4cf70;font-size:13px;margin-bottom:10px;font-weight:bold;text-align:center">${extra}</div>`:'';
   const icon=tokenIconHTML(token);
-  overlay.innerHTML=`<div style="width:min(360px,100%);background:linear-gradient(145deg,#1f4a1f,#0d280d);border:3px solid #39d98a;border-radius:22px;padding:26px 22px;text-align:center;box-shadow:0 0 50px #39d98a88,inset 0 0 20px #39d98a22;animation:adPopIn .5s cubic-bezier(0.34,1.56,0.64,1)"><div style="font-size:64px;line-height:1;animation:adBounce 1s infinite">🎉</div><div style="color:#39d98a;font-size:22px;font-weight:bold;margin-top:12px;text-shadow:0 0 16px #39d98a99">НАГРАДА ПОЛУЧЕНА!</div>${bonusLine}<div style="background:#0006;border:2px solid #39d98a55;border-radius:14px;padding:14px;margin:16px 0;font-size:24px;font-weight:bold;color:#39d98a;text-shadow:0 0 12px #39d98a88;display:flex;align-items:center;justify-content:center;gap:10px">${icon}+${f(reward,5)} ${esc(token)}</div><div style="color:#a8e6a8;font-size:12px;margin-bottom:16px">Зачислено на кошелёк</div><button onclick="document.getElementById('adRewardPopupGreen').remove()" style="width:100%;background:linear-gradient(135deg,#39d98a,#2ba86a);color:#0d280d;font-weight:bold;padding:14px;border-radius:14px;border:0;font-size:16px;cursor:pointer">👍 ОТЛИЧНО!</button></div>`;
+  overlay.innerHTML=`<div style="width:min(360px,100%);background:linear-gradient(145deg,#1f4a1f,#0d280d);border:3px solid #39d98a;border-radius:22px;padding:26px 22px;text-align:center;box-shadow:0 0 50px #39d98a88;animation:adPopIn .5s cubic-bezier(0.34,1.56,0.64,1)"><div style="font-size:64px;line-height:1;animation:adBounce 1s infinite">🎉</div><div style="color:#39d98a;font-size:22px;font-weight:bold;margin-top:12px">НАГРАДА ПОЛУЧЕНА!</div>${bonusLine}<div style="background:#0006;border:2px solid #39d98a55;border-radius:14px;padding:14px;margin:16px 0;font-size:24px;font-weight:bold;color:#39d98a;display:flex;align-items:center;justify-content:center;gap:10px">${icon}+${f(reward,5)} ${esc(token)}</div><div style="color:#a8e6a8;font-size:12px;margin-bottom:16px">Зачислено на кошелёк</div><button onclick="document.getElementById('adRewardPopupGreen').remove()" style="width:100%;background:linear-gradient(135deg,#39d98a,#2ba86a);color:#0d280d;font-weight:bold;padding:14px;border-radius:14px;border:0;font-size:16px;cursor:pointer">👍 ОТЛИЧНО!</button></div>`;
   document.body.appendChild(overlay);
   let sec=5;setInterval(()=>{sec--;if(sec<=0){const el=$('adRewardPopupGreen');if(el) el.remove();}},1000);
 }
@@ -1767,15 +1786,12 @@ function pickToken(target,t){
   else{state_swapTo=t;if(state_swapFrom===t) state_swapFrom=t==='TUSD'?'TG':'TUSD';}
   closeModal();showIncomeTab('swap');
 }
-async function doSwap(){
-  msg('Swap скоро — RPC в разработке','info');
-}
+async function doSwap(){msg('Swap скоро','info');}
 
 /* ═══════ FRIENDS ═══════ */
 async function renderFriends(){
   if(UID) $('refLink').value=`https://t.me/TELEPATp2p_bot?start=${UID}`;
-  const summary=$('refSummary');
-  const list=$('refList');
+  const summary=$('refSummary'),list=$('refList');
   if(list) list.innerHTML='<div class="info">Загрузка...</div>';
   const{data,error}=await sb.rpc('get_my_referrals');
   if(error||!data||!data.length){
@@ -1797,7 +1813,7 @@ async function renderFriends(){
       const earned=[];
       if(n(r.earned_tg)>0) earned.push('+'+f(r.earned_tg,6)+' TG');
       if(n(r.earned_tusd)>0) earned.push('+'+f(r.earned_tusd,6)+' TUSD');
-      return `<div class="ti" style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:#0d1520;border:1px solid #2e3a4c;border-radius:12px;margin-top:8px"><div><div style="color:#fff;font-weight:bold;font-size:13px">👤 ${esc(name)}</div><div class="info" style="font-size:11px">${r.username?'@'+esc(r.username)+' • ':''}${date}</div></div><div style="text-align:right;font-size:12px;color:#39d98a;font-weight:bold">${earned.length?earned.join('<br>'):'<span style="color:#9da9b9">0</span>'}</div></div>`;
+      return `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:#0d1520;border:1px solid #2e3a4c;border-radius:12px;margin-top:8px"><div><div style="color:#fff;font-weight:bold;font-size:13px">👤 ${esc(name)}</div><div class="info" style="font-size:11px">${r.username?'@'+esc(r.username)+' • ':''}${date}</div></div><div style="text-align:right;font-size:12px;color:#39d98a;font-weight:bold">${earned.length?earned.join('<br>'):'<span style="color:#9da9b9">0</span>'}</div></div>`;
     }).join('');
   });
   if(list) list.innerHTML=html;
@@ -1819,11 +1835,8 @@ async function loadReferralEarningsSummary(){
 }
 async function loadMyReferrals(){renderFriends();}
 
-/* ═══════ ADMIN — все функции ═══════ */
-function renderAdmin(){
-  if(UID!==AID){msg('Нет доступа','error');return;}
-  loadAdminRevenue();
-}
+/* ═══════ ADMIN ═══════ */
+function renderAdmin(){if(UID!==AID){msg('Нет доступа','error');return;}loadAdminRevenue();}
 async function loadAdminStats(){
   const{data,error}=await sb.rpc('telepat_admin_all_balances');
   if(error){msg(error.message,'error');return;}
@@ -1921,7 +1934,7 @@ async function adminAdLoad(status){
   box.innerHTML='Загрузка...';
   try{
     const{data,error}=await sb.rpc('admin_ad_list',{p_status:status||null});
-    if(error||!data||data.ok===false){box.innerHTML='<div class="info">Ошибка загрузки</div>';return;}
+    if(error||!data||data.ok===false){box.innerHTML='<div class="info">Ошибка</div>';return;}
     const ads=data.ads||[];
     if(!ads.length){box.innerHTML='<div class="info">Нет заявок</div>';return;}
     const ST={pending:'НА МОДЕРАЦИИ',active:'АКТИВЕН',paused:'ПАУЗА',rejected:'ОТКЛОНЁН',completed:'ЗАВЕРШЁН'};
@@ -1931,7 +1944,7 @@ async function adminAdLoad(status){
       <div class="info" style="margin-top:4px">Статус: ${ST[a.status]||a.status}</div>
       <div class="info">💰 Оплачено: ${f(a.budget,4)} • Потрачено: ${f(a.spent,4)}</div>
       <div class="info">Выполнено: ${a.actions_done||0}/${a.actions_target||0}</div>
-      <div class="row" style="margin-top:10px;flex-wrap:wrap;gap:6px;display:flex">
+      <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">
         ${a.status==='pending'?`<button class="admin-btn sm gold" onclick="adminAdStatus('${a.id}','active')">✅ Одобрить</button><button class="admin-btn sm danger" onclick="adminAdStatus('${a.id}','rejected')">❌ Отклонить</button>`:''}
         ${a.status==='active'?`<button class="admin-btn sm sec" onclick="adminAdStatus('${a.id}','paused')">⏸ Пауза</button>`:''}
         ${a.status==='paused'?`<button class="admin-btn sm gold" onclick="adminAdStatus('${a.id}','active')">▶ Возобновить</button>`:''}
@@ -1942,7 +1955,7 @@ async function adminAdLoad(status){
 async function adminAdStatus(id,status){
   const{data,error}=await sb.rpc('admin_ad_set_status',{p_id:id,p_status:status,p_comment:null});
   if(error||(data&&data.ok===false)){msg('Ошибка','error');return;}
-  msg('✅ Статус обновлён','success');
+  msg('✅ Обновлено','success');
   adminAdLoad();
 }
 async function loadBannerSettings(){
@@ -2070,17 +2083,13 @@ async function saveAdminLogo(id,sym){
   msg('🖼️ Лого обновлён','success');
   await loadAllTokens();await loadAdminTokenPrices();
 }
-async function clearAdminLogo(id,sym){
-  const inp=$('lg-url-'+id);if(inp) inp.value='';
-  await saveAdminLogo(id,sym);
-}
+async function clearAdminLogo(id,sym){const inp=$('lg-url-'+id);if(inp) inp.value='';await saveAdminLogo(id,sym);}
 async function loadAdminTokenPrices(){
   const box=$('adminTokenPricesList');if(!box) return;
   box.innerHTML='Загрузка...';
   const{data,error}=await sb.rpc('admin_list_tokens_with_prices');
   if(error||!data||!data.length){box.innerHTML='<div class="info">Нет данных</div>';return;}
   box.innerHTML=data.map(t=>{
-    const isBase=['TG','AI','TUSD'].includes(t.symbol);
     const sysBadge=t.is_system_token?' 🏦':'';
     return `<div class="pc">
       <div class="pt">${esc(t.symbol)}${sysBadge} — ${esc(t.name||'')}</div>
@@ -2159,7 +2168,7 @@ async function saveAdminCheckinToken(sym){
   const amt=Number($('ci_tok_'+sym).value);
   const{data,error}=await sb.rpc('admin_upsert_checkin_token',{p_symbol:sym,p_amount:amt,p_active:true});
   if(error||!data||data.ok===false){msg('Ошибка','error');return;}
-  msg('✅ '+sym+' обновлён','success');
+  msg('✅ '+sym,'success');
   await loadAdminCheckin();
 }
 async function removeAdminCheckinToken(sym){
@@ -2170,8 +2179,7 @@ async function removeAdminCheckinToken(sym){
   await loadAdminCheckin();
 }
 async function addAdminCheckinToken(){
-  const sym=$('ci_new_symbol').value;
-  const amt=Number($('ci_new_amount').value);
+  const sym=$('ci_new_symbol').value,amt=Number($('ci_new_amount').value);
   if(!sym||amt<=0){msg('Заполните','error');return;}
   const{data,error}=await sb.rpc('admin_upsert_checkin_token',{p_symbol:sym,p_amount:amt,p_active:true});
   if(error||!data||data.ok===false){msg('Ошибка','error');return;}
@@ -2301,7 +2309,7 @@ function calculateListingPreview(){
   if($('listingFeePreview')) $('listingFeePreview').textContent=f(LFT,2)+' TUSD';
 }
 async function loadListingSettingsAdmin(){
-  const st=$('listingSettingsStatus');if(st){st.textContent='Загрузка...';}
+  const st=$('listingSettingsStatus');if(st) st.textContent='Загрузка...';
   try{
     const{data}=await sb.from('telepat_settings').select('setting_key,setting_value').in('setting_key',['listing_fee_tusd','listing_supply_percent']);
     let fee=0,pct=10;
@@ -2317,7 +2325,7 @@ async function saveListingSettingsAdmin(){
   const st=$('listingSettingsStatus');
   const fee=Number($('ls_fee_tusd').value),pct=Number($('ls_supply_percent').value);
   if(!Number.isFinite(fee)||fee<0){if(st) st.textContent='✗ Комиссия';return;}
-  if(!Number.isFinite(pct)||pct<0||pct>100){if(st) st.textContent='✗ Процент 0-100';return;}
+  if(!Number.isFinite(pct)||pct<0||pct>100){if(st) st.textContent='✗ Процент';return;}
   const{data,error}=await sb.rpc('admin_set_listing_settings',{p_fee_tusd:fee,p_supply_percent:pct});
   if(error||(data&&data.ok===false)){if(st) st.textContent='✗ Ошибка';return;}
   LFT=fee;LSP=pct;
@@ -2333,7 +2341,6 @@ async function loadAdminListings(){
   box.innerHTML=data.map(l=>`<div class="pc">
     <div class="pt">${esc(l.token_symbol)} — ${esc(l.token_name)}</div>
     <div class="info">От: ${l.telegram_id}</div>
-    <div class="info">Jetton: ${esc(l.jetton_master||'—')}</div>
     <div class="info">Supply: ${f(l.total_supply)} • Оплата: ${f(l.listing_fee_tusd)} TUSD</div>
     <div class="info">Статус: ${esc(l.admin_status)}</div>
     ${l.admin_status==='pending'?`<div class="admin-btn-row"><button class="admin-btn sm gold" onclick="approveListing('${esc(l.id)}')">✅ ОДОБРИТЬ</button><button class="admin-btn sm danger" onclick="rejectListing('${esc(l.id)}')">❌ ОТКЛОНИТЬ</button></div>`:''}
@@ -2477,7 +2484,7 @@ async function adminCreateAd(){
   if(!url){st.textContent='Введите ссылку';return;}
   if(!file){st.textContent='Выберите видео MP4';return;}
   if(file.size>50*1024*1024){st.textContent='Видео больше 50 МБ';return;}
-  const btn=$('ad_new_submit');btn.disabled=true;st.textContent='Загрузка видео...';
+  const btn=$('ad_new_submit');btn.disabled=true;st.textContent='Загрузка...';
   try{
     const safeName=file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
     const fileName='videos/'+Date.now()+'_'+safeName;
@@ -2485,7 +2492,7 @@ async function adminCreateAd(){
     if(uploadError){st.textContent='Ошибка: '+uploadError.message;btn.disabled=false;return;}
     const{data:urlData}=sb.storage.from('ads').getPublicUrl(fileName);
     const videoUrl=urlData.publicUrl;
-    st.textContent='Создание кампании...';
+    st.textContent='Создание...';
     const{error:insertError}=await sb.from('telepat_ad_campaigns').insert({advertiser_telegram_id:UID,title:title,description:desc,campaign_type:'video',url:url,video_url:videoUrl,reward_per_action:reward,reward_token_id:tokenId,target_actions:target,completed_actions:0,duration_seconds:duration,buffer_seconds:buffer,cta_button_text:cta,cta_text:desc,payment_status:'paid',admin_status:'approved'});
     if(insertError){st.textContent='Ошибка: '+insertError.message;btn.disabled=false;return;}
     st.innerHTML='✅ Реклама создана!';
@@ -2582,7 +2589,7 @@ async function claimWelcomeBonus(){
   }else{msg(data?.message||'Не удалось','error');await loadWelcomeBonusStatus();}
 }
 
-/* ═══════ ADS — Menu / Form / My ads / Balance ═══════ */
+/* ═══════ ADS Menu/Form/My/Balance ═══════ */
 function openAdMenu(){$('adMenuModal').classList.add('show');}
 function closeAdMenu(e){if(e&&e.target!==$('adMenuModal')) return;$('adMenuModal').classList.remove('show');}
 function openAdForm(type){
@@ -2604,9 +2611,9 @@ function openAdForm(type){
       <input id="af_image" placeholder="https://..." style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
       <label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">Ссылка</label>
       <input id="af_link" placeholder="https://t.me/..." style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
-      <label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">Дней показа (1-30)</label>
+      <label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">Дней (1-30)</label>
       <input id="af_days" type="number" value="1" min="1" max="30" oninput="adRecalc()" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
-      <div class="prev"><div class="history-row"><span>Цена за день</span><b>${AD_PRICES.banner_price_per_day} TUSD</b></div><div class="history-row"><span>Итого</span><b id="af_costTotal">${AD_PRICES.banner_price_per_day} TUSD</b></div></div>
+      <div class="prev"><div class="history-row"><span>Итого</span><b id="af_costTotal">${AD_PRICES.banner_price_per_day} TUSD</b></div></div>
       <button class="admin-btn gold" style="width:100%;margin-top:10px" onclick="adSubmit()">📢 Оплатить</button>`;
   }else if(type==='video'){
     tEl.textContent='🎬 Видео';
@@ -2616,9 +2623,9 @@ function openAdForm(type){
       <input id="af_title" maxlength="40" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
       <label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">Описание</label>
       <input id="af_description" maxlength="120" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
-      <label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">Ссылка на видео (mp4)</label>
+      <label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">Ссылка видео (mp4)</label>
       <input id="af_video" placeholder="https://...mp4" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
-      <label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">Куда ведёт кнопка</label>
+      <label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">Куда ведёт</label>
       <input id="af_link" placeholder="https://t.me/..." style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
       <label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">Длительность (сек)</label>
       <input id="af_duration" type="number" value="15" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
@@ -2692,7 +2699,7 @@ async function adSubmit(){
   const type=AD_CURRENT_TYPE;
   const g=id=>$(id)?.value?.trim()||'';
   const st=$('adFormStatus');
-  if(st){st.textContent='Отправка...';}
+  if(st) st.textContent='Отправка...';
   try{
     let rpcName,params,confirmMsg;
     if(type==='banner'){
@@ -2706,7 +2713,7 @@ async function adSubmit(){
       const views=Number(g('af_views'))||0,reward=Number(g('af_reward'))||0;
       const total=views*reward*1.20;
       if(!g('af_title')||!g('af_video')||!g('af_link')){if(st) st.textContent='Заполните';return;}
-      confirmMsg=`Видео на ${views} просмотров.\nК оплате: ${f(total,4)} TUSD`;
+      confirmMsg=`Видео на ${views}.\nК оплате: ${f(total,4)} TUSD`;
       rpcName='ad_create_video';
       params={p_user_id:UID,p_title:g('af_title'),p_description:g('af_description'),p_video_url:g('af_video'),p_target_url:g('af_link'),p_duration:Number(g('af_duration'))||15,p_views:views,p_reward_per_view:reward};
     }else if(type==='task'){
@@ -2728,7 +2735,7 @@ async function adSubmit(){
     const{data,error}=await sb.rpc(rpcName,params);
     if(error||!data||data.ok===false){
       const err=data?.error||error?.message||'Ошибка';
-      const msgMap={insufficient_balance:`Недостаточно. Нужно ${f(data?.need,2)}, у вас ${f(data?.have,2)}`,title_and_link_required:'Заполните',title_and_video_required:'Заполните',title_and_url_required:'Заполните'};
+      const msgMap={insufficient_balance:`Недостаточно. Нужно ${f(data?.need,2)}`};
       if(st) st.textContent=msgMap[err]||err;
       return;
     }
@@ -2765,10 +2772,12 @@ async function loadMyAds(){
 function openAdTopup(){_adModalMode='topup';$('adBalanceModalTitle').textContent='📢 Пополнить';$('adBalanceModal').classList.add('show');loadAdBalanceInfo();}
 function openAdWithdraw(){_adModalMode='withdraw';$('adBalanceModalTitle').textContent='📢 Вывести';$('adBalanceModal').classList.add('show');loadAdBalanceInfo();}
 async function loadAdBalanceInfo(){
-  const{data}=await sb.rpc('get_ad_balance');
-  const main=n(data?.tusd_balance),free=n(data?.available_to_withdraw);
-  if(_adModalMode==='topup') $('adBalanceAvail').textContent='Доступно: '+main.toFixed(2)+' TUSD';
-  else $('adBalanceAvail').textContent='К выводу: '+free.toFixed(2)+' TUSD';
+  try{
+    const{data}=await sb.rpc('get_ad_balance');
+    const main=n(data?.tusd_balance),free=n(data?.available_to_withdraw);
+    if(_adModalMode==='topup') $('adBalanceAvail').textContent='Доступно: '+main.toFixed(2)+' TUSD';
+    else $('adBalanceAvail').textContent='К выводу: '+free.toFixed(2)+' TUSD';
+  }catch(e){}
 }
 function closeAdBalanceModal(e){if(e&&e.target!==$('adBalanceModal')) return;$('adBalanceModal').classList.remove('show');}
 async function confirmAdBalanceAction(){
@@ -2779,6 +2788,14 @@ async function confirmAdBalanceAction(){
   if(error||!data||data.ok===false){msg(data?.error||error?.message||'Ошибка','error');return;}
   msg(_adModalMode==='topup'?`✅ Пополнено ${amt}`:`✅ Выведено ${amt}`,'success');
   closeAdBalanceModal();await refreshAll();
+}
+async function loadAdPrices(){
+  try{
+    const{data,error}=await sb.rpc('ad_get_prices');
+    if(!error&&data&&data.ok){
+      AD_PRICES={banner_price_per_day:Number(data.banner_price_per_day)||10,video_price_per_view:Number(data.video_price_per_view)||0.001,task_price_per_sub:Number(data.task_price_per_sub)||0.5,link_price_per_click:Number(data.link_price_per_click)||0.3};
+    }
+  }catch(e){}
 }
 
 /* ═══════ REFRESH ALL ═══════ */
@@ -2814,16 +2831,6 @@ document.addEventListener('DOMContentLoaded',async()=>{
   setInterval(refreshJwt,30*60*1000);
   setInterval(loadRewardFunds,60*1000);
 });
-async function loadAdPrices(){
-  try{
-    const{data,error}=await sb.rpc('ad_get_prices');
-    if(!error&&data&&data.ok){
-      AD_PRICES={banner_price_per_day:Number(data.banner_price_per_day)||10,video_price_per_view:Number(data.video_price_per_view)||0.001,task_price_per_sub:Number(data.task_price_per_sub)||0.5,link_price_per_click:Number(data.link_price_per_click)||0.3};
-    }
-  }catch(e){}
-}
-async function loadWelcomeBonusStatusFallback(){}
-function openTasks(){openTasksModal();}
 </script>
 </body>
 </html>
