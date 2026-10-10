@@ -1267,7 +1267,8 @@ function renderHome(){
   const gearLv=getEquippedGearLevel();
   const nextLv=Math.min(21,rl+1);
   const needStake=RANK_STAKE[nextLv]||stakeUSD;
-  const needDeals=nextLv*5;
+    const TRADE_THRESHOLDS=[0,1,2,5,10,15,20,25,30,40,50,70,90,120,150,200,250,350,500,750,1000,1500];
+  const needDeals=TRADE_THRESHOLDS[nextLv]!==undefined?TRADE_THRESHOLDS[nextLv]:1500;
   const needRefs=nextLv<=5?0:(nextLv-5);
   const needGear=nextLv;
   $('scStakeTxt').textContent=`$${f(stakeUSD,2)} / $${f(needStake,2)}`;
