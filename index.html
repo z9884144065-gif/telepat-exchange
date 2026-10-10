@@ -461,7 +461,7 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 </div>
 </div>
 
-<!-- ═══════ ADMIN — ПОЛНАЯ ═══════ -->
+<!-- ═══════ ADMIN ═══════ -->
 <div id="view-admin" class="hidden">
 <h2 style="color:var(--gold)">👑 Админ-панель</h2>
 
@@ -950,6 +950,8 @@ let STAKE_STATE=null,STAKE_TIMER=null,STAKE_LAST_TS=0,STAKE_RATE_SEC=0,STAKE_DIS
 let ACT=[],ACC=null,ACR=[],ATC=null,LFT=0,LSP=10;
 let __PENDING_TASK=null,__RETURN_TIMER=null,DONATE_TOKEN=null,ADMIN_REWARD_TOKEN=null,LB_TAB='profit';
 let __START_ORDER_ID=null,ORDER_CACHE={},__BUY_ORDER=null;
+let state_swapFrom='TG',state_swapTo='TUSD';
+let SWAP_QUOTE=null,SWAP_QUOTE_TIMER=null,SWAP_BUSY=false;
 const UI_DEFAULTS={ui_bg:'#0b1018',ui_bg_radial:'#26334a',ui_accent:'#f4cf70',ui_card:'#141c28'};
 const VERIFIED_SYMBOLS=new Set(BASE_VERIFIED);
 
@@ -958,7 +960,6 @@ const RANK_STAKE=[0,0.5,1,2,3,4,5,6,7,8,16,32,64,128,256,512,1024,2048,4096,8192
 const RC=['#fff','#d8d8d8','#b9c5b9','#75c99a','#58b5e9','#4f8cff','#3974d9','#6673e8','#4169e1','#7389bd','#b87333','#bfc2c9','#e0bd45','#9b59b6','#8e44ad','#e0b72f','#e68a27','#24c8aa','#f5cf3d','#f7b83f','#ffd700'];
 const rk=l=>RC[Math.max(0,Math.min(20,Number(l||0)))];
 
-// ★★★ ПАТЧ: картинки рыцаря по группам уровней ★★★
 const GROUP_IMAGE={0:'knight-0.png',1:'knight-4.png',2:'knight-9.png',3:'knight-14.png',4:'knight-18.png'};
 function getKnightGroup(level){
   if(level>=18) return 4;
@@ -970,8 +971,8 @@ function getKnightGroup(level){
 
 const BUY_ERR={not_found:'Ордер не найден',already_taken:'Ордер выкуплен',own_order:'Нельзя выкупить свой',invalid_amount:'Некорректная сумма',too_much:'Слишком большая сумма',banned:'Заблокирован',creator_insufficient:'У продавца мало средств',taker_insufficient:'У вас мало средств'};
 const TOKEN_ICONS={'TG':{emoji:'🥇',bg:'linear-gradient(135deg,#f5d477,#c99629)'},'AI':{emoji:'🤖',bg:'linear-gradient(135deg,#8b5cf6,#6d28d9)'},'TUSD':{emoji:'💵',bg:'linear-gradient(135deg,#39d98a,#2ba86a)'},'VKCOIN':{emoji:'🎮',bg:'linear-gradient(135deg,#4f8cff,#2563eb)'},'RUB':{emoji:'₽',bg:'linear-gradient(135deg,#4caf50,#2e7d32)'},'DEFAULT':{emoji:'🪙',bg:'linear-gradient(135deg,#7f8c9f,#4a596d)'}};
-const OP_ICONS={ad_view:'📺',checkin:'🔥',task_reward:'📋',task_commission:'👑',staking_claim:'💧',welcome_bonus:'🎁',transfer_in:'⬇️',transfer_out:'⬆️',transfer_fee:'💸',p2p_trade:'🤝',test:'🧪',fund_deposit:'➕',reward_share_claim:'💵',reward_fund_share:'🎁'};
-const OP_LABELS={ad_view:'Реклама',checkin:'Чекин',task_reward:'Задание',task_commission:'Комиссия',staking_claim:'Стейкинг',welcome_bonus:'Бонус',transfer_in:'Входящий',transfer_out:'Исходящий',transfer_fee:'Комиссия перевода',p2p_trade:'P2P сделка',test:'Тест',fund_deposit:'Взнос в фонд',reward_share_claim:'Сбор награды',reward_fund_share:'Награда из фонда'};
+const OP_ICONS={ad_view:'📺',checkin:'🔥',task_reward:'📋',task_commission:'👑',staking_claim:'💧',welcome_bonus:'🎁',transfer_in:'⬇️',transfer_out:'⬆️',transfer_fee:'💸',p2p_trade:'🤝',test:'🧪',fund_deposit:'➕',reward_share_claim:'💵',reward_fund_share:'🎁',swap:'🔄'};
+const OP_LABELS={ad_view:'Реклама',checkin:'Чекин',task_reward:'Задание',task_commission:'Комиссия',staking_claim:'Стейкинг',welcome_bonus:'Бонус',transfer_in:'Входящий',transfer_out:'Исходящий',transfer_fee:'Комиссия перевода',p2p_trade:'P2P сделка',test:'Тест',fund_deposit:'Взнос в фонд',reward_share_claim:'Сбор награды',reward_fund_share:'Награда из фонда',swap:'Обмен'};
 const SLOT_LABEL={body:'👕 Торс',legs:'👖 Ноги',weapon:'🗡 Оружие',armor:'🛡 Броня',helmet:'🪖 Шлем',shield:'🛡 Щит',cloak:'🧥 Плащ',ring:'💍 Кольцо',bag:'🎒 Сумка',pet:'🐺 Питомец',titleSlot:'🏷 Титул',aura:'✨ Аура',license:'📜 Грамота'};
 
 const $=id=>document.getElementById(id);
@@ -1104,9 +1105,21 @@ async function loadMyItems(){
 async function loadShopItems(){
   try{
     const{data,error}=await sb.rpc('get_shop_items',{p_min_rank:0});
-    if(error||!data||data.ok===false){SHOP_ITEMS=[];return;}
-    SHOP_ITEMS=data.items||[];
-  }catch(e){SHOP_ITEMS=[];}
+    if(error){
+      console.error('[loadShopItems] RPC error:',error);
+      SHOP_ITEMS=[];
+      return;
+    }
+    if(!data||data.ok===false){
+      console.error('[loadShopItems] bad data:',data);
+      SHOP_ITEMS=[];
+      return;
+    }
+    SHOP_ITEMS=Array.isArray(data.items)?data.items:[];
+  }catch(e){
+    console.error('[loadShopItems] exception:',e);
+    SHOP_ITEMS=[];
+  }
 }
 async function loadStakeState(){
   if(!UID) return;
@@ -1210,7 +1223,6 @@ function renderHome(){
   const days=Math.floor((Date.now()-reg.getTime())/DAY_MS);
   $('userDays').textContent='📅 '+days+' дней';
 
-  // ★★★ ПАТЧ: смена картинки рыцаря по группе уровня ★★★
   const knightImgEl=$('knightImg');
   if(knightImgEl){
     const group=getKnightGroup(rl);
@@ -1332,26 +1344,40 @@ async function showShopTab(tab){
     const myGear=MY_ITEMS.filter(i=>n(i.min_rank)===targetLv);
     const slotsNeeded=['weapon','body','legs'];
     if(targetLv>=5) slotsNeeded.push('armor');
+    if(!SHOP_ITEMS.length){
+      c.innerHTML=`<div class="item-card"><div class="item-desc">⚠️ Магазин не загрузился. Обнови страницу или проверь RPC <b>get_shop_items</b>.</div></div>`;
+      return;
+    }
     c.innerHTML=`
-<div class="item-card"><div class="item-header"><b>⚔️ Сет уровня ${targetLv} (${RANKS[targetLv]})</b></div><div class="item-desc">Купи предметы → надень → уровень пересчитается.</div></div>
+<div class="item-card"><div class="item-header"><b>⚔️ Сет уровня ${targetLv} (${RANKS[targetLv]||'—'})</b></div><div class="item-desc">Купи предметы → надень → уровень пересчитается.</div></div>
 ${slotsNeeded.map(slot=>{
   const have=myGear.find(i=>i.slot===slot);
   const cfg=SHOP_ITEMS.find(i=>i.slot===slot&&n(i.min_rank)===targetLv);
-  const price=cfg?Number(cfg.price_usd||0):0;
+  const price=cfg?Number(cfg.price_final||cfg.price_usd||0):0;
   const icon=slot==='weapon'?'🗡️':slot==='body'?'👕':slot==='legs'?'👖':'⛑️';
   const slotName=slot==='weapon'?'Оружие':slot==='body'?'Броня':slot==='legs'?'Поножи':'Шлем';
   let btn;
-  if(have&&have.is_equipped) btn=`<button class="green" disabled>✅ Надето</button>`;
-  else if(have) btn=`<button class="gold" onclick="equipItem('${have.id}')">🎽 Надеть</button>`;
-  else btn=`<button onclick="buyGearItem('${slot}',${targetLv})">Купить $${f(price,2)}</button>`;
+  if(!cfg){
+    btn=`<button disabled>Нет в продаже</button>`;
+  }else if(have&&have.is_equipped){
+    btn=`<button class="green" disabled>✅ Надето</button>`;
+  }else if(have){
+    btn=`<button class="gold" onclick="equipItem('${have.id}')">🎽 Надеть</button>`;
+  }else{
+    btn=`<button onclick="buyGearItem('${esc(cfg.symbol)}')">Купить $${f(price,2)}</button>`;
+  }
+  const priceLabel=cfg?`$${f(price,2)}`:'—';
   return `<div class="item-card">
     <div class="item-header">
       <span class="item-name">${icon} ${slotName} ур.${targetLv}</span>
-      <span class="rarity common">$${f(price,2)}</span>
+      <span class="rarity common">${priceLabel}</span>
     </div>
     <div class="item-footer">${btn}</div>
   </div>`;
-}).join('')}`;
+}).join('')}
+<div class="item-card" style="border-color:#2d3a4c">
+<div class="item-desc">💰 TUSD: <b style="color:var(--gold)">$${f(CU?.tusd_balance||0,2)}</b>${CU?.merchant_license_until&&new Date(CU.merchant_license_until)>new Date()?' • 🎩 Грамота: -20%':''}</div>
+</div>`;
   }
   else if(tab==='extras'){
     const curLevel=CU?Number(CU.rank_level||0):0;
@@ -1368,7 +1394,7 @@ ${extras.map(slot=>{
   return `<div class="item-card">
     <div class="item-header"><span class="item-name">${icons[slot]} ${names[slot]}</span>${locked?`<span class="rarity common">🔒 Ур.${levelReq}</span>`:`<span class="rarity rare">Открыт</span>`}</div>
     <div class="item-footer">
-      <span class="item-price">${locked?`Нужен ур. ${levelReq}`:`$${fmt(price)}`}</span>
+      <span class="item-price">${locked?`Нужен ур. ${levelReq}`:`$${f(price,2)}`}</span>
       ${locked?`<button disabled>🔒</button>`:has?`<button class="green" disabled>✅ Надето</button>`:`<button onclick="msg('Покупка скоро')">Купить</button>`}
     </div>
   </div>`;
@@ -1398,16 +1424,19 @@ ${extras.map(slot=>{
   else if(tab==='refs'){c.innerHTML=`<div class="item-card"><div class="item-header"><b>👥 Рефералы на продажу</b></div><div class="item-desc">Скоро</div></div>`;}
   else if(tab==='auction'){c.innerHTML=`<div class="item-card"><div class="item-header"><b>🔨 Аукцион</b></div><div class="item-desc">Скоро</div></div>`;}
 }
-async function buyGearItem(slot,level){
-  const cfg=SHOP_ITEMS.find(i=>i.slot===slot&&n(i.min_rank)===level);
+async function buyGearItem(symbol){
+  const cfg=SHOP_ITEMS.find(i=>i.symbol===symbol);
   if(!cfg){msg('Предмет не найден','error');return;}
   const price=Number(cfg.price_final||cfg.price_usd||0);
-  if(n(CU.tusd_balance)<price){msg('Недостаточно TUSD','error');return;}
+  const bal=n(CU?.tusd_balance);
+  if(bal<price){msg(`Недостаточно TUSD (нужно $${f(price,2)}, у тебя $${f(bal,2)})`,'error');return;}
   if(!confirm(`Купить "${cfg.name}" за $${f(price,2)}?`)) return;
   const{data,error}=await sb.rpc('buy_item',{p_item_symbol:cfg.symbol,p_pay_token:'TUSD'});
-  if(error||!data||data.ok===false){msg(data?.error||error?.message||'Ошибка','error');return;}
-  msg('✅ Куплено! Надень в инвентаре','success');
+  if(error){msg(error.message,'error');return;}
+  if(!data||data.ok===false){msg(data?.error||'Ошибка покупки','error');return;}
+  msg(`✅ Куплено: ${cfg.name}`,'success');
   await refreshAll();
+  if(!$('view-shop').classList.contains('hidden')) showShopTab('gear');
 }
 
 /* ═══════ INCOME ═══════ */
@@ -1438,9 +1467,11 @@ ${inv.length?inv.map(i=>`
 </div>`).join(''):'<div class="item-card"><div class="item-desc">Нет предметов</div></div>'}`;
   }
   else if(tab==='swap'){
-    const fromBal=n(CU?.tg_balance||0);
+    const fromBal=tb(state_swapFrom);
+    const fromPrice=priceOf(state_swapFrom);
+    const toPrice=priceOf(state_swapTo);
     c.innerHTML=`
-<div class="item-card"><div class="item-header"><b>🔄 Swap</b></div><div class="item-desc">Курс: 1 TG = $100 • Комиссия 0.5%</div></div>
+<div class="item-card"><div class="item-header"><b>🔄 Swap · Пул ликвидности</b></div><div class="item-desc">Курс от резервов пула (x·y=k). При обмене TUSD → TOKEN, цена TOKEN растёт.</div></div>
 <div class="swap-box">
 <div class="lbl"><span>Отдаёте</span><span id="swFromBal">Баланс: ${f(fromBal,4)}</span></div>
 <div class="row">
@@ -1448,6 +1479,7 @@ ${inv.length?inv.map(i=>`
 <button class="max-btn" onclick="setSwapMax()">MAX</button>
 <button class="token-badge" onclick="openTokenPicker('from')">${tokenIcon(state_swapFrom)} ${state_swapFrom} ▼</button>
 </div>
+<div class="lbl" style="margin-top:6px"><span>Цена (TUSD)</span><span>$${f(fromPrice,8)}</span></div>
 </div>
 <div class="swap-arrow-wrap"><button class="swap-arrow-btn" onclick="swapSwapTokens()">⇅</button></div>
 <div class="swap-box">
@@ -1456,9 +1488,15 @@ ${inv.length?inv.map(i=>`
 <input type="number" id="swToAmt" placeholder="0.0" readonly>
 <button class="token-badge" onclick="openTokenPicker('to')">${tokenIcon(state_swapTo)} ${state_swapTo} ▼</button>
 </div>
+<div class="lbl" style="margin-top:6px"><span>Цена (TUSD)</span><span>$${f(toPrice,8)}</span></div>
 </div>
+<div class="prev" style="margin-top:10px">
+<div class="history-row"><span>Курс</span><b id="swRate">—</b></div>
+<div class="history-row"><span>Комиссия</span><b id="swFee">—</b></div>
+</div>
+<div id="swErr" class="info er" style="text-align:center;margin-top:6px"></div>
 <button class="swap-btn" id="swapBtn" onclick="doSwap()" disabled>Обменять</button>`;
-    calcSwap();
+    SWAP_QUOTE=null;
   }
   else if(tab==='staking'){
     await loadStakeState();
@@ -1730,8 +1768,7 @@ function updateBuyPreview(){
 async function confirmBuyOrder(){
   if(!__BUY_ORDER||!UID) return;
   const o=__BUY_ORDER;
-  const fromTotal=n(o.from_amount),toTotal=n(o.to_amount);
-  const rate=fromTotal>0?toTotal/fromTotal:0;
+  const fromTotal=n(o.from_amount);
   const getAmt=n($('buyAmount').value);
   const btn=$('buyConfirmBtn');
   if(getAmt<=0){msg('Введите количество','error');return;}
@@ -1762,31 +1799,147 @@ function buyErrText(data,error){
   else if(code==='taker_insufficient'&&data.need!=null) base='Недостаточно. Нужно '+f(data.need,8)+' '+(data.need_token||'');
   return base;
 }
-let state_swapFrom='TG',state_swapTo='TUSD';
+
+/* ═══════ SWAP (AMM) ═══════ */
 function calcSwap(){
-  const inp=$('swFromAmt'),out=$('swToAmt');
-  if(!inp||!out) return;
-  const fromAmt=n(inp.value);
-  const rate=priceOf(state_swapFrom)/priceOf(state_swapTo);
-  const toAmt=fromAmt*rate*0.995;
-  out.value=fromAmt>0?toAmt.toFixed(8):'';
-  if($('swToUsd')) $('swToUsd').textContent='≈ $'+f(toAmt*priceOf(state_swapTo),2);
-  const fromBal=tb(state_swapFrom);
-  if($('swFromBal')) $('swFromBal').textContent='Баланс: '+f(fromBal,4);
-  const btn=$('swapBtn');
-  const enough=fromAmt>0&&fromBal>=fromAmt;
-  btn.disabled=!enough;
-  btn.classList.toggle('active',enough);
+  if(SWAP_QUOTE_TIMER) clearTimeout(SWAP_QUOTE_TIMER);
+  SWAP_QUOTE_TIMER=setTimeout(fetchSwapQuote,300);
 }
-function setSwapMax(){const inp=$('swFromAmt');if(!inp) return;inp.value=tb(state_swapFrom);calcSwap();}
-function swapSwapTokens(){const t=state_swapFrom;state_swapFrom=state_swapTo;state_swapTo=t;showIncomeTab('swap');}
-function openTokenPicker(target){openModal('Выбрать токен',ALL_TOKENS.map(t=>`<button class="admin-btn sec" style="width:100%;margin-bottom:6px" onclick="pickToken('${target}','${t.symbol}')">${tokenIcon(t.symbol)} ${t.symbol}</button>`).join(''));}
+async function fetchSwapQuote(){
+  const inp=$('swFromAmt');if(!inp) return;
+  const out=$('swToAmt');
+  const rateEl=$('swRate');
+  const feeEl=$('swFee');
+  const errEl=$('swErr');
+  const btn=$('swapBtn');
+  const amt=n(inp.value);
+  if(errEl) errEl.textContent='';
+  if(amt<=0){
+    if(out) out.value='';
+    if(rateEl) rateEl.textContent='—';
+    if(feeEl) feeEl.textContent='—';
+    if($('swToUsd')) $('swToUsd').textContent='≈ $0.00';
+    SWAP_QUOTE=null;
+    if(btn){btn.disabled=true;btn.classList.remove('active');btn.textContent='Обменять';}
+    return;
+  }
+  if(state_swapFrom===state_swapTo){
+    if(errEl) errEl.textContent='Выберите разные токены';
+    if(out) out.value='';
+    if(rateEl) rateEl.textContent='—';
+    if(feeEl) feeEl.textContent='—';
+    SWAP_QUOTE=null;
+    if(btn){btn.disabled=true;btn.classList.remove('active');btn.textContent='Обменять';}
+    return;
+  }
+  const bal=tb(state_swapFrom);
+  if(bal<amt){
+    if(errEl) errEl.textContent=`Недостаточно ${state_swapFrom} (у тебя ${f(bal,6)})`;
+  }
+  if(btn){btn.disabled=true;btn.classList.remove('active');btn.textContent='⏳ Считаем...';}
+  try{
+    const{data,error}=await sb.rpc('get_swap_quote',{
+      p_from_token:state_swapFrom,
+      p_to_token:state_swapTo,
+      p_amount:amt
+    });
+    if(error||!data||data.ok===false){
+      const m=data?.error||error?.message||'Ошибка расчёта';
+      if(errEl) errEl.textContent=m;
+      if(out) out.value='';
+      if(rateEl) rateEl.textContent='—';
+      if(feeEl) feeEl.textContent='—';
+      SWAP_QUOTE=null;
+      if(btn){btn.disabled=true;btn.classList.remove('active');btn.textContent='Обменять';}
+      return;
+    }
+    SWAP_QUOTE=data;
+    const outAmt=Number(data.amount_out)||0;
+    const feeAmt=Number(data.fee)||0;
+    const rate=Number(data.rate)||0;
+    if(out) out.value=outAmt>0?outAmt.toFixed(8):'';
+    if(rateEl) rateEl.textContent=`1 ${state_swapFrom} = ${rate.toFixed(8)} ${state_swapTo}`;
+    if(feeEl) feeEl.textContent=`${feeAmt.toFixed(8)} ${state_swapFrom} (${data.fee_pct}%)`;
+    if($('swToUsd')) $('swToUsd').textContent='≈ $'+f(outAmt*priceOf(state_swapTo),4);
+    const enough=bal>=amt;
+    if(btn){
+      btn.disabled=!enough;
+      btn.classList.toggle('active',enough);
+      btn.textContent=enough?'Обменять':`Мало ${state_swapFrom}`;
+    }
+  }catch(e){
+    if(errEl) errEl.textContent=e.message||'Ошибка сети';
+    SWAP_QUOTE=null;
+    if(btn){btn.disabled=true;btn.classList.remove('active');btn.textContent='Обменять';}
+  }
+}
+function setSwapMax(){
+  const inp=$('swFromAmt');if(!inp) return;
+  inp.value=String(tb(state_swapFrom));
+  calcSwap();
+}
+function swapSwapTokens(){
+  const amt=$('swFromAmt')?.value||'';
+  const t=state_swapFrom;
+  state_swapFrom=state_swapTo;
+  state_swapTo=t;
+  SWAP_QUOTE=null;
+  showIncomeTab('swap').then(()=>{
+    const inp=$('swFromAmt');
+    if(inp&&amt){inp.value=amt;calcSwap();}
+  });
+}
+function openTokenPicker(target){
+  openModal('Выбрать токен',ALL_TOKENS.map(t=>`<button class="admin-btn sec" style="width:100%;margin-bottom:6px" onclick="pickToken('${target}','${t.symbol}')">${tokenIcon(t.symbol)} ${t.symbol} — ${esc(t.name||'')}</button>`).join(''));
+}
 function pickToken(target,t){
   if(target==='from'){state_swapFrom=t;if(state_swapTo===t) state_swapTo=t==='TUSD'?'TG':'TUSD';}
   else{state_swapTo=t;if(state_swapFrom===t) state_swapFrom=t==='TUSD'?'TG':'TUSD';}
-  closeModal();showIncomeTab('swap');
+  closeModal();
+  showIncomeTab('swap');
 }
-async function doSwap(){msg('Swap скоро','info');}
+async function doSwap(){
+  if(SWAP_BUSY) return;
+  if(!SWAP_QUOTE){msg('Дождитесь расчёта котировки','error');return;}
+  const amt=n($('swFromAmt').value);
+  if(amt<=0){msg('Введите сумму','error');return;}
+  const bal=tb(state_swapFrom);
+  if(bal<amt){msg(`Недостаточно ${state_swapFrom}`,'error');return;}
+  const btn=$('swapBtn');
+  SWAP_BUSY=true;
+  if(btn){btn.disabled=true;btn.textContent='⏳ Обмен...';}
+  try{
+    const{data,error}=await sb.rpc('swap_execute',{
+      p_from_token:state_swapFrom,
+      p_to_token:state_swapTo,
+      p_amount:amt
+    });
+    if(error){
+      msg(error.message,'error');
+      SWAP_BUSY=false;
+      if(btn){btn.textContent='Обменять';}
+      calcSwap();
+      return;
+    }
+    if(!data||data.ok===false){
+      msg(data?.error||'Ошибка обмена','error');
+      SWAP_BUSY=false;
+      if(btn){btn.textContent='Обменять';}
+      calcSwap();
+      return;
+    }
+    msg(`✅ ${f(data.amount_in,6)} ${data.from_token} → ${f(data.amount_out,6)} ${data.to_token}`,'success');
+    SWAP_QUOTE=null;
+    SWAP_BUSY=false;
+    await refreshAll();
+    await loadAllTokens();
+    if(currentIncomeTab==='swap') await showIncomeTab('swap');
+  }catch(e){
+    msg(e.message||'Ошибка','error');
+    SWAP_BUSY=false;
+    if(btn){btn.textContent='Обменять';}
+  }
+}
 
 /* ═══════ FRIENDS ═══════ */
 async function renderFriends(){
