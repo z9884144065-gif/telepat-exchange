@@ -358,7 +358,7 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 </div>
 
 <div class="slots-row-bottom">
-<div class="slot" id="slot-ring" onclick="clickSlot('ring')"><span class="slot-label">Кольцо</span>💍</div>
+<div class="slot" id="slot-ring" onclick="clickSlot('ring')"><span class="slot-label">Перстень</span>💍</div>
 <div class="slot" id="slot-bag" onclick="clickSlot('bag')"><span class="slot-label">Сумка</span>🎒</div>
 <div class="slot" id="slot-pet" onclick="clickSlot('pet')"><span class="slot-label">Питомец</span>🐺</div>
 <div class="slot" id="slot-titleSlot" onclick="clickSlot('titleSlot')"><span class="slot-label">Титул</span>🏷️</div>
@@ -405,6 +405,7 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 <button class="quick-btn" onclick="goView('admin')"><span class="icon">👑</span> Админ</button>
 </div>
 </div>
+
 <!-- ═══════ SHOP ═══════ -->
 <div id="view-shop" class="hidden">
 <h2 style="color:var(--gold)">🏪 Магазин</h2>
@@ -460,7 +461,6 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 <button class="admin-btn sec" style="width:100%;margin-top:8px" onclick="loadMyReferrals()">🔄 Обновить</button>
 </div>
 </div>
-
 <!-- ═══════ ADMIN ═══════ -->
 <div id="view-admin" class="hidden">
 <h2 style="color:var(--gold)">👑 Админ-панель</h2>
@@ -979,7 +979,7 @@ const $=id=>document.getElementById(id);
 const n=v=>{const x=Number(v);return Number.isFinite(x)?x:0;};
 const f=(v,m=8)=>n(v).toLocaleString('ru-RU',{maximumFractionDigits:m});
 const esc=v=>String(v??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');
-const tokenIcon=s=>s==='TG'?'🥇':s==='TUSD'?'💵':s==='AI'?'🤖':s==='VKCOIN'?'🎮':'🪙';
+const tokenIcon=s=>s==='TG'?'🥇':s==='TUSD'?'💵':s==='AI'?'🤖':s==='VKCOIN'?'🎮':s==='RUB'?'₽':'🪙';
 const tb=t=>{if(!CU) return 0;if(t==='TG') return n(CU.tg_balance);if(t==='AI') return n(CU.ai_balance);if(t==='TUSD') return n(CU.tusd_balance);return n(CB[t]);};
 const fmtAccumBig=v=>{const x=Number(v)||0;if(x===0) return '0.000000';return x.toFixed(6);};
 const fmtAccum=(v,rateSec)=>{const x=Number(v)||0;if(x===0) return '0.00000000';let d=8;if(rateSec&&rateSec>0){const p=rateSec*0.1;if(p>0){const nd=Math.ceil(-Math.log10(p))+1;d=Math.max(8,Math.min(12,nd));}}return x.toFixed(d);};
@@ -1190,8 +1190,7 @@ function openTelegramProfile(){const name=tgu?.first_name||CU?.first_name||'По
 function showFAQ(){msg('❓ @TELEPATp2p_bot');}
 function openSettings(){if(UID===AID) goView('admin');else msg('⚙️ Скоро');}
 function copyRefLink(){const inp=$('refLink');if(!inp) return;navigator.clipboard?.writeText(inp.value).then(()=>msg('Скопировано','success'),()=>{inp.select();document.execCommand('copy');msg('Скопировано','success');});}
-
-/* ═══════ HOME ═══════ */
+  /* ═══════ HOME ═══════ */
 function getEquippedGearLevel(){
   const eq=MY_ITEMS.filter(i=>i.is_equipped);
   if(!eq.length) return 0;
@@ -1214,16 +1213,13 @@ function renderHome(){
   let totalUSD=tgUSD+aiUSD+tusdUSD;
   Object.keys(CB).forEach(sym=>{if(['TG','AI','TUSD'].includes(sym)) return;const tk=ALL_TOKENS.find(x=>x.symbol===sym);if(tk&&tk.is_system_token) return;totalUSD+=tokenToTusd(sym,n(CB[sym]));});
   $('statBalance').textContent='$'+f(totalUSD,0);
-
   const photo=tgu?.photo_url||CU.photo_url;
   const av=$('avatarImg');
   if(photo){av.src=photo;}
   else{av.src=`data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">👤</text></svg>')}`;}
-
   const reg=CU.created_at?new Date(CU.created_at):new Date();
   const days=Math.floor((Date.now()-reg.getTime())/DAY_MS);
   $('userDays').textContent='📅 '+days+' дней';
-
   const knightImgEl=$('knightImg');
   if(knightImgEl){
     const group=getKnightGroup(rl);
@@ -1238,10 +1234,9 @@ function renderHome(){
       },150);
     }
   }
-
   const eq={};
   MY_ITEMS.filter(i=>i.is_equipped).forEach(i=>{eq[i.slot]=i;});
-  ['weapon','body','legs','armor'].forEach(s=>{
+  ['weapon','body','legs','armor','ring'].forEach(s=>{
     const elId=s==='armor'?'helmet':s;
     const el=$('slot-'+elId);if(!el) return;
     el.classList.remove('empty','locked','filled','unlocked-empty');
@@ -1251,12 +1246,11 @@ function renderHome(){
       el.title=eq[s].name;
     }else{
       el.classList.add('unlocked-empty');
-      const ic=s==='weapon'?'🗡️':s==='body'?'👕':s==='legs'?'👖':'⛑️';
+      const ic={weapon:'🗡️',body:'👕',legs:'👖',armor:'⛑️',ring:'💍'}[s];
       el.innerHTML=`<span class="slot-label">${SLOT_LABEL[s]||s}</span>${ic}`;
     }
     el.onclick=()=>clickSlot(s);
   });
-
   const inv=MY_ITEMS.filter(i=>!i.is_equipped&&!i.is_listed);
   $('invCount').textContent=inv.length+' / 10';
   const grid=$('invGrid');grid.innerHTML='';
@@ -1267,7 +1261,6 @@ function renderHome(){
     else{slot.classList.add('unlocked-empty');slot.innerHTML='🎒';slot.style.opacity='0.4';}
     grid.appendChild(slot);
   }
-
   const stakeUSD=Number(CU.rank_weight||0);
   const deals=Number(CU.trades_new||0);
   const refs=Number(CU.refs_new||0);
@@ -1275,21 +1268,30 @@ function renderHome(){
   const nextLv=Math.min(21,rl+1);
   const needStake=RANK_STAKE[nextLv]||stakeUSD;
   const needDeals=nextLv*5;
-  const needRefs=nextLv*2;
+  const needRefs=nextLv<=5?0:(nextLv-5);
   const needGear=nextLv;
   $('scStakeTxt').textContent=`$${f(stakeUSD,2)} / $${f(needStake,2)}`;
   $('scDealsTxt').textContent=`${deals} / ${needDeals}`;
-  $('scRefsTxt').textContent=`${refs} / ${needRefs}`;
+  $('scRefsTxt').textContent=needRefs===0?`${refs} / 0`:`${refs} / ${needRefs}`;
   $('scGearTxt').textContent=`${gearLv} / ${needGear}`;
   $('scStake').style.width=(needStake>0?Math.min(100,stakeUSD/needStake*100):100)+'%';
   $('scDeals').style.width=(needDeals>0?Math.min(100,deals/needDeals*100):100)+'%';
-  $('scRefs').style.width=(needRefs>0?Math.min(100,refs/needRefs*100):100)+'%';
+  $('scRefs').style.width=needRefs>0?Math.min(100,refs/needRefs*100)+'%':'100%';
   $('scGear').style.width=(needGear>0?Math.min(100,gearLv/needGear*100):100)+'%';
-  $('scStarTxt').textContent='—';
-  $('scStar').style.width='0%';
+  if(nextLv<14){
+    $('scStarTxt').textContent='🔒 с Барона (14)';
+    $('scStar').style.width='0%';
+  }else{
+    const needStar=nextLv<=15?1:(nextLv-14);
+    const needLvl=nextLv-8;
+    const have=Number(CU.star_refs_count||0);
+    $('scStarTxt').textContent=`${have} / ${needStar} (ур.${needLvl}+)`;
+    $('scStar').style.width=Math.min(100,(have/needStar)*100)+'%';
+  }
 }
 function clickSlot(slot){
-  if(!['weapon','body','legs','armor'].includes(slot)){msg('Слот откроется позже','info');return;}
+  const allowed=['weapon','body','legs','armor','ring','titleSlot','aura'];
+  if(!allowed.includes(slot)){msg('Слот откроется позже','info');return;}
   const equipped=MY_ITEMS.find(i=>i.is_equipped&&i.slot===slot);
   if(equipped){
     if(confirm(`Снять ${equipped.name}?`)){
@@ -1299,7 +1301,7 @@ function clickSlot(slot){
   }
   const available=MY_ITEMS.find(i=>!i.is_equipped&&!i.is_listed&&i.slot===slot);
   if(available){equipItem(available.id);return;}
-  msg('Купи в Магазин → Амуниция','info');
+  msg('Купи в Магазине','info');
   goView('shop');
 }
 async function equipItem(itemId){
@@ -1311,14 +1313,16 @@ async function equipItem(itemId){
 function openItemModal(itemId){
   const item=MY_ITEMS.find(i=>i.id===itemId);
   if(!item) return;
-  const basePrice=Number(item.base_price||0).toFixed(2);
+  const basePrice=Number(item.base_price||item.purchase_price_usd||0).toFixed(2);
+  const canSell=item.category!=='license';
   openModal(`${item.emoji||'🎁'} ${esc(item.name)}`,`
     <div style="text-align:center;font-size:52px;margin:8px 0">${item.emoji||'🎁'}</div>
     <div class="item-desc" style="text-align:center;margin-bottom:12px">Уровень ${item.min_rank} • Слот: ${SLOT_LABEL[item.slot]||item.slot}<br>База: $${basePrice}</div>
     <div class="modal-actions">
       <button class="admin-btn primary" onclick="equipItem('${item.id}');closeModal()">🎽 Надеть</button>
-      <button class="admin-btn gold" onclick="sellMyItem('${item.id}');closeModal()">💰 Продать</button>
+      ${canSell?`<button class="admin-btn gold" onclick="sellMyItem('${item.id}');closeModal()">💰 Выкупить магазину</button>`:''}
     </div>
+    ${canSell?`<div class="info" style="text-align:center;margin-top:12px;font-size:11px">Или выставь на P2P: Доход → Амуниция</div>`:''}
     <button class="admin-btn sec" style="width:100%;margin-top:8px" onclick="closeModal()">Отмена</button>`);
 }
 async function sellMyItem(itemId){
@@ -1341,73 +1345,71 @@ async function showShopTab(tab){
   if(tab==='gear'){
     await loadShopItems();
     const curLv=CU?Number(CU.rank_level||0):0;
-    const targetLv=Math.min(21,curLv+1);
-    const myGear=MY_ITEMS.filter(i=>n(i.min_rank)===targetLv);
-    const slotsNeeded=['weapon','body','legs'];
-    if(targetLv>=5) slotsNeeded.push('armor');
-    if(!SHOP_ITEMS.length){
-      c.innerHTML=`<div class="item-card"><div class="item-desc">⚠️ Магазин не загрузился. Обнови страницу или проверь RPC <b>get_shop_items</b>.</div></div>`;
-      return;
-    }
+    const levels=[];
+    for(let i=1;i<=4;i++){const L=Math.min(21,curLv+i);if(L>curLv)levels.push(L);}
+    if(!SHOP_ITEMS.length){c.innerHTML='<div class="item-card"><div class="item-desc">⚠️ Магазин не загрузился</div></div>';return;}
     c.innerHTML=`
-<div class="item-card"><div class="item-header"><b>⚔️ Сет уровня ${targetLv} (${RANKS[targetLv]||'—'})</b></div><div class="item-desc">Купи предметы → надень → уровень пересчитается.</div></div>
-${slotsNeeded.map(slot=>{
-  const have=myGear.find(i=>i.slot===slot);
-  const cfg=SHOP_ITEMS.find(i=>i.slot===slot&&n(i.min_rank)===targetLv);
-  const price=cfg?Number(cfg.price_final||cfg.price_usd||0):0;
-  const icon=slot==='weapon'?'🗡️':slot==='body'?'👕':slot==='legs'?'👖':'⛑️';
-  const slotName=slot==='weapon'?'Оружие':slot==='body'?'Броня':slot==='legs'?'Поножи':'Шлем';
-  let btn;
-  if(!cfg){btn=`<button disabled>Нет в продаже</button>`;}
-  else if(have&&have.is_equipped){btn=`<button class="green" disabled>✅ Надето</button>`;}
-  else if(have){btn=`<button class="gold" onclick="equipItem('${have.id}')">🎽 Надеть</button>`;}
-  else{btn=`<button onclick="buyGearItem('${esc(cfg.symbol)}')">Купить $${f(price,2)}</button>`;}
-  const priceLabel=cfg?`$${f(price,2)}`:'—';
+<div class="item-card"><div class="item-header"><b>⚔️ Амуниция — 4 уровня вперёд</b></div><div class="item-desc">Можно купить заранее. Надеть — только по достижении уровня.</div></div>
+${levels.map(targetLv=>{
+  const myGear=MY_ITEMS.filter(i=>n(i.min_rank)===targetLv);
+  const slotsNeeded=['weapon','body','legs'];
+  if(targetLv>=5) slotsNeeded.push('armor');
+  if(targetLv>=14) slotsNeeded.push('ring');
+  const needRank=targetLv-1;
+  const locked=curLv<needRank;
+  const slotsHtml=slotsNeeded.map(slot=>{
+    const have=myGear.find(i=>i.slot===slot);
+    const cfg=SHOP_ITEMS.find(i=>i.slot===slot&&n(i.min_rank)===targetLv);
+    const price=cfg?Number(cfg.price_final||cfg.price_usd||0):0;
+    const icons={weapon:'🗡️',body:'👕',legs:'👖',armor:'⛑️',ring:'💍'};
+    const names={weapon:'Оружие',body:'Броня',legs:'Поножи',armor:'Шлем',ring:'Перстень'};
+    let btn;
+    if(!cfg)btn='<button disabled>—</button>';
+    else if(have&&have.is_equipped)btn='<button class="green" disabled>✅ Надето</button>';
+    else if(have)btn=locked?`<button class="gold" disabled>🎽 Ур.${needRank}</button>`:`<button class="gold" onclick="equipItem('${have.id}')">🎽 Надеть</button>`;
+    else if(locked)btn=`<button disabled>🔒 Ур.${needRank}</button>`;
+    else btn=`<button onclick="buyGearItem('${esc(cfg.symbol)}')">Купить $${f(price,2)}</button>`;
+    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #252b36">
+      <span style="font-size:12px">${icons[slot]} ${names[slot]}</span>
+      <span style="font-size:11px;color:var(--gold)">${cfg?'$'+f(price,2):'—'}</span>
+      ${btn}</div>`;
+  }).join('');
   return `<div class="item-card">
-    <div class="item-header">
-      <span class="item-name">${icon} ${slotName} ур.${targetLv}</span>
-      <span class="rarity common">${priceLabel}</span>
-    </div>
-    <div class="item-footer">${btn}</div>
+    <div class="item-header"><b>📦 Уровень ${targetLv} (${RANKS[targetLv]||'—'})</b>${locked?' <span class="rarity common">🔒</span>':''}</div>
+    ${slotsHtml}
   </div>`;
 }).join('')}
 <div class="item-card" style="border-color:#2d3a4c">
 <div class="item-desc">💰 TUSD: <b style="color:var(--gold)">$${f(CU?.tusd_balance||0,2)}</b>${CU?.merchant_license_until&&new Date(CU.merchant_license_until)>new Date()?' • 🎩 Грамота: -20%':''}</div>
 </div>`;
   }
-  else if(tab==='extras'){
-    const curLevel=CU?Number(CU.rank_level||0):0;
-    const extras=['helmet','shield','cloak','ring','bag','pet','aura'];
-    c.innerHTML=`
-<div class="item-card"><div class="item-header"><b>🛡️ Доп. снаряжение</b></div><div class="item-desc">Открывается по мере роста уровня. Текущий: ${curLevel}</div></div>
-${extras.map(slot=>{
-  const levelReq={helmet:4,shield:6,cloak:9,ring:12,bag:15,pet:17,aura:21}[slot]||1;
-  const price={helmet:3,shield:5,cloak:8,ring:64,bag:512,pet:2048,aura:32768}[slot]||0;
-  const icons={helmet:'⛑️',shield:'🛡️',cloak:'🧥',ring:'💍',bag:'🎒',pet:'🐺',aura:'✨'};
-  const names={helmet:'Шлем',shield:'Щит',cloak:'Плащ',ring:'Кольцо',bag:'Сумка',pet:'Питомец',aura:'Аура'};
-  const locked=curLevel<levelReq;
-  const has=MY_ITEMS.find(i=>i.is_equipped&&i.slot===slot);
-  return `<div class="item-card">
-    <div class="item-header"><span class="item-name">${icons[slot]} ${names[slot]}</span>${locked?`<span class="rarity common">🔒 Ур.${levelReq}</span>`:`<span class="rarity rare">Открыт</span>`}</div>
-    <div class="item-footer">
-      <span class="item-price">${locked?`Нужен ур. ${levelReq}`:`$${f(price,2)}`}</span>
-      ${locked?`<button disabled>🔒</button>`:has?`<button class="green" disabled>✅ Надето</button>`:`<button onclick="msg('Покупка скоро')">Купить</button>`}
-    </div>
-  </div>`;
-}).join('')}`;
-  }
-  else if(tab==='artifacts'){
-    c.innerHTML=`
-<div class="item-card"><div class="item-header"><b>💎 Артефакты</b></div><div class="item-desc">Усилители</div></div>
-<div class="item-card"><div class="item-header"><span class="item-name">💎 Камень дохода</span><span class="rarity common">Common</span></div><div class="item-desc">+5% к стейку</div><div class="item-footer"><span class="item-price">$10</span><button onclick="msg('Скоро')">Купить</button></div></div>
-<div class="item-card"><div class="item-header"><span class="item-name">🧪 Зелье мощи</span><span class="rarity epic">Epic</span></div><div class="item-desc">+50 APR, 12ч</div><div class="item-footer"><span class="item-price">$25</span><button onclick="msg('Скоро')">Купить</button></div></div>
-<div class="item-card"><div class="item-header"><span class="item-name">🔮 Сфера бездны</span><span class="rarity legend">Legendary</span></div><div class="item-desc">+10% ко всему</div><div class="item-footer"><span class="item-price">$150</span><button onclick="msg('Скоро')">Купить</button></div></div>`;
-  }
   else if(tab==='titles'){
+    await loadShopItems();
+    const curLv=CU?Number(CU.rank_level||0):0;
+    const items=SHOP_ITEMS.filter(i=>i.category==='title');
+    const myTitles=MY_ITEMS.filter(i=>i.category==='title');
+    const equipped=myTitles.find(i=>i.is_equipped);
     c.innerHTML=`
-<div class="item-card"><div class="item-header"><b>🏷️ Титулы</b></div><div class="item-desc">Отображаемый титул.</div></div>
-<div class="item-card"><div class="item-header"><span class="item-name">👑 Барон</span><span class="rarity legend">Ур.14</span></div><div class="item-desc">+1% к рефералке</div><div class="item-footer"><span class="item-price">$256</span><button onclick="msg('Скоро')">Купить</button></div></div>
-<div class="item-card"><div class="item-header"><span class="item-name">💎 Виконт</span><span class="rarity legend">Ур.15</span></div><div class="item-desc">+2% к рефералке</div><div class="item-footer"><span class="item-price">$512</span><button onclick="msg('Скоро')">Купить</button></div></div>`;
+<div class="item-card"><div class="item-header"><b>🏷️ Титулы</b></div><div class="item-desc">С Барона (14). Отображаются рядом с ником.</div></div>
+${equipped?`<div class="item-card" style="border-color:#39d98a"><div class="item-header"><b>✅ Активный титул</b></div><div class="item-desc"><b style="color:var(--gold)">${esc(equipped.name)}</b></div></div>`:''}
+${items.length?items.map(t=>{
+  const price=Number(t.price_final||t.price_usd||0);
+  const have=myTitles.find(x=>x.symbol===t.symbol);
+  const locked=Number(t.min_rank)>curLv;
+  let btn;
+  if(locked)btn=`<button disabled>🔒 Ур.${t.min_rank}</button>`;
+  else if(have&&have.is_equipped)btn='<button class="green" disabled>✅ Надето</button>';
+  else if(have)btn=`<button class="gold" onclick="equipItem('${have.id}')">🎽 Надеть</button>`;
+  else btn=`<button onclick="buyGearItem('${esc(t.symbol)}')">Купить $${f(price,2)}</button>`;
+  return `<div class="item-card">
+    <div class="item-header">
+      <span class="item-name">${esc(t.emoji||'👑')} ${esc(t.name)}</span>
+      <span class="rarity ${Number(t.min_rank)>=18?'mythic':Number(t.min_rank)>=16?'legend':'epic'}">Ур.${t.min_rank}</span>
+    </div>
+    <div class="item-footer"><span class="item-price">$${f(price,2)}</span>${btn}</div>
+  </div>`;
+}).join(''):'<div class="item-card"><div class="item-desc">Титулы не найдены. Примените SQL.</div></div>'}
+<div class="item-card" style="border-color:#2d3a4c"><div class="item-desc">💰 TUSD: <b style="color:var(--gold)">$${f(CU?.tusd_balance||0,2)}</b></div></div>`;
   }
   else if(tab==='certs'){
     const{data,error}=await sb.rpc('get_shop_licenses',{p_test_user_id:UID});
@@ -1444,17 +1446,62 @@ ${items.length?items.map(l=>{
       <span class="item-name">📜 ${esc(l.name)}</span>
       <span class="rarity ${l.license_tier===3?'mythic':l.license_tier===2?'legend':'epic'}">${tierName}</span>
     </div>
-    <div class="item-desc">🎒 Срок: <b>${dur}</b></div>
-    <div class="item-desc">🎩 Скидка: <b>-20%</b> на амуницию</div>
+    <div class="item-desc">🎒 Срок: <b>${dur}</b> • 🎩 Скидка: <b>-20%</b></div>
     <div class="item-footer">
       <span class="item-price">${disc?`<s style="color:#666;font-size:11px">$${f(basePrice,2)}</s> $${f(price,2)}`:`$${f(price,2)}`}</span>
       ${btn}
     </div>
   </div>`;
-}).join(''):'<div class="item-card"><div class="item-desc">Грамоты не найдены</div></div>'}
+}).join(''):'<div class="item-card"><div class="item-desc">Грамоты не найдены. Примените SQL.</div></div>'}
 <div class="item-card" style="border-color:#2d3a4c">
 <div class="item-desc">💰 TUSD: <b style="color:var(--gold)">$${f(CU?.tusd_balance||0,2)}</b></div>
 </div>`;
+  }
+  else if(tab==='artifacts'){
+    await loadShopItems();
+    const curLv=CU?Number(CU.rank_level||0):0;
+    const items=SHOP_ITEMS.filter(i=>i.category==='artifact');
+    const myArts=MY_ITEMS.filter(i=>i.category==='artifact');
+    c.innerHTML=`
+<div class="item-card"><div class="item-header"><b>💎 Артефакты</b></div><div class="item-desc">Покупаются и лежат в инвентаре.</div></div>
+${items.length?items.map(a=>{
+  const price=Number(a.price_final||a.price_usd||0);
+  const have=myArts.filter(x=>x.symbol===a.symbol).length;
+  const locked=Number(a.min_rank)>curLv;
+  let btn;
+  if(locked)btn=`<button disabled>🔒 Ур.${a.min_rank}</button>`;
+  else btn=`<button onclick="buyGearItem('${esc(a.symbol)}')">Купить $${f(price,2)}</button>`;
+  return `<div class="item-card">
+    <div class="item-header">
+      <span class="item-name">${esc(a.emoji||'💎')} ${esc(a.name)}</span>
+      <span class="rarity ${Number(a.min_rank)>=16?'legend':Number(a.min_rank)>=12?'epic':'rare'}">Ур.${a.min_rank}</span>
+    </div>
+    ${have?`<div class="item-desc">У вас: <b style="color:#39d98a">${have} шт.</b></div>`:''}
+    <div class="item-footer"><span class="item-price">$${f(price,2)}</span>${btn}</div>
+  </div>`;
+}).join(''):'<div class="item-card"><div class="item-desc">Артефакты не найдены. Примените SQL.</div></div>'}
+<div class="item-card" style="border-color:#2d3a4c"><div class="item-desc">💰 TUSD: <b style="color:var(--gold)">$${f(CU?.tusd_balance||0,2)}</b></div></div>`;
+  }
+  else if(tab==='extras'){
+    const curLevel=CU?Number(CU.rank_level||0):0;
+    const extras=['helmet','shield','cloak','ring','bag','pet','aura'];
+    c.innerHTML=`
+<div class="item-card"><div class="item-header"><b>🛡️ Доп. снаряжение</b></div><div class="item-desc">Открывается по мере роста уровня. Текущий: ${curLevel}</div></div>
+${extras.map(slot=>{
+  const levelReq={helmet:4,shield:6,cloak:9,ring:14,bag:15,pet:17,aura:21}[slot]||1;
+  const price={helmet:3,shield:5,cloak:8,ring:64,bag:512,pet:2048,aura:32768}[slot]||0;
+  const icons={helmet:'⛑️',shield:'🛡️',cloak:'🧥',ring:'💍',bag:'🎒',pet:'🐺',aura:'✨'};
+  const names={helmet:'Шлем',shield:'Щит',cloak:'Плащ',ring:'Перстень',bag:'Сумка',pet:'Питомец',aura:'Аура'};
+  const locked=curLevel<levelReq;
+  const has=MY_ITEMS.find(i=>i.is_equipped&&i.slot===slot);
+  return `<div class="item-card">
+    <div class="item-header"><span class="item-name">${icons[slot]} ${names[slot]}</span>${locked?`<span class="rarity common">🔒 Ур.${levelReq}</span>`:`<span class="rarity rare">Открыт</span>`}</div>
+    <div class="item-footer">
+      <span class="item-price">${locked?`Нужен ур. ${levelReq}`:`$${f(price,2)}`}</span>
+      ${locked?`<button disabled>🔒</button>`:has?`<button class="green" disabled>✅ Надето</button>`:`<button onclick="msg('Покупка скоро')">Купить</button>`}
+    </div>
+  </div>`;
+}).join('')}`;
   }
   else if(tab==='refs'){c.innerHTML=`<div class="item-card"><div class="item-header"><b>👥 Рефералы на продажу</b></div><div class="item-desc">Скоро</div></div>`;}
   else if(tab==='auction'){c.innerHTML=`<div class="item-card"><div class="item-header"><b>🔨 Аукцион</b></div><div class="item-desc">Скоро</div></div>`;}
@@ -1471,7 +1518,7 @@ async function buyGearItem(symbol){
   if(!data||data.ok===false){msg(data?.error||'Ошибка покупки','error');return;}
   msg(`✅ Куплено: ${cfg.name}`,'success');
   await refreshAll();
-  if(!$('view-shop').classList.contains('hidden')) showShopTab('gear');
+  if(!$('view-shop').classList.contains('hidden')) showShopTab(currentShopTab);
 }
 async function buyLicense(symbol,price){
   const bal=n(CU?.tusd_balance);
@@ -1484,8 +1531,38 @@ async function buyLicense(symbol,price){
   await refreshAll();
   if(!$('view-shop').classList.contains('hidden')) showShopTab('certs');
 }
-
-/* ═══════ INCOME ═══════ */
+async function gearListItem(){
+  const itemId=$('gear_sell_item')?.value;
+  const price=Number($('gear_sell_price')?.value);
+  if(!itemId){msg('Выберите предмет','error');return;}
+  if(!Number.isFinite(price)||price<=0){msg('Введите цену','error');return;}
+  const{data,error}=await sb.rpc('gear_list_item',{p_user_item_id:itemId,p_price_tusd:price});
+  if(error||!data||data.ok===false){msg(data?.error||error?.message||'Ошибка','error');return;}
+  msg(`✅ Выставлено за $${f(price,2)}`,'success');
+  await refreshAll();
+  if(currentIncomeTab==='gear-p2p') showIncomeTab('gear-p2p');
+}
+async function gearCancelListing(id){
+  if(!confirm('Снять с продажи?')) return;
+  const{data,error}=await sb.rpc('gear_cancel_listing',{p_listing_id:id});
+  if(error||!data||data.ok===false){msg(data?.error||error?.message||'Ошибка','error');return;}
+  msg('✅ Снято с продажи','success');
+  await refreshAll();
+  if(currentIncomeTab==='gear-p2p') showIncomeTab('gear-p2p');
+}
+async function gearBuyListing(id){
+  if(!confirm('Купить этот предмет?')) return;
+  const{data,error}=await sb.rpc('gear_buy_listing',{p_listing_id:id});
+  if(error||!data||data.ok===false){
+    if(data?.error==='insufficient_funds') msg(`Не хватает: нужно $${f(data.need,2)}, у тебя $${f(data.have,2)}`,'error');
+    else msg(data?.error||error?.message||'Ошибка','error');
+    return;
+  }
+  msg(`✅ Куплено за $${f(data.paid,2)}`,'success');
+  await refreshAll();
+  if(currentIncomeTab==='gear-p2p') showIncomeTab('gear-p2p');
+}
+  /* ═══════ INCOME ═══════ */
 let currentIncomeTab='p2p';
 function renderIncome(){showIncomeTab(currentIncomeTab);}
 async function showIncomeTab(tab){
@@ -1503,21 +1580,55 @@ async function showIncomeTab(tab){
 ${orders.length?orders.map(o=>orderCard(o)).join(''):'<div class="item-card"><div class="item-desc">Ордеров пока нет</div></div>'}`;
   }
   else if(tab==='gear-p2p'){
-    const inv=MY_ITEMS.filter(i=>!i.is_equipped&&!i.is_listed);
+    const{data:listData}=await sb.rpc('gear_get_listings');
+    const{data:myData}=await sb.rpc('gear_my_listings');
+    const listings=(listData&&listData.ok)?(listData.items||[]):[];
+    const myListings=(myData&&myData.ok)?(myData.items||[]):[];
+    const inv=MY_ITEMS.filter(i=>!i.is_equipped&&!i.is_listed&&i.category!=='license');
     c.innerHTML=`
-<div class="item-card"><div class="item-header"><b>🛡️ P2P Амуниция</b></div><div class="item-desc">Продавать из инвентаря за -20% (скоро).</div></div>
-${inv.length?inv.map(i=>`
+<div class="item-card"><div class="item-header"><b>🛡️ P2P Амуниция</b></div><div class="item-desc">Купи заранее или продай ненужное. Комиссия платформы 10%.</div></div>
 <div class="item-card">
-<div class="item-header"><span class="item-name">${i.emoji||'🎁'} ${esc(i.name)}</span><span class="rarity rare">Ур.${i.min_rank}</span></div>
-<button class="gold" disabled>💰 Выставить (скоро)</button>
-</div>`).join(''):'<div class="item-card"><div class="item-desc">Нет предметов</div></div>'}`;
+  <div class="item-header"><b>💼 Выставить свой предмет</b></div>
+  ${inv.length?`
+  <select id="gear_sell_item" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px;margin-top:8px">
+    ${inv.map(i=>`<option value="${i.id}">${i.emoji||'🎁'} ${esc(i.name)} (ур.${i.min_rank})</option>`).join('')}
+  </select>
+  <div style="display:flex;gap:8px;margin-top:8px">
+    <input type="number" id="gear_sell_price" step="0.01" min="0.01" placeholder="Цена TUSD" style="flex:1;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+    <button class="admin-btn sm gold" onclick="gearListItem()">💰 Выставить</button>
+  </div>`:'<div class="info" style="margin-top:8px">Нет свободных предметов</div>'}
+</div>
+${myListings.length?`<div class="item-card">
+  <div class="item-header"><b>📋 Мои лоты</b></div>
+  ${myListings.map(l=>`
+  <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #252b36">
+    <div><div style="font-size:13px;color:#fff">${esc(l.emoji||'🎁')} ${esc(l.item_name)}</div><div class="info" style="font-size:11px">$${f(l.price_tusd,2)} • ${l.status}</div></div>
+    ${l.status==='active'?`<button class="admin-btn sm danger" onclick="gearCancelListing('${l.id}')">❌ Снять</button>`:''}
+  </div>`).join('')}
+</div>`:''}
+<div class="item-card">
+  <div class="item-header"><b>🛒 На продаже (${listings.length})</b></div>
+  ${listings.length?listings.map(l=>`
+  <div class="item-card" style="background:#0d1520;margin-top:8px">
+    <div class="item-header">
+      <span class="item-name">${esc(l.emoji||'🎁')} ${esc(l.item_name)}</span>
+      <span class="rarity rare">Ур.${l.min_rank}</span>
+    </div>
+    <div class="item-desc">Продавец: @${esc(l.seller_username||l.seller_first_name||l.seller_id)}</div>
+    <div class="item-footer">
+      <span class="item-price">$${f(l.price_tusd,2)}</span>
+      <button onclick="gearBuyListing('${l.id}')">🛒 Купить</button>
+    </div>
+  </div>`).join(''):'<div class="info">Лотов пока нет</div>'}
+</div>
+<div class="item-card" style="border-color:#2d3a4c"><div class="item-desc">💰 TUSD: <b style="color:var(--gold)">$${f(CU?.tusd_balance||0,2)}</b></div></div>`;
   }
   else if(tab==='swap'){
     const fromBal=tb(state_swapFrom);
     const fromPrice=priceOf(state_swapFrom);
     const toPrice=priceOf(state_swapTo);
     c.innerHTML=`
-<div class="item-card"><div class="item-header"><b>🔄 Swap · Пул ликвидности</b></div><div class="item-desc">Курс от резервов пула (x·y=k). При обмене TUSD → TOKEN, цена TOKEN растёт.</div></div>
+<div class="item-card"><div class="item-header"><b>🔄 Swap · Пул ликвидности</b></div><div class="item-desc">Курс от резервов пула (x·y=k). TUSD → TOKEN: цена TOKEN растёт.</div></div>
 <div class="swap-box">
 <div class="lbl"><span>Отдаёте</span><span id="swFromBal">Баланс: ${f(fromBal,4)}</span></div>
 <div class="row">
@@ -1998,8 +2109,7 @@ async function loadReferralEarningsSummary(){
   }catch(e){if(list) list.innerHTML='<div class="info">Ошибка</div>';}
 }
 async function loadMyReferrals(){renderFriends();}
-
-/* ═══════ ADMIN ═══════ */
+  /* ═══════ ADMIN ═══════ */
 function renderAdmin(){if(UID!==AID){msg('Нет доступа','error');return;}loadAdminRevenue();}
 async function loadAdminStats(){
   const{data,error}=await sb.rpc('telepat_admin_all_balances');
@@ -2251,9 +2361,14 @@ async function clearAdminLogo(id,sym){const inp=$('lg-url-'+id);if(inp) inp.valu
 async function loadAdminTokenPrices(){
   const box=$('adminTokenPricesList');if(!box) return;
   box.innerHTML='Загрузка...';
+  await loadRewardFunds();
   const{data,error}=await sb.rpc('admin_list_tokens_with_prices');
   if(error||!data||!data.length){box.innerHTML='<div class="info">Нет данных</div>';return;}
   box.innerHTML=data.map(t=>{
+    const fundInfo=(REWARD_FUNDS||[]).find(fd=>fd.token_symbol===t.symbol);
+    const fundAmt=fundInfo?Number(fundInfo.fund_amount||0):0;
+    const fundUsd=fundAmt*Number(t.price_tusd||0);
+    const dailyUsd=fundInfo?Number(fundInfo.fund_per_hour||0)*24*Number(t.price_tusd||0):0;
     const sysBadge=t.is_system_token?' 🏦':'';
     return `<div class="pc">
       <div class="pt">${esc(t.symbol)}${sysBadge} — ${esc(t.name||'')}</div>
@@ -2261,7 +2376,16 @@ async function loadAdminTokenPrices(){
       <input type="number" id="tp-price-${esc(t.id)}" step="0.00000001" value="${t.price_tusd}" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
       <label style="display:block;font-size:11px;color:var(--muted);margin:8px 0 4px">⬇️ Минимум вывода</label>
       <input type="number" id="tp-min-${esc(t.id)}" step="0.00000001" value="${t.min_withdrawal}" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
-      <button class="admin-btn sm gold" style="width:100%;margin-top:8px" onclick="saveAdminTokenParams('${esc(t.id)}')">💾 Сохранить</button>
+      <button class="admin-btn sm gold" style="width:100%;margin-top:8px" onclick="saveAdminTokenParams('${esc(t.id)}')">💾 Сохранить курс</button>
+      <div style="margin-top:14px;padding-top:12px;border-top:1px solid #2d3a4c">
+        <div style="font-size:12px;color:#39d98a;font-weight:700;margin-bottom:4px">🎁 Фонд наград</div>
+        <div class="info" style="font-size:11px">Баланс: <b style="color:#39d98a">${f(fundAmt,6)} ${esc(t.symbol)}</b> (≈$${f(fundUsd,2)})</div>
+        <div class="info" style="font-size:11px">Капает в день: <b>≈$${f(dailyUsd,4)}</b></div>
+        <div style="display:flex;gap:6px;margin-top:8px">
+          <input type="number" id="tp-fund-${esc(t.id)}" step="0.01" min="0" placeholder="TUSD" style="flex:1;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+          <button class="admin-btn sm gold" onclick="adminDepositToFund('${esc(t.symbol)}','${esc(t.id)}')">➕ Пополнить</button>
+        </div>
+      </div>
     </div>`;
   }).join('');
 }
@@ -2272,6 +2396,17 @@ async function saveAdminTokenParams(id){
   if(error||(data&&data.ok===false)){msg('Ошибка','error');return;}
   msg('✅ Сохранено','success');
   await loadAllTokens();await loadUser();await loadCustomBalances();
+}
+async function adminDepositToFund(symbol,id){
+  const inp=$('tp-fund-'+id);if(!inp) return;
+  const amt=Number(inp.value);
+  if(!Number.isFinite(amt)||amt<=0){msg('Введите сумму','error');return;}
+  if(n(CU?.tusd_balance)<amt){msg(`Недостаточно TUSD`,'error');return;}
+  if(!confirm(`Внести ${f(amt,2)} TUSD в фонд ${symbol}?`))return;
+  const{data,error}=await sb.rpc('admin_deposit_to_fund',{p_token_symbol:symbol,p_tusd_amount:amt,p_admin_telegram_id:UID});
+  if(error||!data||data.ok===false){msg(data?.error||error?.message||'Ошибка','error');return;}
+  msg(`✅ Внесено ${f(amt,2)} TUSD → ${f(data.deposited_in_token,6)} ${symbol}`,'success');
+  inp.value='';await loadUser();await loadRewardFunds();await loadAdminTokenPrices();
 }
 async function loadAdminBonusConfig(){
   const box=$('adminBonusBox');if(!box) return;
@@ -2664,8 +2799,7 @@ async function adminCreateAd(){
     btn.disabled=false;
   }catch(e){st.textContent='Ошибка: '+e.message;btn.disabled=false;}
 }
-
-/* ═══════ HISTORY ═══════ */
+  /* ═══════ HISTORY ═══════ */
 async function loadHistory(){
   const box=$('historyList');if(!box) return;
   box.innerHTML='Загрузка...';
