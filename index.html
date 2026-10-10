@@ -1354,6 +1354,8 @@ async function showShopTab(tab){
 ${levels.map(targetLv=>{
   const myGear=MY_ITEMS.filter(i=>n(i.min_rank)===targetLv);
   const slotsNeeded=['weapon','body','legs'];
+if(targetLv>=5) slotsNeeded.push('armor');
+if(targetLv>=14) slotsNeeded.push('ring');
   if(targetLv>=5) slotsNeeded.push('armor');
   if(targetLv>=14) slotsNeeded.push('ring');
   const needRank=targetLv-1;
