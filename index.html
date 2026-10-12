@@ -293,7 +293,6 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 .next-level-box .nl-row.done .nl-text{color:#39d98a}
 .next-level-box .nl-row.done .nl-text b{color:#39d98a}
 .next-level-box .nl-row .nl-status{font-size:14px}
-/* ★★★ ЦВЕТНЫЕ КНОПКИ В P2P ОРДЕРАХ ★★★ */
 .oa button.sec{background:linear-gradient(135deg,#2f80ed,#4f8cff);color:#fff;border:0;box-shadow:0 3px 10px rgba(47,128,237,.35)}
 .oa button.dng{background:linear-gradient(135deg,#f6465d,#ff8a9b);color:#fff;border:0;box-shadow:0 3px 10px rgba(246,70,93,.35)}
 .oa button{transition:transform .2s,opacity .2s}
@@ -419,7 +418,10 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 <button class="quick-btn" onclick="goView('friends')"><span class="icon">👥</span> Друзья</button>
 <button class="quick-btn" onclick="goView('admin')"><span class="icon">👑</span> Админ</button>
 </div>
-  <!-- ═══════ SHOP ═══════ -->
+</div>
+<!-- ═══ ЗАКРЫТ #view-home (ФИКС 1) ═══ -->
+
+<!-- ═══════ SHOP ═══════ -->
 <div id="view-shop" class="hidden">
 <h2 style="color:var(--gold)">🏪 Магазин</h2>
 <div class="tabs" id="shopTabs">
@@ -474,7 +476,8 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 <button class="admin-btn sec" style="width:100%;margin-top:8px" onclick="loadMyReferrals()">🔄 Обновить</button>
 </div>
 </div>
-</div>
+<!-- ═══ ЗАКРЫТ #view-friends (ФИКС 2 — без лишнего </div>) ═══ -->
+
 <!-- ═══════ ADMIN ═══════ -->
 <div id="view-admin" class="hidden">
 <h2 style="color:var(--gold)">👑 Админ-панель</h2>
@@ -490,7 +493,6 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 <div id="adPurchaseHistory" style="margin-top:10px"></div>
 </div>
 
-<!-- ★ НОВАЯ СЕКЦИЯ: НАСТРОЙКИ ПРОЦЕНТОВ -->
 <div class="admin-section">
 <div class="admin-title">⚙️ Настройки процентов и комиссий</div>
 <div class="info" style="margin-bottom:10px">Меняй комиссии и проценты прямо здесь. Все изменения применяются сразу на бэкенде.</div>
@@ -498,7 +500,6 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 <div id="adminSettingsList" style="margin-top:12px"><div class="info">Нажми «Загрузить настройки»</div></div>
 </div>
 
-<!-- ★ НОВАЯ СЕКЦИЯ: ЦЕНЫ АМУНИЦИИ -->
 <div class="admin-section">
 <div class="admin-title">💵 Цены предметов магазина</div>
 <div class="info" style="margin-bottom:10px">Управление ценами амуниции, титулов, артефактов.</div>
@@ -784,6 +785,7 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 </div>
 </div>
 </div>
+<!-- ═══ ЗАКРЫТ #view-admin ═══ -->
 
 <!-- ═══════ МОДАЛКИ ═══════ -->
 <div id="modal" class="modal-overlay" onclick="closeModal(event)"><div class="modal-box" id="modalBox" onclick="event.stopPropagation()"></div></div>
@@ -972,7 +974,9 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 <button class="nav-btn" id="nav-friends" onclick="goView('friends')"><span class="nav-icon">👥</span> Друзья</button>
 <button class="nav-btn nav-admin-hidden" id="nav-admin" onclick="goView('admin')"><span class="nav-icon">👑</span> Админ</button>
 </div>
-<script>
+</div>
+<!-- ═══ ЗАКРЫТ .app (ФИКС 3) ═══ -->
+  <script>
 /* ═══════ CONFIG ═══════ */
 const SU='https://jutszxuzjzyfxarceydw.supabase.co';
 const SK='sb_publishable_geRczpRc3faUHRGto2ue7A_eFFiJDwO';
@@ -2039,7 +2043,7 @@ function buyErrText(data,error){
   else if(code==='taker_insufficient'&&data.need!=null) base='Недостаточно. Нужно '+f(data.need,8)+' '+(data.need_token||'');
   return base;
 }
-
+    
 /* ═══════ SWAP (AMM) ═══════ */
 function calcSwap(){
   if(SWAP_QUOTE_TIMER) clearTimeout(SWAP_QUOTE_TIMER);
@@ -2186,17 +2190,16 @@ async function loadReferralEarningsSummary(){
   }catch(e){if(list) list.innerHTML='<div class="info">Ошибка</div>';}
 }
 async function loadMyReferrals(){renderFriends();}
-  /* ═══════ ADMIN ═══════ */
+
+/* ═══════ ADMIN ═══════ */
 function renderAdmin(){if(UID!==AID){msg('Нет доступа','error');return;}loadAdminRevenue();}
 
-/* ★ НОВОЕ: Настройки процентов и комиссий */
 async function loadAdminSettings(){
   const box=$('adminSettingsList');if(!box) return;
   box.innerHTML='Загрузка...';
   try{
     const{data,error}=await sb.from('telepat_settings').select('*').order('setting_key');
     if(error||!data||!data.length){box.innerHTML='<div class="info">Нет настроек</div>';return;}
-    // Фильтруем настройки (убираем технические)
     const skip=['banner_height','banner_radius','banner_title_size','banner_sub_size','banner_padding','banner_count','ui_bg','ui_bg_radial','ui_accent','ui_card'];
     const items=data.filter(r=>!skip.includes(r.setting_key));
     box.innerHTML=items.map(r=>{
@@ -2224,12 +2227,10 @@ async function saveAdminSetting(key){
   if(error||(data&&data.ok===false)){msg(error?.message||data?.error||'Ошибка','error');return;}
   msg(`✅ ${key} = ${val}`,'success');
   await loadAdminSettings();
-  // Обновляем связанные модули
   await loadAdPrices();
   await loadRewardFunds();
 }
 
-/* ★ НОВОЕ: Управление ценами предметов */
 async function loadAdminItemPrices(){
   const box=$('adminItemPricesList');if(!box) return;
   const cat=$('adItemCat')?.value||'all';
@@ -2264,7 +2265,6 @@ async function saveAdminItemPrice(itemId){
   const inp=$('ip_'+itemId);if(!inp) return;
   const price=Number(inp.value);
   if(!Number.isFinite(price)||price<0){msg('Некорректная цена','error');return;}
-  // Прямой UPDATE (если есть права) или через RPC
   const{error}=await sb.from('telepat_items').update({price_usd:price}).eq('id',itemId);
   if(error){msg(error.message,'error');return;}
   msg('✅ Цена обновлена','success');
