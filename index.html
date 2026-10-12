@@ -53,10 +53,9 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 .slot.unlocked-empty::after{content:'+';position:absolute;top:2px;right:5px;font-size:14px;font-weight:800;color:var(--gold)}
 .slot-label{position:absolute;bottom:-16px;left:50%;transform:translateX(-50%);font-size:8px;color:var(--muted);white-space:nowrap;text-transform:uppercase;letter-spacing:.3px}
 .slot-badge{position:absolute;top:-6px;right:-6px;font-size:9px;background:var(--gold);color:#111;font-weight:800;padding:1px 5px;border-radius:6px;border:1px solid #111}
-.knight-avatar{position:relative;display:flex;align-items:flex-end;justify-content:center;min-height:260px}
+.knight-avatar{position:relative;display:flex;align-items:flex-end;justify-content:center;min-height:260px;padding-top:40px}
 .knight-img{height:260px;width:auto;max-width:100%;object-fit:contain;filter:drop-shadow(0 8px 24px rgba(0,0,0,.7));animation:idle 3.5s ease-in-out infinite;transition:opacity .3s}
 @keyframes idle{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
-/* ★ СПИЧ-БАБЛ: голубой, над рыцарем, с хвостиком вниз */
 .knight-speech{position:absolute;top:-30px;left:50%;transform:translateX(-50%);background:rgba(74,144,226,.22);color:#fff;padding:7px 14px;border-radius:14px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.25),inset 0 0 12px rgba(140,190,255,.1);backdrop-filter:blur(4px);border:1px solid rgba(140,190,255,.25);opacity:0;animation:speechIn .5s forwards;text-shadow:0 1px 3px rgba(0,0,0,.4);z-index:5}
 .knight-speech::before{content:'';position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);border:6px solid transparent;border-top-color:rgba(74,144,226,.22);border-bottom:0}
 @keyframes speechIn{from{opacity:0;transform:translateX(-50%) translateY(-8px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
@@ -74,7 +73,6 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 .scale-bar-fill.green{background:linear-gradient(90deg,#26a17b,#39d98a)}
 .scale-bar-fill.gold{background:linear-gradient(90deg,#c99629,#f5d477)}
 .scale-bar-fill.purple{background:linear-gradient(90deg,#a855f7,#ec4899)}
-.scale-bar-fill.red{background:linear-gradient(90deg,#f6465d,#ff8a9b)}
 .rule-line{margin-top:10px;padding:8px;background:#0d1520;border:1px solid #2a3242;border-radius:10px;font-size:11px;color:var(--muted);text-align:center}
 .rule-line b{color:var(--gold)}
 .quick-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
@@ -286,7 +284,6 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 .nav-admin-hidden{display:none!important}
 .user-info-line{display:flex;justify-content:space-between;padding:4px 0;font-size:11px;border-bottom:1px solid #1a2534}
 .user-info-line:last-child{border-bottom:0}
-/* Карточка «Что нужно для апа» */
 .next-level-box{background:linear-gradient(135deg,#1a2332,#0d141e);border:1px solid #2f4863;border-radius:14px;padding:12px;margin-top:14px}
 .next-level-box .nl-title{color:#7dd3fc;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px}
 .next-level-box .nl-row{display:flex;align-items:center;gap:10px;padding:6px 0;font-size:12px;color:#cfd8e4}
@@ -296,12 +293,20 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 .next-level-box .nl-row.done .nl-text{color:#39d98a}
 .next-level-box .nl-row.done .nl-text b{color:#39d98a}
 .next-level-box .nl-row .nl-status{font-size:14px}
+/* ★★★ ЦВЕТНЫЕ КНОПКИ В P2P ОРДЕРАХ ★★★ */
+.oa button.sec{background:linear-gradient(135deg,#2f80ed,#4f8cff);color:#fff;border:0;box-shadow:0 3px 10px rgba(47,128,237,.35)}
+.oa button.dng{background:linear-gradient(135deg,#f6465d,#ff8a9b);color:#fff;border:0;box-shadow:0 3px 10px rgba(246,70,93,.35)}
+.oa button{transition:transform .2s,opacity .2s}
+.oa button:hover{opacity:.9;transform:translateY(-1px)}
+.order .oa button[onclick*="quickBuyOrder"]{background:linear-gradient(135deg,#39d98a,#2ba86a)!important;box-shadow:0 3px 10px rgba(57,217,138,.35)}
+.order .oa button[onclick*="openBuyModal"]{background:linear-gradient(135deg,#2f80ed,#4f8cff)!important;box-shadow:0 3px 10px rgba(47,128,237,.35)}
 </style>
 </head>
 <body>
 <div id="msg" class="msg-toast"></div>
 <div class="app">
-  <!-- ═══════ HOME ═══════ -->
+
+<!-- ═══════ HOME ═══════ -->
 <div id="view-home">
 <div id="topBannersList"></div>
 
@@ -359,8 +364,8 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 <div class="slot" id="slot-legs" onclick="clickSlot('legs')"><span class="slot-label">Брюки</span>👖</div>
 </div>
 <div class="knight-avatar">
-<img class="knight-img" id="knightImg" src="knight-0.png" alt="Knight" onerror="this.src='knight-9.png'">
 <div class="knight-speech" id="knightSpeech">Славный путь начинается!</div>
+<img class="knight-img" id="knightImg" src="knight-0.png" alt="Knight" onerror="this.src='knight-9.png'">
 </div>
 <div class="slot-col">
 <div class="slot" id="slot-helmet" onclick="clickSlot('armor')"><span class="slot-label">Шлем</span>⛑️</div>
@@ -385,7 +390,6 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 <div class="inventory-grid" id="invGrid"></div>
 </div>
 
-<!-- ★ Блок «Что нужно для апа» -->
 <div class="next-level-box" id="nextLevelBox"></div>
 
 <div class="scales-container">
@@ -406,7 +410,7 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 <div class="scale-bar-bg"><div class="scale-bar-fill purple" id="scStar" style="width:0%"></div></div>
 </div>
 </div>
-<div class="rule-line">📜 Уровень = <b>минимум из 3 шкал</b> (стейк, сделки, рефералы)</div>
+<div class="rule-line">📜 Уровень = <b>минимум из 3 шкал</b></div>
 </div>
 
 <div class="quick-actions">
@@ -415,9 +419,7 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 <button class="quick-btn" onclick="goView('friends')"><span class="icon">👥</span> Друзья</button>
 <button class="quick-btn" onclick="goView('admin')"><span class="icon">👑</span> Админ</button>
 </div>
-</div>
-
-<!-- ═══════ SHOP ═══════ -->
+  <!-- ═══════ SHOP ═══════ -->
 <div id="view-shop" class="hidden">
 <h2 style="color:var(--gold)">🏪 Магазин</h2>
 <div class="tabs" id="shopTabs">
@@ -472,6 +474,7 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 <button class="admin-btn sec" style="width:100%;margin-top:8px" onclick="loadMyReferrals()">🔄 Обновить</button>
 </div>
 </div>
+</div>
 <!-- ═══════ ADMIN ═══════ -->
 <div id="view-admin" class="hidden">
 <h2 style="color:var(--gold)">👑 Админ-панель</h2>
@@ -485,6 +488,35 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 <div class="info" style="text-align:center;margin-bottom:10px">Всего покупок: <b id="adPurchasesCount">0</b></div>
 <button class="admin-btn danger" style="width:100%" onclick="adminClearRevenue()">🗑️ Очистить счётчик</button>
 <div id="adPurchaseHistory" style="margin-top:10px"></div>
+</div>
+
+<!-- ★ НОВАЯ СЕКЦИЯ: НАСТРОЙКИ ПРОЦЕНТОВ -->
+<div class="admin-section">
+<div class="admin-title">⚙️ Настройки процентов и комиссий</div>
+<div class="info" style="margin-bottom:10px">Меняй комиссии и проценты прямо здесь. Все изменения применяются сразу на бэкенде.</div>
+<button class="admin-btn sec" style="width:100%" onclick="loadAdminSettings()">🔄 Загрузить настройки</button>
+<div id="adminSettingsList" style="margin-top:12px"><div class="info">Нажми «Загрузить настройки»</div></div>
+</div>
+
+<!-- ★ НОВАЯ СЕКЦИЯ: ЦЕНЫ АМУНИЦИИ -->
+<div class="admin-section">
+<div class="admin-title">💵 Цены предметов магазина</div>
+<div class="info" style="margin-bottom:10px">Управление ценами амуниции, титулов, артефактов.</div>
+<div class="admin-field">
+<label>Категория</label>
+<select id="adItemCat" onchange="loadAdminItemPrices()">
+<option value="all">Все предметы</option>
+<option value="weapon">🗡️ Оружие</option>
+<option value="body">👕 Броня</option>
+<option value="legs">👖 Поножи</option>
+<option value="armor">🛡 Шлемы</option>
+<option value="title">🏷️ Титулы</option>
+<option value="artifact">💎 Артефакты</option>
+<option value="license">📜 Грамоты</option>
+</select>
+</div>
+<button class="admin-btn sec" style="width:100%" onclick="loadAdminItemPrices()">🔄 Загрузить цены</button>
+<div id="adminItemPricesList" style="margin-top:12px"><div class="info">Нажми «Загрузить цены»</div></div>
 </div>
 
 <div class="admin-section">
@@ -967,15 +999,10 @@ let currentShopTab='gear',currentIncomeTab='p2p';
 const UI_DEFAULTS={ui_bg:'#0b1018',ui_bg_radial:'#26334a',ui_accent:'#f4cf70',ui_card:'#141c28'};
 const VERIFIED_SYMBOLS=new Set(BASE_VERIFIED);
 
-/* ★ НОВАЯ СЕТКА ★ */
 const RANKS=['Новичок','Крестьянин','Вольный','Гражданин','Оруженосец','Мечник','Десятник','Сотник','Тысячник','Рыцарь','Железный рыцарь','Бронзовый рыцарь','Серебряный рыцарь','Золотой рыцарь','Барон','Виконт','Граф','Маркиз','Герцог','Князь','Король','Император'];
-// Стейк в USD
 const RANK_STAKE=[0,0.1,0.5,1,2,3,4,5,6,7,8,16,32,64,256,512,1024,2048,4096,8192,16384,32768];
-// Сделки: 0,1,2,3,4,6,8,10,12,14,16,18,20,22,25,28,31,34,37,40,43,46
 const RANK_TRADES=[0,1,2,3,4,6,8,10,12,14,16,18,20,22,25,28,31,34,37,40,43,46];
-// Рефералы: 0-5=0, 6=1, 7=2, ..., 14=10, 15=11, ..., 21=17
 const RANK_REFS=[0,0,0,0,0,0,1,2,3,4,5,6,7,8,10,11,12,13,14,15,16,17];
-// Звёздный: только с 14 (Барон). Требуемый уровень реферала = мой_уровень - 5
 const RANK_STAR_MIN_LVL=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,9,10,11,12,13,14,15,16];
 
 const RC=['#fff','#d8d8d8','#b9c5b9','#75c99a','#58b5e9','#4f8cff','#3974d9','#6673e8','#4169e1','#7389bd','#b87333','#bfc2c9','#e0bd45','#9b59b6','#8e44ad','#e0b72f','#e68a27','#24c8aa','#f5cf3d','#f7b83f','#ffd700'];
@@ -1126,10 +1153,9 @@ async function loadMyItems(){
 async function loadShopItems(){
   try{
     const{data,error}=await sb.rpc('get_shop_items',{p_min_rank:0});
-    if(error){console.error('[loadShopItems] RPC error:',error);SHOP_ITEMS=[];return;}
-    if(!data||data.ok===false){console.error('[loadShopItems] bad data:',data);SHOP_ITEMS=[];return;}
+    if(error||!data||data.ok===false){SHOP_ITEMS=[];return;}
     SHOP_ITEMS=Array.isArray(data.items)?data.items:[];
-  }catch(e){console.error('[loadShopItems] exception:',e);SHOP_ITEMS=[];}
+  }catch(e){SHOP_ITEMS=[];}
 }
 async function loadStakeState(){
   if(!UID) return;
@@ -1153,10 +1179,7 @@ function startStakeTimer(){
     const dt=(now-STAKE_LAST_TS)/1000;
     STAKE_LAST_TS=now;
     if(dt>0&&dt<2) STAKE_DISPLAY+=STAKE_RATE_SEC*dt;
-    if(now-STAKE_RENDER_TS>=250){
-      STAKE_RENDER_TS=now;
-      renderStake();
-    }
+    if(now-STAKE_RENDER_TS>=250){STAKE_RENDER_TS=now;renderStake();}
     STAKE_TIMER=requestAnimationFrame(tick);
   };
   STAKE_TIMER=requestAnimationFrame(tick);
@@ -1166,15 +1189,9 @@ function renderStake(){
   (REWARD_FUNDS||[]).forEach(fd=>{totalPerDayTusd+=Number(fd.my_per_day_tusd)||0;});
   if(currentIncomeTab==='staking' && !$('view-income').classList.contains('hidden')){
     const numEl=$('stakeAccumValue');
-    if(numEl){
-      const next=fmtAccumBig(STAKE_DISPLAY);
-      if(numEl.textContent!==next) numEl.textContent=next;
-    }
+    if(numEl){const next=fmtAccumBig(STAKE_DISPLAY);if(numEl.textContent!==next) numEl.textContent=next;}
     const tick=$('stakeTick');
-    if(tick){
-      const next=`+$${totalPerDayTusd.toFixed(4)}/день`;
-      if(tick.textContent!==next) tick.textContent=next;
-    }
+    if(tick){const next=`+$${totalPerDayTusd.toFixed(4)}/день`;if(tick.textContent!==next) tick.textContent=next;}
   }
 }
 async function loadRewardFunds(){
@@ -1212,7 +1229,7 @@ function showFAQ(){msg('❓ @TELEPATp2p_bot');}
 function openSettings(){if(UID===AID) goView('admin');else msg('⚙️ Скоро');}
 function copyRefLink(){const inp=$('refLink');if(!inp) return;navigator.clipboard?.writeText(inp.value).then(()=>msg('Скопировано','success'),()=>{inp.select();document.execCommand('copy');msg('Скопировано','success');});}
 
-/* ═══════ HOME — новая логика ═══════ */
+/* ═══════ HOME ═══════ */
 function getEquippedGearLevel(){
   const eq=MY_ITEMS.filter(i=>i.is_equipped);
   if(!eq.length) return 0;
@@ -1252,7 +1269,6 @@ function renderHome(){
   const days=Math.floor((Date.now()-reg.getTime())/DAY_MS);
   $('userDays').textContent='📅 '+days+' дней';
 
-  // ★ Картинка рыцаря по группе
   const knightImgEl=$('knightImg');
   if(knightImgEl){
     const group=getKnightGroup(rl);
@@ -1268,7 +1284,6 @@ function renderHome(){
     }
   }
 
-  // ★ Слоты
   const eq={};
   MY_ITEMS.filter(i=>i.is_equipped).forEach(i=>{eq[i.slot]=i;});
   ['weapon','body','legs','armor','ring'].forEach(s=>{
@@ -1287,7 +1302,6 @@ function renderHome(){
     el.onclick=()=>clickSlot(s);
   });
 
-  // ★ Инвентарь
   const inv=MY_ITEMS.filter(i=>!i.is_equipped&&!i.is_listed);
   $('invCount').textContent=inv.length+' / 10';
   const grid=$('invGrid');grid.innerHTML='';
@@ -1299,7 +1313,6 @@ function renderHome(){
     grid.appendChild(slot);
   }
 
-  // ★ Шкалы: Стейк (USD), Сделки, Рефералы, [Звёздный с 14]
   const stakeUSD=Number(CU.rank_weight||0);
   const deals=Number(CU.trades_new||0);
   const refs=Number(CU.refs_new||0);
@@ -1315,11 +1328,9 @@ function renderHome(){
   $('scDeals').style.width=(needDeals>0?Math.min(100,deals/needDeals*100):100)+'%';
   $('scRefs').style.width=(needRefs>0?Math.min(100,refs/needRefs*100):100)+'%';
 
-  // ★ Звёздный — только с 14
   const starWrap=$('scStarWrap');
-  if(rl<13){
-    starWrap.classList.add('hidden');
-  }else{
+  if(rl<13){starWrap.classList.add('hidden');}
+  else{
     starWrap.classList.remove('hidden');
     const needStarLvl=RANK_STAR_MIN_LVL[nextLv]||0;
     const starRefs=Number(CU.star_refs_count||0);
@@ -1332,7 +1343,6 @@ function renderHome(){
     }
   }
 
-  // ★ Карточка «Что нужно для апа»
   const nlBox=$('nextLevelBox');
   if(nlBox){
     if(rl>=21){
@@ -1350,7 +1360,6 @@ function renderHome(){
     }
   }
 
-  // ★ Спич-бабл над рыцарем
   let speech='';
   if(rl>=21) speech='Я — Император!';
   else if(nextLv){
@@ -2046,9 +2055,7 @@ async function fetchSwapQuote(){
   const amt=n(inp.value);
   if(errEl) errEl.textContent='';
   if(amt<=0){
-    if(out) out.value='';
-    if(rateEl) rateEl.textContent='—';
-    if(feeEl) feeEl.textContent='—';
+    if(out) out.value='';if(rateEl) rateEl.textContent='—';if(feeEl) feeEl.textContent='—';
     if($('swToUsd')) $('swToUsd').textContent='≈ $0.00';
     SWAP_QUOTE=null;
     if(btn){btn.disabled=true;btn.classList.remove('active');btn.textContent='Обменять';}
@@ -2056,9 +2063,7 @@ async function fetchSwapQuote(){
   }
   if(state_swapFrom===state_swapTo){
     if(errEl) errEl.textContent='Выберите разные токены';
-    if(out) out.value='';
-    if(rateEl) rateEl.textContent='—';
-    if(feeEl) feeEl.textContent='—';
+    if(out) out.value='';if(rateEl) rateEl.textContent='—';if(feeEl) feeEl.textContent='—';
     SWAP_QUOTE=null;
     if(btn){btn.disabled=true;btn.classList.remove('active');btn.textContent='Обменять';}
     return;
@@ -2071,9 +2076,7 @@ async function fetchSwapQuote(){
     if(error||!data||data.ok===false){
       const m=data?.error||error?.message||'Ошибка расчёта';
       if(errEl) errEl.textContent=m;
-      if(out) out.value='';
-      if(rateEl) rateEl.textContent='—';
-      if(feeEl) feeEl.textContent='—';
+      if(out) out.value='';if(rateEl) rateEl.textContent='—';if(feeEl) feeEl.textContent='—';
       SWAP_QUOTE=null;
       if(btn){btn.disabled=true;btn.classList.remove('active');btn.textContent='Обменять';}
       return;
@@ -2183,9 +2186,98 @@ async function loadReferralEarningsSummary(){
   }catch(e){if(list) list.innerHTML='<div class="info">Ошибка</div>';}
 }
 async function loadMyReferrals(){renderFriends();}
-
-/* ═══════ ADMIN ═══════ */
+  /* ═══════ ADMIN ═══════ */
 function renderAdmin(){if(UID!==AID){msg('Нет доступа','error');return;}loadAdminRevenue();}
+
+/* ★ НОВОЕ: Настройки процентов и комиссий */
+async function loadAdminSettings(){
+  const box=$('adminSettingsList');if(!box) return;
+  box.innerHTML='Загрузка...';
+  try{
+    const{data,error}=await sb.from('telepat_settings').select('*').order('setting_key');
+    if(error||!data||!data.length){box.innerHTML='<div class="info">Нет настроек</div>';return;}
+    // Фильтруем настройки (убираем технические)
+    const skip=['banner_height','banner_radius','banner_title_size','banner_sub_size','banner_padding','banner_count','ui_bg','ui_bg_radial','ui_accent','ui_card'];
+    const items=data.filter(r=>!skip.includes(r.setting_key));
+    box.innerHTML=items.map(r=>{
+      const label=r.description||r.setting_key;
+      const isPercent=r.setting_key.includes('percent')||r.setting_key.includes('pct')||r.setting_key.includes('commission');
+      const isFee=r.setting_key.includes('fee');
+      let suffix=isPercent?' %':(isFee?' TUSD':'');
+      return `<div class="pc">
+        <div class="pt" style="font-size:13px">${esc(label)}</div>
+        <div class="info" style="font-size:10px;color:#6a768a;margin-top:2px">${esc(r.setting_key)}</div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <input type="number" id="set_${esc(r.setting_key)}" value="${esc(r.setting_value)}" step="any" style="flex:1;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+          <span style="align-self:center;color:var(--gold);font-weight:700;font-size:12px">${suffix}</span>
+          <button class="admin-btn sm gold" onclick="saveAdminSetting('${esc(r.setting_key)}')">💾</button>
+        </div>
+      </div>`;
+    }).join('');
+  }catch(e){box.innerHTML='<div class="info">Ошибка</div>';}
+}
+async function saveAdminSetting(key){
+  const inp=$('set_'+key);if(!inp) return;
+  const val=String(inp.value).trim();
+  if(!val){msg('Введите значение','error');return;}
+  const{data,error}=await sb.rpc('admin_set_app_setting',{p_key:key,p_value:val});
+  if(error||(data&&data.ok===false)){msg(error?.message||data?.error||'Ошибка','error');return;}
+  msg(`✅ ${key} = ${val}`,'success');
+  await loadAdminSettings();
+  // Обновляем связанные модули
+  await loadAdPrices();
+  await loadRewardFunds();
+}
+
+/* ★ НОВОЕ: Управление ценами предметов */
+async function loadAdminItemPrices(){
+  const box=$('adminItemPricesList');if(!box) return;
+  const cat=$('adItemCat')?.value||'all';
+  box.innerHTML='Загрузка...';
+  try{
+    let q=sb.from('telepat_items').select('*').order('min_rank').order('slot');
+    if(cat!=='all'){
+      if(['weapon','body','legs','armor','helmet','shield','cloak','ring','bag','pet','aura'].includes(cat)){
+        q=q.eq('slot',cat);
+      }else if(cat==='title'||cat==='artifact'||cat==='license'){
+        q=q.eq('category',cat);
+      }
+    }
+    const{data,error}=await q;
+    if(error||!data||!data.length){box.innerHTML='<div class="info">Нет предметов</div>';return;}
+    box.innerHTML=data.map(it=>`
+      <div class="pc">
+        <div class="pt" style="font-size:13px">${it.emoji||'🎁'} ${esc(it.name)}</div>
+        <div class="info" style="font-size:10px;color:#6a768a;margin-top:2px">
+          ${esc(it.symbol||'')} • ${esc(it.slot||it.category||'')} • Ур.${it.min_rank||0} • ${it.active?'✅ вкл':'❌ выкл'}
+        </div>
+        <div style="display:flex;gap:6px;margin-top:8px">
+          <input type="number" id="ip_${esc(it.id)}" value="${it.price_usd||0}" step="0.01" style="flex:1;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+          <button class="admin-btn sm gold" onclick="saveAdminItemPrice('${esc(it.id)}')">💾</button>
+          <button class="admin-btn sm ${it.active?'danger':'sec'}" onclick="toggleAdminItem('${esc(it.id)}',${!it.active})">${it.active?'❌':'✅'}</button>
+        </div>
+      </div>
+    `).join('');
+  }catch(e){box.innerHTML='<div class="info">Ошибка: '+esc(e.message)+'</div>';}
+}
+async function saveAdminItemPrice(itemId){
+  const inp=$('ip_'+itemId);if(!inp) return;
+  const price=Number(inp.value);
+  if(!Number.isFinite(price)||price<0){msg('Некорректная цена','error');return;}
+  // Прямой UPDATE (если есть права) или через RPC
+  const{error}=await sb.from('telepat_items').update({price_usd:price}).eq('id',itemId);
+  if(error){msg(error.message,'error');return;}
+  msg('✅ Цена обновлена','success');
+  await loadShopItems();
+}
+async function toggleAdminItem(itemId,active){
+  const{error}=await sb.from('telepat_items').update({active}).eq('id',itemId);
+  if(error){msg(error.message,'error');return;}
+  msg(active?'✅ Включён':'❌ Выключен','success');
+  await loadAdminItemPrices();
+  await loadShopItems();
+}
+
 async function loadAdminStats(){
   const{data,error}=await sb.rpc('telepat_admin_all_balances');
   if(error){msg(error.message,'error');return;}
