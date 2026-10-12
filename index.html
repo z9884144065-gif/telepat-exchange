@@ -3711,17 +3711,42 @@ async function loadAdPrices(){
     }
   }catch(e){}
 }
-  CREATE OR REPLACE FUNCTION public.equip_newest_title(p_user_id bigint, p_title_symbol text)
-RETURNS jsonb LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$
-DECLARE v_item_id uuid;
-BEGIN
-  UPDATE telepat_user_items SET is_equipped=false
-   WHERE user_id=p_user_id AND slot='titleSlot';
-  SELECT id INTO v_item_id FROM telepat_user_items
-   WHERE user_id=p_user_id AND (symbol=p_title_symbol OR item_symbol=p_title_symbol) AND slot='titleSlot'
-   ORDER BY created_at DESC LIMIT 1;
-  IF v_item_id IS NULL THEN RETURN jsonb_build_object('ok',false,'error','item_not_found'); END IF;
-  UPDATE telepat_user_items SET is_equipped=true WHERE id=v_item_id;
-  RETURN jsonb_build_object('ok',true,'item_id',v_item_id);
-END;$$;
-GRANT EXECUTE ON FUNCTION public.equip_newest_title(bigint,text) TO anon, authenticated;
+  
+/* ═══════ REFRESH ALL ═══════ */
+async function refreshAll(){
+  await loadUser();
+  await loadMyItems();
+  await loadAllTokens();
+  await loadCustomBalances();
+  await loadRewardFunds();
+  await loadStakeState();
+  renderHome();
+  if(!$('view-shop').classList.contains('hidden')) renderShop();
+  if(!$('view-income').classList.contains('hidden')) renderIncome();
+  if(!$('view-friends').classList.contains('hidden')) renderFriends();
+  if(!$('view-rating').classList.contains('hidden')) renderRating();
+  if(!$('view-checkin').classList.contains('hidden')) renderCheckin();
+}
+
+/* ═══════ INIT ═══════ */
+document.addEventListener('DOMContentLoaded',async()=>{
+  await refreshJwt();
+  await loadUiSettingsPublic();
+  await loadBannerSettings();
+  await loadUser();
+  await loadWelcomeBonusStatus();
+  await loadAllTokens();
+  await loadMyItems();
+  await loadCustomBalances();
+  await loadRewardFunds();
+  await loadStakeState();
+  await loadTopBanner();
+  await loadAdPrices();
+  renderHome();
+  if(__START_ORDER_ID){setTimeout(()=>{goView('income');showIncomeTab('p2p');},500);}
+  setInterval(refreshJwt,30*60*1000);
+  setInterval(loadRewardFunds,60*1000);
+});
+</script>
+</body>
+</html>
