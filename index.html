@@ -79,10 +79,10 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 .quick-btn{background:#1e2530;border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;transition:.2s}
 .quick-btn:hover{border-color:var(--gold);transform:translateY(-2px)}
 .quick-btn .icon{font-size:24px}
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(14,19,26,.95);backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:8px 6px calc(8px + env(safe-area-inset-bottom));display:flex;justify-content:center;gap:4px;z-index:900}
-.nav-btn{flex:1;max-width:100px;padding:10px 4px;background:transparent;border:0;color:var(--muted);font-size:10px;font-weight:600;cursor:pointer;border-radius:10px;line-height:1.3;display:flex;flex-direction:column;align-items:center;gap:4px;transition:.2s}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(14,19,26,.95);backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:8px 4px calc(8px + env(safe-area-inset-bottom));display:flex;justify-content:center;gap:2px;z-index:900}
+.nav-btn{flex:1;max-width:80px;padding:10px 2px;background:transparent;border:0;color:var(--muted);font-size:9px;font-weight:600;cursor:pointer;border-radius:10px;line-height:1.3;display:flex;flex-direction:column;align-items:center;gap:4px;transition:.2s}
 .nav-btn.active{color:var(--gold);background:rgba(244,207,112,.1)}
-.nav-btn .nav-icon{font-size:22px}
+.nav-btn .nav-icon{font-size:20px}
 .tabs{display:flex;gap:4px;margin-bottom:12px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
 .tabs::-webkit-scrollbar{display:none}
 .tab{padding:8px 14px;background:var(--bg-card);border:1px solid var(--line);border-radius:20px;color:var(--muted);font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;flex:0 0 auto;transition:.2s}
@@ -299,6 +299,19 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 .oa button:hover{opacity:.9;transform:translateY(-1px)}
 .order .oa button[onclick*="quickBuyOrder"]{background:linear-gradient(135deg,#39d98a,#2ba86a)!important;box-shadow:0 3px 10px rgba(57,217,138,.35)}
 .order .oa button[onclick*="openBuyModal"]{background:linear-gradient(135deg,#2f80ed,#4f8cff)!important;box-shadow:0 3px 10px rgba(47,128,237,.35)}
+.order{background:linear-gradient(145deg,#1b2636,#111925);border:1px solid var(--line);border-radius:16px;margin-bottom:10px;padding:12px 14px;cursor:pointer;transition:.2s}
+.order .oh{display:flex;flex-direction:column;gap:4px}
+.order .om{font-weight:700;color:#fff;font-size:14px}
+.order .rb{font-size:11px;color:var(--rc,#fff)}
+.order .op{font-size:12px;color:var(--gold);margin-top:4px}
+.order .os{display:flex;gap:12px;font-size:11px;color:var(--muted);margin-top:6px}
+.order .oe{display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--line);flex-direction:column;gap:6px}
+.order.opened .oe{display:flex}
+.order .dt{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+.order .dt span:last-child{color:#fff}
+.order .pl{cursor:pointer;color:var(--gold)}
+.order .oa{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.order .oa button{flex:1;padding:10px;font-size:12px;font-weight:700;border-radius:10px;border:0;cursor:pointer;background:var(--blue);color:#fff;min-width:80px}
 </style>
 </head>
 <body>
@@ -416,10 +429,10 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 <button class="quick-btn" onclick="goView('shop')"><span class="icon">🏪</span> Магазин</button>
 <button class="quick-btn" onclick="goView('income')"><span class="icon">🎯</span> Доход</button>
 <button class="quick-btn" onclick="goView('friends')"><span class="icon">👥</span> Друзья</button>
-<button class="quick-btn" onclick="goView('admin')"><span class="icon">👑</span> Админ</button>
+<button class="quick-btn" onclick="goView('rating')"><span class="icon">🏆</span> Топ-100</button>
 </div>
 </div>
-<!-- ═══ ЗАКРЫТ #view-home (ФИКС 1) ═══ -->
+<!-- ═══ ЗАКРЫТ #view-home ═══ -->
 
 <!-- ═══════ SHOP ═══════ -->
 <div id="view-shop" class="hidden">
@@ -476,7 +489,16 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 <button class="admin-btn sec" style="width:100%;margin-top:8px" onclick="loadMyReferrals()">🔄 Обновить</button>
 </div>
 </div>
-<!-- ═══ ЗАКРЫТ #view-friends (ФИКС 2 — без лишнего </div>) ═══ -->
+
+<!-- ═══════ RATING (ТОП-100) ═══════ -->
+<div id="view-rating" class="hidden">
+<h2 style="color:var(--gold)">🏆 Рейтинг</h2>
+<div class="tabs" id="ratingTabs">
+<button class="tab active" data-tab="refs" onclick="showRatingTab('refs')">👥 По рефералам</button>
+<button class="tab" data-tab="earn" onclick="showRatingTab('earn')">💰 По заработку</button>
+</div>
+<div id="ratingContent"></div>
+</div>
 
 <!-- ═══════ ADMIN ═══════ -->
 <div id="view-admin" class="hidden">
@@ -972,11 +994,11 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 <button class="nav-btn" id="nav-shop" onclick="goView('shop')"><span class="nav-icon">🏪</span> Магазин</button>
 <button class="nav-btn" id="nav-income" onclick="goView('income')"><span class="nav-icon">🎯</span> Доход</button>
 <button class="nav-btn" id="nav-friends" onclick="goView('friends')"><span class="nav-icon">👥</span> Друзья</button>
+<button class="nav-btn" id="nav-rating" onclick="goView('rating')"><span class="nav-icon">🏆</span> Топ-100</button>
 <button class="nav-btn nav-admin-hidden" id="nav-admin" onclick="goView('admin')"><span class="nav-icon">👑</span> Админ</button>
 </div>
 </div>
-<!-- ═══ ЗАКРЫТ .app (ФИКС 3) ═══ -->
-  <script>
+<script>
 /* ═══════ CONFIG ═══════ */
 const SU='https://jutszxuzjzyfxarceydw.supabase.co';
 const SK='sb_publishable_geRczpRc3faUHRGto2ue7A_eFFiJDwO';
@@ -999,7 +1021,7 @@ let __PENDING_TASK=null,__RETURN_TIMER=null,DONATE_TOKEN=null,ADMIN_REWARD_TOKEN
 let __START_ORDER_ID=null,ORDER_CACHE={},__BUY_ORDER=null;
 let state_swapFrom='TG',state_swapTo='TUSD';
 let SWAP_QUOTE=null,SWAP_QUOTE_TIMER=null,SWAP_BUSY=false;
-let currentShopTab='gear',currentIncomeTab='p2p';
+let currentShopTab='gear',currentIncomeTab='p2p',currentRatingTab='refs';
 const UI_DEFAULTS={ui_bg:'#0b1018',ui_bg_radial:'#26334a',ui_accent:'#f4cf70',ui_card:'#141c28'};
 const VERIFIED_SYMBOLS=new Set(BASE_VERIFIED);
 
@@ -1210,7 +1232,7 @@ async function loadRewardFunds(){
 
 /* ═══════ NAVIGATION ═══════ */
 function goView(v){
-  ['home','shop','income','friends','admin'].forEach(x=>{
+  ['home','shop','income','friends','rating','admin'].forEach(x=>{
     const el=$('view-'+x);if(el) el.classList.toggle('hidden',x!==v);
     const nb=$('nav-'+x);if(nb) nb.classList.toggle('active',x===v);
   });
@@ -1218,6 +1240,7 @@ function goView(v){
   if(v==='shop') renderShop();
   if(v==='income') renderIncome();
   if(v==='friends') renderFriends();
+  if(v==='rating') renderRating();
   if(v==='admin') renderAdmin();
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -1649,7 +1672,7 @@ async function gearBuyListing(id){
   await refreshAll();
   if(currentIncomeTab==='gear-p2p') showIncomeTab('gear-p2p');
 }
-
+  
 /* ═══════ INCOME ═══════ */
 function renderIncome(){showIncomeTab(currentIncomeTab);}
 async function showIncomeTab(tab){
@@ -1659,12 +1682,23 @@ async function showIncomeTab(tab){
   c.innerHTML='<div class="item-card"><div class="item-desc">Загрузка...</div></div>';
 
   if(tab==='p2p'){
-    const{data}=await sb.rpc('get_p2p_orders',{p_from_token:'TG',p_to_token:'TUSD',p_sort:'rank'});
-    const orders=data||[];
+    // ★ ИСПРАВЛЕНО: показываем ордера ВСЕХ пар, свои — сверху
+    let orders=[];
+    try{
+      const r1=await sb.rpc('get_p2p_orders',{p_from_token:null,p_to_token:null,p_sort:'rank'});
+      if(!r1.error && Array.isArray(r1.data)) orders=r1.data;
+    }catch(e){}
+    if(!orders.length){
+      const r2=await sb.rpc('get_p2p_orders',{p_from_token:'TG',p_to_token:'TUSD',p_sort:'rank'});
+      orders=r2.data||[];
+    }
+    const myOrders=orders.filter(o=>String(o.creator_id)===String(UID));
+    const otherOrders=orders.filter(o=>String(o.creator_id)!==String(UID));
+    orders=[...myOrders,...otherOrders];
     c.innerHTML=`
-<div class="item-card"><div class="item-header"><b>💱 P2P Токены</b></div><div class="item-desc">Покупка = +1 сделка</div></div>
+<div class="item-card"><div class="item-header"><b>💱 P2P Токены</b></div><div class="item-desc">Покупка = +1 сделка. Любые пары: TG, TUSD, AI, RUB, USD и другие.</div></div>
 <button class="admin-btn gold" style="width:100%;margin-bottom:12px" onclick="openCreateOrder()">➕ Создать ордер</button>
-${orders.length?orders.map(o=>orderCard(o)).join(''):'<div class="item-card"><div class="item-desc">Ордеров пока нет</div></div>'}`;
+${orders.length?orders.map(o=>orderCard(o)).join(''):'<div class="item-card"><div class="item-desc">Ордеров пока нет. Нажми «Создать ордер».</div></div>'}`;
   }
   else if(tab==='gear-p2p'){
     const{data:listData}=await sb.rpc('gear_get_listings');
@@ -2043,7 +2077,7 @@ function buyErrText(data,error){
   else if(code==='taker_insufficient'&&data.need!=null) base='Недостаточно. Нужно '+f(data.need,8)+' '+(data.need_token||'');
   return base;
 }
-    
+
 /* ═══════ SWAP (AMM) ═══════ */
 function calcSwap(){
   if(SWAP_QUOTE_TIMER) clearTimeout(SWAP_QUOTE_TIMER);
@@ -2191,6 +2225,69 @@ async function loadReferralEarningsSummary(){
 }
 async function loadMyReferrals(){renderFriends();}
 
+/* ═══════ RATING / LEADERBOARD (ТОП-100) ═══════ */
+function renderRating(){showRatingTab(currentRatingTab);}
+async function showRatingTab(tab){
+  currentRatingTab=tab;
+  document.querySelectorAll('#ratingTabs .tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
+  const c=$('ratingContent');if(!c) return;
+  c.innerHTML='<div class="item-card"><div class="item-desc">Загрузка...</div></div>';
+  let list=[];
+  try{
+    const rpcName = tab==='refs' ? 'get_leaderboard_referrals' : 'get_leaderboard_earnings';
+    const r = await sb.rpc(rpcName,{p_limit:100});
+    if(!r.error && r.data){
+      if(Array.isArray(r.data)) list=r.data;
+      else if(r.data.ok && Array.isArray(r.data.items)) list=r.data.items;
+    }
+  }catch(e){}
+  if(!list.length){
+    try{
+      if(tab==='refs'){
+        const r=await sb.from('users')
+          .select('telegram_id,username,first_name,refs_new,rank_name,rank_level')
+          .order('refs_new',{ascending:false})
+          .limit(100);
+        list=r.data||[];
+      }else{
+        const r=await sb.from('users')
+          .select('telegram_id,username,first_name,rank_name,rank_level,tg_balance,tusd_balance,ai_balance')
+          .limit(1000);
+        list=(r.data||[]).map(u=>({...u,
+          portfolio:Number(u.tg_balance||0)*100+Number(u.tusd_balance||0)+Number(u.ai_balance||0)*0.0001
+        })).sort((a,b)=>b.portfolio-a.portfolio).slice(0,100);
+      }
+    }catch(e){}
+  }
+  if(!list.length){c.innerHTML='<div class="item-card"><div class="item-desc">Пока нет данных</div></div>';return;}
+  const medals=['🥇','🥈','🥉'];
+  const title = tab==='refs'
+    ? '👥 Топ-100 по приглашённым рефералам'
+    : '💰 Топ-100 по заработку (портфель в $)';
+  c.innerHTML=`<div class="item-card"><div class="item-desc" style="text-align:center">${title}</div></div>`+
+    list.map((u,i)=>{
+      const place=medals[i]||('#'+(i+1));
+      const nm = u.username ? '@'+u.username : (u.first_name||('ID '+u.telegram_id));
+      let val;
+      if(tab==='refs'){
+        val = Number(u.refs_new||u.refs||0)+' 👥';
+      }else{
+        const p = u.portfolio!=null ? Number(u.portfolio) : (Number(u.tg_balance||0)*100+Number(u.tusd_balance||0)+Number(u.ai_balance||0)*0.0001);
+        val = '$'+f(p,2);
+      }
+      const isMe=String(u.telegram_id)===String(UID);
+      const cls = i===0?'gold':i===1?'silver':i===2?'bronze':'';
+      return `<div class="lead-row" style="${isMe?'border-color:var(--gold);box-shadow:0 0 12px rgba(244,207,112,.35)':''}">
+        <div class="lead-place ${cls}">${place}</div>
+        <div class="lead-info">
+          <div class="lead-name">${esc(nm)}${isMe?' <span style="color:var(--gold);font-size:10px">(вы)</span>':''}</div>
+          <div class="lead-rank">👑 ${esc(u.rank_name||RANKS[u.rank_level||0]||'Новичок')}</div>
+        </div>
+        <div class="lead-value"><b>${val}</b></div>
+      </div>`;
+    }).join('');
+}
+  
 /* ═══════ ADMIN ═══════ */
 function renderAdmin(){if(UID!==AID){msg('Нет доступа','error');return;}loadAdminRevenue();}
 
@@ -3276,6 +3373,7 @@ async function refreshAll(){
   if(!$('view-shop').classList.contains('hidden')) renderShop();
   if(!$('view-income').classList.contains('hidden')) renderIncome();
   if(!$('view-friends').classList.contains('hidden')) renderFriends();
+  if(!$('view-rating').classList.contains('hidden')) renderRating();
 }
 
 /* ═══════ INIT ═══════ */
