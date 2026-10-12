@@ -144,8 +144,6 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 .modal-box{background:linear-gradient(145deg,#1d2939,#101721);border:1px solid #68562a;border-radius:20px;padding:18px;max-width:440px;width:100%;max-height:85vh;overflow-y:auto}
 .modal-box .modal-title{color:var(--gold);font-size:16px;font-weight:800;margin-bottom:12px}
 .modal-box .modal-actions{display:flex;gap:8px;margin-top:14px}
-.slider{width:100%;height:8px;border-radius:4px;background:#0d1520;outline:none;margin-top:8px;appearance:none}
-.slider::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:var(--gold);cursor:pointer}
 .hidden{display:none!important}
 .msg-toast{position:fixed;top:60px;left:12px;right:12px;padding:12px;border-radius:12px;background:#1e252f;border:1px solid var(--line);text-align:center;font-size:13px;z-index:2000;display:none}
 .msg-toast.show{display:block;animation:slideDown .3s}
@@ -163,46 +161,6 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 .tlogo.sm{width:28px;height:28px;flex:0 0 28px;font-size:13px}
 .tlogo.xs{width:22px;height:22px;flex:0 0 22px;font-size:12px;vertical-align:middle;display:inline-flex;margin-right:4px}
 .tlogo.lg{width:52px;height:52px;flex:0 0 52px;font-size:24px}
-.wallet-token-row{display:flex;align-items:center;gap:12px;padding:11px 13px;background:linear-gradient(145deg,#101a28,#0c121c);border:1px solid #2d3a4c;border-radius:15px;box-shadow:0 4px 12px rgba(0,0,0,.3)}
-.wallet-token-row.equipped{border-color:#39d98a!important;box-shadow:0 0 20px #39d98a66,inset 0 0 12px #39d98a22!important;background:linear-gradient(145deg,#102a1c,#0c1c14)!important}
-.equip-badge{position:absolute;top:-6px;right:-6px;background:#39d98a;color:#0d280d;font-size:10px;font-weight:bold;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;z-index:5}
-.wallet-token-row .wt-actions{display:flex;flex-direction:column;gap:8px;margin-left:6px}
-.wallet-token-row .wt-actions button{width:42px;height:42px;min-width:42px;padding:0;margin:0;font-size:20px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:var(--blue);color:#fff;border:0;cursor:pointer}
-.wallet-token-row .wt-actions button:disabled{opacity:.35}
-.logo-thumb-preview{width:56px;height:56px;flex:0 0 56px;border-radius:50%;background:#0d1520;display:flex;align-items:center;justify-content:center;font-size:24px;overflow:hidden;position:relative;box-shadow:0 4px 14px rgba(0,0,0,.5),inset 0 0 0 1.5px rgba(255,255,255,.08);border:2px solid #4a596d}
-.logo-thumb-preview img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%}
-.logo-thumb-preview.on{border-color:#39d98a}
-.user-head{display:flex;align-items:center;gap:14px;padding:4px 0 12px}
-.user-avatar{width:64px;height:64px;flex:0 0 64px;border-radius:50%;overflow:hidden;background:linear-gradient(135deg,#80652d,#c99629);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:bold;color:#17120a;box-shadow:0 6px 18px rgba(0,0,0,.5);position:relative}
-.user-avatar img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%}
-.user-meta{flex:1;min-width:0}
-.user-meta .uname{color:#fff;font-size:17px;font-weight:bold;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.user-meta .uhandle{color:var(--gold);font-size:13px;margin-top:3px}
-#topBannersList{position:sticky;top:0;z-index:200;margin:0 -14px 12px -14px;padding:10px 14px 6px 14px;background:linear-gradient(180deg,#0b1018 0%,#0b1018 75%,rgba(11,16,24,.92) 100%);backdrop-filter:blur(10px)}
-#topBannersList:empty{display:none}
-.ad-banner{position:relative;border-radius:var(--bn-r,14px);overflow:hidden;margin-bottom:10px;min-height:var(--bn-h,110px);cursor:pointer;border:1px solid #2a3242;background:linear-gradient(135deg,#1a1f2e,#12161f)}
-.ad-banner-bg{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.5}
-.ad-banner-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,13,18,.92) 0%,rgba(10,13,18,.35) 100%)}
-.ad-banner-body{position:relative;z-index:2;padding:var(--bn-p,16px) 46px calc(var(--bn-p,16px) + 22px) var(--bn-p,16px);display:flex;flex-direction:column;justify-content:center;min-height:var(--bn-h,110px)}
-.ad-banner-title{color:#fff;font-size:var(--bn-ts,17px);font-weight:700;line-height:1.3;margin-bottom:6px}
-.ad-banner-sub{color:#cfd8e4;font-size:var(--bn-ss,13px);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.ad-banner-cta{display:inline-block;margin-top:8px;color:#4f8cff;font-size:12px;font-weight:700}
-.ad-banner-close{position:absolute;top:8px;right:8px;width:26px;height:26px;padding:0;margin:0;border:0;background:rgba(0,0,0,.55);color:#fff;border-radius:50%;font-size:13px;cursor:pointer;z-index:4;line-height:1}
-.ad-banner-mark{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.72);color:#cbd5e1;font-size:11px;font-weight:800;letter-spacing:3px;text-align:center;padding:5px 0;text-transform:uppercase;z-index:3}
-.reward-fund-card{background:linear-gradient(145deg,#12201a,#0a1610);border:1px solid #2d5a3d;border-radius:16px;padding:14px;margin-top:8px}
-.reward-fund-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
-.reward-fund-symbol{font-size:16px;font-weight:bold;color:#fff}
-.reward-fund-fund{margin-left:auto;text-align:right}
-.reward-fund-val{font-size:20px;font-weight:bold;color:#39d98a;line-height:1}
-.reward-fund-delta{font-size:11px;margin-top:3px}
-.reward-fund-delta.up{color:#39d98a}
-.reward-fund-delta.down{color:#ff647c}
-.reward-fund-stats{display:flex;gap:10px;font-size:11px;color:#8f9bab;margin-top:6px;flex-wrap:wrap}
-.reward-fund-stats b{color:#fff}
-.reward-fund-actions{display:flex;gap:8px;margin-top:10px}
-.reward-fund-actions button{margin:0;padding:9px;font-size:12px;background:var(--gold);color:#111;border:0;border-radius:10px;font-weight:700;cursor:pointer;flex:1}
-.reward-fund-mine{background:#0006;border:1px solid #2d5a3d;border-radius:10px;padding:8px 10px;margin-top:8px;font-size:11px}
-.reward-fund-mine b{color:#39d98a}
 .lead-row{display:flex;align-items:center;gap:12px;padding:12px 14px;background:linear-gradient(145deg,#101a28,#0c121c);border:1px solid #2d3a4c;border-radius:14px;margin-top:8px}
 .lead-place{flex:0 0 40px;font-size:18px;font-weight:bold;text-align:center;color:#f4cf70}
 .lead-place.gold{color:#ffd700}
@@ -212,7 +170,7 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 .lead-name{color:#fff;font-weight:bold;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .lead-rank{color:#8f9bab;font-size:11px;margin-top:2px}
 .lead-value{text-align:right}
-.lead-value b{display:block;font-size:16px;font-weight:bold}
+.lead-value b{display:block;font-size:16px;font-weight:bold;color:var(--gold)}
 .lead-value span{color:#8f9bab;font-size:10px}
 .inventory-section{margin-top:26px;padding-top:14px;border-top:1px solid #2a3242}
 .inventory-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
@@ -226,14 +184,11 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 .qb .qi{font-size:22px;margin-bottom:6px}
 .qb.gold{background:linear-gradient(135deg,#f5d477,#c99629);color:#17120a;border-color:#a37a1e}
 .stake-collect{background:linear-gradient(135deg,#39d98a,#2ba86a);color:#0d280d;font-weight:bold;border:0;padding:12px;border-radius:12px;width:100%;font-size:14px;cursor:pointer}
-.ad-balance-value{text-align:center;font-size:34px;font-weight:bold;color:#39d98a;text-shadow:0 0 18px #39d98a88;line-height:1.1}
 .task{background:#0d1520;border:1px solid #2d3a4c;border-radius:14px;padding:12px;margin-top:8px;cursor:pointer}
 .task.done{opacity:.6}
 .task .tt{font-weight:bold;color:#fff;font-size:14px}
 .task .ts{color:#8f9bab;font-size:11px;margin-top:4px}
 .task .tr{color:#39d98a;font-weight:bold;font-size:13px;margin-top:6px}
-.task-pending{margin-bottom:12px;padding:14px;border:1px solid #66572e;border-radius:12px;background:#17150e;text-align:center}
-.task-pending .tp-title{color:#f4cf70;font-weight:bold;font-size:14px;margin-bottom:10px}
 .ci-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin-top:8px}
 .ci-day{background:#0d1520;border:1px solid #2d3a4c;border-radius:8px;padding:6px 2px;text-align:center;font-size:10px;color:#9da9b9;transition:all .3s}
 .ci-day.done{background:linear-gradient(145deg,#1f4a1f,#0d280d);border:2px solid #39d98a;color:#39d98a;font-weight:bold;box-shadow:0 0 12px #39d98a88}
@@ -243,18 +198,9 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 .ci-check{display:none}
 .ci-day.done .ci-check,.ci-day.next .ci-check{display:block;font-size:14px;line-height:1}
 @keyframes ciPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
-@keyframes ciGlow{0%,100%{box-shadow:0 0 24px #39d98a55}50%{box-shadow:0 0 36px #39d98a88}}
 @keyframes adFadeIn{from{opacity:0}to{opacity:1}}
 @keyframes adPopIn{0%{transform:scale(.3);opacity:0}100%{transform:scale(1);opacity:1}}
 @keyframes adBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
-.acc-item{margin-top:8px;background:#0d1520;border:1px solid #2d3a4c;border-radius:14px;overflow:hidden}
-.acc-item.open{border-color:#68562a}
-.acc-header{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;cursor:pointer;font-weight:bold;color:var(--gold);font-size:14px}
-.acc-header .acc-title{flex:1;min-width:0;word-break:break-word;padding-right:10px}
-.acc-header .acc-arrow{color:#9da9b9;font-size:14px;transition:transform .25s}
-.acc-item.open .acc-header .acc-arrow{transform:rotate(90deg);color:var(--gold)}
-.acc-body{display:none;padding:4px 16px 16px 16px;border-top:1px solid #1a2534}
-.acc-item.open .acc-body{display:block}
 #adModal .af{position:relative;width:100vw;height:100vh;display:flex;flex-direction:column;background:#000;overflow:hidden}
 #adModal video{width:100%;flex:1;min-height:0;object-fit:contain;background:#000;display:block}
 #adModal .at{position:absolute;top:0;left:0;right:0;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(180deg,#000c,transparent);color:#fff;font-size:14px;font-weight:bold;z-index:5}
@@ -276,14 +222,9 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 .ok{color:var(--green)}
 .er{color:var(--red)}
 .prev{margin-top:12px;background:#0d1520;border:1px solid var(--line);border-radius:12px;padding:12px}
-.srow{display:flex;align-items:center;gap:8px}
-.srow label{margin:0;white-space:nowrap}
-.srow select{max-width:190px;background:var(--bg);color:#fff;padding:8px;border-radius:8px;border:1px solid var(--line)}
 .buy-pct-row{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}
 .buy-pct-row button{margin:0;padding:10px 4px;font-size:12px;background:#263345;color:#fff;border:1px solid var(--line);border-radius:8px;cursor:pointer}
 .nav-admin-hidden{display:none!important}
-.user-info-line{display:flex;justify-content:space-between;padding:4px 0;font-size:11px;border-bottom:1px solid #1a2534}
-.user-info-line:last-child{border-bottom:0}
 .next-level-box{background:linear-gradient(135deg,#1a2332,#0d141e);border:1px solid #2f4863;border-radius:14px;padding:12px;margin-top:14px}
 .next-level-box .nl-title{color:#7dd3fc;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px}
 .next-level-box .nl-row{display:flex;align-items:center;gap:10px;padding:6px 0;font-size:12px;color:#cfd8e4}
@@ -297,8 +238,6 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 .oa button.dng{background:linear-gradient(135deg,#f6465d,#ff8a9b);color:#fff;border:0;box-shadow:0 3px 10px rgba(246,70,93,.35)}
 .oa button{transition:transform .2s,opacity .2s}
 .oa button:hover{opacity:.9;transform:translateY(-1px)}
-.order .oa button[onclick*="quickBuyOrder"]{background:linear-gradient(135deg,#39d98a,#2ba86a)!important;box-shadow:0 3px 10px rgba(57,217,138,.35)}
-.order .oa button[onclick*="openBuyModal"]{background:linear-gradient(135deg,#2f80ed,#4f8cff)!important;box-shadow:0 3px 10px rgba(47,128,237,.35)}
 .order{background:linear-gradient(145deg,#1b2636,#111925);border:1px solid var(--line);border-radius:16px;margin-bottom:10px;padding:12px 14px;cursor:pointer;transition:.2s}
 .order .oh{display:flex;flex-direction:column;gap:4px}
 .order .om{font-weight:700;color:#fff;font-size:14px}
@@ -368,7 +307,6 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 <div class="rank-sub" id="rankSub">Уровень 0 из 21</div>
 </div>
 </div>
-
 <div class="knight-layout">
 <div class="slot-col">
 <div class="slot" id="slot-weapon" onclick="clickSlot('weapon')"><span class="slot-label">Меч</span>🗡️</div>
@@ -385,7 +323,6 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 <div class="slot" id="slot-cloak" onclick="clickSlot('cloak')"><span class="slot-label">Плащ</span>🧥</div>
 </div>
 </div>
-
 <div class="slots-row-bottom">
 <div class="slot" id="slot-ring" onclick="clickSlot('ring')"><span class="slot-label">Перстень</span>💍</div>
 <div class="slot" id="slot-bag" onclick="clickSlot('bag')"><span class="slot-label">Сумка</span>🎒</div>
@@ -393,7 +330,6 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 <div class="slot" id="slot-titleSlot" onclick="clickSlot('titleSlot')"><span class="slot-label">Титул</span>🏷️</div>
 <div class="slot" id="slot-aura" onclick="clickSlot('aura')"><span class="slot-label">Аура</span>✨</div>
 </div>
-
 <div class="inventory-section">
 <div class="inventory-header">
 <span class="title">🎒 Инвентарь</span>
@@ -401,9 +337,7 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 </div>
 <div class="inventory-grid" id="invGrid"></div>
 </div>
-
 <div class="next-level-box" id="nextLevelBox"></div>
-
 <div class="scales-container">
 <div class="scale-item">
 <div class="scale-header"><span>💎 Стейк</span><b id="scStakeTxt">$0 / $0.1</b></div>
@@ -432,7 +366,6 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 <button class="quick-btn" onclick="goView('rating')"><span class="icon">🏆</span> Топ-100</button>
 </div>
 </div>
-<!-- ═══ ЗАКРЫТ #view-home ═══ -->
 
 <!-- ═══════ SHOP ═══════ -->
 <div id="view-shop" class="hidden">
@@ -490,7 +423,7 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 </div>
 </div>
 
-<!-- ═══════ RATING (ТОП-100) ═══════ -->
+<!-- ═══════ RATING ═══════ -->
 <div id="view-rating" class="hidden">
 <h2 style="color:var(--gold)">🏆 Рейтинг</h2>
 <div class="tabs" id="ratingTabs">
@@ -807,7 +740,6 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 </div>
 </div>
 </div>
-<!-- ═══ ЗАКРЫТ #view-admin ═══ -->
 
 <!-- ═══════ МОДАЛКИ ═══════ -->
 <div id="modal" class="modal-overlay" onclick="closeModal(event)"><div class="modal-box" id="modalBox" onclick="event.stopPropagation()"></div></div>
@@ -853,64 +785,6 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 </div>
 <div class="info" id="profileCancelled" style="margin-top:10px"></div>
 <button class="admin-btn sec" style="width:100%;margin-top:12px" onclick="closeProfile()">Закрыть</button>
-</div>
-</div>
-
-<div id="addLiqModal" class="modal-overlay" onclick="closeAddLiq(event)">
-<div class="modal-box" onclick="event.stopPropagation()">
-<div class="modal-title">💧 Пул</div>
-<div class="info">Токен</div>
-<div id="addLiqToken" style="font-size:22px;font-weight:bold;color:var(--gold);margin:8px 0 14px">—</div>
-<label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px">Сумма TUSD</label>
-<input id="addLiqAmount" type="number" min="0" step="any" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
-<div class="info" style="margin-top:8px" id="addLiqAvailable">Доступно: 0</div>
-<button class="admin-btn primary" style="width:100%;margin-top:8px" onclick="confirmAddLiquidity()">✅ Внести</button>
-<button class="admin-btn sec" style="width:100%;margin-top:8px" onclick="closeAddLiq()">Отмена</button>
-</div>
-</div>
-
-<div id="donateFundModal" class="modal-overlay" onclick="closeDonateFund(event)">
-<div class="modal-box" onclick="event.stopPropagation()">
-<div class="modal-title" id="donateFundTitle">➕ В фонд наград</div>
-<div class="info" style="margin:8px 0 14px">Сумма в TUSD переводится в фонд токена по текущему курсу.</div>
-<label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px">Сумма TUSD</label>
-<input id="donateFundAmount" type="number" min="0.01" step="0.01" placeholder="100" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
-<div class="info" style="margin-top:8px" id="donateFundAvail">Доступно: 0 TUSD</div>
-<button class="admin-btn primary" style="width:100%;margin-top:8px" onclick="confirmDonateFund()">✅ Внести в фонд</button>
-<button class="admin-btn sec" style="width:100%;margin-top:8px" onclick="closeDonateFund()">Отмена</button>
-</div>
-</div>
-
-<div id="adminRewardConfigModal" class="modal-overlay" onclick="closeAdminRewardConfig(event)">
-<div class="modal-box" style="width:min(520px,100%);max-height:85vh;overflow-y:auto" onclick="event.stopPropagation()">
-<div class="modal-title">🎁 Настройка фонда</div>
-<div class="info" id="adminRewardTokenName" style="margin-bottom:10px">—</div>
-<label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px">💰 Комиссия с обмена (%)</label>
-<input id="arc_fee_swap" type="number" step="0.01" min="0" max="99" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
-<label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">🎁 Из неё в фонд (%)</label>
-<input id="arc_fee_fund" type="number" step="0.01" min="0" max="100" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
-<label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">👑 Из неё тебе (%)</label>
-<input id="arc_fee_owner" type="number" step="0.01" min="0" max="100" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
-<label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">⏱ Ставка в час (%)</label>
-<input id="arc_rate" type="number" step="0.0001" min="0" max="10" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
-<label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">🎯 Кому раздавать</label>
-<select id="arc_target" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px"><option value="holders">Всем держателям</option><option value="stakers">Только стейкерам</option></select>
-<label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">💵 В чём раздавать</label>
-<input id="arc_token_sym" placeholder="TUSD / TG" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
-<button class="admin-btn gold" style="width:100%;margin-top:12px" onclick="saveAdminRewardConfig()">💾 Сохранить</button>
-<button class="admin-btn sec" style="width:100%;margin-top:8px" onclick="closeAdminRewardConfig()">Отмена</button>
-<div id="adminRewardStatus" class="info" style="margin-top:9px;text-align:center"></div>
-</div>
-</div>
-
-<div id="adBalanceModal" class="modal-overlay" onclick="closeAdBalanceModal(event)">
-<div class="modal-box" onclick="event.stopPropagation()">
-<div class="modal-title" id="adBalanceModalTitle">📢 Рекламный баланс</div>
-<label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px">Сумма TUSD</label>
-<input id="adBalanceAmount" type="number" step="any" min="0" placeholder="100" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
-<div class="info" style="margin-top:8px" id="adBalanceAvail">Доступно: —</div>
-<button class="admin-btn primary" style="width:100%;margin-top:8px" id="adBalanceBtn" onclick="confirmAdBalanceAction()">✅ Подтвердить</button>
-<button class="admin-btn sec" style="width:100%;margin-top:8px" onclick="closeAdBalanceModal()">Отмена</button>
 </div>
 </div>
 
@@ -1682,23 +1556,68 @@ async function showIncomeTab(tab){
   c.innerHTML='<div class="item-card"><div class="item-desc">Загрузка...</div></div>';
 
   if(tab==='p2p'){
-    // ★ ИСПРАВЛЕНО: показываем ордера ВСЕХ пар, свои — сверху
+    // ★ Прямой SELECT из таблицы — не зависит от RPC и работает всегда
     let orders=[];
     try{
-      const r1=await sb.rpc('get_p2p_orders',{p_from_token:null,p_to_token:null,p_sort:'rank'});
-      if(!r1.error && Array.isArray(r1.data)) orders=r1.data;
-    }catch(e){}
+      const r=await sb.from('p2p_orders')
+        .select('*')
+        .order('created_at',{ascending:false})
+        .limit(500);
+      if(r.error){
+        console.error('[P2P] select error:',r.error);
+        msg('P2P: '+r.error.message,'error');
+      }else if(Array.isArray(r.data)){
+        orders=r.data.filter(o=>String(o.status||'').toLowerCase()==='open');
+        console.log('[P2P] всего строк:',r.data.length,'| открытых:',orders.length);
+      }
+    }catch(e){ console.error('[P2P] select ex:',e); }
+
     if(!orders.length){
-      const r2=await sb.rpc('get_p2p_orders',{p_from_token:'TG',p_to_token:'TUSD',p_sort:'rank'});
-      orders=r2.data||[];
+      try{
+        const r=await sb.rpc('get_p2p_orders',{p_from_token:null,p_to_token:null,p_sort:'rank'});
+        if(!r.error && Array.isArray(r.data)) orders=r.data;
+        console.log('[P2P] rpc(null,null):',r.data?.length||0);
+      }catch(e){ console.error('[P2P] rpc ex:',e); }
     }
+
+    if(orders.length){
+      try{
+        const ids=[...new Set(orders.map(o=>Number(o.creator_id)).filter(Boolean))];
+        if(ids.length){
+          const u=await sb.from('users')
+            .select('telegram_id,username,first_name,rank_name,rank_level,trades_new')
+            .in('telegram_id',ids);
+          const map={}; (u.data||[]).forEach(x=>{ map[String(x.telegram_id)]=x; });
+          orders=orders.map(o=>{
+            const uu=map[String(o.creator_id)]||{};
+            const fromA=n(o.from_amount), toA=n(o.to_amount);
+            return Object.assign({}, o, {
+              creator_username:   uu.username   || o.creator_username   || null,
+              creator_first_name: uu.first_name || o.creator_first_name || null,
+              creator_rank_name:  uu.rank_name  || o.creator_rank_name  || 'Новичок',
+              creator_rank_level: Number(uu.rank_level || o.creator_rank_level || 0),
+              likes:              n(o.likes),
+              dislikes:           n(o.dislikes),
+              completed_trades:   Number(uu.trades_new || o.completed_trades || 0),
+              rate:               fromA>0 ? toA/fromA : n(o.rate)
+            });
+          });
+        }
+      }catch(e){ console.error('[P2P] users join ex:',e); }
+    }
+
     const myOrders=orders.filter(o=>String(o.creator_id)===String(UID));
     const otherOrders=orders.filter(o=>String(o.creator_id)!==String(UID));
     orders=[...myOrders,...otherOrders];
+
+    console.log('[P2P] итог:',orders.length,'(моих:',myOrders.length+')');
+
     c.innerHTML=`
 <div class="item-card"><div class="item-header"><b>💱 P2P Токены</b></div><div class="item-desc">Покупка = +1 сделка. Любые пары: TG, TUSD, AI, RUB, USD и другие.</div></div>
 <button class="admin-btn gold" style="width:100%;margin-bottom:12px" onclick="openCreateOrder()">➕ Создать ордер</button>
-${orders.length?orders.map(o=>orderCard(o)).join(''):'<div class="item-card"><div class="item-desc">Ордеров пока нет. Нажми «Создать ордер».</div></div>'}`;
+${orders.length
+  ? orders.map(o=>orderCard(o)).join('')
+  : '<div class="item-card"><div class="item-desc">Ордеров пока нет. Нажми «Создать ордер».</div></div>'}`;
   }
   else if(tab==='gear-p2p'){
     const{data:listData}=await sb.rpc('gear_get_listings');
@@ -1975,7 +1894,7 @@ function showAdRewardPopup(reward,token,extra){
   let sec=5;setInterval(()=>{sec--;if(sec<=0){const el=$('adRewardPopupGreen');if(el) el.remove();}},1000);
 }
 
-/* ═══════ P2P ═══════ */
+/* ═══════ P2P (создание/выкуп) ═══════ */
 function openCreateOrder(){
   const tokens=ALL_TOKENS.map(t=>t.symbol);
   openModal('➕ Создать P2P-ордер',`
@@ -1993,8 +1912,9 @@ async function confirmCreateOrder(){
   const fromAmt=n($('newFromAmt').value),toAmt=n($('newToAmt').value);
   if(from===to||fromAmt<=0||toAmt<=0){msg('Заполните поля','error');return;}
   if(fromAmt*1.001>tb(from)){msg('Мало '+from,'error');return;}
-  const{error}=await sb.rpc('create_p2p_order_v2',{p_from_token:from,p_to_token:to,p_from_amount:fromAmt,p_to_amount:toAmt});
+  const{data,error}=await sb.rpc('create_p2p_order_v2',{p_from_token:from,p_to_token:to,p_from_amount:fromAmt,p_to_amount:toAmt});
   if(error){msg(error.message,'error');return;}
+  if(data && data.ok===false){msg(data.error||data.message||'Не удалось создать ордер','error');return;}
   msg('🚀 Ордер создан','success');
   closeModal();await refreshAll();showIncomeTab('p2p');
 }
