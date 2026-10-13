@@ -6,20 +6,18 @@
 <title>TELEPAT — Empire</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-.order-actions{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
-.order-actions button{flex:1;padding:10px;font-size:12px;font-weight:700;border-radius:10px;border:0;cursor:pointer;background:var(--blue);color:#fff;min-width:80px}<style>
-
+<style>
 :root{--bg:#0b0e11;--bg-card:#151a21;--line:#252b36;--gold:#f4cf70;--text:#fff;--muted:#8a94a6;--green:#26a17b;--red:#f6465d;--blue:#2f80ed;--purple:#a855f7;--cyan:#22d3ee}
 *{box-sizing:border-box}
 html,body{margin:0;padding:0;background:radial-gradient(circle at 50% -10%,#1a2535 0%,var(--bg) 42%),var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;min-height:100vh;-webkit-tap-highlight-color:transparent}
 .app{max-width:520px;margin:0 auto;padding:14px 12px 110px}
 h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
-.sub{text-align:center;color:var(--muted);font-size:13px;margin-bottom:18px}
 .top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
 .logo{font-size:20px;font-weight:800;color:var(--gold);letter-spacing:.5px}
 .top-icons{display:flex;gap:6px}
 .icon-btn{width:34px;height:34px;border-radius:50%;background:var(--bg-card);border:1px solid var(--line);color:var(--muted);display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;transition:.2s}
 .icon-btn:hover{border-color:var(--gold);color:var(--gold)}
+.icon-btn.hidden{display:none!important}
 .profile-card{background:linear-gradient(135deg,#1a212c,#0e131a);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px;position:relative;overflow:hidden}
 .profile-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--blue),var(--purple),var(--gold))}
 .profile-header{display:flex;align-items:center;gap:14px}
@@ -44,14 +42,13 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 .knight-layout{display:grid;grid-template-columns:68px 1fr 68px;gap:10px;align-items:center;margin-bottom:16px}
 .slot-col{display:flex;flex-direction:column;gap:18px}
 .slot{width:68px;height:68px;background:#0d1520;border:2px solid #2a3242;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:30px;cursor:pointer;position:relative;transition:.25s}
-.slot:hover{border-color:var(--gold)}
 .slot.filled{border-color:var(--green);background:linear-gradient(135deg,#0d2818,#132b1f);box-shadow:0 0 12px rgba(38,161,123,.4)}
 .slot.unlocked-empty{border-color:#3a4553;color:#94a3b8}
 .slot-label{position:absolute;bottom:-16px;left:50%;transform:translateX(-50%);font-size:8px;color:var(--muted);white-space:nowrap;text-transform:uppercase;letter-spacing:.3px}
 .knight-avatar{position:relative;display:flex;align-items:flex-end;justify-content:center;min-height:260px;padding-top:40px}
-.knight-img{height:260px;width:auto;max-width:100%;object-fit:contain;filter:drop-shadow(0 8px 24px rgba(0,0,0,.7));animation:idle 3.5s ease-in-out infinite;transition:opacity .3s}
+.knight-img{height:260px;width:auto;max-width:100%;object-fit:contain;filter:drop-shadow(0 8px 24px rgba(0,0,0,.7));animation:idle 3.5s ease-in-out infinite}
 @keyframes idle{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
-.knight-speech{position:absolute;top:-30px;left:50%;transform:translateX(-50%);background:rgba(74,144,226,.22);color:#fff;padding:7px 14px;border-radius:14px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.25);backdrop-filter:blur(4px);border:1px solid rgba(140,190,255,.25);opacity:0;animation:speechIn .5s forwards;z-index:5}
+.knight-speech{position:absolute;top:-30px;left:50%;transform:translateX(-50%);background:rgba(74,144,226,.22);color:#fff;padding:7px 14px;border-radius:14px;font-size:11px;font-weight:700;white-space:nowrap;backdrop-filter:blur(4px);border:1px solid rgba(140,190,255,.25);opacity:0;animation:speechIn .5s forwards;z-index:5}
 @keyframes speechIn{from{opacity:0;transform:translateX(-50%) translateY(-8px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
 .slots-row-bottom{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:26px}
 .slots-row-bottom .slot{width:100%;height:60px;font-size:22px;border-radius:12px}
@@ -60,7 +57,7 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 .scale-header{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:4px}
 .scale-header b{color:#fff}
 .scale-bar-bg{height:10px;background:#080b10;border-radius:99px;overflow:hidden}
-.scale-bar-fill{height:100%;border-radius:99px;transition:width .8s;position:relative;overflow:hidden}
+.scale-bar-fill{height:100%;border-radius:99px;transition:width .8s}
 .scale-bar-fill.blue{background:linear-gradient(90deg,#2f80ed,#4f8cff)}
 .scale-bar-fill.green{background:linear-gradient(90deg,#26a17b,#39d98a)}
 .scale-bar-fill.gold{background:linear-gradient(90deg,#c99629,#f5d477)}
@@ -71,9 +68,8 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 .quick-btn{background:#1e2530;border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;transition:.2s}
 .quick-btn:hover{border-color:var(--gold);transform:translateY(-2px)}
 .quick-btn .icon{font-size:24px}
-.quick-btn.hidden{display:none!important}
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(14,19,26,.95);backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:8px 4px calc(8px + env(safe-area-inset-bottom));display:flex;justify-content:center;gap:2px;z-index:900}
-.nav-btn{flex:1;max-width:78px;padding:10px 2px;background:transparent;border:0;color:var(--muted);font-size:9px;font-weight:600;cursor:pointer;border-radius:10px;line-height:1.3;display:flex;flex-direction:column;align-items:center;gap:4px;transition:.2s}
+.nav-btn{flex:1;max-width:78px;padding:10px 2px;background:transparent;border:0;color:var(--muted);font-size:9px;font-weight:600;cursor:pointer;border-radius:10px;line-height:1.3;display:flex;flex-direction:column;align-items:center;gap:4px}
 .nav-btn.active{color:var(--gold);background:rgba(244,207,112,.1)}
 .nav-btn .nav-icon{font-size:20px}
 .nav-btn.nav-wide{flex:1.6;max-width:140px;background:linear-gradient(135deg,#f5d477,#c99629);color:#17120a;margin-left:2px}
@@ -82,9 +78,9 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 .tabs::-webkit-scrollbar{display:none}
 .tab{padding:8px 14px;background:var(--bg-card);border:1px solid var(--line);border-radius:20px;color:var(--muted);font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;flex:0 0 auto;transition:.2s}
 .tab.active{background:var(--blue);border-color:var(--blue);color:#fff}
+.title{color:var(--gold);font-size:14px;font-weight:bold;letter-spacing:.7px;margin-bottom:13px}
 .card{background:linear-gradient(145deg,#1b2636,#111925);border:1px solid var(--line);border-radius:20px;padding:17px;margin-bottom:13px;box-shadow:0 12px 30px #0007}
 .card.gold{border-color:#80652b}
-.title{color:var(--gold);font-size:14px;font-weight:bold;letter-spacing:.7px;margin-bottom:13px}
 .item-card{background:var(--bg-card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:8px;display:flex;flex-direction:column;gap:8px}
 .item-card .item-header{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .item-card .item-name{font-weight:700;font-size:14px;color:#fff}
@@ -94,7 +90,6 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 .item-card button{padding:7px 14px;font-size:12px;font-weight:700;border-radius:8px;border:0;cursor:pointer;background:var(--blue);color:#fff}
 .item-card button.gold{background:var(--gold);color:#111}
 .item-card button.green{background:var(--green);color:#fff}
-.item-card button.red{background:var(--red);color:#fff}
 .item-card button:disabled{opacity:.5;cursor:not-allowed}
 .rarity{font-size:9px;text-transform:uppercase;font-weight:700;padding:3px 7px;border-radius:4px}
 .rarity.common{background:#334155;color:#cbd5e1}
@@ -124,7 +119,6 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 .swap-arrow-btn{width:46px;height:46px;border-radius:50%;background:var(--bg-card);border:2px solid var(--line);color:var(--gold);font-size:20px;cursor:pointer;pointer-events:auto}
 .swap-btn{width:100%;padding:14px;border-radius:12px;border:0;font-weight:800;font-size:14px;cursor:pointer;margin-top:12px;background:#263345;color:var(--muted)}
 .swap-btn.active{background:linear-gradient(135deg,#2f80ed,#4f8cff);color:#fff}
-.swap-btn:disabled{cursor:not-allowed}
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;padding:16px;z-index:1500}
 .modal-overlay.show{display:flex}
 .modal-box{background:linear-gradient(145deg,#1d2939,#101721);border:1px solid #68562a;border-radius:20px;padding:18px;max-width:440px;width:100%;max-height:85vh;overflow-y:auto}
@@ -202,14 +196,26 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 .order .dt{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
 .order .dt span:last-child{color:#fff}
 .order .pl{cursor:pointer;color:var(--gold)}
-.order .oa{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
-.order .oa button{flex:1;padding:10px;font-size:12px;font-weight:700;border-radius:10px;border:0;cursor:pointer;background:var(--blue);color:#fff;min-width:80px}
+.order-actions{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.order-actions button{flex:1;padding:10px;font-size:12px;font-weight:700;border-radius:10px;border:0;cursor:pointer;background:var(--blue);color:#fff;min-width:80px}
 .price-hint{background:linear-gradient(135deg,#1a2e1a,#0d1f0d);border:1px solid var(--green);border-radius:10px;padding:10px;margin-top:8px;font-size:11px}
 .price-hint b{color:#39d98a}
 .price-range{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:8px}
 .price-range button{padding:8px 4px;font-size:11px;background:#1e2530;border:1px solid var(--line);border-radius:8px;color:#fff;cursor:pointer}
 .price-range button.green{background:#1e4620;border-color:#39d98a}
 .price-range button.red{background:#4a1f1f;border-color:#f6465d}
+#topBannersList{position:sticky;top:0;z-index:200;margin:0 -14px 12px -14px;padding:10px 14px 6px 14px;background:linear-gradient(180deg,#0b1018 0%,#0b1018 75%,rgba(11,16,24,.92) 100%);backdrop-filter:blur(10px)}
+#topBannersList:empty{display:none}
+.ad-banner{position:relative;border-radius:var(--bn-r,14px);overflow:hidden;margin-bottom:10px;min-height:var(--bn-h,110px);cursor:pointer;border:1px solid #2a3242;background:linear-gradient(135deg,#1a1f2e,#12161f)}
+.ad-banner-bg{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.5}
+.ad-banner-overlay{position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,13,18,.92) 0%,rgba(10,13,18,.35) 100%)}
+.ad-banner-body{position:relative;z-index:2;padding:var(--bn-p,16px) 46px calc(var(--bn-p,16px) + 22px) var(--bn-p,16px);display:flex;flex-direction:column;justify-content:center;min-height:var(--bn-h,110px)}
+.ad-banner-title{color:#fff;font-size:var(--bn-ts,17px);font-weight:700;line-height:1.3;margin-bottom:6px}
+.ad-banner-sub{color:#cfd8e4;font-size:var(--bn-ss,13px);line-height:1.4}
+.ad-banner-mark{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.72);color:#cbd5e1;font-size:11px;font-weight:800;letter-spacing:3px;text-align:center;padding:5px 0;text-transform:uppercase;z-index:3}
+#adModal video{width:100%;flex:1;min-height:0;object-fit:contain;background:#000;display:block}
+.slider{width:100%;height:8px;border-radius:4px;background:#0d1520;outline:none;margin-top:8px;appearance:none}
+.slider::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:var(--gold);cursor:pointer}
 </style>
 </head>
 <body>
@@ -227,6 +233,7 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 <button class="icon-btn" onclick="openHistory()">📜</button>
 <button class="icon-btn" onclick="showFAQ()">❓</button>
 <button class="icon-btn" onclick="openSettings()">⚙️</button>
+<button id="adminIcon" class="icon-btn hidden" onclick="goView('admin')" title="Админ">👑</button>
 </div>
 </div>
 
@@ -309,25 +316,32 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 <div class="scale-header"><span>👥 Рефералы</span><b id="scRefsTxt">0 / 0</b></div>
 <div class="scale-bar-bg"><div class="scale-bar-fill gold" id="scRefs" style="width:0%"></div></div>
 </div>
+<div class="scale-item hidden" id="scStarWrap">
+<div class="scale-header"><span>⭐ Звёздный</span><b id="scStarTxt">—</b></div>
+<div class="scale-bar-bg"><div class="scale-bar-fill purple" id="scStar" style="width:0%"></div></div>
+</div>
 </div>
 <div class="rule-line">📜 Уровень = <b>минимум из 3 шкал</b></div>
 </div>
 
+<!-- БОНУС — ПОД рыцарем (под шкалами) -->
 <div class="card gold" id="bonusCard" style="display:none">
 <div class="title">🎁 ПРИВЕТСТВЕННЫЙ БОНУС</div>
 <div id="bonusStatus" class="info">Загрузка...</div>
 <button id="bonusBtn" class="admin-btn gold" style="width:100%;margin-top:8px" onclick="claimWelcomeBonus()">🎁 Получить</button>
 </div>
 
+<!-- 6 КНОПОК: Магазин, Доход, Друзья, Топ-100, Обмен, Чекин -->
 <div class="quick-actions">
 <button class="quick-btn" onclick="goView('shop')"><span class="icon">🏪</span> Магазин</button>
 <button class="quick-btn" onclick="goView('income')"><span class="icon">🎯</span> Доход</button>
 <button class="quick-btn" onclick="goView('friends')"><span class="icon">👥</span> Друзья</button>
 <button class="quick-btn" onclick="goView('rating')"><span class="icon">🏆</span> Топ-100</button>
 <button class="quick-btn" onclick="quickSwap()"><span class="icon">🔄</span> Обмен</button>
-<button id="adminQuickRow" class="quick-btn hidden" onclick="goView('admin')"><span class="icon">👑</span> Админ</button>
+<button class="quick-btn" onclick="quickCheckin()"><span class="icon">🔥</span> Чекин</button>
 </div>
 </div>
+<!-- ═══ ЗАКРЫТ #view-home ═══ -->
 
 <!-- ═══════ SHOP ═══════ -->
 <div id="view-shop" class="hidden">
@@ -372,8 +386,8 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 <div class="item-card">
 <div class="title" style="font-size:12px;margin-bottom:8px">ЗАРАБОТАНО ПО ТОКЕНАМ</div>
 <div style="display:flex;gap:8px">
-<div class="tbox" style="flex:1;background:#0d1520;border:1px solid #303d50;border-radius:14px;padding:12px"><div class="info">Заработано TG</div><div style="color:#fff;font-size:20px;font-weight:bold;margin-top:4px" id="refTG">0</div></div>
-<div class="tbox" style="flex:1;background:#0d1520;border:1px solid #303d50;border-radius:14px;padding:12px"><div class="info">Заработано TUSD</div><div style="color:#fff;font-size:20px;font-weight:bold;margin-top:4px" id="refTUSD">0</div></div>
+<div style="flex:1;background:#0d1520;border:1px solid #303d50;border-radius:14px;padding:12px"><div class="info">Заработано TG</div><div style="color:#fff;font-size:20px;font-weight:bold;margin-top:4px" id="refTG">0</div></div>
+<div style="flex:1;background:#0d1520;border:1px solid #303d50;border-radius:14px;padding:12px"><div class="info">Заработано TUSD</div><div style="color:#fff;font-size:20px;font-weight:bold;margin-top:4px" id="refTUSD">0</div></div>
 </div>
 <div id="refEarningsList" style="display:flex;flex-direction:column;gap:5px;margin-top:8px"><div class="info">Загрузка...</div></div>
 </div>
@@ -469,7 +483,7 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 
 <div class="admin-section">
 <div class="admin-title">💰 Доход магазина</div>
-<div class="revenue-box" style="background:linear-gradient(135deg,#1a2e1a,#0d1f0d);border:1px solid var(--green);border-radius:12px;padding:14px;text-align:center">
+<div style="background:linear-gradient(135deg,#1a2e1a,#0d1f0d);border:1px solid var(--green);border-radius:12px;padding:14px;text-align:center">
 <div style="font-size:26px;font-weight:800;color:var(--green)" id="adRevenue">$0</div>
 <div class="info" style="text-transform:uppercase;margin-top:4px">Заработано с покупок</div>
 </div>
@@ -508,7 +522,7 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 <input id="ni_emoji" placeholder="🗡️" maxlength="4" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px"></div>
 <div class="admin-field"><label>Название</label>
 <input id="ni_name" placeholder="Меч рыцаря" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px"></div>
-<div class="admin-field"><label>Символ (уникальный)</label>
+<div class="admin-field"><label>Символ</label>
 <input id="ni_symbol" placeholder="SWORD_10" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px"></div>
 <div class="admin-field"><label>Слот</label>
 <select id="ni_slot" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
@@ -677,6 +691,81 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 </div>
 
 <div class="admin-section">
+<div class="admin-title">🪙 Добавить токен</div>
+<label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px">Название</label>
+<input id="listingTokenName" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+<label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">Символ</label>
+<input id="listingTokenSymbol" maxlength="20" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+<label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">Jetton Master</label>
+<input id="listingJettonMaster" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+<label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">Лого (URL)</label>
+<input id="listingLogoUrl" placeholder="https://..." style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+<label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">Decimals</label>
+<input id="listingDecimals" type="number" value="9" min="0" max="18" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+<label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">Supply</label>
+<input id="listingTotalSupply" type="number" oninput="calculateListingPreview()" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+<div class="prev">
+<div class="info">Supply %: <b id="listingSupplyPercentPreview">10%</b></div>
+<div class="info">Кол-во: <b id="listingSupplyAmountPreview">0</b></div>
+<div class="info">Оплата: <b id="listingFeePreview">0 TUSD</b></div>
+</div>
+<button id="createListingButton" class="admin-btn gold" style="width:100%;margin-top:8px" onclick="createTokenListing()">➕ СОЗДАТЬ ЗАЯВКУ</button>
+<div id="listingCreateResult" class="info" style="margin-top:9px"></div>
+</div>
+
+<div class="admin-section">
+<div class="admin-title">⚙️ Настройки листинга</div>
+<button class="admin-btn sec" style="width:100%" onclick="loadListingSettingsAdmin()">🔄 Загрузить</button>
+<label style="display:block;font-size:11px;color:var(--muted);margin:12px 0 4px">💰 Комиссия за листинг (TUSD)</label>
+<input id="ls_fee_tusd" type="number" step="0.01" min="0" placeholder="50" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+<label style="display:block;font-size:11px;color:var(--muted);margin:12px 0 4px">📊 Доля платформы от Supply (%)</label>
+<input id="ls_supply_percent" type="number" step="0.1" min="0" max="100" placeholder="10" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+<div class="admin-btn-row">
+<button class="admin-btn gold" onclick="saveListingSettingsAdmin()">💾 Сохранить</button>
+<button class="admin-btn sec" onclick="loadListingSettingsAdmin()">↺ Сбросить</button>
+</div>
+<div id="listingSettingsStatus" class="info" style="margin-top:8px;text-align:center"></div>
+</div>
+
+<div class="admin-section">
+<div class="admin-title">📋 Заявки на листинг</div>
+<button class="admin-btn sec" style="width:100%" onclick="loadAdminListings()">🔄 ЗАГРУЗИТЬ</button>
+<div id="adminListingsList" style="margin-top:12px"></div>
+</div>
+
+<div class="admin-section">
+<div class="admin-title">🛡️ Верификация токенов</div>
+<button class="admin-btn sec" style="width:100%" onclick="loadAdminVerification()">🔄 ЗАГРУЗИТЬ</button>
+<div id="adminVerifyList" style="margin-top:12px"></div>
+</div>
+
+<div class="admin-section">
+<div class="admin-title">📺 Добавить рекламу</div>
+<label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px">Название</label>
+<input id="ad_new_title" placeholder="Игра XYZ" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+<label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">Описание</label>
+<input id="ad_new_desc" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+<label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">Видео (MP4, 50 МБ)</label>
+<input id="ad_new_video" type="file" accept="video/mp4" style="width:100%;padding:8px;color:#fff;font-size:12px">
+<label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">Ссылка</label>
+<input id="ad_new_url" placeholder="https://t.me/канал" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+<label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">Текст кнопки</label>
+<input id="ad_new_cta" value="🚀 ПЕРЕЙТИ" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+<label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">Длительность (сек)</label>
+<input id="ad_new_duration" type="number" value="15" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+<label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">Буфер (сек)</label>
+<input id="ad_new_buffer" type="number" value="10" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+<label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">Награда</label>
+<input id="ad_new_reward" type="number" value="0.0005" step="0.000001" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+<label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">Токен награды</label>
+<select id="ad_new_token" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px"><option value="">TUSD</option></select>
+<label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">Просмотров</label>
+<input id="ad_new_target" type="number" value="10000" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+<button id="ad_new_submit" class="admin-btn gold" style="width:100%;margin-top:8px" onclick="adminCreateAd()">📤 ЗАГРУЗИТЬ И СОЗДАТЬ</button>
+<div id="ad_new_status" class="info" style="margin-top:9px"></div>
+</div>
+
+<div class="admin-section">
 <div class="admin-title">📋 Задания</div>
 <button class="admin-btn sec" style="width:100%" onclick="loadAdminTasks()">🔄 Загрузить задания</button>
 <button class="admin-btn gold" style="width:100%;margin-top:8px" onclick="openAdminTaskForm(null)">➕ Создать задание</button>
@@ -761,7 +850,7 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 
 <div id="adModal" class="modal-overlay" style="background:#000;padding:0;align-items:stretch">
 <div style="position:relative;width:100vw;height:100vh;display:flex;flex-direction:column;background:#000">
-<video id="adVideo" playsinline preload="auto" webkit-playsinline style="width:100%;flex:1;min-height:0;object-fit:contain;background:#000"></video>
+<video id="adVideo" playsinline preload="auto" webkit-playsinline></video>
 <div style="position:absolute;top:0;left:0;right:0;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(180deg,#000c,transparent);color:#fff;z-index:5">
 <button onclick="closeAdModal()" style="width:38px;height:38px;border-radius:50%;background:#0009;color:#fff;border:1px solid #fff5;font-size:18px;cursor:pointer">✕</button>
 <div style="background:#0009;padding:6px 14px;border-radius:20px;font-size:14px;border:1px solid #fff3" id="adTimer">0:25</div>
@@ -815,6 +904,7 @@ const RANKS=['Новичок','Крестьянин','Вольный','Граж�
 const RANK_STAKE=[0,0.1,0.5,1,2,3,4,5,6,7,8,16,32,64,256,512,1024,2048,4096,8192,16384,32768];
 const RANK_TRADES=[0,1,2,3,4,6,8,10,12,14,16,18,20,22,25,28,31,34,37,40,43,46];
 const RANK_REFS=[0,0,0,0,0,0,1,2,3,4,5,6,7,8,10,11,12,13,14,15,16,17];
+const RANK_STAR_MIN_LVL=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,9,10,11,12,13,14,15,16];
 
 const RC=['#fff','#d8d8d8','#b9c5b9','#75c99a','#58b5e9','#4f8cff','#3974d9','#6673e8','#4169e1','#7389bd','#b87333','#bfc2c9','#e0bd45','#9b59b6','#8e44ad','#e0b72f','#e68a27','#24c8aa','#f5cf3d','#f7b83f','#ffd700'];
 const rk=l=>RC[Math.max(0,Math.min(20,Number(l||0)))];
@@ -889,18 +979,10 @@ async function loadAllTokens(){
     if(!error&&data&&data.length){
       ALL_TOKENS=data.map(t=>({id:t.id,symbol:t.symbol,name:t.name,price_tusd:Number(t.price_tusd)||0,min_withdrawal:Number(t.min_withdrawal)||0,decimals:t.decimals,logo_url:t.logo_url||t.logo||t.icon_url||null,is_system_token:!!t.is_system_token}));
     }else{
-      ALL_TOKENS=[
-        {symbol:'TG',name:'Telepat Gold',price_tusd:100,is_system_token:false},
-        {symbol:'AI',name:'AI Token',price_tusd:0.0001,is_system_token:false},
-        {symbol:'TUSD',name:'Telepat Dollar',price_tusd:1,is_system_token:false}
-      ];
+      ALL_TOKENS=[{symbol:'TG',name:'Telepat Gold',price_tusd:100,is_system_token:false},{symbol:'AI',name:'AI Token',price_tusd:0.0001,is_system_token:false},{symbol:'TUSD',name:'Telepat Dollar',price_tusd:1,is_system_token:false}];
     }
   }catch{
-    ALL_TOKENS=[
-      {symbol:'TG',name:'Telepat Gold',price_tusd:100,is_system_token:false},
-      {symbol:'AI',name:'AI Token',price_tusd:0.0001,is_system_token:false},
-      {symbol:'TUSD',name:'Telepat Dollar',price_tusd:1,is_system_token:false}
-    ];
+    ALL_TOKENS=[{symbol:'TG',name:'Telepat Gold',price_tusd:100,is_system_token:false},{symbol:'AI',name:'AI Token',price_tusd:0.0001,is_system_token:false},{symbol:'TUSD',name:'Telepat Dollar',price_tusd:1,is_system_token:false}];
   }
   fillAll();
 }
@@ -911,6 +993,11 @@ function fillAll(){
     ALL_TOKENS.forEach(t=>{const o=document.createElement('option');o.value=t.symbol;o.textContent=t.symbol+(t.name?' — '+t.name:'');el.appendChild(o);});
     if(prev&&ALL_TOKENS.find(t=>t.symbol===prev)) el.value=prev;
   });
+  const adSel=$('ad_new_token');
+  if(adSel&&ALL_TOKENS.length){
+    adSel.innerHTML='<option value="">TUSD (по умолчанию)</option>';
+    ALL_TOKENS.forEach(t=>{const o=document.createElement('option');o.value=t.id;o.textContent=t.symbol+' — '+t.name;adSel.appendChild(o);});
+  }
 }
 async function loadCustomBalances(){
   if(!UID){CB={};return;}
@@ -949,7 +1036,7 @@ async function loadUser(){
   if(tgu?.username){
     try{const r=await sb.rpc('activate_pending_referral',{p_user_id:UID,p_username:tgu.username});if(r.data?.activated>0){const r3=await sb.from('users').select('*').eq('telegram_id',UID).maybeSingle();if(r3.data)CU=r3.data;}}catch(e){}
   }
-  if(UID===AID){$('adminQuickRow')?.classList.remove('hidden');}
+  if(UID===AID){$('adminIcon')?.classList.remove('hidden');}
 }
 async function loadMyItems(){
   try{const{data}=await sb.rpc('get_my_items',{p_test_user_id:UID});MY_ITEMS=(data&&data.items)||[];}catch(e){MY_ITEMS=[];}
@@ -987,6 +1074,7 @@ function goView(v){
   window.scrollTo({top:0,behavior:'smooth'});
 }
 function quickSwap(){goView('income');setTimeout(()=>showIncomeTab('swap'),60);}
+function quickCheckin(){goView('income');setTimeout(()=>showIncomeTab('checkin'),60);}
 function openModal(title,html){$('modalBox').innerHTML=`<div class="modal-title">${title}</div>${html}`;$('modal').classList.add('show');}
 function closeModal(e){if(e&&e.target!==$('modal')) return;$('modal').classList.remove('show');}
 function openHistory(){$('historyModal').classList.add('show');HISTORY_OFFSET=0;HISTORY_ITEMS=[];loadHistory();}
@@ -1068,6 +1156,16 @@ function renderHome(){
   $('scDeals').style.width=(needDeals>0?Math.min(100,deals/needDeals*100):100)+'%';
   $('scRefs').style.width=(needRefs>0?Math.min(100,refs/needRefs*100):100)+'%';
 
+  const starWrap=$('scStarWrap');
+  if(rl<13){starWrap.classList.add('hidden');}
+  else{
+    starWrap.classList.remove('hidden');
+    const needStarLvl=RANK_STAR_MIN_LVL[nextLv]||0;
+    const starRefs=Number(CU.star_refs_count||0);
+    if(needStarLvl>0){$('scStarTxt').textContent=`1 (нужен ур.${needStarLvl}+)`;$('scStar').style.width=starRefs>0?'100%':'0%';}
+    else{$('scStarTxt').textContent='—';$('scStar').style.width='0%';}
+  }
+
   const nlBox=$('nextLevelBox');
   if(nlBox){
     if(rl>=21){nlBox.innerHTML=`<div class="nl-title">🏆 МАКСИМАЛЬНЫЙ УРОВЕНЬ</div><div class="nl-row done"><span class="nl-icon">👑</span><span class="nl-text"><b>Император!</b></span><span class="nl-status">✅</span></div>`;}
@@ -1077,9 +1175,9 @@ function renderHome(){
       const dealsDone=deals>=needDeals;
       const refsDone=refs>=needRefs;
       const rows=[];
-      rows.push(`<div class="nl-row ${stakeDone?'done':''}"><span class="nl-icon">💎</span><span class="nl-text">Стейк: <b>$${f(stakeUSD,2)}</b> / $${f(needStake,2)}</span><span class="nl-status">${stakeDone?'✅':'⏳'}</span></div>`);
-      rows.push(`<div class="nl-row ${dealsDone?'done':''}"><span class="nl-icon">🔄</span><span class="nl-text">Сделок: <b>${deals}</b> / ${needDeals}</span><span class="nl-status">${dealsDone?'✅':'⏳'}</span></div>`);
-      rows.push(`<div class="nl-row ${refsDone?'done':''}"><span class="nl-icon">👥</span><span class="nl-text">Рефералов: <b>${refs}</b> / ${needRefs}</span><span class="nl-status">${refsDone?'✅':'⏳'}</span></div>`);
+      rows.push(`<div class="nl-row ${stakeDone?'done':''}"><span class="nl-icon">💎</span><span class="nl-text">Стейк: <b>$${f(stakeUSD,2)}</b> / $${f(needStake,2)}${stakeDone?'':` — нужно ещё <b>$${f(needStake-stakeUSD,2)}</b>`}</span><span class="nl-status">${stakeDone?'✅':'⏳'}</span></div>`);
+      rows.push(`<div class="nl-row ${dealsDone?'done':''}"><span class="nl-icon">🔄</span><span class="nl-text">Сделок: <b>${deals}</b> / ${needDeals}${dealsDone?'':` — нужно ещё <b>${needDeals-deals}</b>`}</span><span class="nl-status">${dealsDone?'✅':'⏳'}</span></div>`);
+      rows.push(`<div class="nl-row ${refsDone?'done':''}"><span class="nl-icon">👥</span><span class="nl-text">Рефералов: <b>${refs}</b> / ${needRefs}${refsDone?'':` — нужно ещё <b>${needRefs-refs}</b>`}</span><span class="nl-status">${refsDone?'✅':'⏳'}</span></div>`);
       nlBox.innerHTML=`<div class="nl-title">🎯 До ${nextRank} (уровень ${nextLv})</div>${rows.join('')}`;
     }
   }
@@ -1091,11 +1189,11 @@ function renderHome(){
   setKnightSpeech(speech);
 }
 function clickSlot(slot){
-  const allowed=['weapon','body','legs','armor','ring'];
+  const allowed=['weapon','body','legs','armor','ring','titleSlot','aura'];
   if(!allowed.includes(slot)){msg('Слот откроется позже','info');return;}
   const equipped=MY_ITEMS.find(i=>i.is_equipped&&i.slot===slot);
   if(equipped){
-    if(confirm(`Снять ${equipped.name}?`)){sb.rpc('equip_item',{p_user_item_id:equipped.id}).then(()=>{msg('Снято');refreshAll();});}
+    if(confirm(`Снять ${equipped.name}?`)){sb.rpc('equip_item',{p_user_item_id:equipped.id}).then(r=>{if(r.data?.ok){msg('Снято');refreshAll();}else msg('Ошибка','error');});}
     return;
   }
   const available=MY_ITEMS.find(i=>!i.is_equipped&&!i.is_listed&&i.slot===slot);
@@ -1109,11 +1207,22 @@ async function equipItem(itemId){
 }
 function openItemModal(itemId){
   const item=MY_ITEMS.find(i=>i.id===itemId);if(!item) return;
+  const canSell=item.category!=='license';
   openModal(`${item.emoji||'🎁'} ${esc(item.name)}`,`
     <div style="text-align:center;font-size:52px;margin:8px 0">${item.emoji||'🎁'}</div>
-    <div class="item-desc" style="text-align:center;margin-bottom:12px">Уровень ${item.min_rank}</div>
-    <button class="admin-btn primary" style="width:100%" onclick="equipItem('${item.id}');closeModal()">🎽 Надеть</button>
+    <div class="item-desc" style="text-align:center;margin-bottom:12px">Уровень ${item.min_rank} • Слот: ${SLOT_LABEL[item.slot]||item.slot}</div>
+    <div class="modal-actions">
+      <button class="admin-btn primary" onclick="equipItem('${item.id}');closeModal()">🎽 Надеть</button>
+      ${canSell?`<button class="admin-btn gold" onclick="sellMyItem('${item.id}');closeModal()">💰 Выкупить магазину</button>`:''}
+    </div>
     <button class="admin-btn sec" style="width:100%;margin-top:8px" onclick="closeModal()">Отмена</button>`);
+}
+async function sellMyItem(itemId){
+  if(!confirm('Продать предмет в магазин?')) return;
+  const{data,error}=await sb.rpc('sell_item_to_shop',{p_user_item_id:itemId});
+  if(error||!data||data.ok===false){msg(data?.error||'Ошибка','error');return;}
+  msg('💰 Возвращено: $'+Number(data.refunded_usd||0).toFixed(2),'success');
+  await refreshAll();
 }
 
 /* ═══════ CHAT BONUS (публичная) ═══════ */
@@ -1177,7 +1286,7 @@ async function payChatBonus(){
   const cooldown=Math.floor(Number($('cb_cooldown')?.value||3));
   const st=$('cbStatusPage');
   if(!chatId){if(st) st.textContent='Выберите чат';return;}
-  if(reward<=0){if(st) st.textContent='Награда должна быть > 0';return;}
+  if(reward<=0){if(st) st.textContent='Награда > 0';return;}
   if(st) st.textContent='Оплата...';
   try{
     const{data,error}=await sb.rpc('pay_chat_bonus_activate_v2',{
@@ -1195,9 +1304,7 @@ async function payChatBonus(){
     }
     if(st) st.innerHTML='<span class="ok">✅ Оплачено! Раздача активирована.</span>';
     msg(`✅ Чат «${data.chat_title||chatId}» подключён`,'success');
-    await refreshAll();
-    await loadAvailableChats();
-    await loadMyChatBonus();
+    await refreshAll();await loadAvailableChats();await loadMyChatBonus();
   }catch(e){if(st) st.textContent='Ошибка: '+e.message;}
 }
 async function loadMyChatBonus(){
@@ -1227,37 +1334,50 @@ async function showShopTab(tab){
     const levels=[];
     for(let i=1;i<=4;i++){const L=Math.min(21,curLv+i);if(L>curLv)levels.push(L);}
     if(!SHOP_ITEMS.length){c.innerHTML='<div class="item-card"><div class="item-desc">⚠️ Магазин не загрузился</div></div>';return;}
-    c.innerHTML=`<div class="item-card"><div class="item-header"><b>⚔️ Амуниция — 4 уровня вперёд</b></div></div>
+    c.innerHTML=`<div class="item-card"><div class="item-header"><b>⚔️ Амуниция — 4 уровня вперёд</b></div><div class="item-desc">Можно купить заранее (любой уровень). Надеть — только по достижении уровня.</div></div>
 ${levels.map(targetLv=>{
   const myGear=MY_ITEMS.filter(i=>n(i.min_rank)===targetLv);
   const slotsNeeded=['weapon','body','legs'];
   if(targetLv>=5) slotsNeeded.push('armor');
+  if(targetLv>=14) slotsNeeded.push('ring');
+  const locked=curLv<targetLv;
   const slotsHtml=slotsNeeded.map(slot=>{
     const have=myGear.find(i=>i.slot===slot);
     const cfg=SHOP_ITEMS.find(i=>i.slot===slot&&n(i.min_rank)===targetLv);
     const price=cfg?Number(cfg.price_final||cfg.price_usd||0):0;
+    const icons={weapon:'🗡️',body:'👕',legs:'👖',armor:'⛑️',ring:'💍'};
+    const names={weapon:'Оружие',body:'Броня',legs:'Поножи',armor:'Шлем',ring:'Перстень'};
     let btn;
     if(!cfg)btn='<button disabled>—</button>';
     else if(have&&have.is_equipped)btn='<button class="green" disabled>✅ Надето</button>';
-    else if(have)btn=`<button class="gold" onclick="equipItem('${have.id}')">🎽 Надеть</button>`;
+    else if(have)btn=locked?`<button class="gold" disabled>🎽 Ур.${targetLv}</button>`:`<button class="gold" onclick="equipItem('${have.id}')">🎽 Надеть</button>`;
     else btn=`<button onclick="buyGearItem('${esc(cfg.symbol)}')">Купить $${f(price,2)}</button>`;
     return `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #252b36">
-      <span style="font-size:12px">${slot}</span>
+      <span style="font-size:12px">${icons[slot]} ${names[slot]}</span>
       <span style="font-size:11px;color:var(--gold)">${cfg?'$'+f(price,2):'—'}</span>${btn}</div>`;
   }).join('');
-  return `<div class="item-card"><div class="item-header"><b>📦 Ур.${targetLv} (${RANKS[targetLv]||'—'})</b></div>${slotsHtml}</div>`;
+  return `<div class="item-card"><div class="item-header"><b>📦 Ур.${targetLv} (${RANKS[targetLv]||'—'})</b>${locked?' <span class="rarity common">🔒</span>':''}</div>${slotsHtml}</div>`;
 }).join('')}`;
+  }
+  else if(tab==='titles'){
+    await loadShopItems();
+    const items=SHOP_ITEMS.filter(i=>i.category==='title');
+    const myTitles=MY_ITEMS.filter(i=>i.category==='title');
+    c.innerHTML='<div class="item-card"><div class="item-header"><b>🏷️ Титулы</b></div></div>'+
+      (items.length?items.map(t=>{
+        const have=myTitles.find(x=>x.symbol===t.symbol);
+        let btn=have?`<button class="gold" onclick="equipItem('${have.id}')">🎽</button>`:`<button onclick="buyGearItem('${esc(t.symbol)}')">Купить</button>`;
+        return `<div class="item-card"><div class="item-header"><span class="item-name">${t.emoji||'👑'} ${esc(t.name)}</span></div>
+        <div class="item-footer"><span class="item-price">$${f(t.price_usd,2)}</span>${btn}</div></div>`;
+      }).join(''):'<div class="item-card"><div class="item-desc">Пусто</div></div>');
   }
   else if(tab==='certs'){
     const{data}=await sb.rpc('get_shop_licenses',{p_test_user_id:UID});
     const items=(data&&data.ok)?(data.items||[]):[];
-    c.innerHTML=`<div class="item-card"><div class="item-header"><b>📜 Грамоты торговца</b></div></div>`+
-      (items.length?items.map(l=>{
-        const price=Number(l.price_final||l.price_usd||0);
-        return `<div class="item-card"><div class="item-header"><span class="item-name">📜 ${esc(l.name)}</span></div>
-        <div class="item-footer"><span class="item-price">$${f(price,2)}</span>
-        <button onclick="buyLicense('${esc(l.symbol)}',${price})">Купить</button></div></div>`;
-      }).join(''):'<div class="item-card"><div class="item-desc">Нет грамот</div></div>');
+    c.innerHTML='<div class="item-card"><div class="item-header"><b>📜 Грамоты</b></div></div>'+
+      (items.length?items.map(l=>`<div class="item-card"><div class="item-header"><span class="item-name">📜 ${esc(l.name)}</span></div>
+      <div class="item-footer"><span class="item-price">$${f(l.price_final||l.price_usd||0,2)}</span>
+      <button onclick="buyLicense('${esc(l.symbol)}',${l.price_final||l.price_usd||0})">Купить</button></div></div>`).join(''):'<div class="item-card"><div class="item-desc">Пусто</div></div>');
   }
   else if(tab==='artifacts'){
     await loadShopItems();
@@ -1267,17 +1387,17 @@ ${levels.map(targetLv=>{
       <div class="item-footer"><span class="item-price">$${f(a.price_usd,2)}</span>
       <button onclick="buyGearItem('${esc(a.symbol)}')">Купить</button></div></div>`).join(''):'<div class="item-card"><div class="item-desc">Пусто</div></div>');
   }
-  else if(tab==='titles'){
-    await loadShopItems();
-    const items=SHOP_ITEMS.filter(i=>i.category==='title');
-    c.innerHTML='<div class="item-card"><div class="item-header"><b>🏷️ Титулы</b></div></div>'+
-      (items.length?items.map(t=>`<div class="item-card"><div class="item-header"><span class="item-name">${t.emoji||'👑'} ${esc(t.name)}</span></div>
-      <div class="item-footer"><span class="item-price">$${f(t.price_usd,2)}</span>
-      <button onclick="buyGearItem('${esc(t.symbol)}')">Купить</button></div></div>`).join(''):'<div class="item-card"><div class="item-desc">Пусто</div></div>');
+  else if(tab==='extras'){
+    const curLevel=CU?Number(CU.rank_level||0):0;
+    const extras=['helmet','shield','cloak','ring','bag','pet','aura'];
+    c.innerHTML='<div class="item-card"><div class="item-header"><b>🛡️ Доп. снаряжение</b></div></div>'+
+      extras.map(slot=>{
+        const levelReq={helmet:4,shield:6,cloak:9,ring:14,bag:15,pet:17,aura:21}[slot]||1;
+        const locked=curLevel<levelReq;
+        return `<div class="item-card"><div class="item-header"><span class="item-name">${slot}</span>${locked?`<span class="rarity common">🔒 Ур.${levelReq}</span>`:'<span class="rarity rare">Открыт</span>'}</div></div>`;
+      }).join('');
   }
-  else if(tab==='extras'||tab==='refs'||tab==='auction'){
-    c.innerHTML='<div class="item-card"><div class="item-desc">Скоро</div></div>';
-  }
+  else{c.innerHTML='<div class="item-card"><div class="item-desc">Скоро</div></div>';}
 }
 async function buyGearItem(symbol){
   const cfg=SHOP_ITEMS.find(i=>i.symbol===symbol);
@@ -1287,14 +1407,34 @@ async function buyGearItem(symbol){
   const{data,error}=await sb.rpc('buy_item',{p_item_symbol:cfg.symbol,p_pay_token:'TUSD'});
   if(error){msg(error.message,'error');return;}
   if(!data||data.ok===false){msg(data?.error||'Ошибка','error');return;}
-  msg(`✅ Куплено`,'success');
-  await refreshAll();
+  msg(`✅ Куплено`,'success');await refreshAll();
   if(!$('view-shop').classList.contains('hidden')) showShopTab(currentShopTab);
 }
 async function buyLicense(symbol,price){
   if(!confirm(`Купить грамоту за $${f(price,2)}?`)) return;
   const{data,error}=await sb.rpc('buy_item',{p_item_symbol:symbol,p_pay_token:'TUSD'});
   if(error){msg(error.message,'error');return;}
+  msg('✅ Куплено','success');await refreshAll();
+}
+async function gearListItem(){
+  const itemId=$('gear_sell_item')?.value;
+  const price=Number($('gear_sell_price')?.value);
+  if(!itemId||!Number.isFinite(price)||price<=0){msg('Заполните','error');return;}
+  const{data,error}=await sb.rpc('gear_list_item',{p_user_item_id:itemId,p_price_tusd:price});
+  if(error||!data||data.ok===false){msg(data?.error||'Ошибка','error');return;}
+  msg(`✅ Выставлено за $${f(price,2)}`,'success');
+  await refreshAll();if(currentIncomeTab==='gear-p2p') showIncomeTab('gear-p2p');
+}
+async function gearCancelListing(id){
+  if(!confirm('Снять?')) return;
+  const{data,error}=await sb.rpc('gear_cancel_listing',{p_listing_id:id});
+  if(error||!data||data.ok===false){msg('Ошибка','error');return;}
+  msg('✅','success');await refreshAll();
+}
+async function gearBuyListing(id){
+  if(!confirm('Купить?')) return;
+  const{data,error}=await sb.rpc('gear_buy_listing',{p_listing_id:id});
+  if(error||!data||data.ok===false){msg(data?.error||'Ошибка','error');return;}
   msg('✅ Куплено','success');await refreshAll();
 }
   
@@ -1341,30 +1481,75 @@ async function showIncomeTab(tab){
 <button class="admin-btn gold" style="width:100%;margin-bottom:12px" onclick="openCreateOrder()">➕ Создать ордер</button>
 ${orders.length?orders.map(o=>orderCard(o)).join(''):'<div class="item-card"><div class="item-desc">Ордеров пока нет. Нажми «Создать ордер».</div></div>'}`;
   }
+  else if(tab==='gear-p2p'){
+    const{data:listData}=await sb.rpc('gear_get_listings');
+    const{data:myData}=await sb.rpc('gear_my_listings');
+    const listings=(listData&&listData.ok)?(listData.items||[]):[];
+    const myListings=(myData&&myData.ok)?(myData.items||[]):[];
+    const inv=MY_ITEMS.filter(i=>!i.is_equipped&&!i.is_listed&&i.category!=='license');
+    c.innerHTML=`
+<div class="item-card"><div class="item-header"><b>🛡️ P2P Амуниция</b></div><div class="item-desc">Комиссия платформы 10%.</div></div>
+<div class="item-card">
+  <div class="item-header"><b>💼 Выставить свой предмет</b></div>
+  ${inv.length?`
+  <select id="gear_sell_item" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px;margin-top:8px">
+    ${inv.map(i=>`<option value="${i.id}">${i.emoji||'🎁'} ${esc(i.name)} (ур.${i.min_rank})</option>`).join('')}
+  </select>
+  <div style="display:flex;gap:8px;margin-top:8px">
+    <input type="number" id="gear_sell_price" step="0.01" min="0.01" placeholder="Цена TUSD" style="flex:1;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+    <button class="admin-btn sm gold" onclick="gearListItem()">💰 Выставить</button>
+  </div>`:'<div class="info" style="margin-top:8px">Нет свободных предметов</div>'}
+</div>
+${myListings.length?`<div class="item-card">
+  <div class="item-header"><b>📋 Мои лоты</b></div>
+  ${myListings.map(l=>`
+  <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #252b36">
+    <div><div style="font-size:13px;color:#fff">${esc(l.emoji||'🎁')} ${esc(l.item_name)}</div><div class="info" style="font-size:11px">$${f(l.price_tusd,2)} • ${l.status}</div></div>
+    ${l.status==='active'?`<button class="admin-btn sm danger" onclick="gearCancelListing('${l.id}')">❌</button>`:''}
+  </div>`).join('')}
+</div>`:''}
+<div class="item-card">
+  <div class="item-header"><b>🛒 На продаже (${listings.length})</b></div>
+  ${listings.length?listings.map(l=>`
+  <div class="item-card" style="background:#0d1520;margin-top:8px">
+    <div class="item-header">
+      <span class="item-name">${esc(l.emoji||'🎁')} ${esc(l.item_name)}</span>
+      <span class="rarity rare">Ур.${l.min_rank}</span>
+    </div>
+    <div class="item-desc">Продавец: @${esc(l.seller_username||l.seller_first_name||l.seller_id)}</div>
+    <div class="item-footer">
+      <span class="item-price">$${f(l.price_tusd,2)}</span>
+      <button onclick="gearBuyListing('${l.id}')">🛒 Купить</button>
+    </div>
+  </div>`).join(''):'<div class="info">Лотов пока нет</div>'}
+</div>
+<div class="item-card" style="border-color:#2d3a4c"><div class="item-desc">💰 TUSD: <b style="color:var(--gold)">$${f(CU?.tusd_balance||0,2)}</b></div></div>`;
+  }
   else if(tab==='swap'){
     const fromBal=tb(state_swapFrom);
     const fromPrice=priceOf(state_swapFrom);
     const toPrice=priceOf(state_swapTo);
     c.innerHTML=`
-<div class="item-card"><div class="item-header"><b>🔄 Swap · Пул ликвидности</b></div></div>
+<div class="item-card"><div class="item-header"><b>🔄 Swap · Пул ликвидности</b></div><div class="item-desc">Курс от резервов пула (x·y=k).</div></div>
 <div class="swap-box">
 <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:6px"><span>Отдаёте</span><span>Баланс: ${f(fromBal,4)}</span></div>
 <div class="row">
 <input type="number" id="swFromAmt" placeholder="0.0" oninput="calcSwap()">
 <button class="max-btn" onclick="setSwapMax()">MAX</button>
-<button class="token-badge" onclick="openTokenPicker('from')">${tokenIcon(state_swapFrom)} ${state_swapFrom}</button>
+<button class="token-badge" onclick="openTokenPicker('from')">${tokenIcon(state_swapFrom)} ${state_swapFrom} ▼</button>
 </div>
-<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:6px"><span>Цена</span><span>$${f(fromPrice,8)}</span></div>
+<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:6px"><span>Цена (TUSD)</span><span>$${f(fromPrice,8)}</span></div>
 </div>
 <div class="swap-arrow-wrap"><button class="swap-arrow-btn" onclick="swapSwapTokens()">⇅</button></div>
 <div class="swap-box">
 <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:6px"><span>Получаете</span><span id="swToUsd">≈ $0.00</span></div>
 <div class="row">
 <input type="number" id="swToAmt" placeholder="0.0" readonly>
-<button class="token-badge" onclick="openTokenPicker('to')">${tokenIcon(state_swapTo)} ${state_swapTo}</button>
+<button class="token-badge" onclick="openTokenPicker('to')">${tokenIcon(state_swapTo)} ${state_swapTo} ▼</button>
 </div>
+<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:6px"><span>Цена (TUSD)</span><span>$${f(toPrice,8)}</span></div>
 </div>
-<div class="prev">
+<div class="prev" style="margin-top:10px">
 <div class="history-row"><span>Курс</span><b id="swRate">—</b></div>
 <div class="history-row"><span>Комиссия</span><b id="swFee">—</b></div>
 </div>
@@ -1375,74 +1560,82 @@ ${orders.length?orders.map(o=>orderCard(o)).join(''):'<div class="item-card"><di
   else if(tab==='staking'){
     await loadStakeState();
     await loadRewardFunds();
+    const acc=STAKE_DISPLAY;
     let dailyUSD=0;
     (REWARD_FUNDS||[]).forEach(fd=>{dailyUSD+=Number(fd.my_per_day_tusd)||0;});
     c.innerHTML=`
 <div class="item-card"><div class="item-header"><b>💎 Стейкинг</b></div>
 <div style="text-align:center;margin:12px 0">
-<div class="info" style="font-size:11px">НАКОПЛЕНО</div>
-<div style="font-size:28px;font-weight:800;color:#39d98a">$<span id="stakeAccumValue">${f(STAKE_DISPLAY,6)}</span></div>
+<div style="font-size:11px;color:#8a94a6">НАКОПЛЕНО</div>
+<div style="font-size:28px;font-weight:800;color:#39d98a">$<span id="stakeAccumValue">${f(acc,6)}</span></div>
 <div id="stakeTick" style="font-size:12px;color:#39d98a;margin-top:6px">+$${dailyUSD.toFixed(4)}/день</div>
 </div>
 <button class="stake-collect" onclick="claimStaking()">💵 СОБРАТЬ В TUSD</button>
+</div>
+<div class="item-card"><div class="item-header"><b>🎁 Фонды наград</b></div>
+${REWARD_FUNDS.length?REWARD_FUNDS.map(fd=>`
+<div style="padding:8px 0;border-bottom:1px solid #252b36">
+<div style="display:flex;align-items:center;gap:8px">${tokenIconHTML(fd.token_symbol,'sm')}<b>${esc(fd.token_symbol)}</b></div>
+<div class="item-desc" style="font-size:11px;margin-top:4px">Фонд: ${f(fd.fund_amount,6)} • Ставка: ${fd.hourly_rate_pct}%/час</div>
+<div class="item-desc" style="color:#39d98a;font-size:11px">Мне: +${f(fd.my_per_day,6)}/день</div>
+</div>`).join(''):'<div class="item-desc">Фондов пока нет</div>'}
 </div>`;
   }
   else if(tab==='checkin'){
     const{data}=await sb.rpc('get_checkin_status');
     const canClaim=data?.can_claim;
     const currentDay=data?.current_day||0;
+    let rewardsHtml='';
+    const r=data?.next_rewards||{};
+    Object.keys(r).forEach(k=>{if(n(r[k])>0) rewardsHtml+=`<div class="item-desc">${tokenIconHTML(k,'xs')} ${esc(k)}: +${f(r[k],8)}</div>`;});
     let calHtml='';
     for(let d=1;d<=30;d++){
-      const isBonus=d%7===0;const isDone=d<=currentDay;const isNext=d===(currentDay+1)&&canClaim;
+      const isBonus=d%7===0;const isDone=d<=currentDay&&d!==(currentDay+1);const isNext=d===(currentDay+1)&&canClaim;
       let cls='ci-day';if(isDone)cls+=' done';if(isNext)cls+=' next';if(isBonus)cls+=' bonus';
-      calHtml+=`<div class="${cls}"><div style="font-weight:bold;font-size:12px">${d}</div>${isDone?'<span class="ci-check">✅</span>':(isNext?'<span class="ci-check">🔥</span>':'')}</div>`;
+      calHtml+=`<div class="${cls}"><div style="font-weight:bold;font-size:12px">${d}</div>${isDone?'<span class="ci-check">✅</span>':(isNext?'<span class="ci-check">🔥</span>':`<div style="font-size:9px">${isBonus?'⭐':'•'}</div>`)}</div>`;
     }
-    c.innerHTML=`<div class="item-card"><div class="item-header"><b>🔥 Чекин</b></div>
-<div style="text-align:center;padding:8px 0"><div style="font-size:44px;font-weight:bold;color:#f4cf70">${currentDay}</div><div class="info">дней подряд</div></div>
+    c.innerHTML=`
+<div class="item-card"><div class="item-header"><b>🔥 Чекин — 30 дней</b></div>
+<div style="text-align:center;padding:8px 0"><div style="font-size:44px;font-weight:bold;color:#f4cf70;line-height:1">${currentDay}</div><div class="info">дней подряд</div></div>
+${data?.is_bonus_day?'<div style="text-align:center;padding:8px;background:#3a2818;border:1px solid #f4cf70;border-radius:10px;margin-bottom:10px;color:#f4cf70;font-weight:bold;font-size:13px">⭐ БОНУСНЫЙ ДЕНЬ ×2</div>':''}
+<div class="info" style="text-align:center;margin-bottom:8px">Сегодня получишь:</div>
+<div style="background:#0d1520;border:1px solid #303d50;border-radius:12px;padding:12px;margin-bottom:10px;font-size:13px">${rewardsHtml||'<div class="info">Нет активных токенов</div>'}</div>
 <button class="admin-btn gold" style="width:100%" ${canClaim?'':'disabled'} onclick="claimCheckin()">${canClaim?`🔥 Получить день ${currentDay+1}`:'✅ Уже получено'}</button>
-<div class="ci-grid" style="margin-top:12px">${calHtml}</div></div>`;
+<div class="title" style="margin-top:16px;font-size:12px">КАЛЕНДАРЬ 30 ДНЕЙ</div>
+<div class="ci-grid">${calHtml}</div>
+</div>`;
   }
   else if(tab==='tasks'){
     const{data}=await sb.rpc('get_active_tasks',{p_user_id:String(UID)});
     const tasks=data||[];
-    c.innerHTML='<div class="item-card"><div class="item-header"><b>📋 Задания</b></div></div>'+
-      (tasks.length?tasks.map(t=>`<div class="task ${t.is_completed?'done':''}" onclick="startTask('${esc(t.id)}','${esc(t.link)}')">
-        <div class="tt">${esc(t.type)}</div>
-        <div class="ts">${esc(t.link)}</div>
-        <div class="ts">${t.completed_count}/${t.limit_count}</div>
-        ${t.is_completed?'<span class="ok">✅ Выполнено</span>':`<div class="tr">+${f(t.reward)} ${esc(t.reward_token)}</div>`}
-      </div>`).join(''):'<div class="item-card"><div class="item-desc">Нет заданий</div></div>');
+    const TL={subscribe_channel:'📢 Канал',subscribe_bot:'🤖 Бот',video:'📺 Видео',click:'🔗 Ссылка'};
+    c.innerHTML=`
+<div class="item-card"><div class="item-header"><b>📋 Задания</b></div></div>
+${tasks.length?tasks.map(t=>`
+<div class="task ${t.is_completed?'done':''}" onclick="startTask('${esc(t.id)}','${esc(t.link)}')">
+<div class="tt">${esc(TL[t.type]||t.type)}</div>
+<div class="ts">${esc(t.link)}</div>
+<div class="ts">${t.completed_count}/${t.limit_count}</div>
+${t.is_completed?'<span class="ok">✅ Выполнено</span>':`<div class="tr">+${f(t.reward)} ${esc(t.reward_token)}</div>`}
+</div>`).join(''):'<div class="item-card"><div class="item-desc">Нет заданий</div></div>'}`;
   }
   else if(tab==='ads'){
-    c.innerHTML=`<div class="item-card"><div class="item-header"><b>⚡ Быстрые действия</b></div>
+    c.innerHTML=`
+<div class="item-card"><div class="item-header"><b>⚡ Быстрые действия</b></div>
 <div class="qa">
 <button class="qb" onclick="showIncomeTab('p2p')"><span class="qi">🔄</span>ОБМЕН</button>
 <button class="qb" onclick="showIncomeTab('staking')"><span class="qi">💧</span>ПУЛЫ</button>
 <button class="qb gold" onclick="watchAd()"><span class="qi">📺</span>РЕКЛАМА</button>
+<button class="qb gold" onclick="openTasksModal()"><span class="qi">📋</span>ЗАДАНИЯ</button>
 <button class="qb gold" onclick="claimWelcomeBonus()"><span class="qi">🎁</span>БОНУС</button>
-</div></div>`;
-  }
-  else if(tab==='gear-p2p'){
-    c.innerHTML='<div class="item-card"><div class="item-desc">Загрузка...</div></div>';
-    const{data:listData}=await sb.rpc('gear_get_listings');
-    const listings=(listData&&listData.ok)?(listData.items||[]):[];
-    const inv=MY_ITEMS.filter(i=>!i.is_equipped&&!i.is_listed&&i.category!=='license');
-    c.innerHTML=`<div class="item-card"><div class="item-header"><b>🛡️ P2P Амуниция</b></div></div>
-<div class="item-card"><div class="item-header"><b>💼 Выставить</b></div>
-${inv.length?`
-<select id="gear_sell_item" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px;margin-top:8px">
-${inv.map(i=>`<option value="${i.id}">${i.emoji||'🎁'} ${esc(i.name)}</option>`).join('')}
-</select>
-<div style="display:flex;gap:8px;margin-top:8px">
-<input type="number" id="gear_sell_price" step="0.01" placeholder="Цена TUSD" style="flex:1;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
-<button class="admin-btn sm gold" onclick="gearListItem()">💰</button>
-</div>`:'<div class="info">Нет предметов</div>'}
+<button class="qb gold" onclick="showIncomeTab('checkin')"><span class="qi">🔥</span>ЧЕКИН</button>
+</div></div>
+<div class="item-card"><div class="item-header"><b>📢 Заказать рекламу</b></div>
+<div class="qa">
+<button class="qb" onclick="openAdMenu()"><span class="qi">📢</span>ЗАКАЗАТЬ</button>
+<button class="qb" onclick="openMyAds()"><span class="qi">📋</span>МОИ ЗАКАЗЫ</button>
 </div>
-<div class="item-card"><div class="item-header"><b>🛒 На продаже</b></div>
-${listings.length?listings.map(l=>`<div class="item-card" style="background:#0d1520;margin-top:8px">
-<div class="item-header"><span class="item-name">${esc(l.emoji||'🎁')} ${esc(l.item_name)}</span></div>
-<div class="item-footer"><span class="item-price">$${f(l.price_tusd,2)}</span>
-<button onclick="gearBuyListing('${l.id}')">Купить</button></div></div>`).join(''):'<div class="info">Пусто</div>'}
+<div class="info" style="margin-top:10px;text-align:center">Баланс: $${f(CU?.tusd_balance||0,2)}</div>
 </div>`;
   }
 }
@@ -1454,7 +1647,7 @@ function orderCard(o){
   const ownerLabel=o.creator_username?'@'+esc(o.creator_username):'ID '+Number(o.creator_id);
   const actionsHtml=isMine
     ?`<div class="order-actions"><button onclick="openProfile(${Number(o.creator_id)})">👤</button><button onclick="cancelP2POrder('${esc(o.id)}')" style="background:#f6465d">❌ Отменить</button></div>`
-    :`<div class="order-actions"><button onclick="openProfile(${Number(o.creator_id)})" style="flex:0 0 46px">👤</button><button onclick="quickBuyOrder('${esc(o.id)}')">⚡ Купить</button><button onclick="openBuyModal('${esc(o.id)}')">🛒 Выкуп</button></div>`;
+    :`<div class="order-actions"><button onclick="openProfile(${Number(o.creator_id)})" style="flex:0 0 46px">👤</button><button onclick="quickBuyOrder('${esc(o.id)}')" style="background:linear-gradient(135deg,#39d98a,#2ba86a)">⚡ Быстро</button><button onclick="openBuyModal('${esc(o.id)}')">🛒 Купить</button></div>`;
   return `<div class="order" id="order-${esc(o.id)}" style="--rc:${c}">
     <div class="oh" onclick="toggleOrder('${esc(o.id)}')">
       <div class="om">${tokenIconHTML(o.from_token,'xs')} ${f(o.from_amount)} ${esc(o.from_token)} → ${f(o.to_amount)} ${esc(o.to_token)}</div>
@@ -1473,7 +1666,7 @@ function orderCard(o){
 }
 function toggleOrder(id){$('order-'+id)?.classList.toggle('opened');}
 
-/* ═══════ CREATE ORDER с подсказкой цены ═══════ */
+/* ═══════ CREATE ORDER С ПОДСКАЗКОЙ ЦЕНЫ ═══════ */
 function openCreateOrder(){
   const tokens=ALL_TOKENS.map(t=>t.symbol);
   openModal('➕ Создать P2P-ордер',`
@@ -1484,7 +1677,7 @@ function openCreateOrder(){
 <div class="admin-field" style="margin-top:9px"><label>Получаю</label>
 <select id="newTo" onchange="recalcPriceHints()" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">${tokens.map(t=>`<option>${t}</option>`).join('')}</select></div>
 <div class="admin-field" style="margin-top:9px"><label>Количество</label>
-<input type="number" id="newToAmt" step="any" placeholder="0.0" oninput="recalcPriceHints(true)" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px"></div>
+<input type="number" id="newToAmt" step="any" placeholder="0.0" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px"></div>
 
 <div id="priceHintBox" class="price-hint" style="display:none">
 <div style="color:#cfd8e4;font-size:11px">💡 <b>Рекомендуемая цена</b> (рыночный курс ± 10%)</div>
@@ -1505,7 +1698,7 @@ function openCreateOrder(){
 </div>`);
   setTimeout(()=>recalcPriceHints(),50);
 }
-function recalcPriceHints(keepToAmt){
+function recalcPriceHints(){
   const from=$('newFrom')?.value,to=$('newTo')?.value;
   const fromAmt=n($('newFromAmt')?.value);
   const hintBox=$('priceHintBox');
@@ -1513,23 +1706,21 @@ function recalcPriceHints(keepToAmt){
   if(!from||!to||from===to){hintBox.style.display='none';return;}
   const pFrom=priceOf(from),pTo=priceOf(to);
   if(pFrom<=0||pTo<=0){hintBox.style.display='none';return;}
-  // Рыночный курс: 1 from = (pFrom/pTo) to
   const marketRate=pFrom/pTo;
   const lowRate=marketRate*0.9;
   const highRate=marketRate*1.1;
   hintBox.style.display='block';
   $('hintMarket').textContent=`1 ${from} = ${f(marketRate,6)} ${to}`;
   $('hintRange').textContent=`${f(lowRate,6)} — ${f(highRate,6)} ${to} за 1 ${from}`;
-  // Не пересчитываем поле "получаю", если юзер сам его редактирует
-  if(keepToAmt && fromAmt>0){
-    const curTo=n($('newToAmt')?.value);
-    if(curTo<=0) $('newToAmt').value=(fromAmt*marketRate).toFixed(8);
+  const toAmtEl=$('newToAmt');
+  if(toAmtEl && !toAmtEl.value && fromAmt>0){
+    toAmtEl.value=(fromAmt*marketRate).toFixed(8);
   }
 }
 function setPriceByPct(pct){
   const from=$('newFrom')?.value,to=$('newTo')?.value;
   const fromAmt=n($('newFromAmt')?.value);
-  if(!from||!to||fromAmt<=0) return;
+  if(!from||!to||fromAmt<=0){msg('Заполните сумму','error');return;}
   const pFrom=priceOf(from),pTo=priceOf(to);
   if(pFrom<=0||pTo<=0) return;
   const marketRate=pFrom/pTo;
@@ -1584,7 +1775,8 @@ function updateBuyPreview(){
   $('buyAvail').textContent=`${f(tb(o.to_token),8)} ${o.to_token}`;
   const btn=$('buyConfirmBtn');
   if(getAmt<=0){btn.disabled=true;btn.textContent='✅ Выкупить';}
-  else{btn.disabled=false;btn.textContent='✅ Выкупить';}
+  else if(getAmt>=fromTotal-1e-12){btn.disabled=false;btn.textContent='✅ Выкупить полностью';}
+  else{btn.disabled=false;btn.textContent='✅ Выкупить часть';}
 }
 async function confirmBuyOrder(){
   if(!__BUY_ORDER||!UID) return;
@@ -1599,10 +1791,12 @@ async function confirmBuyOrder(){
     if(isFull){
       const{error}=await sb.rpc('accept_p2p_order_v2',{p_order_id:String(o.id)});
       if(error){$('buyStatus').innerHTML='<span class="er">'+esc(error.message)+'</span>';btn.disabled=false;return;}
+      $('buyStatus').innerHTML='<span class="ok">✅ Выкуплено полностью</span>';
     }else{
       const{data,error}=await sb.rpc('accept_p2p_order_chat_partial',{p_order_id:String(o.id),p_taker_id:String(UID),p_get_amount:getAmt});
       if(error){$('buyStatus').innerHTML='<span class="er">'+esc(error.message)+'</span>';btn.disabled=false;return;}
       if(!data||data.ok===false){$('buyStatus').innerHTML='<span class="er">Ошибка</span>';btn.disabled=false;return;}
+      $('buyStatus').innerHTML='<span class="ok">✅ Выкуплено '+f(getAmt,8)+' '+esc(o.from_token)+'</span>';
     }
     msg('✅ Куплено','success');
     await refreshAll();
@@ -1623,8 +1817,7 @@ async function fetchSwapQuote(){
   if(amt<=0){
     if(out) out.value='';if(rateEl) rateEl.textContent='—';if(feeEl) feeEl.textContent='—';
     if($('swToUsd')) $('swToUsd').textContent='≈ $0.00';
-    SWAP_QUOTE=null;
-    if(btn){btn.disabled=true;btn.classList.remove('active');btn.textContent='Обменять';}
+    SWAP_QUOTE=null;if(btn){btn.disabled=true;btn.classList.remove('active');btn.textContent='Обменять';}
     return;
   }
   if(state_swapFrom===state_swapTo){if(errEl) errEl.textContent='Разные токены';SWAP_QUOTE=null;if(btn){btn.disabled=true;btn.classList.remove('active');btn.textContent='Обменять';}return;}
@@ -1689,7 +1882,10 @@ async function renderFriends(){
   const summary=$('refSummary'),list=$('refList');
   if(list) list.innerHTML='<div class="info">Загрузка...</div>';
   const{data,error}=await sb.rpc('get_my_referrals');
-  if(error||!data||!data.length){if(list)list.innerHTML='<div class="info">Пока нет рефералов</div>';if(summary)summary.innerHTML='';loadReferralEarningsSummary();return;}
+  if(error||!data||!data.length){
+    if(list)list.innerHTML='<div class="info">Пока нет рефералов. Поделись ссылкой!</div>';
+    if(summary)summary.innerHTML='';loadReferralEarningsSummary();return;
+  }
   const t1=data.filter(r=>r.level===1).length,t2=data.filter(r=>r.level===2).length,t3=data.filter(r=>r.level===3).length;
   if(summary) summary.innerHTML=`📊 1 ур.: <b>${t1}</b> • 2 ур.: <b>${t2}</b> • 3 ур.: <b>${t3}</b>`;
   let html='';
@@ -1700,26 +1896,26 @@ async function renderFriends(){
     html+=refs.map(r=>{
       const name=r.first_name||r.username||r.referral_id;
       const date=new Date(r.joined_at).toLocaleDateString('ru-RU');
-      return `<div style="display:flex;justify-content:space-between;padding:10px;background:#0d1520;border:1px solid #2e3a4c;border-radius:12px;margin-top:8px">
-        <div><div style="color:#fff;font-weight:bold;font-size:13px">👤 ${esc(name)}</div>
-        <div class="info" style="font-size:11px">${r.username?'@'+esc(r.username)+' • ':''}${date}</div></div>
-      </div>`;
+      const earned=[];
+      if(n(r.earned_tg)>0) earned.push('+'+f(r.earned_tg,6)+' TG');
+      if(n(r.earned_tusd)>0) earned.push('+'+f(r.earned_tusd,6)+' TUSD');
+      return `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px;background:#0d1520;border:1px solid #2e3a4c;border-radius:12px;margin-top:8px"><div><div style="color:#fff;font-weight:bold;font-size:13px">👤 ${esc(name)}</div><div class="info" style="font-size:11px">${r.username?'@'+esc(r.username)+' • ':''}${date}</div></div><div style="text-align:right;font-size:12px;color:#39d98a;font-weight:bold">${earned.length?earned.join('<br>'):'<span style="color:#9da9b9">0</span>'}</div></div>`;
     }).join('');
   });
   if(list) list.innerHTML=html;
   loadReferralEarningsSummary();
 }
 async function loadReferralEarningsSummary(){
-  const list=$('refEarningsList');
+  const elTG=$('refTG'),elTU=$('refTUSD'),list=$('refEarningsList');
+  if(elTG) elTG.textContent='0';if(elTU) elTU.textContent='0';
   if(list) list.innerHTML='<div class="info">Загрузка...</div>';
   try{
     const{data,error}=await sb.rpc('get_referral_earnings_summary');
     if(error||!data||data.ok===false){if(list)list.innerHTML='<div class="info">Нет данных</div>';return;}
     const earnings=data.earnings||[];
     if(!earnings.length){if(list)list.innerHTML='<div class="info">Пока нет начислений</div>';return;}
-    if(list) list.innerHTML=earnings.map(e=>`<div style="display:flex;gap:8px;padding:8px 10px;background:#0d1520;border:1px solid #2d3a4c;border-radius:10px">
-      ${tokenIconHTML(e.token_symbol,'sm')}<div style="flex:1"><div style="color:#fff;font-weight:bold;font-size:13px">${esc(e.token_symbol)}</div></div>
-      <div style="color:#39d98a;font-weight:bold">+${f(e.total_amount,6)}</div></div>`).join('');
+    earnings.forEach(e=>{if(e.token_symbol==='TG'&&elTG) elTG.textContent=f(e.total_amount);if(e.token_symbol==='TUSD'&&elTU) elTU.textContent=f(e.total_amount);});
+    if(list) list.innerHTML=earnings.map(e=>`<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:#0d1520;border:1px solid #2d3a4c;border-radius:10px">${tokenIconHTML(e.token_symbol,'sm')}<div style="flex:1"><div style="color:#fff;font-weight:bold;font-size:13px">${esc(e.token_symbol)}</div><div class="info" style="font-size:10px">${e.ops} операций</div></div><div style="color:#39d98a;font-weight:bold">+${f(e.total_amount,6)}</div></div>`).join('');
   }catch(e){if(list)list.innerHTML='<div class="info">Ошибка</div>';}
 }
 async function loadMyReferrals(){renderFriends();}
@@ -1773,13 +1969,12 @@ async function showRatingTab(tab){
       </div>`;
     }).join('');
 }
-  
+
 /* ═══════ ADMIN ═══════ */
 function renderAdmin(){
   if(UID!==AID){msg('Нет доступа','error');return;}
   loadAdminRevenue();
 }
-
 async function loadAdminSettings(){
   const box=$('adminSettingsList');if(!box) return;
   box.innerHTML='Загрузка...';
@@ -1790,11 +1985,15 @@ async function loadAdminSettings(){
     const items=data.filter(r=>!skip.includes(r.setting_key));
     box.innerHTML=items.map(r=>{
       const label=r.description||r.setting_key;
+      const isPercent=r.setting_key.includes('percent')||r.setting_key.includes('pct')||r.setting_key.includes('commission');
+      const isFee=r.setting_key.includes('fee');
+      let suffix=isPercent?' %':(isFee?' TUSD':'');
       return `<div class="pc">
         <div class="pt" style="font-size:13px">${esc(label)}</div>
         <div class="info" style="font-size:10px;color:#6a768a">${esc(r.setting_key)}</div>
         <div style="display:flex;gap:8px;margin-top:8px">
           <input type="number" id="set_${esc(r.setting_key)}" value="${esc(r.setting_value)}" step="any" style="flex:1;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+          <span style="align-self:center;color:var(--gold);font-weight:700;font-size:12px">${suffix}</span>
           <button class="admin-btn sm gold" onclick="saveAdminSetting('${esc(r.setting_key)}')">💾</button>
         </div>
       </div>`;
@@ -1808,7 +2007,7 @@ async function saveAdminSetting(key){
   const{data,error}=await sb.rpc('admin_set_app_setting',{p_key:key,p_value:val});
   if(error||(data&&data.ok===false)){msg(error?.message||data?.error||'Ошибка','error');return;}
   msg(`✅ ${key} = ${val}`,'success');
-  await loadAdminSettings();
+  await loadAdminSettings();await loadAdPrices();await loadRewardFunds();
 }
 async function loadAdminItemPrices(){
   const box=$('adminItemPricesList');if(!box) return;
@@ -1826,7 +2025,7 @@ async function loadAdminItemPrices(){
     box.innerHTML=data.map(it=>`
       <div class="pc">
         <div class="pt" style="font-size:13px">${it.emoji||'🎁'} ${esc(it.name)}</div>
-        <div class="info" style="font-size:10px;color:#6a768a">${esc(it.symbol||'')} • ${esc(it.slot||it.category||'')} • Ур.${it.min_rank||0}</div>
+        <div class="info" style="font-size:10px;color:#6a768a">${esc(it.symbol||'')} • ${esc(it.slot||it.category||'')} • Ур.${it.min_rank||0} • ${it.active?'✅':'❌'}</div>
         <div style="display:flex;gap:6px;margin-top:8px">
           <input type="number" id="ip_${esc(it.id)}" value="${it.price_usd||0}" step="0.01" style="flex:1;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
           <button class="admin-btn sm gold" onclick="saveAdminItemPrice('${esc(it.id)}')">💾</button>
@@ -1862,10 +2061,11 @@ async function createAdminItem(){
   if(st) st.textContent='Создание...';
   try{
     const{error}=await sb.from('telepat_items').insert({symbol,name,slot,category,min_rank,price_usd,emoji,active:true});
-    if(error){if(st) st.textContent='Ошибка: '+error.message;return;}
+    if(error){if(st) st.textContent='Ошибка: '+error.message;console.error(error);return;}
     if(st) st.textContent='✅ Создано: '+name;
     msg('✅ Предмет создан','success');
-    await loadAdminItemPrices();
+    $('ni_name').value='';$('ni_symbol').value='';$('ni_emoji').value='';
+    await loadAdminItemPrices();await loadShopItems();
   }catch(e){if(st) st.textContent='Ошибка: '+e.message;}
 }
 async function loadAdminStats(){
@@ -1893,7 +2093,7 @@ async function loadAdminRevenue(){
     if($('adRevenue')) $('adRevenue').textContent='$'+f(Number(data.total_revenue)||0,2);
     if($('adPurchasesCount')) $('adPurchasesCount').textContent=data.purchases_count||0;
     const hist=$('adPurchaseHistory');
-    if(hist) hist.innerHTML=(data.items||[]).slice(0,10).map(p=>`<div class="history-row"><span>${esc(p.item||'')}</span><b>+$${f(p.amount,2)}</b></div>`).join('')||'<div class="info" style="text-align:center">Нет покупок</div>';
+    if(hist) hist.innerHTML=(data.items||[]).slice(0,10).map(p=>`<div class="history-row"><span>${esc(p.item||'')}</span><b>+$${f(p.amount,2)}</b></div>`).join('')||'<div class="info" style="text-align:center">Пока нет покупок</div>';
   }catch(e){}
 }
 async function adminClearRevenue(){
@@ -1913,8 +2113,8 @@ async function loadAdminRewardTokens(){
     <div class="pt">${tokenIconHTML(c.symbol,'sm')} ${esc(c.symbol)} — ${esc(c.name||'')}</div>
     <div class="info" style="font-size:11px;margin-top:3px">Комиссия ${c.fee_swap_pct}% • Фонд: ${f(c.reward_fund,4)} • Ставка ${c.hourly_rate}%/час</div>
     <div class="admin-btn-row">
-      <button class="admin-btn sm gold" onclick="openAdminRewardConfig('${esc(c.symbol)}')">⚙️</button>
-      <button class="admin-btn sm sec" onclick="runAccrue('${esc(c.symbol)}')">🎁</button>
+      <button class="admin-btn sm gold" onclick="openAdminRewardConfig('${esc(c.symbol)}')">⚙️ Настроить</button>
+      <button class="admin-btn sm sec" onclick="runAccrue('${esc(c.symbol)}')">🎁 Раздать</button>
     </div>
   </div>`).join('');
 }
@@ -1929,7 +2129,7 @@ async function adminRefreshRewardFunds(){
   const{error}=await sb.rpc('run_all_reward_funds');
   if(error){msg(error.message,'error');return;}
   msg('✅ Раздача завершена','success');
-  await loadAdminRewardTokens();await loadRewardFunds();
+  await loadAdminRewardTokens();await loadRewardFunds();await loadStakeState();
 }
 function openAdminRewardConfig(symbol){
   ADMIN_REWARD_TOKEN=symbol;
@@ -1965,14 +2165,16 @@ async function adminAdLoad(status){
     const ads=data.ads||[];
     if(!ads.length){box.innerHTML='<div class="info">Нет заявок</div>';return;}
     const ST={pending:'НА МОДЕРАЦИИ',active:'АКТИВЕН',paused:'ПАУЗА',rejected:'ОТКЛОНЁН',completed:'ЗАВЕРШЁН'};
+    const TP={banner:'🖼️ Баннер',video:'🎬 Видео',task:'📋 Задание',link:'🔗 Ссылка'};
     box.innerHTML=ads.map(a=>`<div class="pc">
-      <div class="pt">${esc(a.ad_type)} — ${esc(a.title)}</div>
+      <div class="pt">${TP[a.ad_type]||a.ad_type} — ${esc(a.title)}</div>
       <div class="info">Статус: ${ST[a.status]||a.status}</div>
       <div class="info">💰 Оплачено: ${f(a.budget,4)} • Потрачено: ${f(a.spent,4)}</div>
+      <div class="info">Выполнено: ${a.actions_done||0}/${a.actions_target||0}</div>
       <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">
-        ${a.status==='pending'?`<button class="admin-btn sm gold" onclick="adminAdStatus('${a.id}','active')">✅</button><button class="admin-btn sm danger" onclick="adminAdStatus('${a.id}','rejected')">❌</button>`:''}
-        ${a.status==='active'?`<button class="admin-btn sm sec" onclick="adminAdStatus('${a.id}','paused')">⏸</button>`:''}
-        ${a.status==='paused'?`<button class="admin-btn sm gold" onclick="adminAdStatus('${a.id}','active')">▶</button>`:''}
+        ${a.status==='pending'?`<button class="admin-btn sm gold" onclick="adminAdStatus('${a.id}','active')">✅ Одобрить</button><button class="admin-btn sm danger" onclick="adminAdStatus('${a.id}','rejected')">❌ Отклонить</button>`:''}
+        ${a.status==='active'?`<button class="admin-btn sm sec" onclick="adminAdStatus('${a.id}','paused')">⏸ Пауза</button>`:''}
+        ${a.status==='paused'?`<button class="admin-btn sm gold" onclick="adminAdStatus('${a.id}','active')">▶ Возобновить</button>`:''}
       </div>
     </div>`).join('');
   }catch(e){box.innerHTML='Ошибка';}
@@ -1982,75 +2184,247 @@ async function adminAdStatus(id,status){
   if(error||(data&&data.ok===false)){msg('Ошибка','error');return;}
   msg('✅ Обновлено','success');adminAdLoad();
 }
-
-/* ═══════ CHAT BONUS заявки (админ) ═══════ */
-async function loadChatBonusRequests(){
-  const box=$('chatBonusList');if(!box) return;
-  box.innerHTML='Загрузка...';
+async function loadBannerSettings(){
   try{
-    const{data,error}=await sb.from('telepat_chat_bonus_requests').select('*').order('created_at',{ascending:false}).limit(100);
-    if(error){box.innerHTML='<div class="info er">'+esc(error.message)+'</div>';return;}
-    if(!data||!data.length){box.innerHTML='<div class="info">Нет заявок</div>';return;}
-    box.innerHTML=data.map(r=>`<div class="pc">
-      <div class="pt">👤 ${esc(r.username||('ID '+r.user_id))}</div>
-      <div class="info">${esc(r.chat_link||'')}</div>
-      <div class="info" style="font-size:11px">${new Date(r.created_at).toLocaleString('ru-RU')}</div>
-      <div class="info" style="color:${r.status==='approved'?'#39d98a':(r.status==='pending'?'#f4cf70':'#ff647c')}">Статус: ${r.status}</div>
-    </div>`).join('');
-  }catch(e){box.innerHTML='<div class="info">Ошибка</div>';}
-}
-async function approveChatBonus(id){
-  const{error}=await sb.from('telepat_chat_bonus_requests').update({status:'approved'}).eq('id',id);
-  if(error){msg(error.message,'error');return;}
-  msg('✅ Одобрено','success');loadChatBonusRequests();
-}
-async function rejectChatBonus(id){
-  const{error}=await sb.from('telepat_chat_bonus_requests').update({status:'rejected'}).eq('id',id);
-  if(error){msg(error.message,'error');return;}
-  msg('❌ Отклонено','success');loadChatBonusRequests();
-}
-async function loadChatBonusSettings(){
-  const st=$('cbs_status');if(st) st.textContent='Загрузка...';
-  try{
-    const{data}=await sb.from('telepat_settings').select('setting_key,setting_value').in('setting_key',['chat_bonus_price','chat_bonus_fee_pct','chat_bonus_wallet']);
-    let price=1,fee=10,wallet='';
+    const{data}=await sb.from('telepat_settings').select('setting_key,setting_value').in('setting_key',['banner_height','banner_radius','banner_title_size','banner_sub_size','banner_padding','banner_count']);
     (data||[]).forEach(r=>{
-      if(r.setting_key==='chat_bonus_price') price=Number(r.setting_value)||1;
-      if(r.setting_key==='chat_bonus_fee_pct') fee=Number(r.setting_value)||10;
-      if(r.setting_key==='chat_bonus_wallet') wallet=r.setting_value||'';
+      const v=Number(r.setting_value);if(!Number.isFinite(v)) return;
+      if(r.setting_key==='banner_height') BANNER_SETTINGS.height=v;
+      if(r.setting_key==='banner_radius') BANNER_SETTINGS.radius=v;
+      if(r.setting_key==='banner_title_size') BANNER_SETTINGS.title_size=v;
+      if(r.setting_key==='banner_sub_size') BANNER_SETTINGS.sub_size=v;
+      if(r.setting_key==='banner_padding') BANNER_SETTINGS.padding=v;
+      if(r.setting_key==='banner_count') BANNER_SETTINGS.count=Math.max(1,Math.min(3,v));
     });
-    if($('cbs_price')) $('cbs_price').value=price;
-    if($('cbs_fee')) $('cbs_fee').value=fee;
-    if($('cbs_wallet')) $('cbs_wallet').value=wallet;
-    if(st) st.textContent='✅ Загружено';
-  }catch(e){if(st) st.textContent='Ошибка';}
+  }catch(e){}
+  applyBannerSettings();
+  const g=id=>$(id);
+  if(g('bnH')){g('bnH').value=BANNER_SETTINGS.height;g('bnHS').textContent=BANNER_SETTINGS.height;}
+  if(g('bnR')){g('bnR').value=BANNER_SETTINGS.radius;g('bnRS').textContent=BANNER_SETTINGS.radius;}
+  if(g('bnT')){g('bnT').value=BANNER_SETTINGS.title_size;g('bnTS').textContent=BANNER_SETTINGS.title_size;}
+  if(g('bnS')){g('bnS').value=BANNER_SETTINGS.sub_size;g('bnSS').textContent=BANNER_SETTINGS.sub_size;}
+  if(g('bnP')){g('bnP').value=BANNER_SETTINGS.padding;g('bnPS').textContent=BANNER_SETTINGS.padding;}
+  if(g('bnCount')) g('bnCount').value=String(BANNER_SETTINGS.count);
 }
-async function saveChatBonusSettings(){
-  const st=$('cbs_status');if(st) st.textContent='Сохранение...';
-  const pairs=[
-    ['chat_bonus_price',String(Number($('cbs_price').value)||1)],
-    ['chat_bonus_fee_pct',String(Number($('cbs_fee').value)||10)],
-    ['chat_bonus_wallet',($('cbs_wallet').value||'').trim()]
-  ];
-  for(const[k,v] of pairs){
-    const{data,error}=await sb.rpc('admin_set_app_setting',{p_key:k,p_value:v});
+function applyBannerSettings(){
+  const root=document.documentElement;
+  root.style.setProperty('--bn-h',BANNER_SETTINGS.height+'px');
+  root.style.setProperty('--bn-r',BANNER_SETTINGS.radius+'px');
+  root.style.setProperty('--bn-ts',BANNER_SETTINGS.title_size+'px');
+  root.style.setProperty('--bn-ss',BANNER_SETTINGS.sub_size+'px');
+  root.style.setProperty('--bn-p',BANNER_SETTINGS.padding+'px');
+}
+async function saveBannerSettings(){
+  const st=$('bnSetStatus');if(st) st.textContent='Сохранение...';
+  const vals={banner_height:$('bnH').value,banner_radius:$('bnR').value,banner_title_size:$('bnT').value,banner_sub_size:$('bnS').value,banner_padding:$('bnP').value,banner_count:$('bnCount').value};
+  for(const[k,v] of Object.entries(vals)){
+    const{data,error}=await sb.rpc('admin_set_app_setting',{p_key:k,p_value:String(v)});
     if(error||!data||data.ok===false){if(st) st.textContent='Ошибка';return;}
   }
+  await loadBannerSettings();await loadTopBanner();
+  if(st) st.textContent='✅ Сохранено';msg('🖼️ Сохранено','success');
+}
+async function loadTopBanner(){
+  const container=$('topBannersList');if(!container) return;
+  container.innerHTML='';
+  try{
+    const{data,error}=await sb.rpc('banner_get_active_list',{p_limit:BANNER_SETTINGS.count});
+    if(error||!data||data.ok===false) return;
+    (data.banners||[]).forEach(b=>{
+      const el=document.createElement('div');el.className='ad-banner';
+      el.innerHTML=`<div class="ad-banner-bg" ${b.image_url?`style="background-image:url('${esc(b.image_url)}')"`:''}></div><div class="ad-banner-overlay"></div><div class="ad-banner-body"><div class="ad-banner-title">${esc(b.title||'')}</div><div class="ad-banner-sub">${esc(b.subtitle||'')}</div></div><div class="ad-banner-mark">Реклама</div>`;
+      el.onclick=()=>{const url=b.link_url||'';if(!url) return;try{if(window.Telegram?.WebApp?.openLink) window.Telegram.WebApp.openLink(url);else window.open(url,'_blank');}catch{}};
+      container.appendChild(el);
+    });
+  }catch(e){}
+}
+async function loadUiSettings(){
+  try{
+    const{data}=await sb.rpc('get_ui_settings');
+    const s=Object.assign({},UI_DEFAULTS,data||{});
+    if($('ui-bg')) $('ui-bg').value=s.ui_bg;
+    if($('ui-bg-radial')) $('ui-bg-radial').value=s.ui_bg_radial;
+    if($('ui-accent')) $('ui-accent').value=s.ui_accent;
+    if($('ui-card')) $('ui-card').value=s.ui_card;
+    applyUiColors(s);
+    if($('uiSettingsStatus')) $('uiSettingsStatus').textContent='✅ Загружено';
+  }catch(e){}
+}
+async function saveUiSettings(){
+  const st=$('uiSettingsStatus');if(st) st.textContent='Сохранение...';
+  const values={ui_bg:$('ui-bg').value,ui_bg_radial:$('ui-bg-radial').value,ui_accent:$('ui-accent').value,ui_card:$('ui-card').value};
+  for(const[k,v] of Object.entries(values)){
+    const{data,error}=await sb.rpc('admin_set_ui_setting',{p_key:k,p_value:v});
+    if(error||!data||data.ok===false){if(st) st.textContent='Ошибка';return;}
+  }
+  applyUiColors(values);if(st) st.textContent='✅ Сохранено';
+}
+function resetUiSettings(){
+  applyUiColors(UI_DEFAULTS);
+  if($('ui-bg')) $('ui-bg').value=UI_DEFAULTS.ui_bg;
+  if($('ui-bg-radial')) $('ui-bg-radial').value=UI_DEFAULTS.ui_bg_radial;
+  if($('ui-accent')) $('ui-accent').value=UI_DEFAULTS.ui_accent;
+  if($('ui-card')) $('ui-card').value=UI_DEFAULTS.ui_card;
+}
+function applyUiColors(colors){
+  const root=document.documentElement;
+  root.style.setProperty('--bg',colors.ui_bg);
+  root.style.setProperty('--bg-card',colors.ui_card);
+  root.style.setProperty('--gold',colors.ui_accent);
+  document.body.style.background=`radial-gradient(circle at 50% -10%,${colors.ui_bg_radial} 0,${colors.ui_bg} 42%),${colors.ui_bg}`;
+}
+async function loadUiSettingsPublic(){try{const{data}=await sb.rpc('get_ui_settings');applyUiColors(Object.assign({},UI_DEFAULTS,data||{}));}catch(e){}}
+async function loadAllLogos(){
+  const box=$('adminLogosList');if(!box) return;
+  box.innerHTML='Загрузка...';
+  try{
+    const{data}=await sb.from('telepat_tokens').select('id,symbol,name,logo_url,active,verified').order('symbol');
+    if(!data||!data.length){box.innerHTML='<div class="info">Нет токенов</div>';return;}
+    box.innerHTML=data.map(t=>{
+      const base=TOKEN_ICONS[t.symbol]||TOKEN_ICONS.DEFAULT;
+      const hasLogo=!!(t.logo_url&&String(t.logo_url).trim());
+      return `<div class="pc"><div style="display:flex;align-items:center;gap:12px"><div class="tlogo" style="background:${base.bg}"><span>${base.emoji}</span>${hasLogo?`<img src="${esc(t.logo_url)}" onerror="this.remove()">`:''}</div><div style="flex:1"><div class="pt">${esc(t.symbol)}${t.active===false?' (выкл)':''}</div><div class="info" style="font-size:11px">${esc(t.name||'')}</div></div></div>
+      <input type="text" id="lg-url-${esc(t.id)}" value="${esc(t.logo_url||'')}" placeholder="https://..." style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px;margin-top:8px">
+      <div class="admin-btn-row"><button class="admin-btn sm gold" onclick="saveAdminLogo('${esc(t.id)}','${esc(t.symbol)}')">💾 Сохранить</button>
+      <button class="admin-btn sm sec" onclick="clearAdminLogo('${esc(t.id)}','${esc(t.symbol)}')">🗑 Убрать</button></div></div>`;
+    }).join('');
+  }catch(e){box.innerHTML='Ошибка';}
+}
+async function saveAdminLogo(id,sym){
+  const inp=$('lg-url-'+id);if(!inp) return;
+  const url=inp.value.trim();
+  const{data,error}=await sb.rpc('admin_set_token_logo',{p_token_id:id,p_logo_url:url||null});
+  if(error||(data&&data.ok===false)){msg('Ошибка','error');return;}
+  msg('🖼️ Лого обновлён','success');
+  await loadAllTokens();await loadAdminTokenPrices();
+}
+async function clearAdminLogo(id,sym){const inp=$('lg-url-'+id);if(inp) inp.value='';await saveAdminLogo(id,sym);}
+async function loadAdminTokenPrices(){
+  const box=$('adminTokenPricesList');if(!box) return;
+  box.innerHTML='Загрузка...';
+  await loadRewardFunds();
+  const{data,error}=await sb.rpc('admin_list_tokens_with_prices');
+  if(error||!data||!data.length){box.innerHTML='<div class="info">Нет данных</div>';return;}
+  box.innerHTML=data.map(t=>{
+    const fundInfo=(REWARD_FUNDS||[]).find(fd=>fd.token_symbol===t.symbol);
+    const fundAmt=fundInfo?Number(fundInfo.fund_amount||0):0;
+    const fundUsd=fundAmt*Number(t.price_tusd||0);
+    const sysBadge=t.is_system_token?' 🏦':'';
+    return `<div class="pc">
+      <div class="pt">${esc(t.symbol)}${sysBadge} — ${esc(t.name||'')}</div>
+      <label style="display:block;font-size:11px;color:var(--muted);margin:8px 0 4px">💰 Курс в TUSD</label>
+      <input type="number" id="tp-price-${esc(t.id)}" step="0.00000001" value="${t.price_tusd}" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+      <label style="display:block;font-size:11px;color:var(--muted);margin:8px 0 4px">⬇️ Минимум вывода</label>
+      <input type="number" id="tp-min-${esc(t.id)}" step="0.00000001" value="${t.min_withdrawal}" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+      <button class="admin-btn sm gold" style="width:100%;margin-top:8px" onclick="saveAdminTokenParams('${esc(t.id)}')">💾 Сохранить курс</button>
+      <div style="margin-top:14px;padding-top:12px;border-top:1px solid #2d3a4c">
+        <div style="font-size:12px;color:#39d98a;font-weight:700;margin-bottom:4px">🎁 Фонд наград</div>
+        <div class="info" style="font-size:11px">Баланс: <b style="color:#39d98a">${f(fundAmt,6)} ${esc(t.symbol)}</b> (≈$${f(fundUsd,2)})</div>
+        <div style="display:flex;gap:6px;margin-top:8px">
+          <input type="number" id="tp-fund-${esc(t.id)}" step="0.01" min="0" placeholder="TUSD" style="flex:1;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+          <button class="admin-btn sm gold" onclick="adminDepositToFund('${esc(t.symbol)}','${esc(t.id)}')">➕ Пополнить</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+async function saveAdminTokenParams(id){
+  const price=Number($('tp-price-'+id).value);
+  const minW=Number($('tp-min-'+id).value);
+  const{data,error}=await sb.rpc('admin_set_token_params',{p_token_id:id,p_price_tusd:price,p_min_withdrawal:minW,p_name:null,p_description:null,p_jetton_master:null,p_logo_url:null,p_is_system_token:null});
+  if(error||(data&&data.ok===false)){msg('Ошибка','error');return;}
+  msg('✅ Сохранено','success');
+  await loadAllTokens();await loadUser();await loadCustomBalances();
+}
+async function adminDepositToFund(symbol,id){
+  const inp=$('tp-fund-'+id);if(!inp) return;
+  const amt=Number(inp.value);
+  if(!Number.isFinite(amt)||amt<=0){msg('Введите сумму','error');return;}
+  if(n(CU?.tusd_balance)<amt){msg(`Недостаточно TUSD`,'error');return;}
+  if(!confirm(`Внести ${f(amt,2)} TUSD в фонд ${symbol}?`))return;
+  const{data,error}=await sb.rpc('admin_deposit_to_fund',{p_token_symbol:symbol,p_tusd_amount:amt,p_admin_telegram_id:UID});
+  if(error||!data||data.ok===false){msg(data?.error||error?.message||'Ошибка','error');return;}
+  msg(`✅ Внесено ${f(amt,2)} TUSD → ${f(data.deposited_in_token,6)} ${symbol}`,'success');
+  inp.value='';await loadUser();await loadRewardFunds();await loadAdminTokenPrices();
+}
+async function loadAdminBonusConfig(){
+  const box=$('adminBonusBox');if(!box) return;
+  box.innerHTML='Загрузка...';
+  const{data,error}=await sb.rpc('admin_get_welcome_bonus_config');
+  if(error||!data||data.ok===false){box.innerHTML='<div class="info">Ошибка</div>';return;}
+  box.innerHTML=`<div class="pc">
+    <div class="info" style="margin-bottom:8px">Получили: <b>${data.claimed}</b> / ${data.limit} • Осталось: <b style="color:#39d98a">${data.remaining}</b></div>
+    <label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px">Сумма бонуса (TUSD)</label>
+    <input type="number" id="wb_amount" value="${data.amount}" step="0.01" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+    <label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">Лимит участников</label>
+    <input type="number" id="wb_limit" value="${data.limit}" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+    <button class="admin-btn gold" style="width:100%;margin-top:12px" onclick="saveAdminBonusConfig()">💾 Сохранить</button>
+    <div id="adminBonusStatus" class="info" style="margin-top:8px;text-align:center"></div>
+  </div>`;
+}
+async function saveAdminBonusConfig(){
+  const st=$('adminBonusStatus');if(st) st.textContent='Сохранение...';
+  const amount=Number($('wb_amount').value),limit=Number($('wb_limit').value);
+  const{data,error}=await sb.rpc('admin_set_welcome_bonus_config',{p_amount:amount,p_limit:limit});
+  if(error||(data&&data.ok===false)){if(st) st.textContent='Ошибка';return;}
   if(st) st.textContent='✅ Сохранено';
+  await loadAdminBonusConfig();await loadWelcomeBonusStatus();
+}
+async function loadAdminCheckin(){
+  const box=$('adminCheckinBox');if(!box) return;
+  box.innerHTML='Загрузка...';
+  const{data,error}=await sb.rpc('admin_get_checkin_config');
+  if(error||!data||data.ok===false){box.innerHTML='<div class="info">Ошибка</div>';return;}
+  const s=data.settings||{},tokens=data.tokens||[];
+  let html=`<div class="title" style="font-size:12px">ОБЩИЕ</div>
+    <label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px">Максимум дней</label>
+    <input id="ci_max_days" type="number" value="${s.max_days||30}" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+    <label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">Прирост в день (%)</label>
+    <input id="ci_growth" type="number" step="0.1" value="${s.growth_percent||5}" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+    <label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">Бонусный множитель</label>
+    <input id="ci_bonus_mult" type="number" step="0.1" value="${s.bonus_multiplier||2}" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+    <button class="admin-btn sm gold" style="width:100%;margin-top:8px" onclick="saveAdminCheckinSettings()">💾 Сохранить</button>
+    <div class="title" style="margin-top:16px;font-size:12px">ТОКЕНЫ</div>`;
+  tokens.forEach(t=>{html+=`<div class="pc"><div class="pt">${tokenIconHTML(t.token_symbol,'xs')} ${esc(t.token_symbol)}</div><input id="ci_tok_${esc(t.token_symbol)}" type="number" step="0.00000001" value="${t.base_amount}" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px;margin-top:6px"><div class="admin-btn-row"><button class="admin-btn sm gold" onclick="saveAdminCheckinToken('${esc(t.token_symbol)}')">💾</button><button class="admin-btn sm danger" onclick="removeAdminCheckinToken('${esc(t.token_symbol)}')">🗑</button></div></div>`;});
+  html+=`<div class="title" style="margin-top:12px;font-size:12px">ДОБАВИТЬ</div>
+    <select id="ci_new_symbol" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">${ALL_TOKENS.map(t=>`<option value="${t.symbol}">${t.symbol}</option>`).join('')}</select>
+    <input id="ci_new_amount" type="number" step="0.00000001" placeholder="1" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px;margin-top:8px">
+    <button class="admin-btn sm gold" style="width:100%;margin-top:8px" onclick="addAdminCheckinToken()">➕ Добавить</button>`;
+  box.innerHTML=html;
+}
+async function saveAdminCheckinSettings(){
+  const fields=[['checkin_max_days',$('ci_max_days').value],['checkin_growth_percent',$('ci_growth').value],['checkin_bonus_day_multiplier',$('ci_bonus_mult').value]];
+  for(const[k,v] of fields){
+    const{data,error}=await sb.rpc('admin_update_checkin_setting',{p_key:k,p_value:String(v)});
+    if(error||!data||data.ok===false){msg('Ошибка','error');return;}
+  }
   msg('✅ Сохранено','success');
 }
-
-/* ═══════ CHAT BONUS — раздача в чатах (админ) ═══════ */
+async function saveAdminCheckinToken(sym){
+  const amt=Number($('ci_tok_'+sym).value);
+  const{data,error}=await sb.rpc('admin_upsert_checkin_token',{p_symbol:sym,p_amount:amt,p_active:true});
+  if(error||!data||data.ok===false){msg('Ошибка','error');return;}
+  msg('✅ '+sym,'success');await loadAdminCheckin();
+}
+async function removeAdminCheckinToken(sym){
+  if(!confirm('Убрать '+sym+'?')) return;
+  const{data,error}=await sb.rpc('admin_remove_checkin_token',{p_symbol:sym});
+  if(error||!data||data.ok===false){msg('Ошибка','error');return;}
+  msg('🗑 Удалено','success');await loadAdminCheckin();
+}
+async function addAdminCheckinToken(){
+  const sym=$('ci_new_symbol').value,amt=Number($('ci_new_amount').value);
+  if(!sym||amt<=0){msg('Заполните','error');return;}
+  const{data,error}=await sb.rpc('admin_upsert_checkin_token',{p_symbol:sym,p_amount:amt,p_active:true});
+  if(error||!data||data.ok===false){msg('Ошибка','error');return;}
+  msg('✅ Добавлен','success');await loadAdminCheckin();
+}
 async function loadAdminChats(){
   const box=$('adminChatsList');if(!box) return;
   box.innerHTML='Загрузка...';
   try{
-    const{data,error}=await sb.from('telepat_chat_activity')
-      .select('id,chat_id,enabled,reward_per_message,budget,spent,max_messages_per_user_day,cooldown_seconds')
-      .order('updated_at',{ascending:false})
-      .limit(50);
-    if(error||!data||!data.length){box.innerHTML='<div class="info">Нет чатов</div>';return;}
-    // подтянем названия из telepat_chats
+    const{data}=await sb.from('telepat_chat_activity').select('*').order('updated_at',{ascending:false}).limit(50);
+    if(!data||!data.length){box.innerHTML='<div class="info">Нет чатов</div>';return;}
     const ids=[...new Set(data.map(x=>x.chat_id))];
     const{data:chats}=await sb.from('telepat_chats').select('id,chat_title,chat_id').in('id',ids);
     const cmap={};(chats||[]).forEach(c=>{cmap[c.id]=c;});
@@ -2077,27 +2451,16 @@ function closeAdminChatEdit(){$('adminChatEdit').classList.add('hidden');ACC=nul
 async function saveAdminChatReward(){
   if(!ACC) return;
   const st=$('adminChatEditStatus');st.textContent='Сохранение...';
-  const upd={
-    enabled:$('ce_enabled').value==='true',
-    reward_per_message:n($('ce_reward').value),
-    budget:n($('ce_budget').value),
-    cooldown_seconds:Math.floor(n($('ce_cooldown').value)),
-    max_messages_per_user_day:Math.floor(n($('ce_maxmsg').value)),
-    updated_at:new Date().toISOString()
-  };
+  const upd={enabled:$('ce_enabled').value==='true',reward_per_message:n($('ce_reward').value),budget:n($('ce_budget').value),cooldown_seconds:Math.floor(n($('ce_cooldown').value)),max_messages_per_user_day:Math.floor(n($('ce_maxmsg').value)),updated_at:new Date().toISOString()};
   const{error}=await sb.from('telepat_chat_activity').update(upd).eq('id',ACC.id);
   if(error){st.textContent='Ошибка: '+error.message;return;}
   st.textContent='✅';msg('✅ Сохранено','success');
-  await loadAdminChats();
-  setTimeout(closeAdminChatEdit,900);
+  await loadAdminChats();setTimeout(closeAdminChatEdit,900);
 }
-
-/* ═══════ УПРАВЛЕНИЕ ЮЗЕРОМ ═══════ */
 async function adminLoadUser(){
   const raw=$('userSearchId').value.trim();
   if(!raw){msg('Введите ID','error');return;}
-  const box=$('adminUserCard');
-  box.classList.remove('hidden');box.innerHTML='Поиск...';
+  const box=$('adminUserCard');box.classList.remove('hidden');box.innerHTML='Поиск...';
   let targetId=raw.replace(/^@/,'');
   if(!/^\d+$/.test(targetId)){
     try{const r=await sb.rpc('admin_resolve_usernames',{p_list:[targetId]});if(r.data?.ok&&r.data.resolved&&r.data.resolved[targetId]!=null) targetId=String(r.data.resolved[targetId]);else{box.innerHTML='<div class="info">Не найден</div>';return;}}catch(e){box.innerHTML='Ошибка';return;}
@@ -2106,12 +2469,18 @@ async function adminLoadUser(){
   if(error||!data||data.ok===false){box.innerHTML='<div class="info">Не найден</div>';return;}
   ADMIN_USER=data;
   const u=data.user;
+  const badges=[];
+  if(u.is_banned) badges.push('<span class="er">🚫 ЗАБАНЕН</span>');
+  if(u.is_frozen) badges.push('<span class="er">🔒 ЗАМОРОЖЕН</span>');
+  if(!u.is_banned&&!u.is_frozen) badges.push('<span class="ok">✅ АКТИВЕН</span>');
   let html=`<div class="pc"><div class="pt">👤 ${esc(u.first_name||u.username||u.telegram_id)}</div>
   <div class="info">${u.username?'@'+esc(u.username):'без @'}</div>
-  <div class="info">Титул: ${esc(u.rank_name||'—')} (ур.${u.rank_level||0})</div></div>
+  <div class="info">Титул: ${esc(u.rank_name||'—')} (ур.${u.rank_level||0})</div>
+  <div class="info">Регистрация: ${new Date(u.created_at).toLocaleDateString('ru-RU')}</div>
+  <div style="margin-top:6px">${badges.join(' ')}</div></div>
   <div class="title" style="margin-top:14px;font-size:12px">💰 БАЛАНСЫ</div>`;
   (data.balances||[]).forEach(b=>{
-    html+=`<div class="pc"><div class="pt">${tokenIconHTML(b.symbol,'xs')} ${esc(b.symbol)}</div>
+    html+=`<div class="pc"><div class="pt">${tokenIconHTML(b.symbol,'xs')} ${esc(b.symbol)} — ${esc(b.name||'')}</div>
     <div style="color:#fff;font-size:20px;font-weight:bold;margin-top:4px">${f(b.balance)}</div>
     <div class="admin-btn-row">
       <button class="admin-btn sm gold" onclick="adminBalanceAction('${esc(b.symbol)}','add')">➕</button>
@@ -2119,7 +2488,7 @@ async function adminLoadUser(){
       <button class="admin-btn sm sec" onclick="adminBalanceAction('${esc(b.symbol)}','set')">✏️</button>
     </div></div>`;
   });
-  html+=`<div class="admin-btn-row"><button class="admin-btn sm ${u.is_banned?'':'danger'}" onclick="adminToggleFlag('banned',${!u.is_banned})">${u.is_banned?'✅ Разбанить':'🚫 Забанить'}</button></div>`;
+  html+=`<div class="admin-btn-row" style="margin-top:14px"><button class="admin-btn sm ${u.is_frozen?'':'danger'}" onclick="adminToggleFlag('frozen',${!u.is_frozen})">${u.is_frozen?'🔓 Разморозить':'🔒 Заморозить'}</button><button class="admin-btn sm ${u.is_banned?'':'danger'}" onclick="adminToggleFlag('banned',${!u.is_banned})">${u.is_banned?'✅ Разбанить':'🚫 Забанить'}</button></div>`;
   box.innerHTML=html;
 }
 async function adminBalanceAction(token,mode){
@@ -2132,8 +2501,7 @@ async function adminBalanceAction(token,mode){
   const reason=prompt('Причина:')||null;
   const{data,error}=await sb.rpc('admin_set_balance',{p_target_id:Number(u.telegram_id),p_token:token,p_amount:amount,p_mode:mode,p_reason:reason});
   if(error||!data||data.ok===false){msg(error?.message||data?.error||'Ошибка','error');return;}
-  msg(`✅ ${token}: ${f(data.new_balance)}`,'success');
-  adminLoadUser();
+  msg(`✅ ${token}: ${f(data.new_balance)}`,'success');adminLoadUser();
 }
 async function adminToggleFlag(flag,value){
   if(!ADMIN_USER) return;
@@ -2181,8 +2549,102 @@ async function adminTransfer(){
   if(error||(data&&data.success===false)){msg(data?.message||error?.message||'Ошибка','error');return;}
   msg('💰 Переведено','success');$('adminAmount').value='';loadAdminStats();
 }
-
-/* ═══════ ЗАДАНИЯ (админ) ═══════ */
+async function createTokenListing(){
+  if(UID!==AID){msg('Нет доступа','error');return;}
+  const nm=$('listingTokenName').value.trim(),sm=$('listingTokenSymbol').value.trim(),jm=$('listingJettonMaster').value.trim();
+  const logo=($('listingLogoUrl')?.value||'').trim();
+  const dc=Number($('listingDecimals').value),sp=n($('listingTotalSupply').value);
+  const r=$('listingCreateResult'),b=$('createListingButton');
+  if(!nm||!sm||!jm){msg('Заполните','error');return;}
+  if(sp<=0){msg('Supply>0','error');return;}
+  if(b){b.disabled=true;b.textContent='⏳';}
+  try{
+    const{data,error}=await sb.rpc('telepat_create_listing',{p_telegram_id:UID,p_token_name:nm,p_token_symbol:sm,p_jetton_master:jm,p_network:'TON',p_decimals:dc,p_total_supply:sp,p_description:null,p_logo_url:logo||null});
+    if(error){if(r) r.innerHTML='<span class="er">'+esc(error.message)+'</span>';msg(error.message,'error');return;}
+    const l=Array.isArray(data)?data[0]:data;
+    if(r) r.innerHTML='<span class="ok">✅ ID: '+esc(l?.id||'')+'</span>';
+    msg('🪙 Создана','success');
+    $('listingTokenName').value='';$('listingTokenSymbol').value='';$('listingJettonMaster').value='';
+    if($('listingLogoUrl')) $('listingLogoUrl').value='';$('listingTotalSupply').value='';
+    calculateListingPreview();await loadAdminListings();
+  }finally{if(b){b.disabled=false;b.textContent='➕ СОЗДАТЬ ЗАЯВКУ';}}
+}
+function calculateListingPreview(){
+  const sup=n($('listingTotalSupply')?.value),a=sup*LSP/100;
+  if($('listingSupplyAmountPreview')) $('listingSupplyAmountPreview').textContent=f(a,12);
+  if($('listingSupplyPercentPreview')) $('listingSupplyPercentPreview').textContent=f(LSP,2)+'%';
+  if($('listingFeePreview')) $('listingFeePreview').textContent=f(LFT,2)+' TUSD';
+}
+async function loadListingSettingsAdmin(){
+  const st=$('listingSettingsStatus');if(st) st.textContent='Загрузка...';
+  try{
+    const{data}=await sb.from('telepat_settings').select('setting_key,setting_value').in('setting_key',['listing_fee_tusd','listing_supply_percent']);
+    let fee=0,pct=10;
+    (data||[]).forEach(r=>{const v=Number(r.setting_value);if(!Number.isFinite(v)) return;if(r.setting_key==='listing_fee_tusd') fee=v;if(r.setting_key==='listing_supply_percent') pct=v;});
+    LFT=fee;LSP=pct;
+    if($('ls_fee_tusd')) $('ls_fee_tusd').value=fee;
+    if($('ls_supply_percent')) $('ls_supply_percent').value=pct;
+    if(st) st.textContent='✅ Загружено';calculateListingPreview();
+  }catch(e){if(st) st.textContent='Ошибка';}
+}
+async function saveListingSettingsAdmin(){
+  const st=$('listingSettingsStatus');
+  const fee=Number($('ls_fee_tusd').value),pct=Number($('ls_supply_percent').value);
+  if(!Number.isFinite(fee)||fee<0){if(st) st.textContent='✗ Комиссия';return;}
+  if(!Number.isFinite(pct)||pct<0||pct>100){if(st) st.textContent='✗ Процент';return;}
+  const{data,error}=await sb.rpc('admin_set_listing_settings',{p_fee_tusd:fee,p_supply_percent:pct});
+  if(error||(data&&data.ok===false)){if(st) st.textContent='✗ Ошибка';return;}
+  LFT=fee;LSP=pct;if(st) st.textContent='✅ Сохранено';msg('⚙️ Сохранено','success');calculateListingPreview();
+}
+async function loadAdminListings(){
+  const box=$('adminListingsList');if(!box) return;
+  box.innerHTML='Загрузка...';
+  const{data,error}=await sb.rpc('telepat_admin_get_listings',{p_admin_telegram_id:UID});
+  if(error||!data||!data.length){box.innerHTML='<div class="info">Нет заявок</div>';return;}
+  box.innerHTML=data.map(l=>`<div class="pc">
+    <div class="pt">${esc(l.token_symbol)} — ${esc(l.token_name)}</div>
+    <div class="info">От: ${l.telegram_id}</div>
+    <div class="info">Supply: ${f(l.total_supply)} • Оплата: ${f(l.listing_fee_tusd)} TUSD</div>
+    <div class="info">Статус: ${esc(l.admin_status)}</div>
+    ${l.admin_status==='pending'?`<div class="admin-btn-row"><button class="admin-btn sm gold" onclick="approveListing('${esc(l.id)}')">✅ ОДОБРИТЬ</button><button class="admin-btn sm danger" onclick="rejectListing('${esc(l.id)}')">❌ ОТКЛОНИТЬ</button></div>`:''}
+  </div>`).join('');
+}
+async function approveListing(id){
+  if(!confirm('Одобрить?')) return;
+  const{error}=await sb.rpc('telepat_admin_approve_listing',{p_admin_telegram_id:UID,p_listing_id:id,p_comment:'OK'});
+  if(error){msg(error.message,'error');return;}
+  msg('✅ Токен создан','success');
+  await loadAdminListings();await loadAllTokens();
+}
+async function rejectListing(id){
+  if(!confirm('Отклонить?')) return;
+  const{error}=await sb.rpc('telepat_admin_reject_listing',{p_admin_telegram_id:UID,p_listing_id:id,p_comment:'NO'});
+  if(error){msg(error.message,'error');return;}
+  msg('❌ Отклонено','success');await loadAdminListings();
+}
+async function loadAdminVerification(){
+  const box=$('adminVerifyList');if(!box) return;
+  box.innerHTML='Загрузка...';
+  const{data,error}=await sb.rpc('telepat_admin_list_tokens_full');
+  if(error||!data||!data.length){box.innerHTML='<div class="info">Нет данных</div>';return;}
+  box.innerHTML=data.map(t=>{
+    const isBase=['TG','AI','TUSD'].includes(t.symbol);
+    const isVerified=isBase||t.verified;
+    return `<div class="pc">
+      <div class="pt">${esc(t.symbol)} — ${esc(t.name||'')}</div>
+      <div class="info">Владелец: ${t.owner_telegram_id||'—'}</div>
+      <div class="info" style="color:${isVerified?'#39d98a':'#ff647c'}">${isVerified?(isBase?'✅ БАЗОВЫЙ':'✅ ВЕРИФИЦИРОВАН'):'❌ НЕ ВЕРИФИЦИРОВАН'}</div>
+      ${isBase?'':`<button class="admin-btn sm gold" onclick="setTokenVerified('${esc(t.id)}',${t.manual_verified?'false':'true'})">${t.manual_verified?'❌ Снять':'✅ Верифицировать'}</button>`}
+    </div>`;
+  }).join('');
+}
+async function setTokenVerified(id,v){
+  if(!confirm(v?'Поставить вручную?':'Снять?')) return;
+  const{data,error}=await sb.rpc('telepat_admin_set_token_verified',{p_token_id:id,p_manual:v});
+  if(error){msg(error.message,'error');return;}
+  msg(v?'✅ Верифицирован':'🔄 Снято','success');
+  await loadAllTokens();await loadAdminVerification();
+}
 async function loadAdminTasks(){
   const box=$('adminTasksList');if(!box) return;
   box.innerHTML='Загрузка...';
@@ -2192,20 +2654,16 @@ async function loadAdminTasks(){
     <div class="pt">${esc(t.type)}</div>
     <div class="info">${esc(t.link)}</div>
     <div class="info" style="color:${t.status==='approved'?'#39d98a':'#ff647c'}">+${f(t.reward)} ${esc(t.reward_token)} • ${t.completed_count}/${t.limit_count}</div>
-    <div class="admin-btn-row">
-      <button class="admin-btn sm sec" onclick="openAdminTaskForm('${esc(t.id)}')">✏️</button>
-      <button class="admin-btn sm danger" onclick="deleteAdminTask('${esc(t.id)}')">🗑</button>
-    </div>
+    <div class="admin-btn-row"><button class="admin-btn sm sec" onclick="openAdminTaskForm('${esc(t.id)}')">✏️</button><button class="admin-btn sm danger" onclick="deleteAdminTask('${esc(t.id)}')">🗑</button></div>
   </div>`).join('');
   window.__AT=data;
 }
 function openAdminTaskForm(id){
   ATC=id?(window.__AT||[]).find(x=>String(x.id)===String(id)):null;
   $('adminTaskFormTitle').textContent=ATC?'✏️ РЕД.':'📝 НОВОЕ';
-  if(ATC){$('at_type').value=ATC.type;$('at_link').value=ATC.link;$('at_reward').value=ATC.reward;$('at_reward_token').value=ATC.reward_token;$('at_limit').value=ATC.limit_count;$('at_status').value=ATC.status;}
-  else{$('at_type').value='subscribe_channel';$('at_link').value='';$('at_reward').value='';$('at_limit').value='100';}
-  $('adminTaskFormStatus').textContent='';
-  $('adminTaskForm').classList.remove('hidden');
+  if(ATC){$('at_type').value=ATC.type||'subscribe_channel';$('at_link').value=ATC.link||'';$('at_reward').value=ATC.reward??'';$('at_reward_token').value=ATC.reward_token||'TG';$('at_limit').value=ATC.limit_count??100;$('at_status').value=ATC.status||'approved';}
+  else{$('at_type').value='subscribe_channel';$('at_link').value='';$('at_reward').value='';$('at_reward_token').value='TG';$('at_limit').value='100';$('at_status').value='approved';}
+  $('adminTaskFormStatus').textContent='';$('adminTaskForm').classList.remove('hidden');
 }
 function closeAdminTaskForm(){$('adminTaskForm').classList.add('hidden');ATC=null;}
 async function saveAdminTask(){
@@ -2213,7 +2671,7 @@ async function saveAdminTask(){
   const p={p_type:$('at_type').value,p_link:$('at_link').value.trim(),p_reward:n($('at_reward').value),p_reward_token:$('at_reward_token').value,p_limit_count:Math.floor(n($('at_limit').value)||100),p_status:$('at_status').value};
   if(!p.p_link||p.p_reward<=0){st.textContent='Заполните';return;}
   const r=ATC?await sb.rpc('telepat_admin_update_task',{p_id:ATC.id,...p}):await sb.rpc('telepat_admin_create_task',p);
-  if(r.error){st.textContent='Ошибка';return;}
+  if(r.error){st.textContent='Ошибка: '+r.error.message;return;}
   if(r.data?.ok){st.textContent='✅';await loadAdminTasks();setTimeout(closeAdminTaskForm,900);}
   else st.textContent='Ошибка';
 }
@@ -2221,217 +2679,38 @@ async function deleteAdminTask(id){
   if(!confirm('Удалить?')) return;
   const{error}=await sb.rpc('telepat_admin_delete_task',{p_id:id});
   if(error){msg(error.message,'error');return;}
-  msg('🗑','success');loadAdminTasks();
+  msg('🗑 Удалено','success');await loadAdminTasks();
 }
-
-/* ═══════ UI / BANNER / LOGOS / TOKEN PRICES / BONUS / CHECKIN ═══════ */
-async function loadBannerSettings(){
+async function adminCreateAd(){
+  if(UID!==AID){msg('Нет доступа','error');return;}
+  const st=$('ad_new_status');st.textContent='Проверка...';
+  const title=$('ad_new_title').value.trim();
+  const desc=$('ad_new_desc').value.trim();
+  const url=$('ad_new_url').value.trim();
+  const cta=$('ad_new_cta').value.trim()||'🚀 ПЕРЕЙТИ';
+  const duration=parseInt($('ad_new_duration').value)||15;
+  const buffer=parseInt($('ad_new_buffer').value)||10;
+  const reward=Number($('ad_new_reward').value)||0.0005;
+  const tokenId=$('ad_new_token').value||null;
+  const target=parseInt($('ad_new_target').value)||1000;
+  const file=$('ad_new_video').files[0];
+  if(!title||!url||!file){st.textContent='Заполните все поля и выберите видео';return;}
+  if(file.size>50*1024*1024){st.textContent='Видео > 50 МБ';return;}
+  const btn=$('ad_new_submit');btn.disabled=true;st.textContent='Загрузка...';
   try{
-    const{data}=await sb.from('telepat_settings').select('setting_key,setting_value').in('setting_key',['banner_height','banner_radius','banner_title_size','banner_sub_size','banner_padding','banner_count']);
-    (data||[]).forEach(r=>{const v=Number(r.setting_value);if(!Number.isFinite(v)) return;
-      if(r.setting_key==='banner_height') BANNER_SETTINGS.height=v;
-      if(r.setting_key==='banner_radius') BANNER_SETTINGS.radius=v;
-      if(r.setting_key==='banner_title_size') BANNER_SETTINGS.title_size=v;
-      if(r.setting_key==='banner_sub_size') BANNER_SETTINGS.sub_size=v;
-      if(r.setting_key==='banner_padding') BANNER_SETTINGS.padding=v;
-      if(r.setting_key==='banner_count') BANNER_SETTINGS.count=Math.max(1,Math.min(3,v));
-    });
-  }catch(e){}
-  const g=id=>$(id);
-  if(g('bnH')){g('bnH').value=BANNER_SETTINGS.height;g('bnHS').textContent=BANNER_SETTINGS.height;}
-  if(g('bnR')){g('bnR').value=BANNER_SETTINGS.radius;g('bnRS').textContent=BANNER_SETTINGS.radius;}
-  if(g('bnT')){g('bnT').value=BANNER_SETTINGS.title_size;g('bnTS').textContent=BANNER_SETTINGS.title_size;}
-  if(g('bnS')){g('bnS').value=BANNER_SETTINGS.sub_size;g('bnSS').textContent=BANNER_SETTINGS.sub_size;}
-  if(g('bnP')){g('bnP').value=BANNER_SETTINGS.padding;g('bnPS').textContent=BANNER_SETTINGS.padding;}
-  if(g('bnCount')) g('bnCount').value=String(BANNER_SETTINGS.count);
-}
-async function saveBannerSettings(){
-  const st=$('bnSetStatus');if(st) st.textContent='Сохранение...';
-  const vals={banner_height:$('bnH').value,banner_radius:$('bnR').value,banner_title_size:$('bnT').value,banner_sub_size:$('bnS').value,banner_padding:$('bnP').value,banner_count:$('bnCount').value};
-  for(const[k,v] of Object.entries(vals)){
-    const{data,error}=await sb.rpc('admin_set_app_setting',{p_key:k,p_value:String(v)});
-    if(error||!data||data.ok===false){if(st) st.textContent='Ошибка';return;}
-  }
-  await loadBannerSettings();if(st) st.textContent='✅ Сохранено';msg('💾','success');
-}
-async function loadTopBanner(){
-  const container=$('topBannersList');if(!container) return;
-  container.innerHTML='';
-  try{
-    const{data,error}=await sb.rpc('banner_get_active_list',{p_limit:BANNER_SETTINGS.count});
-    if(error||!data||data.ok===false) return;
-    (data.banners||[]).forEach(b=>{
-      const el=document.createElement('div');el.className='ad-banner';
-      el.innerHTML=`<div class="ad-banner-bg" ${b.image_url?`style="background-image:url('${esc(b.image_url)}')"`:''}></div><div class="ad-banner-overlay"></div><div class="ad-banner-body"><div class="ad-banner-title">${esc(b.title||'')}</div><div class="ad-banner-sub">${esc(b.subtitle||'')}</div></div><div class="ad-banner-mark">Реклама</div>`;
-      el.onclick=()=>{const url=b.link_url||'';if(!url) return;try{if(window.Telegram?.WebApp?.openLink) window.Telegram.WebApp.openLink(url);else window.open(url,'_blank');}catch{}};
-      container.appendChild(el);
-    });
-  }catch(e){}
-}
-async function loadUiSettings(){
-  try{
-    const{data}=await sb.rpc('get_ui_settings');
-    const s=Object.assign({},UI_DEFAULTS,data||{});
-    if($('ui-bg')) $('ui-bg').value=s.ui_bg;
-    if($('ui-bg-radial')) $('ui-bg-radial').value=s.ui_bg_radial;
-    if($('ui-accent')) $('ui-accent').value=s.ui_accent;
-    if($('ui-card')) $('ui-card').value=s.ui_card;
-    applyUiColors(s);
-    if($('uiSettingsStatus')) $('uiSettingsStatus').textContent='✅ Загружено';
-  }catch(e){}
-}
-async function saveUiSettings(){
-  const st=$('uiSettingsStatus');if(st) st.textContent='Сохранение...';
-  const values={ui_bg:$('ui-bg').value,ui_bg_radial:$('ui-bg-radial').value,ui_accent:$('ui-accent').value,ui_card:$('ui-card').value};
-  for(const[k,v] of Object.entries(values)){
-    const{data,error}=await sb.rpc('admin_set_ui_setting',{p_key:k,p_value:v});
-    if(error||!data||data.ok===false){if(st) st.textContent='Ошибка';return;}
-  }
-  applyUiColors(values);if(st) st.textContent='✅';
-}
-function resetUiSettings(){
-  applyUiColors(UI_DEFAULTS);
-  if($('ui-bg')) $('ui-bg').value=UI_DEFAULTS.ui_bg;
-  if($('ui-bg-radial')) $('ui-bg-radial').value=UI_DEFAULTS.ui_bg_radial;
-  if($('ui-accent')) $('ui-accent').value=UI_DEFAULTS.ui_accent;
-  if($('ui-card')) $('ui-card').value=UI_DEFAULTS.ui_card;
-}
-function applyUiColors(colors){
-  const root=document.documentElement;
-  root.style.setProperty('--bg',colors.ui_bg);
-  root.style.setProperty('--bg-card',colors.ui_card);
-  root.style.setProperty('--gold',colors.ui_accent);
-  document.body.style.background=`radial-gradient(circle at 50% -10%,${colors.ui_bg_radial} 0,${colors.ui_bg} 42%),${colors.ui_bg}`;
-}
-async function loadUiSettingsPublic(){try{const{data}=await sb.rpc('get_ui_settings');applyUiColors(Object.assign({},UI_DEFAULTS,data||{}));}catch(e){}}
-
-async function loadAllLogos(){
-  const box=$('adminLogosList');if(!box) return;
-  box.innerHTML='Загрузка...';
-  try{
-    const{data}=await sb.from('telepat_tokens').select('id,symbol,name,logo_url,active').order('symbol');
-    if(!data||!data.length){box.innerHTML='<div class="info">Нет токенов</div>';return;}
-    box.innerHTML=data.map(t=>{
-      const base=TOKEN_ICONS[t.symbol]||TOKEN_ICONS.DEFAULT;
-      const hasLogo=!!(t.logo_url&&t.logo_url.trim());
-      return `<div class="pc"><div style="display:flex;align-items:center;gap:12px"><div class="tlogo" style="background:${base.bg}"><span>${base.emoji}</span>${hasLogo?`<img src="${esc(t.logo_url)}" onerror="this.remove()">`:''}</div><div><div class="pt">${esc(t.symbol)}</div><div class="info">${esc(t.name||'')}</div></div></div>
-      <input type="text" id="lg-url-${esc(t.id)}" value="${esc(t.logo_url||'')}" placeholder="https://..." style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px;margin-top:8px">
-      <div class="admin-btn-row"><button class="admin-btn sm gold" onclick="saveAdminLogo('${esc(t.id)}','${esc(t.symbol)}')">💾</button></div></div>`;
-    }).join('');
-  }catch(e){box.innerHTML='Ошибка';}
-}
-async function saveAdminLogo(id,sym){
-  const inp=$('lg-url-'+id);if(!inp) return;
-  const{data,error}=await sb.rpc('admin_set_token_logo',{p_token_id:id,p_logo_url:inp.value.trim()||null});
-  if(error||(data&&data.ok===false)){msg('Ошибка','error');return;}
-  msg('🖼️','success');await loadAllTokens();await loadAdminTokenPrices();
-}
-async function clearAdminLogo(id,sym){const inp=$('lg-url-'+id);if(inp) inp.value='';await saveAdminLogo(id,sym);}
-async function loadAdminTokenPrices(){
-  const box=$('adminTokenPricesList');if(!box) return;
-  box.innerHTML='Загрузка...';
-  const{data,error}=await sb.rpc('admin_list_tokens_with_prices');
-  if(error||!data||!data.length){box.innerHTML='<div class="info">Нет данных</div>';return;}
-  box.innerHTML=data.map(t=>`<div class="pc">
-    <div class="pt">${esc(t.symbol)} — ${esc(t.name||'')}</div>
-    <label style="display:block;font-size:11px;color:var(--muted);margin:8px 0 4px">Курс в TUSD</label>
-    <input type="number" id="tp-price-${esc(t.id)}" step="0.00000001" value="${t.price_tusd}" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
-    <label style="display:block;font-size:11px;color:var(--muted);margin:8px 0 4px">Минимум вывода</label>
-    <input type="number" id="tp-min-${esc(t.id)}" step="0.00000001" value="${t.min_withdrawal}" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
-    <button class="admin-btn sm gold" style="width:100%;margin-top:8px" onclick="saveAdminTokenParams('${esc(t.id)}')">💾 Сохранить</button>
-  </div>`).join('');
-}
-async function saveAdminTokenParams(id){
-  const price=Number($('tp-price-'+id).value);
-  const minW=Number($('tp-min-'+id).value);
-  const{data,error}=await sb.rpc('admin_set_token_params',{p_token_id:id,p_price_tusd:price,p_min_withdrawal:minW,p_name:null,p_description:null,p_jetton_master:null,p_logo_url:null,p_is_system_token:null});
-  if(error||(data&&data.ok===false)){msg('Ошибка','error');return;}
-  msg('✅','success');await loadAllTokens();await loadUser();
-}
-async function adminDepositToFund(symbol,id){
-  const inp=$('tp-fund-'+id);if(!inp) return;
-  const amt=Number(inp.value);
-  if(!Number.isFinite(amt)||amt<=0){msg('Введите сумму','error');return;}
-  const{data,error}=await sb.rpc('admin_deposit_to_fund',{p_token_symbol:symbol,p_tusd_amount:amt,p_admin_telegram_id:UID});
-  if(error||!data||data.ok===false){msg(data?.error||'Ошибка','error');return;}
-  msg('✅ Внесено','success');inp.value='';await loadUser();await loadRewardFunds();
-}
-async function loadAdminBonusConfig(){
-  const box=$('adminBonusBox');if(!box) return;
-  box.innerHTML='Загрузка...';
-  const{data,error}=await sb.rpc('admin_get_welcome_bonus_config');
-  if(error||!data||data.ok===false){box.innerHTML='<div class="info">Ошибка</div>';return;}
-  box.innerHTML=`<div class="pc"><div class="info" style="margin-bottom:8px">Получили: <b>${data.claimed}</b> / ${data.limit}</div>
-    <label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px">Сумма бонуса (TUSD)</label>
-    <input type="number" id="wb_amount" value="${data.amount}" step="0.01" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
-    <label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">Лимит участников</label>
-    <input type="number" id="wb_limit" value="${data.limit}" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
-    <button class="admin-btn gold" style="width:100%;margin-top:12px" onclick="saveAdminBonusConfig()">💾 Сохранить</button>
-    <div id="adminBonusStatus" class="info" style="margin-top:8px;text-align:center"></div>
-  </div>`;
-}
-async function saveAdminBonusConfig(){
-  const st=$('adminBonusStatus');if(st) st.textContent='...';
-  const{data,error}=await sb.rpc('admin_set_welcome_bonus_config',{p_amount:Number($('wb_amount').value),p_limit:Number($('wb_limit').value)});
-  if(error||(data&&data.ok===false)){if(st) st.textContent='Ошибка';return;}
-  if(st) st.textContent='✅';await loadAdminBonusConfig();await loadWelcomeBonusStatus();
-}
-async function loadAdminCheckin(){
-  const box=$('adminCheckinBox');if(!box) return;
-  box.innerHTML='Загрузка...';
-  const{data,error}=await sb.rpc('admin_get_checkin_config');
-  if(error||!data||data.ok===false){box.innerHTML='<div class="info">Ошибка</div>';return;}
-  const s=data.settings||{},tokens=data.tokens||[];
-  let html=`<label style="display:block;font-size:11px;color:var(--muted)">Максимум дней</label>
-    <input id="ci_max_days" type="number" value="${s.max_days||30}" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px;margin-top:4px">
-    <button class="admin-btn sm gold" style="width:100%;margin-top:8px" onclick="saveAdminCheckinSettings()">💾</button>
-    <div class="title" style="margin-top:12px;font-size:12px">ТОКЕНЫ</div>`;
-  tokens.forEach(t=>{html+=`<div class="pc"><div class="pt">${esc(t.token_symbol)}</div>
-    <input id="ci_tok_${esc(t.token_symbol)}" type="number" step="0.00000001" value="${t.base_amount}" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px;margin-top:6px">
-    <div class="admin-btn-row"><button class="admin-btn sm gold" onclick="saveAdminCheckinToken('${esc(t.token_symbol)}')">💾</button>
-    <button class="admin-btn sm danger" onclick="removeAdminCheckinToken('${esc(t.token_symbol)}')">🗑</button></div></div>`;});
-  box.innerHTML=html;
-}
-async function saveAdminCheckinSettings(){
-  const{data,error}=await sb.rpc('admin_update_checkin_setting',{p_key:'checkin_max_days',p_value:String($('ci_max_days').value)});
-  if(error||!data||data.ok===false){msg('Ошибка','error');return;}
-  msg('✅','success');
-}
-async function saveAdminCheckinToken(sym){
-  const amt=Number($('ci_tok_'+sym).value);
-  const{data,error}=await sb.rpc('admin_upsert_checkin_token',{p_symbol:sym,p_amount:amt,p_active:true});
-  if(error||!data||data.ok===false){msg('Ошибка','error');return;}
-  msg('✅','success');await loadAdminCheckin();
-}
-async function removeAdminCheckinToken(sym){
-  if(!confirm('Убрать?')) return;
-  const{data,error}=await sb.rpc('admin_remove_checkin_token',{p_symbol:sym});
-  if(error||!data||data.ok===false){msg('Ошибка','error');return;}
-  msg('🗑','success');await loadAdminCheckin();
-}
-async function addAdminCheckinToken(){
-  const sym=$('ci_new_symbol')?.value,amt=Number($('ci_new_amount')?.value);
-  if(!sym||amt<=0) return;
-  const{data,error}=await sb.rpc('admin_upsert_checkin_token',{p_symbol:sym,p_amount:amt,p_active:true});
-  if(error||!data||data.ok===false){msg('Ошибка','error');return;}
-  msg('✅','success');await loadAdminCheckin();
-}
-
-/* ═══════ LISTING / VERIFICATION (заглушки) ═══════ */
-async function loadAdminListings(){}
-async function createTokenListing(){msg('Скоро','info');}
-function calculateListingPreview(){}
-async function loadListingSettingsAdmin(){}
-async function saveListingSettingsAdmin(){}
-async function approveListing(id){
-  const{error}=await sb.rpc('telepat_admin_approve_listing',{p_admin_telegram_id:UID,p_listing_id:id,p_comment:'OK'});
-  if(error){msg(error.message,'error');return;}
-  msg('✅','success');await loadAdminListings();
-}
-async function rejectListing(id){
-  const{error}=await sb.rpc('telepat_admin_reject_listing',{p_admin_telegram_id:UID,p_listing_id:id,p_comment:'NO'});
-  if(error){msg(error.message,'error');return;}
-  msg('❌','success');await loadAdminListings();
+    const safeName=file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+    const fileName='videos/'+Date.now()+'_'+safeName;
+    const{error:uploadError}=await sb.storage.from('ads').upload(fileName,file,{contentType:'video/mp4',upsert:false});
+    if(uploadError){st.textContent='Ошибка: '+uploadError.message;btn.disabled=false;return;}
+    const{data:urlData}=sb.storage.from('ads').getPublicUrl(fileName);
+    const videoUrl=urlData.publicUrl;
+    st.textContent='Создание...';
+    const{error:insertError}=await sb.from('telepat_ad_campaigns').insert({advertiser_telegram_id:UID,title:title,description:desc,campaign_type:'video',url:url,video_url:videoUrl,reward_per_action:reward,reward_token_id:tokenId,target_actions:target,completed_actions:0,duration_seconds:duration,buffer_seconds:buffer,cta_button_text:cta,cta_text:desc,payment_status:'paid',admin_status:'approved'});
+    if(insertError){st.textContent='Ошибка: '+insertError.message;btn.disabled=false;return;}
+    st.innerHTML='✅ Реклама создана!';
+    $('ad_new_video').value='';$('ad_new_title').value='';$('ad_new_desc').value='';$('ad_new_url').value='';
+    btn.disabled=false;
+  }catch(e){st.textContent='Ошибка: '+e.message;btn.disabled=false;}
 }
 
 /* ═══════ HISTORY ═══════ */
@@ -2451,11 +2730,14 @@ async function loadHistory(){
     const label=OP_LABELS[it.operation_type]||it.operation_type;
     return `<div style="display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #1a2534;font-size:12px">
       <div style="font-size:20px">${icon}</div>
-      <div style="flex:1"><b>${esc(label)}</b><div class="info" style="font-size:11px">${esc(it.description||'')}</div></div>
+      <div style="flex:1"><b>${esc(label)}</b><div class="info" style="font-size:11px;margin-top:2px">${esc(it.description||'')}</div></div>
       <div style="text-align:right;color:${color};font-weight:700">${sign}${f(amt,6)}<div class="info" style="font-size:11px">${esc(it.token||'')}</div></div>
     </div>`;
   }).join('');
 }
+async function loadOwnerEarnings(){}
+function openOwnerEarnings(){}
+function closeOwnerEarnings(){}
 
 /* ═══════ PROFILE ═══════ */
 async function openProfile(uid){
@@ -2496,38 +2778,64 @@ async function claimWelcomeBonus(){
   if(!UID) return;
   const btn=$('bonusBtn');if(btn){btn.disabled=true;btn.textContent='⏳';}
   const{data,error}=await sb.rpc('grant_welcome_bonus_v2');
-  if(error){msg(error.message,'error');if(btn){btn.disabled=false;btn.textContent='🎁';}return;}
+  if(error){msg(error.message,'error');if(btn){btn.disabled=false;btn.textContent='🎁 Получить';}return;}
   if(data?.success){
     await refreshAll();
-    showAdRewardPopup(Number(data.amount)||1,data.token||'TUSD',`🎁 БОНУС • ВЫ ${data.place}-Й`);
+    showAdRewardPopup(Number(data.amount)||1,data.token||'TUSD',`🎁 ПРИВЕТСТВЕННЫЙ БОНУС • ВЫ ${data.place}-Й ИЗ ${data.limit}`);
     await loadWelcomeBonusStatus();
   }else{msg(data?.message||'Не удалось','error');await loadWelcomeBonusStatus();}
 }
 
-/* ═══════ CHAT BONUS — функции для заявок (старый submit) ═══════ */
-async function submitChatBonusPage(){await payChatBonus();}
-async function submitChatBonusRequest(){await payChatBonus();}
-
-/* ═══════ РАЗДАЧА — базовое (заглушки для кнопок из других мест) ═══════ */
+/* ═══════ ADS / МОДАЛКИ ═══════ */
+function openAdMenu(){msg('📢 Реклама в разработке','info');}
+function closeAdMenu(){}
+function openAdForm(){}
+function closeAdForm(){}
+function openMyAds(){}
+function closeMyAds(){}
+async function loadMyAds(){}
+async function openTasksModal(){$('tasksModal')?.classList.add('show');if(currentIncomeTab!=='tasks') showIncomeTab('tasks');}
+function closeTasks(e){if(e&&e.target!==$('tasksModal')) return;$('tasksModal').classList.remove('show');}
 async function startTask(id,link){
   __PENDING_TASK=id;
   try{window.Telegram?.WebApp?.openLink?window.Telegram.WebApp.openLink(link):window.open(link,'_blank');}catch{window.open(link,'_blank');}
   msg('⏳ Выполните и вернитесь','info');
 }
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='visible'&&__PENDING_TASK){
+    if(__RETURN_TIMER) clearTimeout(__RETURN_TIMER);
+    __RETURN_TIMER=setTimeout(async()=>{
+      const tid=__PENDING_TASK;__PENDING_TASK=null;
+      const{data,error}=await sb.rpc('complete_task',{p_task_id:tid,p_user_id:String(UID)});
+      if(error||!data?.ok){msg(data?.error||'Не выполнено','error');return;}
+      msg(`🎁 Задание выполнено`,'success');
+      await refreshAll();
+      if(currentIncomeTab==='tasks') showIncomeTab('tasks');
+    },TASK_CHECK_DELAY);
+  }
+});
 async function watchAd(){msg('📺 Реклама скоро','info');}
 function closeAdModal(){$('adModal')?.classList.remove('show');}
 async function claimAdReward(){msg('Скоро','info');}
 async function claimStaking(){
   const{data,error}=await sb.rpc('claim_staking',{p_user_id:String(UID)});
-  if(error||!data||data.ok===false){msg(data?.error||'Нечего собирать','error');return;}
-  showAdRewardPopup(Number(data.claimed)||0,'TUSD','💵 СОБРАНО');
-  await refreshAll();showIncomeTab('staking');
+  if(error||!data||data.ok===false){msg(data?.error||error?.message||'Нечего собирать','error');return;}
+  showAdRewardPopup(Number(data.claimed)||0,'TUSD','💵 СТЕЙКИНГ СОБРАН');
+  STAKE_DISPLAY=0;await refreshAll();showIncomeTab('staking');
 }
 async function claimCheckin(){
   const{data,error}=await sb.rpc('claim_daily_checkin');
-  if(error||!data||data.ok===false){msg(data?.error||'Ошибка','error');return;}
-  msg(`🎉 День ${data.day} пройден!`,'success');
+  if(error||!data||data.ok===false){msg(data?.error||error?.message||'Ошибка','error');return;}
+  const r=data.rewards||{};let lines='';
+  Object.keys(r).forEach(t=>{if(n(r[t])>0) lines+=`<div style="display:flex;justify-content:space-between;padding:3px 0;align-items:center">${tokenIconHTML(t,'xs')}<span>${esc(t)}</span><span style="color:#39d98a;font-weight:bold">+${f(r[t],8)}</span></div>`;});
+  showCheckinReward(data.day,lines,data.is_bonus_day);
   await refreshAll();showIncomeTab('checkin');
+}
+function showCheckinReward(day,lines,isBonus){
+  const overlay=document.createElement('div');
+  overlay.style.cssText='position:fixed;z-index:5000;inset:0;background:#000c;display:flex;align-items:center;justify-content:center;padding:20px';
+  overlay.innerHTML=`<div style="width:min(340px,100%);background:linear-gradient(145deg,#1a3a1a,#0d200d);border:2px solid #39d98a;border-radius:20px;padding:22px;text-align:center"><div style="font-size:52px;margin-bottom:6px">🎉</div><div style="color:#39d98a;font-size:20px;font-weight:bold;margin-bottom:4px">ДЕНЬ ${day} ПРОЙДЕН!</div>${isBonus?'<div style="color:#f4cf70;font-size:12px;margin-bottom:10px">⭐ БОНУСНЫЙ ДЕНЬ ×2</div>':''}<div style="background:#0006;border-radius:12px;padding:12px;margin-bottom:14px;font-size:14px">${lines}</div><button onclick="this.parentElement.parentElement.remove()" style="width:100%">👍 ОТЛИЧНО!</button></div>`;
+  document.body.appendChild(overlay);
 }
 function showAdRewardPopup(reward,token,extra){
   const old=$('adRewardPopupGreen');if(old) old.remove();
@@ -2535,40 +2843,72 @@ function showAdRewardPopup(reward,token,extra){
   overlay.id='adRewardPopupGreen';
   overlay.style.cssText='position:fixed;z-index:6000;inset:0;background:#000c;display:flex;align-items:center;justify-content:center;padding:20px';
   overlay.onclick=e=>{if(e.target===overlay) overlay.remove();};
-  overlay.innerHTML=`<div style="width:min(360px,100%);background:linear-gradient(145deg,#1f4a1f,#0d280d);border:3px solid #39d98a;border-radius:22px;padding:26px 22px;text-align:center"><div style="font-size:64px">🎉</div><div style="color:#39d98a;font-size:22px;font-weight:bold;margin-top:12px">НАГРАДА!</div>${extra?`<div style="color:#f4cf70;margin-top:8px">${extra}</div>`:''}<div style="background:#0006;border:2px solid #39d98a55;border-radius:14px;padding:14px;margin:16px 0;font-size:22px;font-weight:bold;color:#39d98a">+${f(reward,5)} ${esc(token)}</div><button onclick="document.getElementById('adRewardPopupGreen').remove()" style="width:100%;padding:14px;border-radius:14px;border:0;background:linear-gradient(135deg,#39d98a,#2ba86a);color:#0d280d;font-weight:bold;font-size:16px;cursor:pointer">👍 ОТЛИЧНО!</button></div>`;
+  const bonusLine=extra?`<div style="color:#f4cf70;font-size:13px;margin-bottom:10px;font-weight:bold;text-align:center">${extra}</div>`:'';
+  const icon=tokenIconHTML(token);
+  overlay.innerHTML=`<div style="width:min(360px,100%);background:linear-gradient(145deg,#1f4a1f,#0d280d);border:3px solid #39d98a;border-radius:22px;padding:26px 22px;text-align:center"><div style="font-size:64px">🎉</div><div style="color:#39d98a;font-size:22px;font-weight:bold;margin-top:12px">НАГРАДА ПОЛУЧЕНА!</div>${bonusLine}<div style="background:#0006;border:2px solid #39d98a55;border-radius:14px;padding:14px;margin:16px 0;font-size:24px;font-weight:bold;color:#39d98a;display:flex;align-items:center;justify-content:center;gap:10px">${icon}+${f(reward,5)} ${esc(token)}</div><button onclick="document.getElementById('adRewardPopupGreen').remove()" style="width:100%;background:linear-gradient(135deg,#39d98a,#2ba86a);color:#0d280d;font-weight:bold;padding:14px;border-radius:14px;border:0;font-size:16px;cursor:pointer">👍 ОТЛИЧНО!</button></div>`;
   document.body.appendChild(overlay);
+  let sec=5;setInterval(()=>{sec--;if(sec<=0){const el=$('adRewardPopupGreen');if(el) el.remove();}},1000);
+}
+async function loadAdPrices(){
+  try{
+    const{data}=await sb.rpc('ad_get_prices');
+    if(data&&data.ok){
+      AD_PRICES={banner_price_per_day:Number(data.banner_price_per_day)||10,video_price_per_view:Number(data.video_price_per_view)||0.001,task_price_per_sub:Number(data.task_price_per_sub)||0.5,link_price_per_click:Number(data.link_price_per_click)||0.3};
+    }
+  }catch(e){}
 }
 
-/* ═══════ GEAR P2P ═══════ */
-async function gearListItem(){
-  const itemId=$('gear_sell_item')?.value;
-  const price=Number($('gear_sell_price')?.value);
-  if(!itemId||!Number.isFinite(price)||price<=0){msg('Заполните','error');return;}
-  const{data,error}=await sb.rpc('gear_list_item',{p_user_item_id:itemId,p_price_tusd:price});
-  if(error||!data||data.ok===false){msg(data?.error||'Ошибка','error');return;}
-  msg(`✅ Выставлено за $${f(price,2)}`,'success');
-  await refreshAll();if(currentIncomeTab==='gear-p2p') showIncomeTab('gear-p2p');
+/* ═══════ CHAT BONUS — админ ═══════ */
+async function loadChatBonusRequests(){
+  const box=$('chatBonusList');if(!box) return;
+  box.innerHTML='Загрузка...';
+  try{
+    const{data,error}=await sb.from('telepat_chat_bonus_requests').select('*').order('created_at',{ascending:false}).limit(100);
+    if(error){box.innerHTML='<div class="info er">'+esc(error.message)+'</div>';return;}
+    if(!data||!data.length){box.innerHTML='<div class="info">Нет заявок</div>';return;}
+    box.innerHTML=data.map(r=>`<div class="pc">
+      <div class="pt">👤 ${esc(r.username||('ID '+r.user_id))}</div>
+      <div class="info">${esc(r.chat_link||'')}</div>
+      <div class="info" style="font-size:11px">${new Date(r.created_at).toLocaleString('ru-RU')}</div>
+      <div class="info" style="color:${r.status==='approved'?'#39d98a':(r.status==='pending'?'#f4cf70':'#ff647c')}">Статус: ${r.status}</div>
+    </div>`).join('');
+  }catch(e){box.innerHTML='<div class="info">Ошибка</div>';}
 }
-async function gearCancelListing(id){
-  if(!confirm('Снять?')) return;
-  const{data,error}=await sb.rpc('gear_cancel_listing',{p_listing_id:id});
-  if(error||!data||data.ok===false){msg('Ошибка','error');return;}
-  msg('✅','success');await refreshAll();
+async function approveChatBonus(id){
+  const{error}=await sb.from('telepat_chat_bonus_requests').update({status:'approved'}).eq('id',id);
+  if(error){msg(error.message,'error');return;}
+  msg('✅ Одобрено','success');loadChatBonusRequests();
 }
-async function gearBuyListing(id){
-  if(!confirm('Купить?')) return;
-  const{data,error}=await sb.rpc('gear_buy_listing',{p_listing_id:id});
-  if(error||!data||data.ok===false){msg(data?.error||'Ошибка','error');return;}
-  msg('✅ Куплено','success');await refreshAll();
+async function rejectChatBonus(id){
+  const{error}=await sb.from('telepat_chat_bonus_requests').update({status:'rejected'}).eq('id',id);
+  if(error){msg(error.message,'error');return;}
+  msg('❌ Отклонено','success');loadChatBonusRequests();
 }
-
-/* ═══════ HISTORY OWNER (не используется, но оставим) ═══════ */
-async function loadOwnerEarnings(){}
-function openOwnerEarnings(){}
-function closeOwnerEarnings(){}
-
-/* ═══════ AD PRICES (заглушка) ═══════ */
-async function loadAdPrices(){try{const{data}=await sb.rpc('ad_get_prices');if(data&&data.ok) AD_PRICES={banner_price_per_day:Number(data.banner_price_per_day)||10,video_price_per_view:Number(data.video_price_per_view)||0.001,task_price_per_sub:Number(data.task_price_per_sub)||0.5,link_price_per_click:Number(data.link_price_per_click)||0.3};}catch(e){}}
+async function loadChatBonusSettings(){
+  const st=$('cbs_status');if(st) st.textContent='Загрузка...';
+  try{
+    const{data}=await sb.from('telepat_settings').select('setting_key,setting_value').in('setting_key',['chat_bonus_price','chat_bonus_fee_pct','chat_bonus_wallet']);
+    let price=1,fee=10,wallet='';
+    (data||[]).forEach(r=>{
+      if(r.setting_key==='chat_bonus_price') price=Number(r.setting_value)||1;
+      if(r.setting_key==='chat_bonus_fee_pct') fee=Number(r.setting_value)||10;
+      if(r.setting_key==='chat_bonus_wallet') wallet=r.setting_value||'';
+    });
+    if($('cbs_price')) $('cbs_price').value=price;
+    if($('cbs_fee')) $('cbs_fee').value=fee;
+    if($('cbs_wallet')) $('cbs_wallet').value=wallet;
+    if(st) st.textContent='✅ Загружено';
+  }catch(e){if(st) st.textContent='Ошибка';}
+}
+async function saveChatBonusSettings(){
+  const st=$('cbs_status');if(st) st.textContent='Сохранение...';
+  const pairs=[['chat_bonus_price',String(Number($('cbs_price').value)||1)],['chat_bonus_fee_pct',String(Number($('cbs_fee').value)||10)],['chat_bonus_wallet',($('cbs_wallet').value||'').trim()]];
+  for(const[k,v] of pairs){
+    const{data,error}=await sb.rpc('admin_set_app_setting',{p_key:k,p_value:v});
+    if(error||!data||data.ok===false){if(st) st.textContent='Ошибка';return;}
+  }
+  if(st) st.textContent='✅ Сохранено';msg('✅ Настройки чат-бонусов сохранены','success');
+}
 
 /* ═══════ REFRESH ALL ═══════ */
 async function refreshAll(){
