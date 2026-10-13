@@ -468,6 +468,61 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 <h2 style="color:var(--gold)">🎁 Заказать раздачу</h2>
 <div class="item-card">
 <div class="item-header"><b>Автоматические бонусы в вашем чате</b></div>
+<div class="item-desc">Бот будет раздавать награды участникам вашего Telegram-чата. Оплата раз в 30 дней — <b style="color:var(--gold)">$1</b>.</div>
+</div>
+
+<div class="item-card">
+<div class="title" style="font-size:13px;margin-bottom:8px">📋 Как это работает</div>
+<div class="info" style="font-size:12px;line-height:1.8;color:#cfd8e4">
+1. Добавьте бота <b style="color:var(--gold)">@TELEPATp2p_bot</b> в ваш чат.<br>
+2. Дайте ему <b>права администратора</b> (писать + удалять сообщения).<br>
+3. Оплатите <b style="color:var(--gold)">$1 за 30 дней</b> удобным способом.<br>
+4. Подключение произойдёт <b>автоматически</b> в течение 1 минуты.
+</div>
+</div>
+
+<div class="item-card">
+<div class="title" style="font-size:13px;margin-bottom:8px">📝 Оформление</div>
+<label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px">Ссылка на ваш чат</label>
+<input id="cb_chat_link_page" placeholder="https://t.me/your_chat" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+<label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">Ваш @username (для связи)</label>
+<input id="cb_username_page" placeholder="@username" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+
+<div class="title" style="font-size:13px;margin:16px 0 8px">💳 Способ оплаты</div>
+<select id="cb_pay_method_page" onchange="updateChatBonusPayMethod()" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+<option value="balance">💰 С внутреннего баланса</option>
+<option value="stars">💫 Telegram Stars (в разработке)</option>
+</select>
+
+<div id="cbBalanceBlock" style="margin-top:12px">
+<label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px">Каким токеном платить</label>
+<select id="cb_pay_token" onchange="renderChatBonusPrice()" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px"></select>
+<div class="prev" style="margin-top:12px">
+<div class="history-row"><span>Цена</span><b>$1.00 / 30 дней</b></div>
+<div class="history-row"><span>Спишется</span><b id="cbSpendPreview">—</b></div>
+<div class="history-row"><span>Ваш баланс</span><b id="cbBalancePreview">—</b></div>
+</div>
+</div>
+
+<div id="cbStarsBlock" class="hidden" style="margin-top:12px">
+<div class="info" style="text-align:center;padding:12px;background:#1a1f2e;border-radius:10px">
+💫 Оплата звёздами — скоро.<br>Пока используйте внутренний баланс.
+</div>
+</div>
+
+<button class="admin-btn gold" style="width:100%;margin-top:12px" onclick="submitChatBonusPage()">✅ ОПЛАТИТЬ И ПОДКЛЮЧИТЬ</button>
+<div id="cbStatusPage" class="info" style="margin-top:8px;text-align:center"></div>
+</div>
+
+<div class="item-card">
+<div class="item-header"><b>📋 Мои заявки</b></div>
+<div id="myChatBonusList"><div class="info">Загрузка...</div></div>
+<button class="admin-btn sec" style="width:100%;margin-top:8px" onclick="loadMyChatBonus()">🔄 Обновить</button>
+</div>
+</div>
+<h2 style="color:var(--gold)">🎁 Заказать раздачу</h2>
+<div class="item-card">
+<div class="item-header"><b>Автоматические бонусы в вашем чате</b></div>
 <div class="item-desc">Бот будет раздавать награды участникам вашего Telegram-чата. Оплата раз в 30 дней — <b style="color:var(--gold)">$1</b>. Комиссия платформы 10%.</div>
 </div>
 <div class="item-card">
