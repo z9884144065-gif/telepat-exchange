@@ -13,9 +13,7 @@ html,body{margin:0;padding:0;background:radial-gradient(circle at 50% -10%,#1a25
 .app{max-width:520px;margin:0 auto;padding:14px 12px 110px}
 h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
-.top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
-.logo{font-size:20px;font-weight:800;color:var(--gold)}
-.top-icons{display:flex;gap:6px}
+.logo{font-size:20px;font-weight:800;color:var(--gold);text-align:center;margin-bottom:16px}
 .icon-btn{width:34px;height:34px;border-radius:50%;background:var(--bg-card);border:1px solid var(--line);color:var(--muted);display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer}
 .icon-btn:hover{border-color:var(--gold);color:var(--gold)}
 .icon-btn.hidden{display:none!important}
@@ -28,6 +26,13 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
 .avatar-img{position:relative;z-index:1;width:100%;height:100%;border-radius:50%;object-fit:cover;background:#0d1520;border:2px solid #2a3242}
 .profile-info{flex:1;min-width:0}
+.profile-icons-row{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:14px;padding-top:14px;border-top:1px solid #2a3242}
+.profile-icons-row:has(#adminIcon:not(.hidden)){grid-template-columns:repeat(5,1fr)}
+.profile-icon-btn{background:linear-gradient(145deg,#1e2938,#141b26);border:1px solid var(--line);border-radius:12px;padding:10px 4px;display:flex;flex-direction:column;align-items:center;gap:4px;color:#cfd8e4;font-size:22px;cursor:pointer;font-family:inherit;transition:.15s}
+.profile-icon-btn:hover,.profile-icon-btn:active{border-color:var(--gold);transform:translateY(-1px)}
+.profile-icon-btn .pi-label{font-size:9px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.3px}
+.profile-icon-btn#adminIcon{border-color:#80652b;color:var(--gold)}
+.profile-icon-btn#adminIcon .pi-label{color:var(--gold)}
 .username{font-size:16px;font-weight:700;color:#fff}
 .user-stats{display:flex;gap:10px;margin-top:6px;font-size:11px;color:var(--muted);flex-wrap:wrap}
 .user-stats .rank-badge-top{color:var(--gold);font-weight:700}
@@ -104,7 +109,6 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 .acc-item.open .acc-header .acc-arrow{transform:rotate(90deg);color:var(--gold)}
 .acc-body{display:none;padding:4px 14px 16px 14px;border-top:1px solid #1a2534}
 .acc-item.open .acc-body{display:block}
-.acc-body .acc-sub{margin-top:10px}
 .admin-field{margin-bottom:10px}
 .admin-field label{display:block;font-size:11px;color:var(--muted);margin-bottom:4px}
 .admin-field input,.admin-field select,.admin-field textarea{width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px 10px;border-radius:8px;outline:none;font-size:13px}
@@ -236,16 +240,7 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 <div id="view-home">
 <div id="topBannersList"></div>
 
-<div class="top-bar">
 <div class="logo">⚔️ ТЕЛЕПАТ</div>
-<div class="top-icons">
-<button class="icon-btn" onclick="openTelegramProfile()">👤</button>
-<button class="icon-btn" onclick="openHistory()">📜</button>
-<button class="icon-btn" onclick="showFAQ()">❓</button>
-<button class="icon-btn" onclick="openSettings()">⚙️</button>
-<button id="adminIcon" class="icon-btn hidden" onclick="goView('admin')" title="Админ">👑</button>
-</div>
-</div>
 
 <div class="profile-card">
 <div class="profile-header">
@@ -260,6 +255,13 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 <span id="userDays">📅 0 дней</span>
 </div>
 </div>
+</div>
+<div class="profile-icons-row">
+<button class="profile-icon-btn" onclick="openTelegramProfile()"><span>👤</span><span class="pi-label">Профиль</span></button>
+<button class="profile-icon-btn" onclick="openHistory()"><span>📜</span><span class="pi-label">История</span></button>
+<button class="profile-icon-btn" onclick="showFAQ()"><span>❓</span><span class="pi-label">Помощь</span></button>
+<button class="profile-icon-btn" onclick="openSettings()"><span>⚙️</span><span class="pi-label">Настройки</span></button>
+<button id="adminIcon" class="profile-icon-btn hidden" onclick="goView('admin')"><span>👑</span><span class="pi-label">Админ</span></button>
 </div>
 </div>
 
@@ -428,7 +430,7 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 
 <div class="item-card">
 <div class="title" style="font-size:13px;margin-bottom:8px">📝 Шаг 1. Ваш чат</div>
-<div class="info" style="font-size:11px;color:#cfd8e4;margin-bottom:8px">Вставьте ссылку на ваш чат (например <b>https://t.me/mychat</b>) или его числовой ID (например <b>-1001234567890</b>). Для приватных групп используйте ID из команды бота или из логов.</div>
+<div class="info" style="font-size:11px;color:#cfd8e4;margin-bottom:8px">Вставьте ссылку на ваш чат (например <b>https://t.me/mychat</b>) или его числовой ID (например <b>-1001234567890</b>). Для приватных групп используйте ID.</div>
 <label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px">Ссылка на чат или ID</label>
 <input id="cb_chat_link" placeholder="https://t.me/mychat или -1001234567890" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
 <button class="admin-btn sec" style="width:100%;margin-top:8px" onclick="checkChatLink()">🔍 Проверить чат</button>
@@ -441,14 +443,14 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 <option value="TUSD">TUSD — Telepat Dollar</option>
 </select>
 
-<label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">💼 Бюджет раздачи (сколько токенов готовы раздать)</label>
+<label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">💼 Бюджет раздачи</label>
 <input id="cb_budget" type="number" step="any" value="0" placeholder="Например 1000000" oninput="renderChatBonusPrice()" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
 <div class="info" style="font-size:11px;margin-top:4px">С этой суммы сразу списывается 10% комиссии. Остальное идёт в пул раздачи.</div>
 
 <div class="prev" style="margin-top:12px">
 <div class="history-row"><span>$1 за подключение</span><b id="cbSetupPreview">—</b></div>
 <div class="history-row"><span>Бюджет раздачи</span><b id="cbBudgetPreview">—</b></div>
-<div class="history-row"><span>Комиссия 10% (в пользу платформы)</span><b id="cbCommissionPreview">—</b></div>
+<div class="history-row"><span>Комиссия 10% (платформе)</span><b id="cbCommissionPreview">—</b></div>
 <div class="history-row"><span>Пул раздачи</span><b id="cbPoolPreview">—</b></div>
 <div class="history-row"><span>Ваш баланс</span><b id="cbBalancePreview">—</b></div>
 <div class="history-row"><span>Итого спишется</span><b id="cbSpendPreview">—</b></div>
@@ -459,7 +461,7 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 </div>
 
 <div class="item-card">
-<div class="title" style="font-size:13px;margin-bottom:8px">⚙️ Дополнительные параметры (по желанию)</div>
+<div class="title" style="font-size:13px;margin-bottom:8px">⚙️ Дополнительные параметры</div>
 
 <label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px">💰 Награда за одно сообщение</label>
 <input id="cb_reward" type="number" step="0.000001" value="0.001" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
@@ -492,7 +494,7 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 <div class="acc-body">
 <button class="admin-btn sec" style="width:100%" onclick="loadAdminAccounts()">🔄 Обновить</button>
 <div style="margin-top:12px">
-<div class="title" style="font-size:12px;margin-bottom:6px">📢 Рекламный счёт (доход от чатов)</div>
+<div class="title" style="font-size:12px;margin-bottom:6px">📢 Рекламный счёт</div>
 <div id="adsBalanceList"><div class="info">Загрузка...</div></div>
 </div>
 <div style="margin-top:14px">
@@ -513,7 +515,7 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 <select id="adItemCat" onchange="loadAdminItemPrices()">
 <option value="all">Все предметы</option>
 <option value="weapon">🗡 Оружие</option>
-<option value="body">👕 Броня (торс)</option>
+<option value="body">👕 Броня</option>
 <option value="legs">👖 Поножи</option>
 <option value="armor">⛑ Шлемы</option>
 <option value="shield">🛡 Щиты</option>
@@ -916,8 +918,6 @@ let __jwt=sessionStorage.getItem('__jwt')||null;
 let ALL_TOKENS=[],CU=null,CB={},MY_ITEMS=[],SHOP_ITEMS=[],REWARD_FUNDS=[];
 let HISTORY_WALLET='',HISTORY_OFFSET=0,HISTORY_ITEMS=[];
 let ADMIN_USER=null,BANNER_SETTINGS={height:110,radius:14,title_size:17,sub_size:13,padding:16,count:1};
-let AD_PRICES={banner_price_per_day:10,video_price_per_view:0.001,task_price_per_sub:0.5,link_price_per_click:0.3};
-let AD_CURRENT_TYPE=null,_adModalMode='topup',AD=null,ADT=null,ADR=false;
 let STAKE_STATE=null,STAKE_DISPLAY=0;
 let ACT=[],ACC=null,ACR=[],ATC=null,LFT=0,LSP=10;
 let __PENDING_TASK=null,__RETURN_TIMER=null,ADMIN_REWARD_TOKEN=null;
@@ -925,9 +925,8 @@ let __START_ORDER_ID=null,ORDER_CACHE={},__BUY_ORDER=null;
 let state_swapFrom='TG',state_swapTo='TUSD';
 let SWAP_QUOTE=null,SWAP_QUOTE_TIMER=null,SWAP_BUSY=false;
 let currentShopTab='gear',currentIncomeTab='p2p',currentRatingTab='refs';
-// ★ НОВОЕ: выбранный чат в форме "Заказать"
-window.__cbSelectedChatId = 0;
-window.__cbSelectedChatTitle = '';
+window.__cbSelectedChatId=0;
+window.__cbSelectedChatTitle='';
 const UI_DEFAULTS={ui_bg:'#0b1018',ui_bg_radial:'#26334a',ui_accent:'#f4cf70',ui_card:'#141c28'};
 const VERIFIED_SYMBOLS=new Set(BASE_VERIFIED);
 
@@ -1246,7 +1245,7 @@ async function sellMyItem(itemId){
   await refreshAll();
 }
 
-/* ═══════ CHAT BONUS — новая схема (ссылка/ID) ═══════ */
+/* ═══════ CHAT BONUS ═══════ */
 async function renderChatBonus(){
   fillChatBonusTokenSelect();
   await loadMyChatBonus();
@@ -1293,8 +1292,6 @@ function renderChatBonusPrice(){
     btn.textContent=canAfford?'✅ ОПЛАТИТЬ И АКТИВИРОВАТЬ':`❌ Мало ${sym} (нужно ${f(total,6)})`;
   }
 }
-
-/* ★ НОВОЕ: проверка чата по ссылке или ID */
 async function checkChatLink(){
   const inp=$('cb_chat_link');
   const prev=$('cb_chat_preview');
@@ -1343,7 +1340,6 @@ async function checkChatLink(){
     window.__cbSelectedChatId=0;window.__cbSelectedChatTitle='';
   }
 }
-
 async function payChatBonus(){
   const chatId=Number(window.__cbSelectedChatId||0);
   const tokenSym=$('cb_pay_token')?.value||'TUSD';
