@@ -496,7 +496,9 @@ h1{text-align:center;color:var(--gold);margin:5px 0 3px;font-size:26px}
 
 <div id="cbBalanceBlock" style="margin-top:12px">
 <label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px">Каким токеном платить</label>
-<select id="cb_pay_token" onchange="renderChatBonusPrice()" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px"></select>
+<select id="cb_pay_token" onchange="renderChatBonusPrice()" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+<option value="TUSD">TUSD — Telepat Dollar</option>
+</select>
 <div class="prev" style="margin-top:12px">
 <div class="history-row"><span>Цена</span><b>$1.00 / 30 дней</b></div>
 <div class="history-row"><span>Спишется</span><b id="cbSpendPreview">—</b></div>
@@ -1564,13 +1566,21 @@ function fillChatBonusTokenSelect(){
   const sel=$('cb_pay_token');if(!sel) return;
   const prev=sel.value;
   sel.innerHTML='';
-  (ALL_TOKENS||[]).forEach(t=>{
+  // Сортируем: TUSD — всегда первым (по умолчанию), остальные как есть
+  const sorted=[...(ALL_TOKENS||[])].sort((a,b)=>{
+    if(a.symbol==='TUSD') return -1;
+    if(b.symbol==='TUSD') return 1;
+    return 0;
+  });
+  sorted.forEach(t=>{
     const o=document.createElement('option');
     o.value=t.symbol;
-    o.textContent=`${t.symbol} (баланс: ${f(tb(t.symbol),6)})`;
+    o.textContent=`${t.symbol} — ${esc(t.name||'')} (баланс: ${f(tb(t.symbol),6)})`;
     sel.appendChild(o);
   });
+  // Если был выбор — оставляем, иначе ставим TUSD
   if(prev && ALL_TOKENS.find(t=>t.symbol===prev)) sel.value=prev;
+  else sel.value='TUSD';
   renderChatBonusPrice();
 }
 
