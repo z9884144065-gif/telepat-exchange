@@ -1119,7 +1119,80 @@ function openTelegramProfile(){const name=tgu?.first_name||CU?.first_name||'По
 function showFAQ(){msg('❓ @TELEPATp2p_bot');}
 function openSettings(){if(UID===AID) goView('admin');else msg('⚙️ Скоро');}
 function copyRefLink(){const inp=$('refLink');if(!inp) return;navigator.clipboard?.writeText(inp.value).then(()=>msg('Скопировано','success'),()=>{inp.select();document.execCommand('copy');msg('Скопировано','success');});}
+/* ═══════ ПОРТФЕЛЬ ═══════ */
+function openPortfolio(){
+  if(!CU){msg('Данные ещё не загружены','info');return;}
 
+  // Собираем все токены, где есть хоть что-то
+  const rows=[];
+  rows.push({sym:'TG',   wal:n(CU.tg_balance),   price:priceOf('TG')});
+  rows.push({sym:'TUSD', wal:n(CU.tusd_balance), price:priceOf('TUSD')});
+  rows.push({sym:'AI',   wal:n(CU.ai_balance),   price:priceOf('AI')});
+  Object.keys(CB||{}).forEach(sym=>{
+    if(['TG','AI','TUSD'].includes(sym)) return;
+    rows.push({sym, wal:n(CB[sym]), price:priceOf(sym)});
+  });
+
+  // Фильтр: только те, где есть кошелёк или стейк
+  const visible=rows.filter(r=>{
+    const fund=(REWARD_FUNDS||[]).find(f=>f.token_symbol===r.sym);
+    const staked=fund?(Number(fund.my_stake)||Number(fund.user_stake)||0):0;
+    return r.wal>0 || staked>0;
+  });
+
+  if(!visible.length){
+    openModal('💰 Мой портфель',
+      `<div class="info" style="text-align:center;padding:22px 0">Пока пусто.<br>Купи или заработай токены 🚀</div>
+       <button class="admin-btn sec" style="width:100%" onclick="closeModal()">Закрыть</button>`);
+    return;
+  }
+
+  let totalWalletUSD=0, totalStakeUSD=0, totalUSD=0;
+  let html='<div class="info" style="margin-bottom:10px;text-align:center">Все твои активы в одном месте</div>';
+
+  visible.forEach(r=>{
+    const fund=(REWARD_FUNDS||[]).find(f=>f.token_symbol===r.sym);
+    const staked=fund?(Number(fund.my_stake)||Number(fund.user_stake)||0):0;
+
+    const walUSD=r.wal*r.price;
+    const stkUSD=staked*r.price;
+    const lineUSD=walUSD+stkUSD;
+
+    totalWalletUSD+=walUSD;
+    totalStakeUSD+=stkUSD;
+    totalUSD+=lineUSD;
+
+    html+=`<div class="item-card" style="margin-bottom:8px">
+      <div class="item-header">
+        <span class="item-name">${tokenIconHTML(r.sym,'sm')} ${esc(r.sym)}</span>
+        <span class="item-price">≈ $${f(lineUSD,2)}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:6px">
+        <span>💼 В кошельке:</span>
+        <span style="color:#fff">${f(r.wal,6)} <span style="color:#6a768a">(≈$${f(walUSD,2)})</span></span>
+      </div>
+      ${staked>0?`<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:4px">
+        <span>💎 В стейке:</span>
+        <span style="color:#39d98a">${f(staked,6)} <span style="color:#6a768a">(≈$${f(stkUSD,2)})</span></span>
+      </div>`:''}
+    </div>`;
+  });
+
+  html+=`<div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--line)">
+    <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px">
+      <span>💼 Всего в кошельках</span><b style="color:#fff">$${f(totalWalletUSD,2)}</b>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px">
+      <span>💎 Всего в стейке</span><b style="color:#39d98a">$${f(totalStakeUSD,2)}</b>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;font-size:18px;font-weight:800;color:var(--gold);padding-top:10px;border-top:1px solid var(--line);margin-top:6px">
+      <span>ИТОГО</span><span>$${f(totalUSD,2)}</span>
+    </div>
+  </div>
+  <button class="admin-btn sec" style="width:100%;margin-top:12px" onclick="closeModal()">Закрыть</button>`;
+
+  openModal('💰 Мой портфель', html);
+}
 /* ═══════ HOME ═══════ */
 function setKnightSpeech(text){
   const el=$('knightSpeech');if(!el) return;
