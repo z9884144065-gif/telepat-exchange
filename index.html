@@ -1529,7 +1529,97 @@ async function sellMyItem(itemId){
 async function renderChatBonus(){
   await loadMyChatBonus();
 }
+/* ═══════ CHAT BONUS — ОПЛАТА ═══════ */
+function updateChatBonusPayMethod(){
+  const m=$('cb_pay_method_page')?.value||'balance';
+  if(m==='balance'){
+    $('cbBalanceBlock')?.classList.remove('hidden');
+    $('cbStarsBlock')?.classList.add('hidden');
+    renderChatBonusPrice();
+  }else{
+    $('cbBalanceBlock')?.classList.add('hidden');
+    $('cbStarsBlock')?.classList.remove('hidden');
+  }
+}
+
+function renderChatBonusPrice(){
+  const sym=$('cb_pay_token')?.value||'TUSD';
+  const token=(ALL_TOKENS||[]).find(t=>t.symbol===sym);
+  const price=token&&token.price_tusd>0?Number(token.price_tusd):1; // USD за 1 единицу
+  const need=1/price; // сколько единиц нужно для $1
+  const bal=tb(sym);
+  const preview=$('cbSpendPreview');
+  const balPrev=$('cbBalancePreview');
+  if(preview) preview.textContent=f(need,8)+' '+sym;
+  if(balPrev) balPrev.textContent=f(bal,6)+' '+sym;
+  const btn=document.querySelector('#view-chatbonus .admin-btn.gold');
+  if(btn){
+    const canAfford=bal>=need;
+    btn.disabled=!canAfford;
+    btn.textContent=canAfford?'✅ ОПЛАТИТЬ $1 И ПОДКЛЮЧИТЬ':`❌ Мало ${sym} (нужно ${f(need,6)})`;
+  }
+}
+
+function fillChatBonusTokenSelect(){
+  const sel=$('cb_pay_token');if(!sel) return;
+  const prev=sel.value;
+  sel.innerHTML='';
+  (ALL_TOKENS||[]).forEach(t=>{
+    const o=document.createElement('option');
+    o.value=t.symbol;
+    o.textContent=`${t.symbol} (баланс: ${f(tb(t.symbol),6)})`;
+    sel.appendChild(o);
+  });
+  if(prev && ALL_TOKENS.find(t=>t.symbol===prev)) sel.value=prev;
+  renderChatBonusPrice();
+}
+
+async function renderChatBonus(){
+  fillChatBonusTokenSelect();
+  await loadMyChatBonus();
+}
+
 async function submitChatBonusPage(){
+  const method=($('cb_pay_method_page')?.value)||'balance';
+  if(method==='stars'){msg('💫 Оплата звёздами в разработке','info');return;}
+
+  const chatLink=($('cb_chat_link_page')?.value||'').trim();
+  const username=($('cb_username_page')?.value||'').trim();
+  const tokenSym=($('cb_pay_token')?.value||'TUSD');
+  const st=$('cbStatusPage');
+
+  if(!chatLink){if(st) st.textContent='Введите ссылку на чат';return;}
+  if(!/^https?:\/\/(t\.me|telegram\.me)\//.test(chatLink)){if(st) st.textContent='Ссылка должна быть вида https://t.me/...';return;}
+  if(st) st.textContent='Списание с баланса...';
+
+  try{
+    const{data,error}=await sb.rpc('pay_chat_bonus_from_balance',{
+      p_user_id: UID,
+      p_chat_link: chatLink,
+      p_username: username || null,
+      p_token_symbol: tokenSym,
+      p_usd_price: 1
+    });
+    if(error){if(st) st.textContent='Ошибка: '+error.message;console.error('[payChatBonus]',error);return;}
+    if(!data || data.ok===false){
+      const err=data?.error||'unknown';
+      let m='Ошибка';
+      if(err==='insufficient_balance') m=`Недостаточно ${data.token}. Нужно ${f(data.need,6)}, у вас ${f(data.have,6)}`;
+      else if(err==='token_not_found') m='Токен не найден';
+      else if(err==='invalid_amount') m='Некорректная сумма';
+      if(st) st.textContent=m;
+      return;
+    }
+    // Успех
+    if(st) st.innerHTML='<span class="ok">✅ Оплачено! Чат подключён автоматически.</span>';
+    msg(`✅ Оплачено ${f(data.spent,6)} ${data.token} → чат подключён`,'success');
+    $('cb_chat_link_page').value='';
+    $('cb_username_page').value='';
+    await refreshAll();
+    await loadMyChatBonus();
+    await renderChatBonusPrice();
+  }catch(e){if(st) st.textContent='Ошибка: '+e.message;console.error('[payChatBonus ex]',e);}
+}
   const chatLink=($('cb_chat_link_page')?.value||'').trim();
   const username=($('cb_username_page')?.value||'').trim();
   const payMethod=($('cb_pay_method_page')?.value||'tg');
