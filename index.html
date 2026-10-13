@@ -1620,8 +1620,6 @@ async function submitChatBonusPage(){
     await renderChatBonusPrice();
   }catch(e){if(st) st.textContent='Ошибка: '+e.message;console.error('[payChatBonus ex]',e);}
 }
-  c
-}
 async function loadMyChatBonus(){
   const box=$('myChatBonusList');if(!box) return;
   box.innerHTML='Загрузка...';
