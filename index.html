@@ -96,7 +96,6 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 .rarity.epic{background:#4c1d95;color:#c4b5fd}
 .rarity.legend{background:linear-gradient(90deg,#b45309,#f59e0b);color:#fff}
 .rarity.mythic{background:linear-gradient(90deg,#a21caf,#ec4899,#f59e0b);color:#fff}
-/* ═══ АККОРДЕОН АДМИНКИ ═══ */
 .acc-item{background:var(--bg-card);border:1px solid #8a6b28;border-radius:14px;margin-bottom:8px;overflow:hidden}
 .acc-item.open{border-color:var(--gold)}
 .acc-header{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;cursor:pointer;font-weight:800;color:var(--gold);font-size:14px;user-select:none}
@@ -106,7 +105,6 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 .acc-body{display:none;padding:4px 14px 16px 14px;border-top:1px solid #1a2534}
 .acc-item.open .acc-body{display:block}
 .acc-body .acc-sub{margin-top:10px}
-/* ═══ ПОЛЯ ═══ */
 .admin-field{margin-bottom:10px}
 .admin-field label{display:block;font-size:11px;color:var(--muted);margin-bottom:4px}
 .admin-field input,.admin-field select,.admin-field textarea{width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px 10px;border-radius:8px;outline:none;font-size:13px}
@@ -119,13 +117,11 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 .admin-btn.sec{background:#263345;color:#fff;border:1px solid var(--line)}
 .admin-btn.sm{padding:7px 10px;font-size:11px;flex:0 0 auto;min-width:auto}
 .admin-btn:disabled{background:#263345!important;color:var(--muted)!important;cursor:not-allowed!important;opacity:.6}
-/* ═══ БАЛАНСЫ ═══ */
 .balance-tile{background:#0d1520;border:1px solid #2d3a4c;border-radius:12px;padding:12px;margin-top:6px;display:flex;justify-content:space-between;align-items:center}
 .balance-tile .bt-name{font-weight:700;color:#fff;font-size:14px}
 .balance-tile .bt-val{font-weight:800;color:var(--gold);font-size:16px}
 .balance-tile.ads{border-color:#2d5a3d;background:linear-gradient(145deg,#12201a,#0a1610)}
 .balance-tile.ads .bt-val{color:#39d98a}
-/* ═══ ORDERS / MODALS / etc ═══ */
 .swap-box{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:14px}
 .swap-box .row{display:flex;gap:8px;align-items:center}
 .swap-box input{flex:1;background:transparent;border:0;color:#fff;font-size:20px;font-weight:700;outline:none;min-width:0}
@@ -425,20 +421,18 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 <div class="info" style="font-size:12px;line-height:1.8;color:#cfd8e4">
 1. Добавьте бота <b style="color:var(--gold)">@TELEPATp2p_bot</b> в ваш чат.<br>
 2. Дайте ему права <b>администратора</b> (писать + удалять).<br>
-3. Обновите список чатов и выберите свой.<br>
+3. Вставьте ссылку на чат или его ID ниже и нажмите «Проверить».<br>
 4. Настройте параметры и оплатите.
 </div>
 </div>
 
 <div class="item-card">
-<div class="title" style="font-size:13px;margin-bottom:8px">📝 Шаг 1. Выберите чат</div>
-<div style="display:flex;gap:8px">
-<select id="cb_chat_select" style="flex:1;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
-<option value="">— нет доступных чатов —</option>
-</select>
-<button class="admin-btn sm sec" onclick="loadAvailableChats()">🔄</button>
-</div>
-<div class="info" style="font-size:11px;margin-top:6px">Если вашего чата нет — добавьте туда бота и обновите.</div>
+<div class="title" style="font-size:13px;margin-bottom:8px">📝 Шаг 1. Ваш чат</div>
+<div class="info" style="font-size:11px;color:#cfd8e4;margin-bottom:8px">Вставьте ссылку на ваш чат (например <b>https://t.me/mychat</b>) или его числовой ID (например <b>-1001234567890</b>). Для приватных групп используйте ID из команды бота или из логов.</div>
+<label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px">Ссылка на чат или ID</label>
+<input id="cb_chat_link" placeholder="https://t.me/mychat или -1001234567890" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+<button class="admin-btn sec" style="width:100%;margin-top:8px" onclick="checkChatLink()">🔍 Проверить чат</button>
+<div id="cb_chat_preview" style="margin-top:10px"></div>
 
 <div class="title" style="font-size:13px;margin:16px 0 8px">💳 Шаг 2. Оплата</div>
 
@@ -491,7 +485,6 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 <div id="view-admin" class="hidden">
 <h2>👑 Админ-панель</h2>
 
-<!-- 1. МОИ СЧЕТА -->
 <div class="acc-item" id="acc-accounts">
 <div class="acc-header" onclick="toggleAcc('acc-accounts')">
 <span>💼 Мои счета</span><span class="acc-arrow">▶</span>
@@ -510,7 +503,6 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 </div>
 </div>
 
-<!-- 2. МАГАЗИН: ЦЕНЫ И ПРЕДМЕТЫ -->
 <div class="acc-item" id="acc-shop">
 <div class="acc-header" onclick="toggleAcc('acc-shop')">
 <span>🛒 Магазин — цены и предметы</span><span class="acc-arrow">▶</span>
@@ -559,7 +551,6 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 </div>
 </div>
 
-<!-- 3. ДОХОД МАГАЗИНА -->
 <div class="acc-item" id="acc-revenue">
 <div class="acc-header" onclick="toggleAcc('acc-revenue')">
 <span>💰 Доход магазина</span><span class="acc-arrow">▶</span>
@@ -576,7 +567,6 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 </div>
 </div>
 
-<!-- 4. ОБЩАЯ СТАТИСТИКА -->
 <div class="acc-item" id="acc-stats">
 <div class="acc-header" onclick="toggleAcc('acc-stats')">
 <span>📊 Общая статистика</span><span class="acc-arrow">▶</span>
@@ -594,7 +584,6 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 </div>
 </div>
 
-<!-- 5. УПРАВЛЕНИЕ ЮЗЕРОМ -->
 <div class="acc-item" id="acc-user">
 <div class="acc-header" onclick="toggleAcc('acc-user')">
 <span>👥 Управление юзером</span><span class="acc-arrow">▶</span>
@@ -607,7 +596,6 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 </div>
 </div>
 
-<!-- 6. ПЕРЕВОД ТОКЕНОВ -->
 <div class="acc-item" id="acc-transfer">
 <div class="acc-header" onclick="toggleAcc('acc-transfer')">
 <span>💸 Перевод токенов юзеру</span><span class="acc-arrow">▶</span>
@@ -623,7 +611,6 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 </div>
 </div>
 
-<!-- 7. ПЕРЕВОД РЕФЕРАЛОВ -->
 <div class="acc-item" id="acc-refs">
 <div class="acc-header" onclick="toggleAcc('acc-refs')">
 <span>🔀 Перевод рефералов</span><span class="acc-arrow">▶</span>
@@ -638,7 +625,6 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 </div>
 </div>
 
-<!-- 8. НАСТРОЙКИ КОМИССИЙ -->
 <div class="acc-item" id="acc-fees">
 <div class="acc-header" onclick="toggleAcc('acc-fees')">
 <span>⚙️ Комиссии и проценты</span><span class="acc-arrow">▶</span>
@@ -649,7 +635,6 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 </div>
 </div>
 
-<!-- 9. ФОНДЫ НАГРАД -->
 <div class="acc-item" id="acc-rewards">
 <div class="acc-header" onclick="toggleAcc('acc-rewards')">
 <span>🎁 Фонды наград</span><span class="acc-arrow">▶</span>
@@ -661,7 +646,6 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 </div>
 </div>
 
-<!-- 10. КУРСЫ ТОКЕНОВ И ФОНДЫ -->
 <div class="acc-item" id="acc-prices">
 <div class="acc-header" onclick="toggleAcc('acc-prices')">
 <span>💱 Курсы токенов</span><span class="acc-arrow">▶</span>
@@ -672,7 +656,6 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 </div>
 </div>
 
-<!-- 11. ЛОГОТИПЫ ТОКЕНОВ -->
 <div class="acc-item" id="acc-logos">
 <div class="acc-header" onclick="toggleAcc('acc-logos')">
 <span>🖼️ Логотипы токенов</span><span class="acc-arrow">▶</span>
@@ -683,7 +666,6 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 </div>
 </div>
 
-<!-- 12. ЧАТ-БОНУСЫ: РАЗДАЧИ -->
 <div class="acc-item" id="acc-chatbonus">
 <div class="acc-header" onclick="toggleAcc('acc-chatbonus')">
 <span>💬 Раздачи в чатах</span><span class="acc-arrow">▶</span>
@@ -713,7 +695,6 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 </div>
 </div>
 
-<!-- 13. БОНУС НОВИЧКА -->
 <div class="acc-item" id="acc-bonus">
 <div class="acc-header" onclick="toggleAcc('acc-bonus')">
 <span>🎁 Бонус новичка</span><span class="acc-arrow">▶</span>
@@ -724,7 +705,6 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 </div>
 </div>
 
-<!-- 14. ЧЕКИН -->
 <div class="acc-item" id="acc-checkin">
 <div class="acc-header" onclick="toggleAcc('acc-checkin')">
 <span>🔥 Чекин — настройки</span><span class="acc-arrow">▶</span>
@@ -735,7 +715,6 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 </div>
 </div>
 
-<!-- 15. ЗАДАНИЯ -->
 <div class="acc-item" id="acc-tasks">
 <div class="acc-header" onclick="toggleAcc('acc-tasks')">
 <span>📋 Задания</span><span class="acc-arrow">▶</span>
@@ -767,7 +746,6 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 </div>
 </div>
 
-<!-- 16. РЕКЛАМА -->
 <div class="acc-item" id="acc-ads">
 <div class="acc-header" onclick="toggleAcc('acc-ads')">
 <span>📢 Реклама (баннеры, видео)</span><span class="acc-arrow">▶</span>
@@ -813,7 +791,6 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 </div>
 </div>
 
-<!-- 17. UI НАСТРОЙКИ -->
 <div class="acc-item" id="acc-ui">
 <div class="acc-header" onclick="toggleAcc('acc-ui')">
 <span>🎨 Цвета интерфейса</span><span class="acc-arrow">▶</span>
@@ -925,7 +902,7 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 </div>
 </div>
 <script>
-/* ═══════ CONFIG ═══════ */
+  /* ═══════ CONFIG ═══════ */
 const SU='https://jutszxuzjzyfxarceydw.supabase.co';
 const SK='sb_publishable_geRczpRc3faUHRGto2ue7A_eFFiJDwO';
 const EF=SU+'/functions/v1/telegram-auth';
@@ -948,6 +925,9 @@ let __START_ORDER_ID=null,ORDER_CACHE={},__BUY_ORDER=null;
 let state_swapFrom='TG',state_swapTo='TUSD';
 let SWAP_QUOTE=null,SWAP_QUOTE_TIMER=null,SWAP_BUSY=false;
 let currentShopTab='gear',currentIncomeTab='p2p',currentRatingTab='refs';
+// ★ НОВОЕ: выбранный чат в форме "Заказать"
+window.__cbSelectedChatId = 0;
+window.__cbSelectedChatTitle = '';
 const UI_DEFAULTS={ui_bg:'#0b1018',ui_bg_radial:'#26334a',ui_accent:'#f4cf70',ui_card:'#141c28'};
 const VERIFIED_SYMBOLS=new Set(BASE_VERIFIED);
 
@@ -1266,25 +1246,10 @@ async function sellMyItem(itemId){
   await refreshAll();
 }
 
-/* ═══════ CHAT BONUS — новая схема ═══════ */
+/* ═══════ CHAT BONUS — новая схема (ссылка/ID) ═══════ */
 async function renderChatBonus(){
   fillChatBonusTokenSelect();
-  await loadAvailableChats();
   await loadMyChatBonus();
-}
-async function loadAvailableChats(){
-  const sel=$('cb_chat_select');if(!sel) return;
-  sel.innerHTML='<option value="">— загрузка —</option>';
-  try{
-    const r=await sb.from('telepat_chats')
-      .select('chat_id,chat_title,owner_telegram_id,active')
-      .order('created_at',{ascending:false})
-      .limit(50);
-    const list=(r.data||[]).filter(c=>!c.owner_telegram_id||String(c.owner_telegram_id)===String(UID));
-    if(!list.length){sel.innerHTML='<option value="">— нет доступных чатов —</option>';return;}
-    sel.innerHTML='<option value="">— выберите чат —</option>'+
-      list.map(c=>`<option value="${c.chat_id}">${esc(c.chat_title||'—')} (${c.chat_id})${c.owner_telegram_id?' ✅':''}</option>`).join('');
-  }catch(e){console.error(e);sel.innerHTML='<option value="">— ошибка —</option>';}
 }
 function fillChatBonusTokenSelect(){
   const sel=$('cb_pay_token');if(!sel) return;
@@ -1307,11 +1272,11 @@ function fillChatBonusTokenSelect(){
 function renderChatBonusPrice(){
   const sym=$('cb_pay_token')?.value||'TUSD';
   const price=priceOf(sym);
-  const setupCost=1/price;                       // $1 → в токенах
-  const budget=Number($('cb_budget')?.value||0); // бюджет раздачи
-  const commission=budget*0.10;                  // 10% комиссия
-  const pool=budget-commission;                  // пул раздачи
-  const total=setupCost+budget;                  // итого спишется
+  const setupCost=1/price;
+  const budget=Number($('cb_budget')?.value||0);
+  const commission=budget*0.10;
+  const pool=budget-commission;
+  const total=setupCost+budget;
   const bal=tb(sym);
 
   if($('cbSetupPreview')) $('cbSetupPreview').textContent=`${f(setupCost,8)} ${sym}`;
@@ -1328,8 +1293,59 @@ function renderChatBonusPrice(){
     btn.textContent=canAfford?'✅ ОПЛАТИТЬ И АКТИВИРОВАТЬ':`❌ Мало ${sym} (нужно ${f(total,6)})`;
   }
 }
+
+/* ★ НОВОЕ: проверка чата по ссылке или ID */
+async function checkChatLink(){
+  const inp=$('cb_chat_link');
+  const prev=$('cb_chat_preview');
+  if(!inp||!prev) return;
+
+  const raw=(inp.value||'').trim();
+  if(!raw){
+    prev.innerHTML='<div class="er" style="font-size:12px">Введите ссылку или ID чата</div>';
+    window.__cbSelectedChatId=0;window.__cbSelectedChatTitle='';
+    renderChatBonusPrice();
+    return;
+  }
+  prev.innerHTML='<div class="info" style="font-size:12px">Поиск...</div>';
+
+  try{
+    const{data,error}=await sb.rpc('find_chat_by_link',{p_query:raw});
+    if(error){
+      prev.innerHTML=`<div class="er" style="font-size:12px">Ошибка: ${esc(error.message)}</div>`;
+      window.__cbSelectedChatId=0;window.__cbSelectedChatTitle='';
+      return;
+    }
+    if(!data||data.ok===false){
+      prev.innerHTML=`<div class="er" style="font-size:12px">❌ ${esc(data?.error||'Чат не найден')}</div>`;
+      window.__cbSelectedChatId=0;window.__cbSelectedChatTitle='';
+      return;
+    }
+    window.__cbSelectedChatId=Number(data.chat_id);
+    window.__cbSelectedChatTitle=data.chat_title||'—';
+
+    const badge=data.active
+      ? '<span style="color:#39d98a;font-size:11px">✅ активен</span>'
+      : '<span style="color:#f4cf70;font-size:11px">⏳ новый чат</span>';
+
+    prev.innerHTML=`
+      <div class="item-card" style="border-color:#39d98a;margin:0">
+        <div class="item-header">
+          <span class="item-name">📢 ${esc(data.chat_title||'—')}</span>
+          ${badge}
+        </div>
+        <div class="item-desc" style="font-size:11px">
+          ID: <b>${data.chat_id}</b>${data.chat_username?' • @'+esc(data.chat_username):''}
+        </div>
+      </div>`;
+  }catch(e){
+    prev.innerHTML=`<div class="er" style="font-size:12px">Ошибка: ${esc(e.message)}</div>`;
+    window.__cbSelectedChatId=0;window.__cbSelectedChatTitle='';
+  }
+}
+
 async function payChatBonus(){
-  const chatId=Number($('cb_chat_select')?.value||0);
+  const chatId=Number(window.__cbSelectedChatId||0);
   const tokenSym=$('cb_pay_token')?.value||'TUSD';
   const budget=Number($('cb_budget')?.value||0);
   const reward=Number($('cb_reward')?.value||0.001);
@@ -1338,7 +1354,7 @@ async function payChatBonus(){
   const cooldown=Math.floor(Number($('cb_cooldown')?.value||3));
   const st=$('cbStatusPage');
 
-  if(!chatId){if(st) st.textContent='Выберите чат';return;}
+  if(!chatId){if(st) st.textContent='Введите ссылку на чат и нажмите «Проверить»';return;}
   if(reward<=0){if(st) st.textContent='Награда > 0';return;}
   if(budget<0){if(st) st.textContent='Бюджет не может быть отрицательным';return;}
 
@@ -1368,7 +1384,11 @@ async function payChatBonus(){
     if(st) st.innerHTML=`<span class="ok">✅ Оплачено! Пул раздачи: ${f(data.pool,6)} ${data.token}</span>`;
     msg(`✅ Чат «${data.chat_title||chatId}» подключён. Пул: ${f(data.pool,6)} ${data.token}`,'success');
     $('cb_budget').value='0';
-    await refreshAll();await loadAvailableChats();await loadMyChatBonus();
+    if($('cb_chat_link')) $('cb_chat_link').value='';
+    if($('cb_chat_preview')) $('cb_chat_preview').innerHTML='';
+    window.__cbSelectedChatId=0;window.__cbSelectedChatTitle='';
+    await refreshAll();await loadMyChatBonus();
+    renderChatBonusPrice();
   }catch(e){if(st) st.textContent='Ошибка: '+e.message;}
 }
 async function loadMyChatBonus(){
@@ -1479,7 +1499,7 @@ async function buyLicense(symbol,price){
   if(error){msg(error.message,'error');return;}
   msg('✅ Куплено','success');await refreshAll();
 }
-  
+
 /* ═══════ INCOME ═══════ */
 function renderIncome(){showIncomeTab(currentIncomeTab);}
 async function showIncomeTab(tab){
