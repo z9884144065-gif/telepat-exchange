@@ -1620,30 +1620,7 @@ async function submitChatBonusPage(){
     await renderChatBonusPrice();
   }catch(e){if(st) st.textContent='Ошибка: '+e.message;console.error('[payChatBonus ex]',e);}
 }
-  const chatLink=($('cb_chat_link_page')?.value||'').trim();
-  const username=($('cb_username_page')?.value||'').trim();
-  const payMethod=($('cb_pay_method_page')?.value||'tg');
-  const st=$('cbStatusPage');
-  if(!chatLink){if(st) st.textContent='Введите ссылку на чат';return;}
-  if(!/^https?:\/\/(t\.me|telegram\.me)\//.test(chatLink)){if(st) st.textContent='Ссылка должна быть вида https://t.me/...';return;}
-  if(st) st.textContent='Отправка...';
-  try{
-    const{data,error}=await sb.from('telepat_chat_bonus_requests').insert({
-      user_id:UID,
-      chat_link:chatLink,
-      username:username||null,
-      price_usd:1,
-      fee_pct:10,
-      pay_method:payMethod,
-      status:'pending'
-    }).select().maybeSingle();
-    if(error){if(st) st.textContent='Ошибка: '+error.message;console.error('[chatBonus]',error);return;}
-    if(st) st.innerHTML='<span class="ok">✅ Заявка отправлена! Активируем в течение 24 часов.</span>';
-    msg('✅ Заявка на подключение чата отправлена','success');
-    $('cb_chat_link_page').value='';
-    $('cb_username_page').value='';
-    await loadMyChatBonus();
-  }catch(e){if(st) st.textContent='Ошибка: '+e.message;console.error('[chatBonus ex]',e);}
+  c
 }
 async function loadMyChatBonus(){
   const box=$('myChatBonusList');if(!box) return;
