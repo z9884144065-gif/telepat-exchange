@@ -77,10 +77,17 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 .nav-btn .nav-icon{font-size:20px}
 .nav-btn.nav-wide{flex:1.6;max-width:140px;background:linear-gradient(135deg,#f5d477,#c99629);color:#17120a;margin-left:2px}
 .nav-btn.nav-wide .nav-icon{font-size:18px}
-.tabs{display:flex;gap:4px;margin-bottom:12px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
-.tabs::-webkit-scrollbar{display:none}
-.tab{padding:8px 14px;background:var(--bg-card);border:1px solid var(--line);border-radius:20px;color:var(--muted);font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;flex:0 0 auto}
-.tab.active{background:var(--blue);border-color:var(--blue);color:#fff}
+/* ★ НОВЫЕ КРУПНЫЕ ТАБЫ ★ */
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;padding:0}
+.tabs.tabs-2{grid-template-columns:repeat(2,1fr)}
+.tabs.tabs-3{grid-template-columns:repeat(3,1fr)}
+.tabs.tabs-4{grid-template-columns:repeat(4,1fr)}
+.tab{padding:12px 4px 10px;background:var(--bg-card);border:1px solid var(--line);border-radius:12px;color:var(--muted);font-size:11px;font-weight:700;cursor:pointer;text-align:center;line-height:1.25;min-height:60px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;transition:.15s;font-family:inherit}
+.tab:active{transform:scale(.97)}
+.tab.active{background:linear-gradient(135deg,#2f80ed,#4f8cff);border-color:#4f8cff;color:#fff;box-shadow:0 3px 10px rgba(47,128,237,.35)}
+.tab.tab-gold{background:linear-gradient(135deg,#f5d477,#c99629);color:#17120a;border-color:#a37a1e}
+.tab.tab-gold:active{transform:scale(.97)}
+.tab .tab-icon{font-size:20px;line-height:1}
 .title{color:var(--gold);font-size:14px;font-weight:bold;letter-spacing:.7px;margin-bottom:13px}
 .card{background:linear-gradient(145deg,#1b2636,#111925);border:1px solid var(--line);border-radius:20px;padding:17px;margin-bottom:13px}
 .card.gold{border-color:#80652b}
@@ -349,11 +356,11 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 <div id="view-shop" class="hidden">
 <h2>🏪 Магазин</h2>
 <div class="tabs" id="shopTabs">
-<button class="tab active" data-tab="gear" onclick="showShopTab('gear')">⚔️ Амуниция</button>
-<button class="tab" data-tab="extras" onclick="showShopTab('extras')">🛡️ Доп.</button>
-<button class="tab" data-tab="artifacts" onclick="showShopTab('artifacts')">💎 Артефакты</button>
-<button class="tab" data-tab="titles" onclick="showShopTab('titles')">🏷️ Титулы</button>
-<button class="tab" data-tab="certs" onclick="showShopTab('certs')">📜 Грамоты</button>
+<button class="tab active" data-tab="gear" onclick="showShopTab('gear')"><span class="tab-icon">⚔️</span>Амуниция</button>
+<button class="tab" data-tab="extras" onclick="showShopTab('extras')"><span class="tab-icon">🛡️</span>Доп.</button>
+<button class="tab" data-tab="artifacts" onclick="showShopTab('artifacts')"><span class="tab-icon">💎</span>Артефакты</button>
+<button class="tab" data-tab="titles" onclick="showShopTab('titles')"><span class="tab-icon">🏷️</span>Титулы</button>
+<button class="tab" data-tab="certs" onclick="showShopTab('certs')"><span class="tab-icon">📜</span>Грамоты</button>
 </div>
 <div id="shopContent"></div>
 </div>
@@ -361,14 +368,14 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 <!-- ═══════ INCOME ═══════ -->
 <div id="view-income" class="hidden">
 <h2>🎯 Доход</h2>
-<div class="tabs" id="incomeTabs">
-<button class="tab active" data-tab="p2p" onclick="showIncomeTab('p2p')">💱 P2P</button>
-<button class="tab" data-tab="gear-p2p" onclick="showIncomeTab('gear-p2p')">🛡️ Амуниция</button>
-<button class="tab" data-tab="swap" onclick="showIncomeTab('swap')">🔄 Swap</button>
-<button class="tab" data-tab="staking" onclick="showIncomeTab('staking')">💎 Стейкинг</button>
-<button class="tab" data-tab="checkin" onclick="showIncomeTab('checkin')">🔥 Чекин</button>
-<button class="tab" data-tab="tasks" onclick="showIncomeTab('tasks')">📋 Задания</button>
-<button class="tab" data-tab="ads" onclick="showIncomeTab('ads')">📢 Реклама</button>
+<div class="tabs tabs-4" id="incomeTabs">
+<button class="tab active" data-tab="p2p" onclick="showIncomeTab('p2p')"><span class="tab-icon">💱</span>P2P</button>
+<button class="tab" data-tab="gear-p2p" onclick="showIncomeTab('gear-p2p')"><span class="tab-icon">🛡️</span>Амуниция</button>
+<button class="tab" data-tab="swap" onclick="showIncomeTab('swap')"><span class="tab-icon">🔄</span>Swap</button>
+<button class="tab" data-tab="staking" onclick="showIncomeTab('staking')"><span class="tab-icon">💎</span>Стейкинг</button>
+<button class="tab" data-tab="checkin" onclick="showIncomeTab('checkin')"><span class="tab-icon">🔥</span>Чекин</button>
+<button class="tab" data-tab="tasks" onclick="showIncomeTab('tasks')"><span class="tab-icon">📋</span>Задания</button>
+<button class="tab" data-tab="ads" onclick="showIncomeTab('ads')"><span class="tab-icon">📢</span>Реклама</button>
 </div>
 <div id="incomeContent"></div>
 </div>
@@ -402,9 +409,9 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 <!-- ═══════ RATING ═══════ -->
 <div id="view-rating" class="hidden">
 <h2>🏆 Рейтинг</h2>
-<div class="tabs" id="ratingTabs">
-<button class="tab active" data-tab="refs" onclick="showRatingTab('refs')">👥 По рефералам</button>
-<button class="tab" data-tab="earn" onclick="showRatingTab('earn')">💰 По заработку</button>
+<div class="tabs tabs-2" id="ratingTabs">
+<button class="tab active" data-tab="refs" onclick="showRatingTab('refs')"><span class="tab-icon">👥</span>По рефералам</button>
+<button class="tab" data-tab="earn" onclick="showRatingTab('earn')"><span class="tab-icon">💰</span>По заработку</button>
 </div>
 <div id="ratingContent"></div>
 </div>
@@ -925,6 +932,7 @@ let __START_ORDER_ID=null,ORDER_CACHE={},__BUY_ORDER=null;
 let state_swapFrom='TG',state_swapTo='TUSD';
 let SWAP_QUOTE=null,SWAP_QUOTE_TIMER=null,SWAP_BUSY=false;
 let currentShopTab='gear',currentIncomeTab='p2p',currentRatingTab='refs';
+let currentP2PTab='all';
 window.__cbSelectedChatId=0;
 window.__cbSelectedChatTitle='';
 const UI_DEFAULTS={ui_bg:'#0b1018',ui_bg_radial:'#26334a',ui_accent:'#f4cf70',ui_card:'#141c28'};
@@ -1089,7 +1097,7 @@ async function loadRewardFunds(){
   }catch(e){}
 }
 
-/* ═══════ NAVIGATION + АККОРДЕОН ═══════ */
+/* ═══════ NAVIGATION ═══════ */
 function goView(v){
   ['home','shop','income','friends','rating','chatbonus','admin'].forEach(x=>{
     const el=$('view-'+x);if(el) el.classList.toggle('hidden',x!==v);
@@ -1119,11 +1127,11 @@ function openTelegramProfile(){const name=tgu?.first_name||CU?.first_name||'По
 function showFAQ(){msg('❓ @TELEPATp2p_bot');}
 function openSettings(){if(UID===AID) goView('admin');else msg('⚙️ Скоро');}
 function copyRefLink(){const inp=$('refLink');if(!inp) return;navigator.clipboard?.writeText(inp.value).then(()=>msg('Скопировано','success'),()=>{inp.select();document.execCommand('copy');msg('Скопировано','success');});}
+
 /* ═══════ ПОРТФЕЛЬ ═══════ */
 function openPortfolio(){
   if(!CU){msg('Данные ещё не загружены','info');return;}
 
-  // Собираем все токены, где есть хоть что-то
   const rows=[];
   rows.push({sym:'TG',   wal:n(CU.tg_balance),   price:priceOf('TG')});
   rows.push({sym:'TUSD', wal:n(CU.tusd_balance), price:priceOf('TUSD')});
@@ -1133,7 +1141,6 @@ function openPortfolio(){
     rows.push({sym, wal:n(CB[sym]), price:priceOf(sym)});
   });
 
-  // Фильтр: только те, где есть кошелёк или стейк
   const visible=rows.filter(r=>{
     const fund=(REWARD_FUNDS||[]).find(f=>f.token_symbol===r.sym);
     const staked=fund?(Number(fund.my_stake)||Number(fund.user_stake)||0):0;
@@ -1193,6 +1200,7 @@ function openPortfolio(){
 
   openModal('💰 Мой портфель', html);
 }
+
 /* ═══════ HOME ═══════ */
 function setKnightSpeech(text){
   const el=$('knightSpeech');if(!el) return;
@@ -1578,39 +1586,7 @@ async function showIncomeTab(tab){
   c.innerHTML='<div class="item-card"><div class="item-desc">Загрузка...</div></div>';
 
   if(tab==='p2p'){
-    let orders=[];
-    try{
-      const r=await sb.from('p2p_orders').select('*').limit(500);
-      if(!r.error&&Array.isArray(r.data)) orders=r.data.filter(o=>String(o.status||'').toLowerCase()==='open');
-    }catch(e){}
-    if(!orders.length){
-      try{const r2=await sb.rpc('get_p2p_orders',{p_from_token:null,p_to_token:null,p_sort:'rank'});if(!r2.error&&Array.isArray(r2.data))orders=r2.data;}catch(e){}
-    }
-    if(orders.length){
-      try{
-        const ids=[...new Set(orders.map(o=>Number(o.creator_id)).filter(Boolean))];
-        const u=await sb.from('users').select('telegram_id,username,first_name,rank_name,rank_level,trades_new').in('telegram_id',ids);
-        const map={};(u.data||[]).forEach(x=>{map[String(x.telegram_id)]=x;});
-        orders=orders.map(o=>{
-          const uu=map[String(o.creator_id)]||{};
-          const fromA=n(o.from_amount),toA=n(o.to_amount);
-          return Object.assign({},o,{
-            creator_username:uu.username||null,creator_first_name:uu.first_name||null,
-            creator_rank_name:uu.rank_name||'Новичок',creator_rank_level:Number(uu.rank_level||0),
-            likes:n(o.likes),dislikes:n(o.dislikes),
-            completed_trades:Number(uu.trades_new||0),
-            rate:fromA>0?toA/fromA:n(o.rate)
-          });
-        });
-      }catch(e){}
-    }
-    const myOrders=orders.filter(o=>String(o.creator_id)===String(UID));
-    const otherOrders=orders.filter(o=>String(o.creator_id)!==String(UID));
-    orders=[...myOrders,...otherOrders];
-    c.innerHTML=`
-<div class="item-card"><div class="item-header"><b>💱 P2P Токены</b></div><div class="item-desc">Покупка = +1 сделка. Любые пары.</div></div>
-<button class="admin-btn gold" style="width:100%;margin-bottom:12px" onclick="openCreateOrder()">➕ Создать ордер</button>
-${orders.length?orders.map(o=>orderCard(o)).join(''):'<div class="item-card"><div class="item-desc">Ордеров пока нет. Нажми «Создать ордер».</div></div>'}`;
+    renderP2PContent(c);
   }
   else if(tab==='gear-p2p'){
     const{data:listData}=await sb.rpc('gear_get_listings');
@@ -1770,6 +1746,98 @@ ${t.is_completed?'<span class="ok">✅ Выполнено</span>':`<div class="t
 </div>`;
   }
 }
+
+/* ★ НОВОЕ: P2P — 3 кнопки (Все / Мои / Создать) ★ */
+let __P2P_ALL_ORDERS = [];
+
+async function renderP2PContent(container){
+  // Кнопки под-табов
+  const tabsHtml = `
+<div class="tabs tabs-3" style="margin-bottom:12px">
+  <button class="tab ${currentP2PTab==='all'?'active':''}" onclick="switchP2PTab('all')"><span class="tab-icon">🌐</span>Все</button>
+  <button class="tab ${currentP2PTab==='mine'?'active':''}" onclick="switchP2PTab('mine')"><span class="tab-icon">📋</span>Мои</button>
+  <button class="tab tab-gold" onclick="switchP2PTab('create')"><span class="tab-icon">➕</span>Создать</button>
+</div>
+<div id="p2pList"></div>`;
+  container.innerHTML = tabsHtml;
+  await renderP2PList();
+}
+
+async function switchP2PTab(t){
+  if(t==='create'){openCreateOrder();return;}
+  currentP2PTab = t;
+  // Обновить активную кнопку
+  const tabsEls=document.querySelectorAll('#incomeContent .tabs .tab');
+  if(tabsEls.length>=2){
+    tabsEls[0].classList.toggle('active',t==='all');
+    tabsEls[1].classList.toggle('active',t==='mine');
+  }
+  await renderP2PList();
+}
+
+async function renderP2PList(){
+  const box = $('p2pList'); if(!box) return;
+  box.innerHTML='<div class="item-card"><div class="item-desc">Загрузка...</div></div>';
+
+  // Загружаем один раз (кэш), при желании можно обновлять по кнопке
+  let orders = [];
+  try{
+    const r = await sb.from('p2p_orders').select('*').limit(500);
+    if(!r.error && Array.isArray(r.data)){
+      orders = r.data.filter(o=>String(o.status||'').toLowerCase()==='open');
+    }
+  }catch(e){}
+  if(!orders.length){
+    try{
+      const r2 = await sb.rpc('get_p2p_orders',{p_from_token:null,p_to_token:null,p_sort:'rank'});
+      if(!r2.error && Array.isArray(r2.data)) orders=r2.data;
+    }catch(e){}
+  }
+
+  // Обогащаем данными создателей
+  if(orders.length){
+    try{
+      const ids=[...new Set(orders.map(o=>Number(o.creator_id)).filter(Boolean))];
+      const u = await sb.from('users').select('telegram_id,username,first_name,rank_name,rank_level,trades_new').in('telegram_id',ids);
+      const map={}; (u.data||[]).forEach(x=>{map[String(x.telegram_id)]=x;});
+      orders = orders.map(o=>{
+        const uu=map[String(o.creator_id)]||{};
+        const fromA=n(o.from_amount),toA=n(o.to_amount);
+        return Object.assign({},o,{
+          creator_username:uu.username||null,creator_first_name:uu.first_name||null,
+          creator_rank_name:uu.rank_name||'Новичок',creator_rank_level:Number(uu.rank_level||0),
+          likes:n(o.likes),dislikes:n(o.dislikes),
+          completed_trades:Number(uu.trades_new||0),
+          rate:fromA>0?toA/fromA:n(o.rate)
+        });
+      });
+    }catch(e){}
+  }
+
+  __P2P_ALL_ORDERS = orders;
+
+  if(currentP2PTab==='mine'){
+    orders = orders.filter(o=>String(o.creator_id)===String(UID));
+  } else {
+    // "Все": свои сверху, потом остальные
+    const my = orders.filter(o=>String(o.creator_id)===String(UID));
+    const other = orders.filter(o=>String(o.creator_id)!==String(UID));
+    orders = [...my, ...other];
+  }
+
+  if(!orders.length){
+    if(currentP2PTab==='mine'){
+      box.innerHTML = `<div class="item-card"><div class="item-desc" style="text-align:center">У тебя пока нет своих ордеров.<br>Нажми <b>➕ Создать</b> чтобы создать первый.</div></div>`;
+    }else{
+      box.innerHTML = `<div class="item-card"><div class="item-desc" style="text-align:center">Ордеров пока нет.<br>Нажми <b>➕ Создать</b> чтобы создать первый.</div></div>`;
+    }
+    return;
+  }
+
+  box.innerHTML = orders.map(o=>orderCard(o)).join('');
+}
+
+/* ═══════ ОСТАЛЬНЫЕ ФУНКЦИИ (orderCard, openCreateOrder и т.д.) ═══════ */
 function orderCard(o){
   ORDER_CACHE[String(o.id)]=o;
   const isMine=String(o.creator_id)===String(UID);
@@ -1797,7 +1865,6 @@ function orderCard(o){
 }
 function toggleOrder(id){$('order-'+id)?.classList.toggle('opened');}
 
-/* ═══════ CREATE ORDER С ПОДСКАЗКОЙ ЦЕНЫ ═══════ */
 function openCreateOrder(){
   const tokens=ALL_TOKENS.map(t=>t.symbol);
   openModal('➕ Создать P2P-ордер',`
@@ -1865,19 +1932,29 @@ async function confirmCreateOrder(){
   if(error){msg(error.message,'error');return;}
   if(data&&data.ok===false){msg(data.error||data.message||'Ошибка','error');return;}
   msg('🚀 Ордер создан','success');
-  closeModal();await refreshAll();showIncomeTab('p2p');
+  closeModal();
+  await refreshAll();
+  if(currentIncomeTab==='p2p'){
+    // обновляем список — переключаемся на "Мои" чтобы юзер увидел свой ордер
+    currentP2PTab='mine';
+    await renderP2PContent($('incomeContent'));
+  }
 }
 async function cancelP2POrder(id){
   if(!confirm('Отменить ордер?')) return;
   const{error}=await sb.rpc('cancel_p2p_order_v2',{p_order_id:id});
   if(error){msg(error.message,'error');return;}
-  msg('Отменён','success');await refreshAll();showIncomeTab('p2p');
+  msg('Отменён','success');
+  await refreshAll();
+  if(currentIncomeTab==='p2p') await renderP2PContent($('incomeContent'));
 }
 async function quickBuyOrder(id){
   if(!confirm('Выкупить полностью?')) return;
   const{error}=await sb.rpc('accept_p2p_order_v2',{p_order_id:id});
   if(error){msg(error.message,'error');return;}
-  msg('✅ Куплено','success');await refreshAll();showIncomeTab('p2p');
+  msg('✅ Куплено','success');
+  await refreshAll();
+  if(currentIncomeTab==='p2p') await renderP2PContent($('incomeContent'));
 }
 function openBuyModal(orderId){
   const o=ORDER_CACHE[String(orderId)];if(!o){msg('Не найден','error');return;}
@@ -1930,6 +2007,7 @@ async function confirmBuyOrder(){
     msg('✅ Куплено','success');
     await refreshAll();
     setTimeout(closeBuyModal,900);
+    if(currentIncomeTab==='p2p') await renderP2PContent($('incomeContent'));
   }catch(e){$('buyStatus').innerHTML='<span class="er">'+esc(e.message)+'</span>';btn.disabled=false;}
 }
 
@@ -3015,6 +3093,6 @@ document.addEventListener('DOMContentLoaded',async()=>{
   setInterval(refreshJwt,30*60*1000);
   setInterval(loadRewardFunds,60*1000);
 });
-</script>
+  </script>
 </body>
 </html>
