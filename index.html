@@ -82,6 +82,7 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 .tab:active{transform:scale(.97)}
 .tab.active{background:linear-gradient(135deg,#2f80ed,#4f8cff);border-color:#4f8cff;color:#fff;box-shadow:0 3px 10px rgba(47,128,237,.35)}
 .tab.tab-gold{background:linear-gradient(135deg,#f5d477,#c99629);color:#17120a;border-color:#a37a1e}
+.tab.tab-gold:active{transform:scale(.97)}
 .tab .tab-icon{font-size:20px;line-height:1}
 .title{color:var(--gold);font-size:14px;font-weight:bold;letter-spacing:.7px;margin-bottom:13px}
 .card{background:linear-gradient(145deg,#1b2636,#111925);border:1px solid var(--line);border-radius:20px;padding:17px;margin-bottom:13px}
@@ -272,7 +273,7 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 <div class="stats-grid">
 <div class="stat-tile"><div class="val" id="statLevel">0</div><div class="lbl">Уровень</div></div>
 <div class="stat-tile"><div class="val" id="statRating">1500</div><div class="lbl">Рейтинг</div></div>
-<div class="stat-tile" onclick="openPortfolio()" style="cursor:pointer"><div class="val" id="statBalance">$0</div><div class="lbl">Портфель 👆</div></div>
+<div class="stat-tile" onclick="openPortfolio()" style="cursor:pointer;position:relative"><div class="val" id="statBalance">$0</div><div class="lbl">Портфель 👆</div></div>
 </div>
 <div class="knight-section">
 <div class="rank-badge">
@@ -418,7 +419,6 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 </div>
 <div class="item-card">
 <div class="title" style="font-size:13px;margin-bottom:8px">📝 Шаг 1. Ваш чат</div>
-<div class="info" style="font-size:11px;color:#cfd8e4;margin-bottom:8px">Вставьте ссылку на ваш чат или его числовой ID.</div>
 <label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px">Ссылка на чат или ID</label>
 <input id="cb_chat_link" placeholder="https://t.me/mychat или -1001234567890" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
 <button class="admin-btn sec" style="width:100%;margin-top:8px" onclick="checkChatLink()">🔍 Проверить чат</button>
@@ -687,7 +687,7 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 <button class="admin-btn sec" style="width:100%" onclick="adminAdLoad()">🔄 Загрузить все</button>
 <div style="display:flex;gap:6px;margin-top:8px">
 <button class="admin-btn sm sec" onclick="adminAdLoad('pending')">⏳</button>
-<button class="admin-btn sm sec" onclick="adminAdLoad('active')">✅</button>
+<button class="admin-btn sm sec" onclick="adminAdLoad('approved')">✅</button>
 <button class="admin-btn sm sec" onclick="adminAdLoad('paused')">⏸</button>
 </div>
 <div id="adminAdsList" style="margin-top:12px"></div>
@@ -740,6 +740,7 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 <div id="uiSettingsStatus" class="info" style="margin-top:8px;text-align:center"></div>
 </div>
 </div>
+
 </div>
 
 <div id="modal" class="modal-overlay" onclick="closeModal(event)"><div class="modal-box" id="modalBox" onclick="event.stopPropagation()"></div></div>
@@ -829,6 +830,7 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 </div>
 </div>
 <script>
+/* ═══════ CONFIG ═══════ */
 const SU='https://jutszxuzjzyfxarceydw.supabase.co';
 const SK='sb_publishable_geRczpRc3faUHRGto2ue7A_eFFiJDwO';
 const EF=SU+'/functions/v1/telegram-auth';
@@ -837,7 +839,7 @@ const DAY_MS=86400000;
 const TASK_CHECK_DELAY=5000;
 const HISTORY_LIMIT=20;
 const BASE_VERIFIED=['TG','AI','TUSD'];
-const AD_VIEW_COOLDOWN=60;
+const AD_VIEW_COOLDOWN=30;
 const AD_PER_CAMPAIGN_CD=300;
 
 let __jwt=sessionStorage.getItem('__jwt')||null;
@@ -855,7 +857,6 @@ let currentP2PTab='all';
 window.__cbSelectedChatId=0;
 window.__cbSelectedChatTitle='';
 let __CURRENT_AD=null,__AD_TIMER=null,__AD_TIME_LEFT=0;
-
 const UI_DEFAULTS={ui_bg:'#0b1018',ui_bg_radial:'#26334a',ui_accent:'#f4cf70',ui_card:'#141c28'};
 const VERIFIED_SYMBOLS=new Set(BASE_VERIFIED);
 
@@ -1062,14 +1063,12 @@ function openPortfolio(){
     openModal('💰 Мой портфель',`<div class="info" style="text-align:center;padding:22px 0">Пока пусто.<br>Купи или заработай токены 🚀</div><button class="admin-btn sec" style="width:100%" onclick="closeModal()">Закрыть</button>`);
     return;
   }
-  let totalWalletUSD=0, totalStakeUSD=0, totalUSD=0;
+  let totalWalletUSD=0,totalStakeUSD=0,totalUSD=0;
   let html='<div class="info" style="margin-bottom:10px;text-align:center">Все твои активы в одном месте</div>';
   visible.forEach(r=>{
     const fund=(REWARD_FUNDS||[]).find(f=>f.token_symbol===r.sym);
     const staked=fund?(Number(fund.my_stake)||Number(fund.user_stake)||0):0;
-    const walUSD=r.wal*r.price;
-    const stkUSD=staked*r.price;
-    const lineUSD=walUSD+stkUSD;
+    const walUSD=r.wal*r.price,stkUSD=staked*r.price,lineUSD=walUSD+stkUSD;
     totalWalletUSD+=walUSD;totalStakeUSD+=stkUSD;totalUSD+=lineUSD;
     html+=`<div class="item-card" style="margin-bottom:8px"><div class="item-header"><span class="item-name">${tokenIconHTML(r.sym,'sm')} ${esc(r.sym)}</span><span class="item-price">≈ $${f(lineUSD,2)}</span></div>
     <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:6px"><span>💼 В кошельке:</span><span style="color:#fff">${f(r.wal,6)} <span style="color:#6a768a">(≈$${f(walUSD,2)})</span></span></div>
@@ -1199,10 +1198,7 @@ async function sellMyItem(itemId){
   await refreshAll();
 }
 
-async function renderChatBonus(){
-  fillChatBonusTokenSelect();
-  await loadMyChatBonus();
-}
+async function renderChatBonus(){fillChatBonusTokenSelect();await loadMyChatBonus();}
 function fillChatBonusTokenSelect(){
   const sel=$('cb_pay_token');if(!sel) return;
   const prev=sel.value;sel.innerHTML='';
@@ -1475,19 +1471,36 @@ ${data?.is_bonus_day?'<div style="text-align:center;padding:8px;background:#3a28
 ${tasks.length?tasks.map(t=>`<div class="task ${t.is_completed?'done':''}" onclick="startTask('${esc(t.id)}','${esc(t.link)}')"><div class="tt">${esc(TL[t.type]||t.type)}</div><div class="ts">${esc(t.link)}</div><div class="ts">${t.completed_count}/${t.limit_count}</div>${t.is_completed?'<span class="ok">✅ Выполнено</span>':`<div class="tr">+${f(t.reward)} ${esc(t.reward_token)}</div>`}</div>`).join(''):'<div class="item-card"><div class="item-desc">Нет заданий</div></div>'}`;
   }
   else if(tab==='ads'){
-    const cdLeft=await getAdCooldownLeft();
+    let settings={reward_per_view:0.00015,cooldown_seconds:30,daily_limit:150};
+    try{
+      const{data}=await sb.from('telepat_ad_settings').select('reward_per_view,cooldown_seconds,daily_limit').eq('id',1).maybeSingle();
+      if(data) settings=data;
+    }catch(e){}
+    let cdLeft=0;
+    try{
+      const{data:last}=await sb.from('telepat_ad_views').select('created_at').eq('telegram_id',UID).order('created_at',{ascending:false}).limit(1).maybeSingle();
+      if(last?.created_at){
+        const diff=(Date.now()-new Date(last.created_at).getTime())/1000;
+        if(diff<settings.cooldown_seconds) cdLeft=Math.ceil(settings.cooldown_seconds-diff);
+      }
+    }catch(e){}
+    let todayCount=0;
+    try{
+      const start=new Date();start.setHours(0,0,0,0);
+      const{count}=await sb.from('telepat_ad_views').select('*',{count:'exact',head:true}).eq('telegram_id',UID).gte('created_at',start.toISOString());
+      todayCount=count||0;
+    }catch(e){}
     const nextAd=await fetchNextAd();
-    const adReady=!!nextAd && cdLeft<=0;
+    const adReady=!!nextAd && cdLeft<=0 && todayCount<settings.daily_limit;
     const cdBadge=cdLeft>0?`<span class="ad-badge cool">⏳ ${cdLeft} сек</span>`:(nextAd?`<span class="ad-badge">готово</span>`:`<span class="ad-badge" style="background:#8a94a6;color:#fff">нет</span>`);
-    const adTitle=nextAd?(nextAd.title||'Реклама'):'Нет активной рекламы';
-    const adReward=nextAd?Number(nextAd.reward_per_action||0.0005):0;
     c.innerHTML=`
 <div class="item-card" style="border-color:var(--gold)">
 <div class="item-header"><b>📺 Смотреть рекламу</b>${cdBadge}</div>
-<div class="ad-stat-row"><span>Доступно сейчас:</span><b style="color:${adReady?'#39d98a':'#f4cf70'}">${nextAd?esc(adTitle):'—'}</b></div>
-<div class="ad-stat-row"><span>Награда за просмотр:</span><b style="color:#39d98a">+${f(adReward,5)} TUSD</b></div>
-<div class="ad-stat-row"><span>Кулдаун между роликами:</span><b>${AD_VIEW_COOLDOWN} сек</b></div>
-<button class="stake-collect" style="margin-top:10px;${adReady?'':'opacity:.5;pointer-events:none'}" onclick="watchAd()">${adReady?'▶️ СМОТРЕТЬ СЕЙЧАС':(cdLeft>0?'⏳ ПОДОЖДИТЕ '+cdLeft+' сек':'📺 НЕТ РЕКЛАМЫ')}</button>
+<div class="ad-stat-row"><span>Доступно сейчас:</span><b style="color:${adReady?'#39d98a':'#f4cf70'}">${nextAd?esc(nextAd.title):'—'}</b></div>
+<div class="ad-stat-row"><span>Награда за просмотр:</span><b style="color:#39d98a">+${f(settings.reward_per_view,5)} TUSD → в стейкинг</b></div>
+<div class="ad-stat-row"><span>Просмотров сегодня:</span><b>${todayCount}/${settings.daily_limit}</b></div>
+<div class="ad-stat-row"><span>Кулдаун между роликами:</span><b>${settings.cooldown_seconds} сек</b></div>
+<button class="stake-collect" style="margin-top:10px;${adReady?'':'opacity:.5;pointer-events:none'}" onclick="watchAd()">${adReady?'▶️ СМОТРЕТЬ СЕЙЧАС':(cdLeft>0?'⏳ ПОДОЖДИТЕ '+cdLeft+' сек':(todayCount>=settings.daily_limit?'📊 ЛИМИТ НА СЕГОДНЯ':'📺 НЕТ РЕКЛАМЫ'))}</button>
 </div>
 <div class="item-card"><div class="item-header"><b>⚡ Быстрые действия</b></div>
 <div class="qa">
@@ -1628,8 +1641,7 @@ function recalcPriceHints(){
   const pFrom=priceOf(from),pTo=priceOf(to);
   if(pFrom<=0||pTo<=0){hintBox.style.display='none';return;}
   const marketRate=pFrom/pTo;
-  const lowRate=marketRate*0.9;
-  const highRate=marketRate*1.1;
+  const lowRate=marketRate*0.9,highRate=marketRate*1.1;
   hintBox.style.display='block';
   $('hintMarket').textContent=`1 ${from} = ${f(marketRate,6)} ${to}`;
   $('hintRange').textContent=`${f(lowRate,6)} — ${f(highRate,6)} ${to} за 1 ${from}`;
@@ -1890,7 +1902,6 @@ function renderAdmin(){
   loadAdminRevenue();
   loadAdminAccounts();
 }
-
 async function loadAdminAccounts(){
   const adsBox=$('adsBalanceList'),mainBox=$('mainBalanceList');
   if(!adsBox||!mainBox) return;
@@ -1935,7 +1946,6 @@ async function confirmAdsTransfer(){
   msg(`✅ ${f(amt,6)} ${tk} → на основной счёт`,'success');
   setTimeout(()=>{closeModal();loadAdminAccounts();},700);
 }
-
 async function loadAdminItemPrices(){
   const box=$('adminItemPricesList');if(!box) return;
   const cat=$('adItemCat')?.value||'all';
@@ -1995,7 +2005,6 @@ async function createAdminItem(){
     await loadAdminItemPrices();await loadShopItems();
   }catch(e){if(st) st.textContent='Ошибка: '+e.message;}
 }
-
 async function loadAdminRevenue(){
   try{
     const{data}=await sb.rpc('admin_get_purchase_history',{p_limit:20});
@@ -2012,7 +2021,6 @@ async function adminClearRevenue(){
   if(error){msg(error.message,'error');return;}
   msg('💰 Очищено','success');loadAdminRevenue();
 }
-
 async function loadAdminStats(){
   const{data,error}=await sb.rpc('telepat_admin_all_balances');
   if(error){msg(error.message,'error');return;}
@@ -2031,7 +2039,6 @@ async function loadAdminStats(){
   const box=$('adminCustomTokens');
   if(box) box.innerHTML=all.length?all.map(x=>`<div class="st"><b>${f(x.total_balance,2)}</b><span>${esc(x.symbol)} • ${x.holders}👤</span></div>`).join(''):'<div class="info">Нет данных</div>';
 }
-
 async function adminLoadUser(){
   const raw=$('userSearchId').value.trim();
   if(!raw){msg('Введите ID','error');return;}
@@ -2080,7 +2087,6 @@ async function adminToggleFlag(flag,value){
   if(error||!data||data.ok===false){msg(error?.message||'Ошибка','error');return;}
   msg('✅ Готово','success');adminLoadUser();
 }
-
 async function adminTransfer(){
   const tid=Number($('adminTargetId').value);
   const tk=$('adminToken').value;
@@ -2090,7 +2096,6 @@ async function adminTransfer(){
   if(error||(data&&data.success===false)){msg(data?.message||error?.message||'Ошибка','error');return;}
   msg('💰 Переведено','success');$('adminAmount').value='';loadAdminStats();
 }
-
 async function adminTransferReferrals(){
   const targetRaw=$('ref_transfer_target').value.trim();
   const raw=$('ref_transfer_ids').value.trim();
@@ -2119,7 +2124,6 @@ async function adminTransferReferrals(){
   if(data.pending_saved) m+=` • ${data.pending_saved} в ожидании`;
   if(st) st.textContent=m;msg('🔀 '+m,'success');
 }
-
 async function loadAdminSettings(){
   const box=$('adminSettingsList');if(!box) return;
   box.innerHTML='Загрузка...';
@@ -2146,7 +2150,6 @@ async function saveAdminSetting(key){
   if(error||(data&&data.ok===false)){msg(error?.message||data?.error||'Ошибка','error');return;}
   msg(`✅ ${key} = ${val}`,'success');await loadAdminSettings();
 }
-
 async function loadAdminRewardTokens(){
   const box=$('adminRewardTokensList');if(!box) return;
   box.innerHTML='Загрузка...';
@@ -2205,7 +2208,6 @@ async function saveAdminRewardConfig(){
   st.textContent='✅ Сохранено';msg('✅ Сохранено','success');
   await loadRewardFunds();await loadAdminRewardTokens();
 }
-
 async function loadAdminTokenPrices(){
   const box=$('adminTokenPricesList');if(!box) return;
   box.innerHTML='Загрузка...';
@@ -2246,7 +2248,6 @@ async function adminDepositToFund(symbol,id){
   if(error||!data||data.ok===false){msg(data?.error||error?.message||'Ошибка','error');return;}
   msg(`✅ Внесено`,'success');inp.value='';await loadUser();await loadRewardFunds();await loadAdminTokenPrices();
 }
-
 async function loadAllLogos(){
   const box=$('adminLogosList');if(!box) return;
   box.innerHTML='Загрузка...';
@@ -2270,7 +2271,6 @@ async function saveAdminLogo(id,sym){
   msg('🖼️ Лого обновлён','success');await loadAllTokens();
 }
 async function clearAdminLogo(id,sym){const inp=$('lg-url-'+id);if(inp) inp.value='';await saveAdminLogo(id,sym);}
-
 async function loadAdminChats(){
   const box=$('adminChatsList');if(!box) return;
   box.innerHTML='Загрузка...';
@@ -2310,7 +2310,6 @@ async function saveAdminChatReward(){
   st.textContent='✅';msg('✅ Сохранено','success');
   await loadAdminChats();setTimeout(closeAdminChatEdit,900);
 }
-
 async function loadAdminBonusConfig(){
   const box=$('adminBonusBox');if(!box) return;
   box.innerHTML='Загрузка...';
@@ -2332,7 +2331,6 @@ async function saveAdminBonusConfig(){
   if(error||(data&&data.ok===false)){if(st) st.textContent='Ошибка';return;}
   if(st) st.textContent='✅';await loadAdminBonusConfig();await loadWelcomeBonusStatus();
 }
-
 async function loadAdminCheckin(){
   const box=$('adminCheckinBox');if(!box) return;
   box.innerHTML='Загрузка...';
@@ -2370,7 +2368,6 @@ async function removeAdminCheckinToken(sym){
   if(error||!data||data.ok===false){msg('Ошибка','error');return;}
   msg('🗑 Удалено','success');await loadAdminCheckin();
 }
-
 async function loadAdminTasks(){
   const box=$('adminTasksList');if(!box) return;
   box.innerHTML='Загрузка...';
@@ -2407,32 +2404,56 @@ async function deleteAdminTask(id){
   if(error){msg(error.message,'error');return;}
   msg('🗑','success');await loadAdminTasks();
 }
-
 async function adminAdLoad(status){
   const box=$('adminAdsList');if(!box) return;
   box.innerHTML='Загрузка...';
   try{
-    const{data,error}=await sb.rpc('admin_ad_list',{p_status:status||null});
-    if(error||!data||data.ok===false){box.innerHTML='<div class="info">Ошибка</div>';return;}
-    const ads=data.ads||[];
-    if(!ads.length){box.innerHTML='<div class="info">Нет заявок</div>';return;}
-    const ST={pending:'НА МОДЕРАЦИИ',active:'АКТИВЕН',paused:'ПАУЗА',rejected:'ОТКЛОНЁН',completed:'ЗАВЕРШЁН'};
-    box.innerHTML=ads.map(a=>`<div class="pc">
-      <div class="pt">${esc(a.ad_type||a.campaign_type||'')} — ${esc(a.title)}</div>
-      <div class="info">Статус: ${ST[a.status||a.admin_status]||a.status||a.admin_status}</div>
-      <div class="info">💰 Оплачено: ${f(a.budget,4)} • Потрачено: ${f(a.spent,4)}</div>
-      <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">
-        ${(a.status==='pending'||a.admin_status==='pending')?`<button class="admin-btn sm gold" onclick="adminAdStatus('${a.id}','active')">✅</button><button class="admin-btn sm danger" onclick="adminAdStatus('${a.id}','rejected')">❌</button>`:''}
-        ${(a.status==='active'||a.admin_status==='active')?`<button class="admin-btn sm sec" onclick="adminAdStatus('${a.id}','paused')">⏸</button>`:''}
-        ${(a.status==='paused'||a.admin_status==='paused')?`<button class="admin-btn sm gold" onclick="adminAdStatus('${a.id}','active')">▶</button>`:''}
-      </div>
-    </div>`).join('');
+    let q=sb.from('telepat_ad_campaigns').select('*').order('created_at',{ascending:false}).limit(100);
+    if(status) q=q.eq('admin_status',status);
+    const{data,error}=await q;
+    if(error){box.innerHTML='<div class="info">Ошибка: '+esc(error.message)+'</div>';return;}
+    if(!data||!data.length){box.innerHTML='<div class="info">Нет заявок</div>';return;}
+    const ST={pending:'⏳ НА МОДЕРАЦИИ',approved:'✅ АКТИВНА',rejected:'❌ ОТКЛОНЕНА',paused:'⏸ ПАУЗА'};
+    box.innerHTML=data.map(a=>{
+      const sp=n(a.completed_actions),tt=n(a.target_actions);
+      return `<div class="pc">
+        <div class="pt">${esc(a.title||'')}</div>
+        <div class="info">${ST[a.admin_status]||a.admin_status} • 👤 ${a.advertiser_telegram_id}</div>
+        <div class="info" style="font-size:11px">🎬 ${a.video_url?'✅ есть':'❌ нет'} • ${a.duration_seconds||15} сек</div>
+        <div class="info" style="font-size:11px">💰 ${f(a.reward_per_action,5)} TUSD × ${tt} просмотров</div>
+        <div class="info" style="font-size:11px">👀 ${sp}/${tt}</div>
+        ${a.video_url?`<button class="admin-btn sm sec" style="margin-top:6px" onclick="previewAdminAd('${esc(a.id)}')">👁 Превью</button>`:''}
+        <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">
+          ${a.admin_status==='pending'?`<button class="admin-btn sm gold" onclick="adminAdStatus('${a.id}','approved')">✅ Одобрить</button><button class="admin-btn sm danger" onclick="adminAdStatus('${a.id}','rejected')">❌ Отклонить</button>`:''}
+          ${a.admin_status==='approved'?`<button class="admin-btn sm sec" onclick="adminAdStatus('${a.id}','paused')">⏸ Пауза</button>`:''}
+          ${a.admin_status==='paused'?`<button class="admin-btn sm gold" onclick="adminAdStatus('${a.id}','approved')">▶ Возобновить</button>`:''}
+          <button class="admin-btn sm danger" onclick="adminAdDelete('${a.id}')">🗑</button>
+        </div>
+      </div>`;
+    }).join('');
   }catch(e){box.innerHTML='Ошибка';}
 }
+function previewAdminAd(id){
+  sb.from('telepat_ad_campaigns').select('*').eq('id',id).maybeSingle().then(({data})=>{
+    if(!data?.video_url){msg('Нет видео','error');return;}
+    openModal('🎬 Превью',`
+      <video src="${esc(data.video_url)}" controls style="width:100%;border-radius:12px;background:#000"></video>
+      <div class="info" style="margin-top:8px">${esc(data.title||'')}</div>
+      <div class="info">${esc(data.description||'')}</div>
+      <button class="admin-btn sec" style="width:100%;margin-top:8px" onclick="closeModal()">Закрыть</button>
+    `);
+  });
+}
 async function adminAdStatus(id,status){
-  const{data,error}=await sb.rpc('admin_ad_set_status',{p_id:id,p_status:status,p_comment:null});
-  if(error||(data&&data.ok===false)){msg('Ошибка','error');return;}
+  const{error}=await sb.from('telepat_ad_campaigns').update({admin_status:status,updated_at:new Date().toISOString()}).eq('id',id);
+  if(error){msg(error.message,'error');return;}
   msg('✅ Обновлено','success');adminAdLoad();
+}
+async function adminAdDelete(id){
+  if(!confirm('Удалить заявку?')) return;
+  const{error}=await sb.from('telepat_ad_campaigns').delete().eq('id',id);
+  if(error){msg(error.message,'error');return;}
+  msg('🗑 Удалено','success');adminAdLoad();
 }
 async function adminCreateAd(){
   if(UID!==AID){msg('Нет доступа','error');return;}
@@ -2443,34 +2464,24 @@ async function adminCreateAd(){
   const file=$('ad_new_video').files[0];
   if(!title||!url||!file){st.textContent='Заполните поля';return;}
   if(file.size>50*1024*1024){st.textContent='Видео > 50 МБ';return;}
-  const btn=$('ad_new_submit');btn.disabled=true;st.textContent='Загрузка...';
+  const btn=$('ad_new_submit');btn.disabled=true;st.textContent='Загрузка видео...';
   try{
     const safeName=file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
     const fileName='videos/'+Date.now()+'_'+safeName;
     const{error:uploadError}=await sb.storage.from('ads').upload(fileName,file,{contentType:'video/mp4',upsert:false});
-    if(uploadError){st.textContent='Ошибка загрузки: '+uploadError.message;btn.disabled=false;return;}
+    if(uploadError){st.textContent='Ошибка storage: '+uploadError.message;btn.disabled=false;return;}
     const{data:urlData}=sb.storage.from('ads').getPublicUrl(fileName);
-    const videoUrl=urlData.publicUrl;
     st.textContent='Создание...';
-    const{error:insertError}=await sb.from('telepat_ad_campaigns').insert({
-      advertiser_telegram_id:AID,
-      title:title,
-      description:desc,
-      campaign_type:'video',
-      url:url,
-      video_url:videoUrl,
-      reward_per_action:0.0005,
-      target_actions:10000,
-      duration_seconds:15,
-      buffer_seconds:10,
-      cta_button_text:'🚀 ПЕРЕЙТИ',
-      payment_status:'paid',
-      admin_status:'approved'
+    const{data,error}=await sb.rpc('admin_create_ad_campaign',{
+      p_title:title,p_description:desc,p_url:url,
+      p_video_url:urlData.publicUrl,p_reward:0.0005,p_actions:10000,p_duration:15
     });
-    if(insertError){st.textContent='Ошибка: '+insertError.message;btn.disabled=false;return;}
-    st.innerHTML='✅ Реклама создана!';
+    if(error){st.textContent='Ошибка: '+error.message;btn.disabled=false;return;}
+    if(!data||data.ok===false){st.textContent='Ошибка: '+(data?.error||'unknown');btn.disabled=false;return;}
+    st.innerHTML='✅ Реклама опубликована!';
     $('ad_new_video').value='';$('ad_new_title').value='';$('ad_new_desc').value='';$('ad_new_url').value='';
     btn.disabled=false;
+    msg('✅ Реклама активна','success');
   }catch(e){st.textContent='Ошибка: '+e.message;btn.disabled=false;}
 }
 async function loadBannerSettings(){
@@ -2514,7 +2525,6 @@ async function loadTopBanner(){
     });
   }catch(e){}
 }
-
 async function loadUiSettings(){
   try{
     const{data}=await sb.rpc('get_ui_settings');
@@ -2551,7 +2561,6 @@ function applyUiColors(colors){
   document.body.style.background=`radial-gradient(circle at 50% -10%,${colors.ui_bg_radial} 0,${colors.ui_bg} 42%),${colors.ui_bg}`;
 }
 async function loadUiSettingsPublic(){try{const{data}=await sb.rpc('get_ui_settings');applyUiColors(Object.assign({},UI_DEFAULTS,data||{}));}catch(e){}}
-
 async function loadHistory(){
   const box=$('historyList');if(!box) return;
   box.innerHTML='Загрузка...';
@@ -2573,7 +2582,6 @@ async function loadHistory(){
     </div>`;
   }).join('');
 }
-
 async function openProfile(uid){
   $('profileModal').classList.add('show');
   $('profileRank').textContent='Загрузка...';
@@ -2590,7 +2598,6 @@ async function openProfile(uid){
   $('profileDislikes').textContent=n(p.dislikes);
 }
 function closeProfile(e){if(e&&e.target!==$('profileModal')) return;$('profileModal').classList.remove('show');}
-
 async function loadWelcomeBonusStatus(){
   const card=$('bonusCard');if(!card) return;
   card.style.display='none';
@@ -2619,30 +2626,140 @@ async function claimWelcomeBonus(){
   }else{msg(data?.message||'Не удалось','error');await loadWelcomeBonusStatus();}
 }
 
-function openAdMenu(){msg('📢 Реклама в разработке','info');}
-function openMyAds(){}
-async function openTasksModal(){$('tasksModal')?.classList.add('show');if(currentIncomeTab!=='tasks') showIncomeTab('tasks');}
-function closeTasks(e){if(e&&e.target!==$('tasksModal')) return;$('tasksModal').classList.remove('show');}
-async function startTask(id,link){
-  __PENDING_TASK=id;
-  try{window.Telegram?.WebApp?.openLink?window.Telegram.WebApp.openLink(link):window.open(link,'_blank');}catch{window.open(link,'_blank');}
-  msg('⏳ Выполните и вернитесь','info');
+/* ═══════ РЕКЛАМА — заказ юзером ═══════ */
+async function openAdMenu(){
+  if(!UID){msg('Открой через Telegram','error');return;}
+  let minBudget=5, commission=10;
+  try{
+    const{data}=await sb.from('telepat_ad_settings').select('min_budget_usd,platform_commission_pct').eq('id',1).maybeSingle();
+    if(data){minBudget=Number(data.min_budget_usd)||5;commission=Number(data.platform_commission_pct)||10;}
+  }catch(e){}
+  const tusdBal=n(CU?.tusd_balance)||0;
+  openModal('📢 Заказать видеорекламу',`
+    <div class="item-card" style="background:#0d1520;margin-bottom:12px">
+      <div class="item-desc">Ролик увидят все пользователи TELEPAT. Минимум бюджета: <b style="color:var(--gold)">$${f(minBudget,2)}</b>. Комиссия платформы: <b style="color:var(--gold)">${commission}%</b>.</div>
+    </div>
+    <label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px">Название</label>
+    <input id="ao_title" placeholder="Например: Реклама канала X" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+    <label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">Описание</label>
+    <input id="ao_desc" placeholder="Короткое описание" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+    <label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">Ссылка перехода</label>
+    <input id="ao_url" placeholder="https://t.me/yourchannel" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+    <label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">Видео (MP4, до 50 МБ)</label>
+    <input id="ao_video" type="file" accept="video/mp4" style="width:100%;padding:6px;color:#fff;font-size:12px">
+    <div style="display:flex;gap:8px;margin-top:9px">
+      <div style="flex:1"><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px">Цена за просмотр (TUSD)</label>
+      <input id="ao_reward" type="number" step="0.0001" value="0.0005" oninput="updateAdOrderPreview(${minBudget},${commission})" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px"></div>
+      <div style="flex:1"><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px">Просмотров</label>
+      <input id="ao_actions" type="number" value="10000" oninput="updateAdOrderPreview(${minBudget},${commission})" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px"></div>
+    </div>
+    <label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">Длительность (сек, 5–60)</label>
+    <input id="ao_duration" type="number" value="15" min="5" max="60" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+    <div class="prev" style="margin-top:12px">
+      <div class="history-row"><span>Бюджет</span><b id="ao_budget">—</b></div>
+      <div class="history-row"><span>Комиссия ${commission}%</span><b id="ao_fee">—</b></div>
+      <div class="history-row"><span>Итого спишется</span><b id="ao_total">—</b></div>
+      <div class="history-row"><span>Ваш баланс TUSD</span><b style="color:#39d98a">$${f(tusdBal,2)}</b></div>
+    </div>
+    <button id="ao_submit" class="admin-btn gold" style="width:100%;margin-top:12px" onclick="submitAdOrder()">✅ ОПЛАТИТЬ И ОТПРАВИТЬ</button>
+    <div id="ao_status" class="info" style="margin-top:8px;text-align:center"></div>
+    <button class="admin-btn sec" style="width:100%;margin-top:8px" onclick="closeModal()">Отмена</button>
+  `);
+  setTimeout(()=>updateAdOrderPreview(minBudget,commission),50);
 }
-document.addEventListener('visibilitychange',()=>{
-  if(document.visibilityState==='visible'&&__PENDING_TASK){
-    if(__RETURN_TIMER) clearTimeout(__RETURN_TIMER);
-    __RETURN_TIMER=setTimeout(async()=>{
-      const tid=__PENDING_TASK;__PENDING_TASK=null;
-      const{data,error}=await sb.rpc('complete_task',{p_task_id:tid,p_user_id:String(UID)});
-      if(error||!data?.ok){msg(data?.error||'Не выполнено','error');return;}
-      msg('🎁 Задание выполнено','success');
-      await refreshAll();
-      if(currentIncomeTab==='tasks') showIncomeTab('tasks');
-    },TASK_CHECK_DELAY);
+function updateAdOrderPreview(minBudget,commission){
+  minBudget=n(minBudget)||5;
+  commission=n(commission)||10;
+  const reward=n($('ao_reward')?.value);
+  const actions=n($('ao_actions')?.value);
+  const budget=reward*actions;
+  const fee=budget*(commission/100);
+  const total=budget+fee;
+  if($('ao_budget')) $('ao_budget').textContent=`$${f(budget,4)}`;
+  if($('ao_fee')) $('ao_fee').textContent=`$${f(fee,4)}`;
+  if($('ao_total')) $('ao_total').innerHTML=`<b>$${f(total,4)}</b>`;
+  const btn=$('ao_submit');
+  if(btn){
+    const enough=n(CU?.tusd_balance)>=total;
+    const okBudget=budget>=minBudget;
+    if(!okBudget){
+      btn.disabled=true;
+      btn.textContent=`❌ Минимум $${f(minBudget,2)} бюджета`;
+    }else if(!enough){
+      btn.disabled=true;
+      btn.textContent=`❌ Мало TUSD (нужно $${f(total,4)})`;
+    }else{
+      btn.disabled=false;
+      btn.textContent='✅ ОПЛАТИТЬ И ОТПРАВИТЬ';
+    }
   }
-});
+}
+async function submitAdOrder(){
+  const title=($('ao_title')?.value||'').trim();
+  const desc=($('ao_desc')?.value||'').trim();
+  const url=($('ao_url')?.value||'').trim();
+  const reward=n($('ao_reward')?.value);
+  const actions=Math.floor(n($('ao_actions')?.value));
+  const duration=Math.floor(n($('ao_duration')?.value))||15;
+  const file=$('ao_video')?.files?.[0];
+  const st=$('ao_status');
+  if(!title){st.textContent='Введите название';return;}
+  if(!url){st.textContent='Введите ссылку';return;}
+  if(!file){st.textContent='Загрузите видео';return;}
+  if(reward<=0||actions<=0){st.textContent='Проверьте цену и просмотры';return;}
+  if(file.size>50*1024*1024){st.textContent='Видео > 50 МБ';return;}
+  const btn=$('ao_submit');btn.disabled=true;st.textContent='Загрузка видео...';
+  try{
+    const safeName=file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+    const fileName='videos/'+UID+'_'+Date.now()+'_'+safeName;
+    const{error:upErr}=await sb.storage.from('ads').upload(fileName,file,{contentType:'video/mp4',upsert:false});
+    if(upErr){st.textContent='Ошибка загрузки: '+upErr.message;btn.disabled=false;return;}
+    const{data:urlData}=sb.storage.from('ads').getPublicUrl(fileName);
+    st.textContent='Создание заявки...';
+    const{data,error}=await sb.rpc('user_create_ad_campaign',{
+      p_user_id:UID,p_title:title,p_description:desc,p_url:url,
+      p_video_url:urlData.publicUrl,p_reward:reward,p_actions:actions,p_duration:duration
+    });
+    if(error){st.textContent='Ошибка: '+error.message;btn.disabled=false;return;}
+    if(!data||data.ok===false){
+      const err=data?.error||'unknown';
+      if(err==='insufficient_balance') st.textContent=`Недостаточно TUSD. Нужно $${f(data.need,4)}, у вас $${f(data.have,4)}`;
+      else if(err==='budget_too_low') st.textContent=`Минимум $${f(data.min_budget,2)} бюджета (у вас $${f(data.budget,2)})`;
+      else st.textContent='Ошибка: '+err;
+      btn.disabled=false;return;
+    }
+    st.innerHTML=`<span class="ok">✅ Отправлено на модерацию! Списано $${f(data.total,4)}</span>`;
+    msg('✅ Заявка отправлена','success');
+    setTimeout(()=>{closeModal();refreshAll();},1200);
+  }catch(e){st.textContent='Ошибка: '+e.message;btn.disabled=false;}
+}
+async function openMyAds(){
+  if(!UID) return;
+  openModal('📋 Мои рекламные заявки',`<div id="myAdsList" class="info">Загрузка...</div>
+    <button class="admin-btn sec" style="width:100%;margin-top:12px" onclick="closeModal()">Закрыть</button>`);
+  try{
+    const{data,error}=await sb.from('telepat_ad_campaigns')
+      .select('*').eq('advertiser_telegram_id',UID)
+      .order('created_at',{ascending:false}).limit(50);
+    const box=$('myAdsList');if(!box) return;
+    if(error||!data||!data.length){box.innerHTML='<div class="info">У вас пока нет заявок</div>';return;}
+    const ST={pending:'⏳ На модерации',approved:'✅ Активна',rejected:'❌ Отклонена',paused:'⏸ Пауза'};
+    box.innerHTML=data.map(a=>{
+      const sp=n(a.completed_actions),tt=n(a.target_actions);
+      const pct=tt>0?Math.min(100,Math.round(sp/tt*100)):0;
+      const col=a.admin_status==='approved'?'#39d98a':(a.admin_status==='rejected'?'#f6465d':'#f4cf70');
+      return `<div class="pc" style="margin-top:8px">
+        <div class="pt">${esc(a.title||'')}</div>
+        <div class="info" style="font-size:11px;color:${col}">${ST[a.admin_status]||a.admin_status}</div>
+        <div class="info" style="font-size:11px">Цена: ${f(a.reward_per_action,5)} TUSD • Просмотры: ${sp}/${tt}</div>
+        <div style="height:6px;background:#080b10;border-radius:99px;margin-top:6px;overflow:hidden"><div style="height:100%;width:${pct}%;background:linear-gradient(90deg,#39d98a,#2ba86a)"></div></div>
+        <div class="info" style="font-size:10px;margin-top:4px">${new Date(a.created_at).toLocaleString('ru-RU')}</div>
+      </div>`;
+    }).join('');
+  }catch(e){const box=$('myAdsList');if(box)box.innerHTML='<div class="info">Ошибка</div>';}
+}
 
-/* ═══════ VIDEO ADS ═══════ */
+/* ═══════ VIDEO ADS — просмотр ═══════ */
 async function fetchNextAd(){
   try{
     const{data,error}=await sb.rpc('get_next_ad',{p_user_id:UID});
@@ -2671,58 +2788,52 @@ async function fetchNextAd(){
     return ready[Math.floor(Math.random()*ready.length)];
   }catch(e){ return null; }
 }
-
 async function getAdCooldownLeft(){
   try{
+    const{data:settings}=await sb.from('telepat_ad_settings').select('cooldown_seconds').eq('id',1).maybeSingle();
+    const cd=Number(settings?.cooldown_seconds)||30;
     const{data}=await sb.from('telepat_ad_views')
-      .select('created_at')
-      .eq('telegram_id',UID)
-      .order('created_at',{ascending:false})
-      .limit(1)
-      .maybeSingle();
+      .select('created_at').eq('telegram_id',UID)
+      .order('created_at',{ascending:false}).limit(1).maybeSingle();
     if(data?.created_at){
       const last=new Date(data.created_at).getTime();
-      const left=Math.ceil((last+AD_VIEW_COOLDOWN*1000-Date.now())/1000);
+      const left=Math.ceil((last+cd*1000-Date.now())/1000);
       return left>0?left:0;
     }
   }catch(e){}
   return 0;
 }
-
-function fmtAdTime(s){
-  s=Math.max(0,Math.floor(s));
-  const m=Math.floor(s/60), sec=s%60;
-  return m+':'+String(sec).padStart(2,'0');
-}
-
+function fmtAdTime(s){s=Math.max(0,Math.floor(s));const m=Math.floor(s/60),sec=s%60;return m+':'+String(sec).padStart(2,'0');}
 async function watchAd(){
   if(!UID){msg('Открой через Telegram','error');return;}
-  const cdLeft=await getAdCooldownLeft();
-  if(cdLeft>0){msg(`⏳ Следующая реклама через ${cdLeft} сек`,'info');return;}
-
+  let rewardPerView=0.00015,cooldownSec=30,dailyLimit=150,minDur=5,maxDur=60;
+  try{
+    const{data}=await sb.from('telepat_ad_settings').select('*').eq('id',1).maybeSingle();
+    if(data){
+      rewardPerView=Number(data.reward_per_view)||rewardPerView;
+      cooldownSec=Number(data.cooldown_seconds)||cooldownSec;
+      dailyLimit=Number(data.daily_limit)||dailyLimit;
+      minDur=Number(data.min_ad_duration)||minDur;
+      maxDur=Number(data.max_ad_duration)||maxDur;
+    }
+  }catch(e){}
+  try{
+    const{data:last}=await sb.from('telepat_ad_views')
+      .select('created_at').eq('telegram_id',UID)
+      .order('created_at',{ascending:false}).limit(1).maybeSingle();
+    if(last?.created_at){
+      const diff=(Date.now()-new Date(last.created_at).getTime())/1000;
+      if(diff<cooldownSec){
+        const left=Math.ceil(cooldownSec-diff);
+        msg(`⏳ Подождите ${left} сек`,'info');
+        return;
+      }
+    }
+  }catch(e){}
   msg('⏳ Загружаем рекламу...','info');
   const ad=await fetchNextAd();
   if(!ad){msg('📺 Сейчас нет доступной рекламы','info');return;}
-
   __CURRENT_AD=ad;
-  const campId=ad.id || ad.campaign_id;
-
-  try{
-    const{data:lastSame}=await sb.from('telepat_ad_views')
-      .select('created_at')
-      .eq('telegram_id',UID)
-      .eq('zone_id',String(campId))
-      .eq('source','video')
-      .order('created_at',{ascending:false})
-      .limit(1)
-      .maybeSingle();
-    if(lastSame?.created_at){
-      const last=new Date(lastSame.created_at).getTime();
-      const left=Math.ceil((last+AD_PER_CAMPAIGN_CD*1000-Date.now())/1000);
-      if(left>0){msg(`⏳ Эта реклама доступна через ${left} сек`,'info');__CURRENT_AD=null;return;}
-    }
-  }catch(e){}
-
   const video=$('adVideo');
   const timerEl=$('adTimer');
   const statusEl=$('adStatus');
@@ -2730,25 +2841,20 @@ async function watchAd(){
   const btn=$('adClaimBtn');
   const bar=$('adProgressBar');
   if(!video){msg('Ошибка плеера','error');return;}
-
-  const duration=Math.max(5, Number(ad.duration_seconds||15));
+  const duration=Math.max(minDur, Math.min(maxDur, Number(ad.duration_seconds||15)));
   __AD_TIME_LEFT=duration;
-
   titleEl.textContent=ad.title||'Реклама';
-  statusEl.textContent='⏳ Смотрите до конца';
+  statusEl.textContent=`⏳ Смотрите до конца · награда +${f(rewardPerView,5)} TUSD`;
   statusEl.style.color='#e8e8e8';
   btn.disabled=true;
   btn.textContent='🎁 ПОЛУЧИТЬ';
   if(bar) bar.style.width='0%';
   timerEl.textContent=fmtAdTime(__AD_TIME_LEFT);
-
   video.pause();
   video.removeAttribute('src');
   video.load();
-
-  const src=ad.video_url;
-  if(src){
-    video.src=src;
+  if(ad.video_url){
+    video.src=ad.video_url;
     video.muted=false;
     video.playsInline=true;
     video.onerror=()=>{
@@ -2757,9 +2863,7 @@ async function watchAd(){
     };
     try{ await video.play(); }catch(e){}
   }
-
   $('adModal').classList.add('show');
-
   if(__AD_TIMER) clearInterval(__AD_TIMER);
   __AD_TIMER=setInterval(()=>{
     __AD_TIME_LEFT--;
@@ -2772,10 +2876,9 @@ async function watchAd(){
       clearInterval(__AD_TIMER);__AD_TIMER=null;
       if(bar) bar.style.width='100%';
       if(statusEl){statusEl.textContent='✅ Можно получить награду';statusEl.style.color='#39d98a';}
-      if(btn){btn.disabled=false;}
+      if(btn) btn.disabled=false;
     }
   },1000);
-
   video.onended=()=>{
     if(__AD_TIME_LEFT>0){
       __AD_TIME_LEFT=0;
@@ -2786,7 +2889,6 @@ async function watchAd(){
     }
   };
 }
-
 function closeAdModal(){
   const video=$('adVideo');
   if(video){try{video.pause();video.removeAttribute('src');video.load();}catch(e){}}
@@ -2794,63 +2896,47 @@ function closeAdModal(){
   __CURRENT_AD=null;__AD_TIME_LEFT=0;
   $('adModal')?.classList.remove('show');
 }
-
 async function claimAdReward(){
   if(!__CURRENT_AD){closeAdModal();return;}
   const ad=__CURRENT_AD;
   const campId=ad.id || ad.campaign_id;
   const btn=$('adClaimBtn');
   if(btn){btn.disabled=true;btn.textContent='⏳ Начисляем...';}
-
-  let reward=Number(ad.reward_per_action||0.0005);
-  let token='TUSD';
-  let success=false;
-
   try{
-    const{data,error}=await sb.rpc('claim_ad_reward',{p_campaign_id:campId,p_user_id:UID});
-    if(!error && data && data.ok!==false){
-      reward=Number(data.reward ?? reward);
-      token=data.token || token;
-      success=true;
+    const{data,error}=await sb.rpc('claim_ad_reward',{
+      p_telegram_id:UID,
+      p_campaign_id:campId
+    });
+    if(error){
+      msg('❌ '+(error.message||'Ошибка'),'error');
+      if(btn){btn.disabled=false;btn.textContent='🎁 ПОЛУЧИТЬ';}
+      return;
     }
-  }catch(e){}
-
-  if(!success){
-    try{
-      const{error:e1}=await sb.from('telepat_ad_views').insert({
-        telegram_id:UID,
-        source:'video',
-        zone_id:String(campId),
-        amount:reward
-      });
-      if(!e1){
-        await sb.from('telepat_ad_campaigns')
-          .update({
-            completed_actions:(Number(ad.completed_actions||0)+1),
-            updated_at:new Date().toISOString()
-          })
-          .eq('id',campId);
-        await sb.from('users')
-          .update({tusd_balance:(n(CU?.tusd_balance)+reward)})
-          .eq('telegram_id',UID);
-        success=true;
+    if(!data||data.ok===false){
+      const err=data?.error||'unknown';
+      if(err==='Слишком рано'){
+        msg(`⏳ Подождите ${data.wait_seconds} сек`,'info');
+      }else if(err==='Дневной лимит исчерпан'){
+        msg(`📊 Лимит: ${data.views_today}/${data.daily_limit}`,'info');
+      }else{
+        msg('❌ '+err,'error');
       }
-    }catch(e){}
-  }
-
-  if(!success){
-    msg('❌ Не удалось начислить','error');
+      if(btn){btn.disabled=false;btn.textContent='🎁 ПОЛУЧИТЬ';}
+      return;
+    }
+    const reward=Number(data.reward||0);
+    const token=data.reward_token||'TUSD';
+    const addedToStake=Number(data.accumulated_added||0);
+    closeAdModal();
+    showAdRewardPopup(reward, token, `📺 ЗАЧИСЛЕНО В СТЕЙКИНГ +${f(addedToStake,5)} TUSD`);
+    msg(`✅ +${f(addedToStake,5)} TUSD в копилку стейкинга`,'success');
+    await refreshAll();
+    if(currentIncomeTab==='ads') showIncomeTab('ads');
+  }catch(e){
+    msg('❌ '+e.message,'error');
     if(btn){btn.disabled=false;btn.textContent='🎁 ПОЛУЧИТЬ';}
-    return;
   }
-
-  closeAdModal();
-  showAdRewardPopup(reward, token, '📺 РЕКЛАМА ПРОСМОТРЕНА');
-
-  await refreshAll();
-  if(currentIncomeTab==='ads') showIncomeTab('ads');
 }
-
 async function claimStaking(){
   const{data,error}=await sb.rpc('claim_staking',{p_user_id:String(UID)});
   if(error||!data||data.ok===false){msg(data?.error||'Нечего собирать','error');return;}
@@ -2883,7 +2969,26 @@ function showAdRewardPopup(reward,token,extra){
   document.body.appendChild(overlay);
   let sec=5;setInterval(()=>{sec--;if(sec<=0){const el=$('adRewardPopupGreen');if(el) el.remove();}},1000);
 }
-
+async function openTasksModal(){$('tasksModal')?.classList.add('show');if(currentIncomeTab!=='tasks') showIncomeTab('tasks');}
+function closeTasks(e){if(e&&e.target!==$('tasksModal')) return;$('tasksModal').classList.remove('show');}
+async function startTask(id,link){
+  __PENDING_TASK=id;
+  try{window.Telegram?.WebApp?.openLink?window.Telegram.WebApp.openLink(link):window.open(link,'_blank');}catch{window.open(link,'_blank');}
+  msg('⏳ Выполните и вернитесь','info');
+}
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='visible'&&__PENDING_TASK){
+    if(__RETURN_TIMER) clearTimeout(__RETURN_TIMER);
+    __RETURN_TIMER=setTimeout(async()=>{
+      const tid=__PENDING_TASK;__PENDING_TASK=null;
+      const{data,error}=await sb.rpc('complete_task',{p_task_id:tid,p_user_id:String(UID)});
+      if(error||!data?.ok){msg(data?.error||'Не выполнено','error');return;}
+      msg('🎁 Задание выполнено','success');
+      await refreshAll();
+      if(currentIncomeTab==='tasks') showIncomeTab('tasks');
+    },TASK_CHECK_DELAY);
+  }
+});
 async function gearListItem(){
   const itemId=$('gear_sell_item')?.value;
   const price=Number($('gear_sell_price')?.value);
@@ -2905,7 +3010,6 @@ async function gearBuyListing(id){
   if(error||!data||data.ok===false){msg(data?.error||'Ошибка','error');return;}
   msg('✅ Куплено','success');await refreshAll();
 }
-
 async function refreshAll(){
   await loadUser();
   await loadMyItems();
@@ -2920,7 +3024,6 @@ async function refreshAll(){
   if(!$('view-rating').classList.contains('hidden')) renderRating();
   if(!$('view-chatbonus').classList.contains('hidden')) renderChatBonus();
 }
-
 document.addEventListener('DOMContentLoaded',async()=>{
   await refreshJwt();
   await loadUiSettingsPublic();
