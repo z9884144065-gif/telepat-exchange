@@ -23,13 +23,12 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
 .avatar-img{position:relative;z-index:1;width:100%;height:100%;border-radius:50%;object-fit:cover;background:#0d1520;border:2px solid #2a3242}
 .profile-info{flex:1;min-width:0}
-.profile-icons-row{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:14px;padding-top:14px;border-top:1px solid #2a3242}
-.profile-icons-row:has(#adminIcon:not(.hidden)){grid-template-columns:repeat(5,1fr)}
+.profile-icons-row{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:14px;padding-top:14px;border-top:1px solid #2a3242}
+.profile-icons-row:has(#adminIcon:not(.hidden)){grid-template-columns:repeat(6,1fr)}
 .profile-icon-btn{background:linear-gradient(145deg,#1e2938,#141b26);border:1px solid var(--line);border-radius:12px;padding:10px 4px;display:flex;flex-direction:column;align-items:center;gap:4px;color:#cfd8e4;font-size:22px;cursor:pointer;font-family:inherit;transition:.15s}
 .profile-icon-btn:hover,.profile-icon-btn:active{border-color:var(--gold);transform:translateY(-1px)}
 .profile-icon-btn .pi-label{font-size:9px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.3px}
 .profile-icon-btn#adminIcon{border-color:#80652b;color:var(--gold)}
-.profile-icon-btn#adminIcon .pi-label{color:var(--gold)}
 .username{font-size:16px;font-weight:700;color:#fff}
 .user-stats{display:flex;gap:10px;margin-top:6px;font-size:11px;color:var(--muted);flex-wrap:wrap}
 .user-stats .rank-badge-top{color:var(--gold);font-weight:700}
@@ -73,7 +72,6 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 .nav-btn.active{color:var(--gold);background:rgba(244,207,112,.1)}
 .nav-btn .nav-icon{font-size:20px}
 .nav-btn.nav-wide{flex:1.6;max-width:140px;background:linear-gradient(135deg,#f5d477,#c99629);color:#17120a;margin-left:2px}
-.nav-btn.nav-wide .nav-icon{font-size:18px}
 .tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;padding:0}
 .tabs.tabs-2{grid-template-columns:repeat(2,1fr)}
 .tabs.tabs-3{grid-template-columns:repeat(3,1fr)}
@@ -82,7 +80,6 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 .tab:active{transform:scale(.97)}
 .tab.active{background:linear-gradient(135deg,#2f80ed,#4f8cff);border-color:#4f8cff;color:#fff;box-shadow:0 3px 10px rgba(47,128,237,.35)}
 .tab.tab-gold{background:linear-gradient(135deg,#f5d477,#c99629);color:#17120a;border-color:#a37a1e}
-.tab.tab-gold:active{transform:scale(.97)}
 .tab .tab-icon{font-size:20px;line-height:1}
 .title{color:var(--gold);font-size:14px;font-weight:bold;letter-spacing:.7px;margin-bottom:13px}
 .card{background:linear-gradient(145deg,#1b2636,#111925);border:1px solid var(--line);border-radius:20px;padding:17px;margin-bottom:13px}
@@ -101,13 +98,9 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 .rarity{font-size:9px;text-transform:uppercase;font-weight:700;padding:3px 7px;border-radius:4px}
 .rarity.common{background:#334155;color:#cbd5e1}
 .rarity.rare{background:#1e3a8a;color:#93c5fd}
-.rarity.epic{background:#4c1d95;color:#c4b5fd}
-.rarity.legend{background:linear-gradient(90deg,#b45309,#f59e0b);color:#fff}
-.rarity.mythic{background:linear-gradient(90deg,#a21caf,#ec4899,#f59e0b);color:#fff}
 .acc-item{background:var(--bg-card);border:1px solid #8a6b28;border-radius:14px;margin-bottom:8px;overflow:hidden}
 .acc-item.open{border-color:var(--gold)}
 .acc-header{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;cursor:pointer;font-weight:800;color:var(--gold);font-size:14px;user-select:none}
-.acc-header:hover{background:rgba(244,207,112,.05)}
 .acc-header .acc-arrow{color:#9da9b9;font-size:12px;transition:transform .25s}
 .acc-item.open .acc-header .acc-arrow{transform:rotate(90deg);color:var(--gold)}
 .acc-body{display:none;padding:4px 14px 16px 14px;border-top:1px solid #1a2534}
@@ -115,7 +108,6 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 .admin-field{margin-bottom:10px}
 .admin-field label{display:block;font-size:11px;color:var(--muted);margin-bottom:4px}
 .admin-field input,.admin-field select,.admin-field textarea{width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px 10px;border-radius:8px;outline:none;font-size:13px}
-.admin-field input:focus{border-color:var(--gold)}
 .admin-btn-row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
 .admin-btn{flex:1;padding:10px;border-radius:10px;border:0;font-weight:700;font-size:13px;cursor:pointer;min-width:80px}
 .admin-btn.primary{background:var(--blue);color:#fff}
@@ -200,10 +192,9 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 .next-level-box .nl-title{color:#7dd3fc;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px}
 .next-level-box .nl-row{display:flex;align-items:center;gap:10px;padding:6px 0;font-size:12px;color:#cfd8e4}
 .next-level-box .nl-row .nl-icon{flex:0 0 20px;text-align:center;font-size:14px}
-.next-level-box .nl-row .nl-text{flex:1;min-width:0}
-.next-level-box .nl-row .nl-text b{color:#fff}
+.next-level-box .nl-text{flex:1;min-width:0}
+.next-level-box .nl-text b{color:#fff}
 .next-level-box .nl-row.done .nl-text{color:#39d98a}
-.next-level-box .nl-row.done .nl-text b{color:#39d98a}
 .order{background:linear-gradient(145deg,#1b2636,#111925);border:1px solid var(--line);border-radius:16px;margin-bottom:10px;padding:12px 14px;cursor:pointer}
 .order .oh{display:flex;flex-direction:column;gap:4px}
 .order .om{font-weight:700;color:#fff;font-size:14px}
@@ -218,7 +209,6 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 .order-actions{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
 .order-actions button{flex:1;padding:10px;font-size:12px;font-weight:700;border-radius:10px;border:0;cursor:pointer;background:var(--blue);color:#fff;min-width:80px}
 .price-hint{background:linear-gradient(135deg,#1a2e1a,#0d1f0d);border:1px solid var(--green);border-radius:10px;padding:10px;margin-top:8px;font-size:11px}
-.price-hint b{color:#39d98a}
 .price-range{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:8px}
 .price-range button{padding:8px 4px;font-size:11px;background:#1e2530;border:1px solid var(--line);border-radius:8px;color:#fff;cursor:pointer}
 .price-range button.green{background:#1e4620;border-color:#39d98a}
@@ -245,6 +235,7 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 <div id="msg" class="msg-toast"></div>
 <div class="app">
 
+<!-- ═══════ HOME ═══════ -->
 <div id="view-home">
 <div id="topBannersList"></div>
 <div class="logo">⚔️ ТЕЛЕПАТ</div>
@@ -264,6 +255,7 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 </div>
 <div class="profile-icons-row">
 <button class="profile-icon-btn" onclick="openTelegramProfile()"><span>👤</span><span class="pi-label">Профиль</span></button>
+<button class="profile-icon-btn" onclick="openWallet()"><span>💼</span><span class="pi-label">Кошелёк</span></button>
 <button class="profile-icon-btn" onclick="openHistory()"><span>📜</span><span class="pi-label">История</span></button>
 <button class="profile-icon-btn" onclick="showFAQ()"><span>❓</span><span class="pi-label">Помощь</span></button>
 <button class="profile-icon-btn" onclick="openSettings()"><span>⚙️</span><span class="pi-label">Настройки</span></button>
@@ -338,10 +330,10 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 <button class="quick-btn" onclick="goView('friends')"><span class="icon">👥</span> Друзья</button>
 <button class="quick-btn" onclick="goView('rating')"><span class="icon">🏆</span> Топ-100</button>
 <button class="quick-btn" onclick="quickSwap()"><span class="icon">🔄</span> Обмен</button>
-<button class="quick-btn" onclick="quickCheckin()"><span class="icon">🔥</span> Чекин</button>
+<button class="quick-btn" onclick="openWallet()"><span class="icon">💼</span> Кошелёк</button>
 </div>
 </div>
-
+<!-- ═══════ SHOP ═══════ -->
 <div id="view-shop" class="hidden">
 <h2>🏪 Магазин</h2>
 <div class="tabs" id="shopTabs">
@@ -354,6 +346,7 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 <div id="shopContent"></div>
 </div>
 
+<!-- ═══════ INCOME ═══════ -->
 <div id="view-income" class="hidden">
 <h2>🎯 Доход</h2>
 <div class="tabs tabs-4" id="incomeTabs">
@@ -368,6 +361,7 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 <div id="incomeContent"></div>
 </div>
 
+<!-- ═══════ FRIENDS ═══════ -->
 <div id="view-friends" class="hidden">
 <h2>👥 Друзья</h2>
 <div class="item-card">
@@ -393,6 +387,7 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 </div>
 </div>
 
+<!-- ═══════ RATING ═══════ -->
 <div id="view-rating" class="hidden">
 <h2>🏆 Рейтинг</h2>
 <div class="tabs tabs-2" id="ratingTabs">
@@ -402,6 +397,7 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 <div id="ratingContent"></div>
 </div>
 
+<!-- ═══════ CHAT BONUS ═══════ -->
 <div id="view-chatbonus" class="hidden">
 <h2>🎁 Заказать раздачу</h2>
 <div class="item-card">
@@ -459,7 +455,7 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 <button class="admin-btn sec" style="width:100%;margin-top:8px" onclick="loadMyChatBonus()">🔄 Обновить</button>
 </div>
 </div>
-
+<!-- ═══════ ADMIN ═══════ -->
 <div id="view-admin" class="hidden">
 <h2>👑 Админ-панель</h2>
 
@@ -470,6 +466,76 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 <div style="margin-top:12px"><div class="title" style="font-size:12px;margin-bottom:6px">📢 Рекламный счёт</div><div id="adsBalanceList"><div class="info">Загрузка...</div></div></div>
 <div style="margin-top:14px"><div class="title" style="font-size:12px;margin-bottom:6px">💰 Основной счёт</div><div id="mainBalanceList"><div class="info">Загрузка...</div></div></div>
 <button class="admin-btn gold" style="width:100%;margin-top:12px" onclick="openAdsTransferModal()">📤 Перевести с рекламного на основной</button>
+</div>
+</div>
+
+<!-- NEW: КОШЕЛЁК -->
+<div class="acc-item" id="acc-wallet">
+<div class="acc-header" onclick="toggleAcc('acc-wallet')"><span>💼 Кошелёк — ввод/вывод</span><span class="acc-arrow">▶</span></div>
+<div class="acc-body">
+<button class="admin-btn sec" style="width:100%" onclick="loadAdminWalletFlags();loadAdminWithdrawals();loadAdminTokensForWallet();loadAdminReceiveWallets();loadAdminDeposits()">🔄 Обновить всё</button>
+
+<div style="margin-top:14px">
+<div class="title" style="font-size:12px;margin-bottom:8px">⚙️ Глобальные тумблеры</div>
+<label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px">Кошелёк доступен юзерам</label>
+<select id="wf_enabled" onchange="saveAdminWalletFlag('wallet_enabled',this.value==='true')" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+<option value="true">✅ Да</option><option value="false">❌ Нет</option>
+</select>
+<label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">Вывод включён</label>
+<select id="wf_withdraw" onchange="saveAdminWalletFlag('wallet_withdraw_enabled',this.value==='true')" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+<option value="true">✅ Да</option><option value="false">❌ Нет</option>
+</select>
+<label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">Пополнение включено</label>
+<select id="wf_deposit" onchange="saveAdminWalletFlag('wallet_deposit_enabled',this.value==='true')" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+<option value="true">✅ Да</option><option value="false">❌ Нет</option>
+</select>
+</div>
+
+<div style="margin-top:16px;padding-top:12px;border-top:1px solid #2d3a4c">
+<div class="title" style="font-size:12px;margin-bottom:8px">📍 Мои кошельки для приёма пополнений</div>
+<div class="info" style="font-size:11px;margin-bottom:8px">Сюда юзеры будут переводить крипту. В боте они увидят адрес + инструкцию.</div>
+<div id="adminReceiveWallets"><div class="info">Загрузка...</div></div>
+<div style="margin-top:10px;padding-top:10px;border-top:1px dashed #2d3a4c">
+<label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px">Токен (TUSD / TG / AI / другой)</label>
+<input id="rw_token" placeholder="TUSD" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+<label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">Адрес кошелька</label>
+<input id="rw_addr" placeholder="UQ... / EQ... / 0x..." style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px;font-size:12px">
+<label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">Memo (если нужен)</label>
+<input id="rw_memo" placeholder="Необязательно" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px;font-size:12px">
+<label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">Инструкция для юзера</label>
+<input id="rw_inst" placeholder="Обязательно укажите ID" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px;font-size:12px">
+<button class="admin-btn gold" style="width:100%;margin-top:8px" onclick="saveReceiveWallet()">💾 Сохранить / обновить</button>
+<div id="rw_status" class="info" style="margin-top:6px;text-align:center"></div>
+</div>
+</div>
+
+<div style="margin-top:16px;padding-top:12px;border-top:1px solid #2d3a4c">
+<div class="title" style="font-size:12px;margin-bottom:8px">📥 Заявки на ПОПОЛНЕНИЕ</div>
+<div style="display:flex;gap:6px;margin-bottom:8px">
+<button class="admin-btn sm sec" onclick="loadAdminDeposits()">Все</button>
+<button class="admin-btn sm sec" onclick="loadAdminDeposits('pending')">⏳</button>
+<button class="admin-btn sm sec" onclick="loadAdminDeposits('approved')">✅</button>
+<button class="admin-btn sm sec" onclick="loadAdminDeposits('rejected')">❌</button>
+</div>
+<div id="adminDepList"><div class="info">Загрузка...</div></div>
+</div>
+
+<div style="margin-top:16px;padding-top:12px;border-top:1px solid #2d3a4c">
+<div class="title" style="font-size:12px;margin-bottom:8px">📤 Заявки на ВЫВОД</div>
+<div style="display:flex;gap:6px;margin-bottom:8px">
+<button class="admin-btn sm sec" onclick="loadAdminWithdrawals()">Все</button>
+<button class="admin-btn sm sec" onclick="loadAdminWithdrawals('pending')">⏳</button>
+<button class="admin-btn sm sec" onclick="loadAdminWithdrawals('approved')">✅</button>
+<button class="admin-btn sm sec" onclick="loadAdminWithdrawals('rejected')">❌</button>
+</div>
+<div id="adminWdList"><div class="info">Загрузка...</div></div>
+</div>
+
+<div style="margin-top:16px;padding-top:12px;border-top:1px solid #2d3a4c">
+<div class="title" style="font-size:12px;margin-bottom:8px">🪙 Активные токены для вывода</div>
+<div class="info" style="font-size:11px;margin-bottom:8px">Отключённый токен нельзя вывести</div>
+<div id="adminWalletTokens"><div class="info">Загрузка...</div></div>
+</div>
 </div>
 </div>
 
@@ -681,7 +747,7 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 </div>
 
 <div class="acc-item" id="acc-ads">
-<div class="acc-header" onclick="toggleAcc('acc-ads')"><span>📢 Реклама (баннеры, видео)</span><span class="acc-arrow">▶</span></div>
+<div class="acc-header" onclick="toggleAcc('acc-ads')"><span>📢 Реклама (видео/баннеры)</span><span class="acc-arrow">▶</span></div>
 <div class="acc-body">
 <div class="title" style="font-size:12px;margin-bottom:6px">Заявки на рекламу</div>
 <button class="admin-btn sec" style="width:100%" onclick="adminAdLoad()">🔄 Загрузить все</button>
@@ -691,6 +757,20 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 <button class="admin-btn sm sec" onclick="adminAdLoad('paused')">⏸</button>
 </div>
 <div id="adminAdsList" style="margin-top:12px"></div>
+
+<div style="margin-top:16px;padding-top:14px;border-top:1px solid #2d3a4c">
+<div class="title" style="font-size:13px;margin-bottom:8px">➕ Добавить видео рекламу</div>
+<input id="ad_new_title" placeholder="Название" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px;margin-bottom:8px">
+<input id="ad_new_desc" placeholder="Описание" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px;margin-bottom:8px">
+<input id="ad_new_video" type="file" accept="video/mp4" style="width:100%;padding:6px;color:#fff;font-size:12px;margin-bottom:8px">
+<input id="ad_new_url" placeholder="https://t.me/..." style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px;margin-bottom:8px">
+<input id="ad_new_reward" type="number" step="0.0001" value="0.0005" placeholder="Награда за просмотр" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px;margin-bottom:8px">
+<input id="ad_new_actions" type="number" value="10000" placeholder="Кол-во просмотров" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px;margin-bottom:8px">
+<input id="ad_new_duration" type="number" value="15" min="5" max="60" placeholder="Длительность (сек)" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px;margin-bottom:8px">
+<button id="ad_new_submit" class="admin-btn gold" style="width:100%" onclick="adminCreateAd()">📤 Загрузить и создать</button>
+<div id="ad_new_status" class="info" style="margin-top:8px"></div>
+</div>
+
 <div style="margin-top:16px;padding-top:14px;border-top:1px solid #2d3a4c">
 <div class="title" style="font-size:12px;margin-bottom:6px">Настройки баннера</div>
 <label style="display:block;font-size:11px;color:var(--muted)">Высота — <span id="bnHS">110</span></label>
@@ -699,24 +779,11 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 <input type="range" id="bnR" min="0" max="40" value="14" oninput="document.getElementById('bnRS').textContent=this.value" style="width:100%">
 <label style="display:block;font-size:11px;color:var(--muted);margin-top:8px">Заголовок — <span id="bnTS">17</span></label>
 <input type="range" id="bnT" min="12" max="32" value="17" oninput="document.getElementById('bnTS').textContent=this.value" style="width:100%">
-<label style="display:block;font-size:11px;color:var(--muted);margin-top:8px">Кол-во баннеров</label>
-<select id="bnCount" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px;margin-top:4px">
-<option value="1">1</option><option value="2">2</option><option value="3">3</option>
-</select>
 <div class="admin-btn-row">
 <button class="admin-btn gold" onclick="saveBannerSettings()">💾 Сохранить</button>
 <button class="admin-btn sec" onclick="loadBannerSettings()">↺</button>
 </div>
 <div id="bnSetStatus" class="info" style="margin-top:8px;text-align:center"></div>
-</div>
-<div style="margin-top:16px;padding-top:14px;border-top:1px solid #2d3a4c">
-<div class="title" style="font-size:12px;margin-bottom:6px">Добавить рекламу</div>
-<input id="ad_new_title" placeholder="Название" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px;margin-bottom:8px">
-<input id="ad_new_desc" placeholder="Описание" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px;margin-bottom:8px">
-<input id="ad_new_video" type="file" accept="video/mp4" style="width:100%;padding:6px;color:#fff;font-size:12px;margin-bottom:8px">
-<input id="ad_new_url" placeholder="https://t.me/..." style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px;margin-bottom:8px">
-<button id="ad_new_submit" class="admin-btn gold" style="width:100%" onclick="adminCreateAd()">📤 Загрузить и создать</button>
-<div id="ad_new_status" class="info" style="margin-top:8px"></div>
 </div>
 </div>
 </div>
@@ -740,9 +807,9 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 <div id="uiSettingsStatus" class="info" style="margin-top:8px;text-align:center"></div>
 </div>
 </div>
-
 </div>
 
+<!-- МОДАЛКИ -->
 <div id="modal" class="modal-overlay" onclick="closeModal(event)"><div class="modal-box" id="modalBox" onclick="event.stopPropagation()"></div></div>
 
 <div id="historyModal" class="modal-overlay" onclick="closeHistory(event)">
@@ -820,6 +887,7 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 </div>
 </div>
 
+<!-- НИЖНЕЕ МЕНЮ -->
 <div class="bottom-nav">
 <button class="nav-btn active" id="nav-home" onclick="goView('home')"><span class="nav-icon">🏠</span> Дом</button>
 <button class="nav-btn" id="nav-shop" onclick="goView('shop')"><span class="nav-icon">🏪</span> Магазин</button>
@@ -839,8 +907,6 @@ const DAY_MS=86400000;
 const TASK_CHECK_DELAY=5000;
 const HISTORY_LIMIT=20;
 const BASE_VERIFIED=['TG','AI','TUSD'];
-const AD_VIEW_COOLDOWN=30;
-const AD_PER_CAMPAIGN_CD=300;
 
 let __jwt=sessionStorage.getItem('__jwt')||null;
 let ALL_TOKENS=[],CU=null,CB={},MY_ITEMS=[],SHOP_ITEMS=[],REWARD_FUNDS=[];
@@ -911,6 +977,7 @@ function priceOf(sym){
   return 1;
 }
 
+/* ═══════ SUPABASE ═══════ */
 async function refreshJwt(){
   const id=window.Telegram?.WebApp?.initData;
   if(!id) return null;
@@ -928,6 +995,7 @@ const tg=window.Telegram?.WebApp;if(tg){tg.ready();tg.expand();}
 const tgu=tg?.initDataUnsafe?.user||null;
 const UID=Number(tgu?.id||0);
 
+/* ═══════ LOADING ═══════ */
 async function loadAllTokens(){
   VERIFIED_SYMBOLS.clear();BASE_VERIFIED.forEach(s=>VERIFIED_SYMBOLS.add(s));
   try{
@@ -1017,6 +1085,7 @@ async function loadRewardFunds(){
   }catch(e){}
 }
 
+/* ═══════ NAVIGATION ═══════ */
 function goView(v){
   ['home','shop','income','friends','rating','chatbonus','admin'].forEach(x=>{
     const el=$('view-'+x);if(el) el.classList.toggle('hidden',x!==v);
@@ -1044,6 +1113,7 @@ function showFAQ(){msg('❓ @TELEPATp2p_bot');}
 function openSettings(){if(UID===AID) goView('admin');else msg('⚙️ Скоро');}
 function copyRefLink(){const inp=$('refLink');if(!inp) return;navigator.clipboard?.writeText(inp.value).then(()=>msg('Скопировано','success'),()=>{inp.select();document.execCommand('copy');msg('Скопировано','success');});}
 
+/* ═══════ PORTFOLIO ═══════ */
 function openPortfolio(){
   if(!CU){msg('Данные ещё не загружены','info');return;}
   const rows=[];
@@ -1084,6 +1154,7 @@ function openPortfolio(){
   openModal('💰 Мой портфель', html);
 }
 
+/* ═══════ HOME ═══════ */
 function setKnightSpeech(text){const el=$('knightSpeech');if(!el) return;if(el.textContent===text) return;el.textContent=text;}
 function renderHome(){
   if(!CU) return;
@@ -1198,6 +1269,7 @@ async function sellMyItem(itemId){
   await refreshAll();
 }
 
+/* ═══════ CHAT BONUS ═══════ */
 async function renderChatBonus(){fillChatBonusTokenSelect();await loadMyChatBonus();}
 function fillChatBonusTokenSelect(){
   const sel=$('cb_pay_token');if(!sel) return;
@@ -1299,6 +1371,7 @@ async function loadMyChatBonus(){
   }catch(e){box.innerHTML='<div class="info">Ошибка</div>';}
 }
 
+/* ═══════ SHOP ═══════ */
 function renderShop(){showShopTab(currentShopTab);}
 async function showShopTab(tab){
   currentShopTab=tab;
@@ -1386,6 +1459,7 @@ async function buyLicense(symbol,price){
   msg('✅ Куплено','success');await refreshAll();
 }
 
+/* ═══════ INCOME ═══════ */
 function renderIncome(){showIncomeTab(currentIncomeTab);}
 async function showIncomeTab(tab){
   currentIncomeTab=tab;
@@ -1496,7 +1570,7 @@ ${tasks.length?tasks.map(t=>`<div class="task ${t.is_completed?'done':''}" oncli
     c.innerHTML=`
 <div class="item-card" style="border-color:var(--gold)">
 <div class="item-header"><b>📺 Смотреть рекламу</b>${cdBadge}</div>
-<div class="ad-stat-row"><span>Доступно сейчас:</span><b style="color:${adReady?'#39d98a':'#f4cf70'}">${nextAd?esc(nextAd.title):'—'}</b></div>
+<div class="ad-stat-row"><span>Доступно сейчас:</span><b style="color:${adReady?'#39d98a':'#f4cf70'}">${nextAd&&nextAd.title?esc(nextAd.title):'—'}</b></div>
 <div class="ad-stat-row"><span>Награда за просмотр:</span><b style="color:#39d98a">+${f(settings.reward_per_view,5)} TUSD → в стейкинг</b></div>
 <div class="ad-stat-row"><span>Просмотров сегодня:</span><b>${todayCount}/${settings.daily_limit}</b></div>
 <div class="ad-stat-row"><span>Кулдаун между роликами:</span><b>${settings.cooldown_seconds} сек</b></div>
@@ -1504,7 +1578,7 @@ ${tasks.length?tasks.map(t=>`<div class="task ${t.is_completed?'done':''}" oncli
 </div>
 <div class="item-card"><div class="item-header"><b>⚡ Быстрые действия</b></div>
 <div class="qa">
-<button class="qb" onclick="showIncomeTab('p2p')"><span class="qi">🔄</span>ОБМЕН</button>
+<button class="qb" onclick="openWallet()"><span class="qi">💼</span>КОШЕЛЁК</button>
 <button class="qb" onclick="showIncomeTab('staking')"><span class="qi">💧</span>ПУЛЫ</button>
 <button class="qb gold" onclick="watchAd()"><span class="qi">📺</span>РЕКЛАМА</button>
 <button class="qb gold" onclick="openTasksModal()"><span class="qi">📋</span>ЗАДАНИЯ</button>
@@ -1517,21 +1591,22 @@ ${tasks.length?tasks.map(t=>`<div class="task ${t.is_completed?'done':''}" oncli
   }
 }
 
-let __P2P_ALL_ORDERS = [];
+/* ═══════ P2P ═══════ */
+let __P2P_ALL_ORDERS=[];
 async function renderP2PContent(container){
-  const tabsHtml = `
+  const tabsHtml=`
 <div class="tabs tabs-3" style="margin-bottom:12px">
 <button class="tab ${currentP2PTab==='all'?'active':''}" onclick="switchP2PTab('all')"><span class="tab-icon">🌐</span>Все</button>
 <button class="tab ${currentP2PTab==='mine'?'active':''}" onclick="switchP2PTab('mine')"><span class="tab-icon">📋</span>Мои</button>
 <button class="tab tab-gold" onclick="switchP2PTab('create')"><span class="tab-icon">➕</span>Создать</button>
 </div>
 <div id="p2pList"></div>`;
-  container.innerHTML = tabsHtml;
+  container.innerHTML=tabsHtml;
   await renderP2PList();
 }
 async function switchP2PTab(t){
   if(t==='create'){openCreateOrder();return;}
-  currentP2PTab = t;
+  currentP2PTab=t;
   const tabsEls=document.querySelectorAll('#incomeContent .tabs .tab');
   if(tabsEls.length>=2){
     tabsEls[0].classList.toggle('active',t==='all');
@@ -1540,27 +1615,27 @@ async function switchP2PTab(t){
   await renderP2PList();
 }
 async function renderP2PList(){
-  const box = $('p2pList'); if(!box) return;
+  const box=$('p2pList');if(!box) return;
   box.innerHTML='<div class="item-card"><div class="item-desc">Загрузка...</div></div>';
-  let orders = [];
+  let orders=[];
   try{
-    const r = await sb.from('p2p_orders').select('*').limit(500);
+    const r=await sb.from('p2p_orders').select('*').limit(500);
     if(!r.error && Array.isArray(r.data)){
-      orders = r.data.filter(o=>String(o.status||'').toLowerCase()==='open');
+      orders=r.data.filter(o=>String(o.status||'').toLowerCase()==='open');
     }
   }catch(e){}
   if(!orders.length){
     try{
-      const r2 = await sb.rpc('get_p2p_orders',{p_from_token:null,p_to_token:null,p_sort:'rank'});
+      const r2=await sb.rpc('get_p2p_orders',{p_from_token:null,p_to_token:null,p_sort:'rank'});
       if(!r2.error && Array.isArray(r2.data)) orders=r2.data;
     }catch(e){}
   }
   if(orders.length){
     try{
       const ids=[...new Set(orders.map(o=>Number(o.creator_id)).filter(Boolean))];
-      const u = await sb.from('users').select('telegram_id,username,first_name,rank_name,rank_level,trades_new').in('telegram_id',ids);
-      const map={}; (u.data||[]).forEach(x=>{map[String(x.telegram_id)]=x;});
-      orders = orders.map(o=>{
+      const u=await sb.from('users').select('telegram_id,username,first_name,rank_name,rank_level,trades_new').in('telegram_id',ids);
+      const map={};(u.data||[]).forEach(x=>{map[String(x.telegram_id)]=x;});
+      orders=orders.map(o=>{
         const uu=map[String(o.creator_id)]||{};
         const fromA=n(o.from_amount),toA=n(o.to_amount);
         return Object.assign({},o,{
@@ -1573,23 +1648,23 @@ async function renderP2PList(){
       });
     }catch(e){}
   }
-  __P2P_ALL_ORDERS = orders;
+  __P2P_ALL_ORDERS=orders;
   if(currentP2PTab==='mine'){
-    orders = orders.filter(o=>String(o.creator_id)===String(UID));
+    orders=orders.filter(o=>String(o.creator_id)===String(UID));
   } else {
-    const my = orders.filter(o=>String(o.creator_id)===String(UID));
-    const other = orders.filter(o=>String(o.creator_id)!==String(UID));
-    orders = [...my, ...other];
+    const my=orders.filter(o=>String(o.creator_id)===String(UID));
+    const other=orders.filter(o=>String(o.creator_id)!==String(UID));
+    orders=[...my,...other];
   }
   if(!orders.length){
     if(currentP2PTab==='mine'){
-      box.innerHTML = `<div class="item-card"><div class="item-desc" style="text-align:center">У тебя пока нет своих ордеров.<br>Нажми <b>➕ Создать</b> чтобы создать первый.</div></div>`;
+      box.innerHTML=`<div class="item-card"><div class="item-desc" style="text-align:center">У тебя пока нет своих ордеров.<br>Нажми <b>➕ Создать</b> чтобы создать первый.</div></div>`;
     }else{
-      box.innerHTML = `<div class="item-card"><div class="item-desc" style="text-align:center">Ордеров пока нет.<br>Нажми <b>➕ Создать</b> чтобы создать первый.</div></div>`;
+      box.innerHTML=`<div class="item-card"><div class="item-desc" style="text-align:center">Ордеров пока нет.<br>Нажми <b>➕ Создать</b> чтобы создать первый.</div></div>`;
     }
     return;
   }
-  box.innerHTML = orders.map(o=>orderCard(o)).join('');
+  box.innerHTML=orders.map(o=>orderCard(o)).join('');
 }
 function orderCard(o){
   ORDER_CACHE[String(o.id)]=o;
@@ -1742,6 +1817,7 @@ async function confirmBuyOrder(){
   }catch(e){$('buyStatus').innerHTML='<span class="er">'+esc(e.message)+'</span>';btn.disabled=false;}
 }
 
+/* ═══════ SWAP ═══════ */
 function calcSwap(){if(SWAP_QUOTE_TIMER) clearTimeout(SWAP_QUOTE_TIMER);SWAP_QUOTE_TIMER=setTimeout(fetchSwapQuote,300);}
 async function fetchSwapQuote(){
   const inp=$('swFromAmt');if(!inp) return;
@@ -1804,7 +1880,7 @@ async function doSwap(){
     if(currentIncomeTab==='swap') await showIncomeTab('swap');
   }catch(e){msg(e.message||'Ошибка','error');SWAP_BUSY=false;if(btn)btn.textContent='Обменять';}
 }
-
+  /* ═══════ FRIENDS ═══════ */
 async function renderFriends(){
   if(UID) $('refLink').value=`https://t.me/TELEPATp2p_bot?start=${UID}`;
   const summary=$('refSummary'),list=$('refList');
@@ -1848,6 +1924,7 @@ async function loadReferralEarningsSummary(){
 }
 async function loadMyReferrals(){renderFriends();}
 
+/* ═══════ RATING ═══════ */
 function renderRating(){showRatingTab(currentRatingTab);}
 async function showRatingTab(tab){
   currentRatingTab=tab;
@@ -1856,8 +1933,8 @@ async function showRatingTab(tab){
   c.innerHTML='<div class="item-card"><div class="item-desc">Загрузка...</div></div>';
   let list=[];
   try{
-    const rpcName = tab==='refs' ? 'get_leaderboard_referrals' : 'get_leaderboard_earnings';
-    const r = await sb.rpc(rpcName,{p_limit:100});
+    const rpcName=tab==='refs'?'get_leaderboard_referrals':'get_leaderboard_earnings';
+    const r=await sb.rpc(rpcName,{p_limit:100});
     if(!r.error&&r.data){
       if(Array.isArray(r.data)) list=r.data;
       else if(r.data.ok&&Array.isArray(r.data.items)) list=r.data.items;
@@ -1876,7 +1953,7 @@ async function showRatingTab(tab){
   }
   if(!list.length){c.innerHTML='<div class="item-card"><div class="item-desc">Пока нет данных</div></div>';return;}
   const medals=['🥇','🥈','🥉'];
-  const title = tab==='refs'?'👥 Топ-100 по приглашённым':'💰 Топ-100 по заработку';
+  const title=tab==='refs'?'👥 Топ-100 по приглашённым':'💰 Топ-100 по заработку';
   c.innerHTML=`<div class="item-card"><div class="item-desc" style="text-align:center">${title}</div></div>`+
     list.map((u,i)=>{
       const place=medals[i]||('#'+(i+1));
@@ -1897,10 +1974,16 @@ async function showRatingTab(tab){
     }).join('');
 }
 
+/* ═══════ ADMIN — базовый рендер ═══════ */
 function renderAdmin(){
   if(UID!==AID){msg('Нет доступа','error');return;}
   loadAdminRevenue();
   loadAdminAccounts();
+  loadAdminWalletFlags();
+  loadAdminWithdrawals();
+  loadAdminTokensForWallet();
+  loadAdminReceiveWallets();
+  loadAdminDeposits();
 }
 async function loadAdminAccounts(){
   const adsBox=$('adsBalanceList'),mainBox=$('mainBalanceList');
@@ -1946,6 +2029,145 @@ async function confirmAdsTransfer(){
   msg(`✅ ${f(amt,6)} ${tk} → на основной счёт`,'success');
   setTimeout(()=>{closeModal();loadAdminAccounts();},700);
 }
+
+/* ═══════ ADMIN — кошелёк ═══════ */
+async function loadAdminWalletFlags(){
+  try{
+    const{data}=await sb.rpc('get_wallet_status');
+    if(!data||data.ok===false) return;
+    if($('wf_enabled')) $('wf_enabled').value=data.enabled?'true':'false';
+    if($('wf_withdraw')) $('wf_withdraw').value=data.withdraw_enabled?'true':'false';
+    if($('wf_deposit')) $('wf_deposit').value=data.deposit_enabled?'true':'false';
+  }catch(e){}
+}
+async function saveAdminWalletFlag(key,value){
+  const{data,error}=await sb.rpc('admin_set_wallet_flag',{p_key:key,p_value:value});
+  if(error||!data||data.ok===false){msg('Ошибка','error');return;}
+  msg(`✅ ${key} = ${value}`,'success');
+}
+async function loadAdminWithdrawals(status){
+  const box=$('adminWdList'); if(!box) return;
+  box.innerHTML='Загрузка...';
+  try{
+    const{data,error}=await sb.rpc('admin_list_withdrawals',{p_status:status||null});
+    if(error||!data||data.ok===false){box.innerHTML='<div class="info">Ошибка</div>';return;}
+    const items=data.items||[];
+    if(!items.length){box.innerHTML='<div class="info">Заявок нет</div>';return;}
+    const ST={pending:'⏳ ОЖИДАЕТ',approved:'✅ ОДОБРЕНА',rejected:'❌ ОТКЛОНЕНА'};
+    box.innerHTML=items.map(w=>`<div class="pc">
+      <div class="pt">${esc(w.token_symbol)} — ${f(w.amount,8)}</div>
+      <div class="info">👤 ${esc(w.username||w.first_name||w.telegram_id)} • ID ${w.telegram_id}</div>
+      <div class="info" style="font-size:11px;word-break:break-all">💼 ${esc(w.wallet_address||'')}</div>
+      <div class="info" style="color:${w.status==='pending'?'#f4cf70':(w.status==='approved'?'#39d98a':'#f6465d')}">${ST[w.status]||w.status}</div>
+      <div class="info" style="font-size:10px">${new Date(w.created_at).toLocaleString('ru-RU')}</div>
+      ${w.status==='pending'?`<div class="admin-btn-row"><button class="admin-btn sm gold" onclick="doApproveWd('${w.id}')">✅ Одобрить</button><button class="admin-btn sm danger" onclick="doRejectWd('${w.id}')">❌ Отклонить</button></div>`:''}
+    </div>`).join('');
+  }catch(e){box.innerHTML='Ошибка';}
+}
+async function doApproveWd(id){
+  if(!confirm('Одобрить вывод? Отправь крипту вручную на адрес.')) return;
+  const{data,error}=await sb.rpc('admin_approve_withdrawal',{p_id:id});
+  if(error||!data||data.ok===false){msg('Ошибка','error');return;}
+  msg('✅ Одобрено','success');loadAdminWithdrawals();
+}
+async function doRejectWd(id){
+  const reason=prompt('Причина отклонения:')||'Отклонено';
+  const{data,error}=await sb.rpc('admin_reject_withdrawal',{p_id:id,p_reason:reason});
+  if(error||!data||data.ok===false){msg('Ошибка','error');return;}
+  msg('❌ Отклонено (возврат выполнен)','success');loadAdminWithdrawals();
+}
+async function loadAdminTokensForWallet(){
+  const box=$('adminWalletTokens'); if(!box) return;
+  box.innerHTML='Загрузка...';
+  try{
+    const{data}=await sb.from('telepat_tokens').select('id,symbol,name,active,min_withdrawal,price_tusd').order('symbol');
+    if(!data||!data.length){box.innerHTML='<div class="info">Нет токенов</div>';return;}
+    box.innerHTML=data.map(t=>`<div class="pc">
+      <div class="pt">${esc(t.symbol)} — ${esc(t.name||'')}</div>
+      <div class="info" style="font-size:11px">Мин. вывод: ${f(t.min_withdrawal,4)} • Курс: $${f(t.price_tusd,8)}</div>
+      <div class="admin-btn-row">
+        <button class="admin-btn sm ${t.active?'gold':'sec'}" onclick="toggleWalletToken('${t.id}',${!t.active})">${t.active?'✅ Активен':'❌ Отключён'}</button>
+      </div>
+    </div>`).join('');
+  }catch(e){box.innerHTML='Ошибка';}
+}
+async function toggleWalletToken(id,active){
+  const{error}=await sb.from('telepat_tokens').update({active}).eq('id',id);
+  if(error){msg(error.message,'error');return;}
+  msg(active?'✅ Включён':'❌ Отключён','success');
+  loadAdminTokensForWallet();
+}
+async function loadAdminReceiveWallets(){
+  const box=$('adminReceiveWallets'); if(!box) return;
+  box.innerHTML='Загрузка...';
+  try{
+    const{data}=await sb.rpc('admin_list_receive_wallets');
+    if(!data||data.ok===false){box.innerHTML='Ошибка';return;}
+    const items=data.items||[];
+    if(!items.length){box.innerHTML='<div class="info">Нет кошельков</div>';return;}
+    box.innerHTML=items.map(w=>`<div class="pc">
+      <div class="pt">${esc(w.token_symbol)} ${w.active?'✅':'❌'}</div>
+      <div class="info" style="font-size:11px;word-break:break-all">📍 ${esc(w.wallet_address)}</div>
+      ${w.memo?`<div class="info" style="font-size:11px">📝 ${esc(w.memo)}</div>`:''}
+      ${w.instruction?`<div class="info" style="font-size:10px">${esc(w.instruction)}</div>`:''}
+      <div class="admin-btn-row"><button class="admin-btn sm danger" onclick="deleteReceiveWallet('${esc(w.token_symbol)}')">🗑 Удалить</button></div>
+    </div>`).join('');
+  }catch(e){box.innerHTML='Ошибка';}
+}
+async function saveReceiveWallet(){
+  const token=$('rw_token')?.value?.trim();
+  const addr=$('rw_addr')?.value?.trim();
+  const memo=$('rw_memo')?.value?.trim()||null;
+  const inst=$('rw_inst')?.value?.trim()||null;
+  const st=$('rw_status');
+  if(!token||!addr){st.textContent='Заполни токен и адрес';return;}
+  st.textContent='Сохранение...';
+  const{data,error}=await sb.rpc('admin_set_receive_wallet',{p_token:token,p_address:addr,p_memo:memo,p_instruction:inst,p_active:true});
+  if(error||!data||data.ok===false){st.textContent='Ошибка: '+(data?.error||error?.message);return;}
+  st.innerHTML='<span class="ok">✅ Сохранено</span>';
+  $('rw_token').value='';$('rw_addr').value='';$('rw_memo').value='';$('rw_inst').value='';
+  loadAdminReceiveWallets();
+}
+async function deleteReceiveWallet(token){
+  if(!confirm('Удалить кошелёк для '+token+'?')) return;
+  const{data,error}=await sb.rpc('admin_delete_receive_wallet',{p_token:token});
+  if(error||!data||data.ok===false){msg('Ошибка','error');return;}
+  msg('Удалён','success');loadAdminReceiveWallets();
+}
+async function loadAdminDeposits(status){
+  const box=$('adminDepList'); if(!box) return;
+  box.innerHTML='Загрузка...';
+  try{
+    const{data,error}=await sb.rpc('admin_list_deposits',{p_status:status||null});
+    if(error||!data||data.ok===false){box.innerHTML='Ошибка';return;}
+    const items=data.items||[];
+    if(!items.length){box.innerHTML='<div class="info">Заявок нет</div>';return;}
+    const ST={pending:'⏳ ОЖИДАЕТ',approved:'✅ ЗАЧИСЛЕНО',rejected:'❌ ОТКЛОНЕНО'};
+    box.innerHTML=items.map(w=>`<div class="pc">
+      <div class="pt">${esc(w.token_symbol)} — ${f(w.amount,8)}</div>
+      <div class="info">👤 ${esc(w.username||w.first_name||w.telegram_id)} • ID ${w.telegram_id}</div>
+      ${w.tx_hash?`<div class="info" style="font-size:10px;word-break:break-all">Tx: ${esc(w.tx_hash)}</div>`:''}
+      ${w.user_comment?`<div class="info" style="font-size:11px">💬 ${esc(w.user_comment)}</div>`:''}
+      <div class="info" style="color:${w.status==='pending'?'#f4cf70':(w.status==='approved'?'#39d98a':'#f6465d')}">${ST[w.status]||w.status}</div>
+      <div class="info" style="font-size:10px">${new Date(w.created_at).toLocaleString('ru-RU')}</div>
+      ${w.status==='pending'?`<div class="admin-btn-row"><button class="admin-btn sm gold" onclick="doApproveDep('${w.id}')">✅ Зачислить</button><button class="admin-btn sm danger" onclick="doRejectDep('${w.id}')">❌ Отклонить</button></div>`:''}
+    </div>`).join('');
+  }catch(e){box.innerHTML='Ошибка';}
+}
+async function doApproveDep(id){
+  if(!confirm('Подтвердить зачисление? Убедись что перевод реально пришёл.')) return;
+  const{data,error}=await sb.rpc('admin_approve_deposit',{p_id:id,p_comment:'OK'});
+  if(error||!data||data.ok===false){msg('Ошибка','error');return;}
+  msg('✅ Зачислено','success');loadAdminDeposits();
+}
+async function doRejectDep(id){
+  const reason=prompt('Причина отклонения:')||'Отклонено';
+  const{data,error}=await sb.rpc('admin_reject_deposit',{p_id:id,p_reason:reason});
+  if(error||!data||data.ok===false){msg('Ошибка','error');return;}
+  msg('❌ Отклонено','success');loadAdminDeposits();
+}
+
+/* ═══════ ADMIN — прочие разделы ═══════ */
 async function loadAdminItemPrices(){
   const box=$('adminItemPricesList');if(!box) return;
   const cat=$('adItemCat')?.value||'all';
@@ -2130,13 +2352,12 @@ async function loadAdminSettings(){
   try{
     const{data}=await sb.from('telepat_settings').select('*').order('setting_key');
     if(!data||!data.length){box.innerHTML='<div class="info">Нет настроек</div>';return;}
-    const skip=['banner_height','banner_radius','banner_title_size','banner_sub_size','banner_padding','banner_count','ui_bg','ui_bg_radial','ui_accent','ui_card'];
+    const skip=['banner_height','banner_radius','banner_title_size','banner_sub_size','banner_padding','banner_count','ui_bg','ui_bg_radial','ui_accent','ui_card','wallet_enabled','wallet_withdraw_enabled','wallet_deposit_enabled'];
     const items=data.filter(r=>!skip.includes(r.setting_key));
     box.innerHTML=items.map(r=>{
       const label=r.description||r.setting_key;
       const isPercent=r.setting_key.includes('percent')||r.setting_key.includes('pct')||r.setting_key.includes('commission');
-      const isFee=r.setting_key.includes('fee');
-      let suffix=isPercent?' %':(isFee?' TUSD':'');
+      const suffix=isPercent?' %':'';
       return `<div class="pc"><div class="pt" style="font-size:13px">${esc(label)}</div><div class="info" style="font-size:10px;color:#6a768a">${esc(r.setting_key)}</div>
       <div style="display:flex;gap:8px;margin-top:8px"><input type="number" id="set_${esc(r.setting_key)}" value="${esc(r.setting_value)}" step="any" style="flex:1;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px"><span style="align-self:center;color:var(--gold);font-weight:700;font-size:12px">${suffix}</span><button class="admin-btn sm gold" onclick="saveAdminSetting('${esc(r.setting_key)}')">💾</button></div></div>`;
     }).join('');
@@ -2404,6 +2625,8 @@ async function deleteAdminTask(id){
   if(error){msg(error.message,'error');return;}
   msg('🗑','success');await loadAdminTasks();
 }
+
+/* ═══════ ADMIN — реклама ═══════ */
 async function adminAdLoad(status){
   const box=$('adminAdsList');if(!box) return;
   box.innerHTML='Загрузка...';
@@ -2462,6 +2685,9 @@ async function adminCreateAd(){
   const desc=$('ad_new_desc').value.trim();
   const url=$('ad_new_url').value.trim();
   const file=$('ad_new_video').files[0];
+  const reward=n($('ad_new_reward')?.value)||0.0005;
+  const actions=Math.floor(n($('ad_new_actions')?.value))||10000;
+  const duration=Math.floor(n($('ad_new_duration')?.value))||15;
   if(!title||!url||!file){st.textContent='Заполните поля';return;}
   if(file.size>50*1024*1024){st.textContent='Видео > 50 МБ';return;}
   const btn=$('ad_new_submit');btn.disabled=true;st.textContent='Загрузка видео...';
@@ -2474,7 +2700,7 @@ async function adminCreateAd(){
     st.textContent='Создание...';
     const{data,error}=await sb.rpc('admin_create_ad_campaign',{
       p_title:title,p_description:desc,p_url:url,
-      p_video_url:urlData.publicUrl,p_reward:0.0005,p_actions:10000,p_duration:15
+      p_video_url:urlData.publicUrl,p_reward:reward,p_actions:actions,p_duration:duration
     });
     if(error){st.textContent='Ошибка: '+error.message;btn.disabled=false;return;}
     if(!data||data.ok===false){st.textContent='Ошибка: '+(data?.error||'unknown');btn.disabled=false;return;}
@@ -2499,11 +2725,10 @@ async function loadBannerSettings(){
   if(g('bnH')){g('bnH').value=BANNER_SETTINGS.height;g('bnHS').textContent=BANNER_SETTINGS.height;}
   if(g('bnR')){g('bnR').value=BANNER_SETTINGS.radius;g('bnRS').textContent=BANNER_SETTINGS.radius;}
   if(g('bnT')){g('bnT').value=BANNER_SETTINGS.title_size;g('bnTS').textContent=BANNER_SETTINGS.title_size;}
-  if(g('bnCount')) g('bnCount').value=String(BANNER_SETTINGS.count);
 }
 async function saveBannerSettings(){
   const st=$('bnSetStatus');if(st) st.textContent='Сохранение...';
-  const vals={banner_height:$('bnH').value,banner_radius:$('bnR').value,banner_title_size:$('bnT').value,banner_count:$('bnCount').value};
+  const vals={banner_height:$('bnH').value,banner_radius:$('bnR').value,banner_title_size:$('bnT').value};
   for(const[k,v] of Object.entries(vals)){
     const{data,error}=await sb.rpc('admin_set_app_setting',{p_key:k,p_value:String(v)});
     if(error||!data||data.ok===false){if(st) st.textContent='Ошибка';return;}
@@ -2561,6 +2786,8 @@ function applyUiColors(colors){
   document.body.style.background=`radial-gradient(circle at 50% -10%,${colors.ui_bg_radial} 0,${colors.ui_bg} 42%),${colors.ui_bg}`;
 }
 async function loadUiSettingsPublic(){try{const{data}=await sb.rpc('get_ui_settings');applyUiColors(Object.assign({},UI_DEFAULTS,data||{}));}catch(e){}}
+
+/* ═══════ HISTORY ═══════ */
 async function loadHistory(){
   const box=$('historyList');if(!box) return;
   box.innerHTML='Загрузка...';
@@ -2582,6 +2809,8 @@ async function loadHistory(){
     </div>`;
   }).join('');
 }
+
+/* ═══════ PROFILE ═══════ */
 async function openProfile(uid){
   $('profileModal').classList.add('show');
   $('profileRank').textContent='Загрузка...';
@@ -2598,6 +2827,8 @@ async function openProfile(uid){
   $('profileDislikes').textContent=n(p.dislikes);
 }
 function closeProfile(e){if(e&&e.target!==$('profileModal')) return;$('profileModal').classList.remove('show');}
+
+/* ═══════ WELCOME BONUS ═══════ */
 async function loadWelcomeBonusStatus(){
   const card=$('bonusCard');if(!card) return;
   card.style.display='none';
@@ -2626,7 +2857,133 @@ async function claimWelcomeBonus(){
   }else{msg(data?.message||'Не удалось','error');await loadWelcomeBonusStatus();}
 }
 
-/* ═══════ РЕКЛАМА — заказ юзером ═══════ */
+/* ═══════ ADS — просмотр ═══════ */
+async function fetchNextAd(){
+  try{
+    const{data,error}=await sb.rpc('get_active_ad',{p_telegram_id:UID});
+    if(!error && data){
+      if(data.ok===false){
+        return {__blocked:true, reason:data.reason, wait_seconds:data.wait_seconds, views_today:data.views_today, daily_limit:data.daily_limit};
+      }
+      const ad = data.campaign || data.ad || data;
+      if(ad && (ad.id || ad.campaign_id)) return ad;
+    }
+  }catch(e){}
+  try{
+    const{data,error}=await sb.from('telepat_ad_campaigns')
+      .select('*').eq('admin_status','approved').eq('payment_status','paid')
+      .not('video_url','is',null).limit(30);
+    if(error||!data||!data.length) return null;
+    const ready=data.filter(a=>{
+      if(a.campaign_type && a.campaign_type!=='video') return false;
+      if(!a.video_url) return false;
+      const done=Number(a.completed_actions||0),tgt=Number(a.target_actions||0);
+      if(tgt>0 && done>=tgt) return false;
+      return true;
+    });
+    if(!ready.length) return null;
+    return ready[Math.floor(Math.random()*ready.length)];
+  }catch(e){return null;}
+}
+function fmtAdTime(s){s=Math.max(0,Math.floor(s));const m=Math.floor(s/60),sec=s%60;return m+':'+String(sec).padStart(2,'0');}
+async function watchAd(){
+  if(!UID){msg('Открой через Telegram','error');return;}
+  let rewardPerView=0.00015,cooldownSec=30,dailyLimit=150,minDur=5,maxDur=60;
+  try{
+    const{data}=await sb.from('telepat_ad_settings').select('*').eq('id',1).maybeSingle();
+    if(data){
+      rewardPerView=Number(data.reward_per_view)||rewardPerView;
+      cooldownSec=Number(data.cooldown_seconds)||cooldownSec;
+      dailyLimit=Number(data.daily_limit)||dailyLimit;
+      minDur=Number(data.min_ad_duration)||minDur;
+      maxDur=Number(data.max_ad_duration)||maxDur;
+    }
+  }catch(e){}
+  msg('⏳ Загружаем рекламу...','info');
+  const ad=await fetchNextAd();
+  if(!ad){msg('📺 Сейчас нет доступной рекламы','info');return;}
+  if(ad.__blocked){
+    if(ad.reason==='daily_limit'){msg(`📊 Лимит на сегодня: ${ad.views_today}/${ad.daily_limit}`,'info');}
+    else if(ad.reason==='cooldown'){msg(`⏳ Подождите ${Math.ceil(ad.wait_seconds||30)} сек`,'info');}
+    else{msg('⏳ Сейчас нельзя смотреть','info');}
+    return;
+  }
+  __CURRENT_AD=ad;
+  const video=$('adVideo'),timerEl=$('adTimer'),statusEl=$('adStatus'),titleEl=$('adTitle'),btn=$('adClaimBtn'),bar=$('adProgressBar');
+  if(!video){msg('Ошибка плеера','error');return;}
+  const duration=Math.max(minDur, Math.min(maxDur, Number(ad.duration_seconds||15)));
+  __AD_TIME_LEFT=duration;
+  titleEl.textContent=ad.title||'Реклама';
+  statusEl.textContent=`⏳ Смотрите до конца · награда +${f(rewardPerView,5)} TUSD`;
+  statusEl.style.color='#e8e8e8';
+  btn.disabled=true;btn.textContent='🎁 ПОЛУЧИТЬ';
+  if(bar) bar.style.width='0%';
+  timerEl.textContent=fmtAdTime(__AD_TIME_LEFT);
+  video.pause();video.removeAttribute('src');video.load();
+  if(ad.video_url){
+    video.src=ad.video_url;video.muted=false;video.playsInline=true;
+    video.onerror=()=>{statusEl.textContent='❌ Не удалось загрузить видео';statusEl.style.color='#f6465d';};
+    try{ await video.play(); }catch(e){}
+  }
+  $('adModal').classList.add('show');
+  if(__AD_TIMER) clearInterval(__AD_TIMER);
+  __AD_TIMER=setInterval(()=>{
+    __AD_TIME_LEFT--;
+    if(timerEl) timerEl.textContent=fmtAdTime(Math.max(0,__AD_TIME_LEFT));
+    if(bar){const pct=((duration-__AD_TIME_LEFT)/duration)*100;bar.style.width=Math.min(100,pct)+'%';}
+    if(__AD_TIME_LEFT<=0){
+      clearInterval(__AD_TIMER);__AD_TIMER=null;
+      if(bar) bar.style.width='100%';
+      if(statusEl){statusEl.textContent='✅ Можно получить награду';statusEl.style.color='#39d98a';}
+      if(btn) btn.disabled=false;
+    }
+  },1000);
+  video.onended=()=>{
+    if(__AD_TIME_LEFT>0){
+      __AD_TIME_LEFT=0;
+      if(timerEl) timerEl.textContent='0:00';
+      if(bar) bar.style.width='100%';
+      if(statusEl){statusEl.textContent='✅ Можно получить награду';statusEl.style.color='#39d98a';}
+      if(btn) btn.disabled=false;
+    }
+  };
+}
+function closeAdModal(){
+  const video=$('adVideo');
+  if(video){try{video.pause();video.removeAttribute('src');video.load();}catch(e){}}
+  if(__AD_TIMER){clearInterval(__AD_TIMER);__AD_TIMER=null;}
+  __CURRENT_AD=null;__AD_TIME_LEFT=0;
+  $('adModal')?.classList.remove('show');
+}
+async function claimAdReward(){
+  if(!__CURRENT_AD){closeAdModal();return;}
+  const ad=__CURRENT_AD;
+  const campId=ad.id || ad.campaign_id;
+  const btn=$('adClaimBtn');
+  if(btn){btn.disabled=true;btn.textContent='⏳ Начисляем...';}
+  try{
+    const{data,error}=await sb.rpc('credit_ad_reward',{p_telegram_id:UID,p_source:'video',p_zone_id:String(campId)});
+    if(error){msg('❌ '+(error.message||'Ошибка'),'error');if(btn){btn.disabled=false;btn.textContent='🎁 ПОЛУЧИТЬ';}return;}
+    if(!data||data.ok===false){
+      const err=data?.error||'unknown';
+      if(err.includes('лимит')) msg(`📊 ${err}`,'info');
+      else if(err.includes('рано')) msg(`⏳ ${err}`,'info');
+      else msg('❌ '+err,'error');
+      if(btn){btn.disabled=false;btn.textContent='🎁 ПОЛУЧИТЬ';}
+      return;
+    }
+    const reward=Number(data.reward||0);
+    const token=data.reward_token||'TUSD';
+    const addedToStake=Number(data.accumulated_added||data.payout_tusd||0);
+    closeAdModal();
+    showAdRewardPopup(reward, token, `📺 ЗАЧИСЛЕНО В СТЕЙКИНГ +${f(addedToStake,5)} TUSD`);
+    msg(`✅ +${f(addedToStake,5)} TUSD в стейкинг`,'success');
+    await refreshAll();
+    if(currentIncomeTab==='ads') showIncomeTab('ads');
+  }catch(e){msg('❌ '+e.message,'error');if(btn){btn.disabled=false;btn.textContent='🎁 ПОЛУЧИТЬ';}}
+}
+
+/* ═══════ ЗАКАЗ РЕКЛАМЫ ЮЗЕРОМ ═══════ */
 async function openAdMenu(){
   if(!UID){msg('Открой через Telegram','error');return;}
   let minBudget=5, commission=10;
@@ -2637,7 +2994,7 @@ async function openAdMenu(){
   const tusdBal=n(CU?.tusd_balance)||0;
   openModal('📢 Заказать видеорекламу',`
     <div class="item-card" style="background:#0d1520;margin-bottom:12px">
-      <div class="item-desc">Ролик увидят все пользователи TELEPAT. Минимум бюджета: <b style="color:var(--gold)">$${f(minBudget,2)}</b>. Комиссия платформы: <b style="color:var(--gold)">${commission}%</b>.</div>
+      <div class="item-desc">Ролик увидят все пользователи TELEPAT. Минимум бюджета: <b style="color:var(--gold)">$${f(minBudget,2)}</b>. Комиссия: <b style="color:var(--gold)">${commission}%</b>.</div>
     </div>
     <label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px">Название</label>
     <input id="ao_title" placeholder="Например: Реклама канала X" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
@@ -2668,13 +3025,9 @@ async function openAdMenu(){
   setTimeout(()=>updateAdOrderPreview(minBudget,commission),50);
 }
 function updateAdOrderPreview(minBudget,commission){
-  minBudget=n(minBudget)||5;
-  commission=n(commission)||10;
-  const reward=n($('ao_reward')?.value);
-  const actions=n($('ao_actions')?.value);
-  const budget=reward*actions;
-  const fee=budget*(commission/100);
-  const total=budget+fee;
+  minBudget=n(minBudget)||5;commission=n(commission)||10;
+  const reward=n($('ao_reward')?.value),actions=n($('ao_actions')?.value);
+  const budget=reward*actions,fee=budget*(commission/100),total=budget+fee;
   if($('ao_budget')) $('ao_budget').textContent=`$${f(budget,4)}`;
   if($('ao_fee')) $('ao_fee').textContent=`$${f(fee,4)}`;
   if($('ao_total')) $('ao_total').innerHTML=`<b>$${f(total,4)}</b>`;
@@ -2682,16 +3035,9 @@ function updateAdOrderPreview(minBudget,commission){
   if(btn){
     const enough=n(CU?.tusd_balance)>=total;
     const okBudget=budget>=minBudget;
-    if(!okBudget){
-      btn.disabled=true;
-      btn.textContent=`❌ Минимум $${f(minBudget,2)} бюджета`;
-    }else if(!enough){
-      btn.disabled=true;
-      btn.textContent=`❌ Мало TUSD (нужно $${f(total,4)})`;
-    }else{
-      btn.disabled=false;
-      btn.textContent='✅ ОПЛАТИТЬ И ОТПРАВИТЬ';
-    }
+    if(!okBudget){btn.disabled=true;btn.textContent=`❌ Минимум $${f(minBudget,2)} бюджета`;}
+    else if(!enough){btn.disabled=true;btn.textContent=`❌ Мало TUSD (нужно $${f(total,4)})`;}
+    else{btn.disabled=false;btn.textContent='✅ ОПЛАТИТЬ И ОТПРАВИТЬ';}
   }
 }
 async function submitAdOrder(){
@@ -2759,184 +3105,187 @@ async function openMyAds(){
   }catch(e){const box=$('myAdsList');if(box)box.innerHTML='<div class="info">Ошибка</div>';}
 }
 
-/* ═══════ VIDEO ADS — просмотр ═══════ */
-async function fetchNextAd(){
-  try{
-    const{data,error}=await sb.rpc('get_next_ad',{p_user_id:UID});
-    if(!error&&data){
-      const ad = data.ad || (data.ok===false?null:data);
-      if(ad && (ad.id || ad.campaign_id)) return ad;
-      if(data.ok===true && data.ad===null) return null;
-    }
-  }catch(e){}
-  try{
-    const{data,error}=await sb.from('telepat_ad_campaigns')
-      .select('*')
-      .eq('admin_status','approved')
-      .eq('payment_status','paid')
-      .not('video_url','is',null)
-      .limit(30);
-    if(error||!data||!data.length) return null;
-    const ready=data.filter(a=>{
-      if(a.campaign_type && a.campaign_type!=='video') return false;
-      if(!a.video_url) return false;
-      const done=Number(a.completed_actions||0),tgt=Number(a.target_actions||0);
-      if(tgt>0 && done>=tgt) return false;
-      return true;
-    });
-    if(!ready.length) return null;
-    return ready[Math.floor(Math.random()*ready.length)];
-  }catch(e){ return null; }
-}
-async function getAdCooldownLeft(){
-  try{
-    const{data:settings}=await sb.from('telepat_ad_settings').select('cooldown_seconds').eq('id',1).maybeSingle();
-    const cd=Number(settings?.cooldown_seconds)||30;
-    const{data}=await sb.from('telepat_ad_views')
-      .select('created_at').eq('telegram_id',UID)
-      .order('created_at',{ascending:false}).limit(1).maybeSingle();
-    if(data?.created_at){
-      const last=new Date(data.created_at).getTime();
-      const left=Math.ceil((last+cd*1000-Date.now())/1000);
-      return left>0?left:0;
-    }
-  }catch(e){}
-  return 0;
-}
-function fmtAdTime(s){s=Math.max(0,Math.floor(s));const m=Math.floor(s/60),sec=s%60;return m+':'+String(sec).padStart(2,'0');}
-async function watchAd(){
-  if(!UID){msg('Открой через Telegram','error');return;}
-  let rewardPerView=0.00015,cooldownSec=30,dailyLimit=150,minDur=5,maxDur=60;
-  try{
-    const{data}=await sb.from('telepat_ad_settings').select('*').eq('id',1).maybeSingle();
-    if(data){
-      rewardPerView=Number(data.reward_per_view)||rewardPerView;
-      cooldownSec=Number(data.cooldown_seconds)||cooldownSec;
-      dailyLimit=Number(data.daily_limit)||dailyLimit;
-      minDur=Number(data.min_ad_duration)||minDur;
-      maxDur=Number(data.max_ad_duration)||maxDur;
-    }
-  }catch(e){}
-  try{
-    const{data:last}=await sb.from('telepat_ad_views')
-      .select('created_at').eq('telegram_id',UID)
-      .order('created_at',{ascending:false}).limit(1).maybeSingle();
-    if(last?.created_at){
-      const diff=(Date.now()-new Date(last.created_at).getTime())/1000;
-      if(diff<cooldownSec){
-        const left=Math.ceil(cooldownSec-diff);
-        msg(`⏳ Подождите ${left} сек`,'info');
-        return;
-      }
-    }
-  }catch(e){}
-  msg('⏳ Загружаем рекламу...','info');
-  const ad=await fetchNextAd();
-  if(!ad){msg('📺 Сейчас нет доступной рекламы','info');return;}
-  __CURRENT_AD=ad;
-  const video=$('adVideo');
-  const timerEl=$('adTimer');
-  const statusEl=$('adStatus');
-  const titleEl=$('adTitle');
-  const btn=$('adClaimBtn');
-  const bar=$('adProgressBar');
-  if(!video){msg('Ошибка плеера','error');return;}
-  const duration=Math.max(minDur, Math.min(maxDur, Number(ad.duration_seconds||15)));
-  __AD_TIME_LEFT=duration;
-  titleEl.textContent=ad.title||'Реклама';
-  statusEl.textContent=`⏳ Смотрите до конца · награда +${f(rewardPerView,5)} TUSD`;
-  statusEl.style.color='#e8e8e8';
-  btn.disabled=true;
-  btn.textContent='🎁 ПОЛУЧИТЬ';
-  if(bar) bar.style.width='0%';
-  timerEl.textContent=fmtAdTime(__AD_TIME_LEFT);
-  video.pause();
-  video.removeAttribute('src');
-  video.load();
-  if(ad.video_url){
-    video.src=ad.video_url;
-    video.muted=false;
-    video.playsInline=true;
-    video.onerror=()=>{
-      statusEl.textContent='❌ Не удалось загрузить видео';
-      statusEl.style.color='#f6465d';
-    };
-    try{ await video.play(); }catch(e){}
+/* ═══════ КОШЕЛЁК ПОЛЬЗОВАТЕЛЯ ═══════ */
+async function openWallet(){
+  if(!UID) return;
+  const{data:st}=await sb.rpc('get_wallet_status');
+  if(!st||st.ok===false){msg('Ошибка','error');return;}
+  if(!st.enabled){
+    openModal('💼 Кошелёк',`<div class="info" style="text-align:center;padding:20px">Кошелёк временно отключён администратором</div>
+      <button class="admin-btn sec" style="width:100%;margin-top:8px" onclick="closeModal()">Закрыть</button>`);
+    return;
   }
-  $('adModal').classList.add('show');
-  if(__AD_TIMER) clearInterval(__AD_TIMER);
-  __AD_TIMER=setInterval(()=>{
-    __AD_TIME_LEFT--;
-    if(timerEl) timerEl.textContent=fmtAdTime(Math.max(0,__AD_TIME_LEFT));
-    if(bar){
-      const pct=((duration-__AD_TIME_LEFT)/duration)*100;
-      bar.style.width=Math.min(100,pct)+'%';
-    }
-    if(__AD_TIME_LEFT<=0){
-      clearInterval(__AD_TIMER);__AD_TIMER=null;
-      if(bar) bar.style.width='100%';
-      if(statusEl){statusEl.textContent='✅ Можно получить награду';statusEl.style.color='#39d98a';}
-      if(btn) btn.disabled=false;
-    }
-  },1000);
-  video.onended=()=>{
-    if(__AD_TIME_LEFT>0){
-      __AD_TIME_LEFT=0;
-      if(timerEl) timerEl.textContent='0:00';
-      if(bar) bar.style.width='100%';
-      if(statusEl){statusEl.textContent='✅ Можно получить награду';statusEl.style.color='#39d98a';}
-      if(btn) btn.disabled=false;
-    }
-  };
+  const{data:my}=await sb.rpc('user_get_wallet');
+  const linked=my&&my.linked;
+  const myAddr=linked?my.address:'';
+  const{data:rw}=await sb.rpc('user_get_receive_wallets');
+  const wallets=(rw&&rw.ok&&rw.items)?rw.items:[];
+  const myId=(rw&&rw.my_id)?rw.my_id:UID;
+
+  const recvHtml=wallets.length?wallets.map(w=>`
+    <div class="pc" style="margin-top:6px">
+      <div class="pt">${esc(w.token_symbol)}</div>
+      <div class="info" style="font-size:11px;word-break:break-all">📍 ${esc(w.wallet_address)}</div>
+      ${w.memo?`<div class="info" style="font-size:11px">📝 Memo: <b>${esc(w.memo)}</b></div>`:''}
+      <div class="info" style="font-size:10px;color:#f4cf70">⚠️ В комментарии укажи: <b>${myId}</b></div>
+      <button class="admin-btn sm sec" style="width:100%;margin-top:6px" onclick="copyText('${esc(w.wallet_address)}')">📋 Скопировать адрес</button>
+    </div>
+  `).join(''):'<div class="info">Реквизиты пока не настроены</div>';
+
+  openModal('💼 Кошелёк',`
+    <div class="tabs tabs-2" style="margin-bottom:12px">
+      <button class="tab active" id="wt-dep" onclick="walletTab('dep')"><span class="tab-icon">📥</span>Пополнить</button>
+      <button class="tab" id="wt-wd" onclick="walletTab('wd')"><span class="tab-icon">📤</span>Вывести</button>
+    </div>
+
+    <div id="wallet-dep">
+      <div class="item-card" style="background:#0d1520;margin-bottom:8px">
+        <div class="item-desc" style="font-size:11px">1. Переведи крипту на <b>любой из кошельков ниже</b><br>
+        2. В комментарии укажи ID: <b style="color:#f4cf70">${myId}</b><br>
+        3. Вернись сюда и создай заявку</div>
+      </div>
+      <div class="item-header" style="margin-top:8px"><b>📍 Куда переводить</b></div>
+      ${recvHtml}
+
+      <div class="item-header" style="margin-top:14px"><b>📝 Создать заявку на пополнение</b></div>
+      <select id="d_tok" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px;margin-top:6px">
+        ${wallets.map(w=>`<option value="${w.token_symbol}">${w.token_symbol}</option>`).join('') || ALL_TOKENS.map(t=>`<option value="${t.symbol}">${t.symbol}</option>`).join('')}
+      </select>
+      <input id="d_amt" type="number" step="any" placeholder="Сумма" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px;margin-top:8px">
+      <input id="d_tx" placeholder="TxHash (не обязательно)" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px;margin-top:8px;font-size:12px">
+      <input id="d_cmt" placeholder="Комментарий (не обязательно)" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px;margin-top:8px;font-size:12px">
+      <button class="admin-btn gold" style="width:100%;margin-top:8px" onclick="submitDeposit()">📥 Отправить заявку</button>
+      <div id="d_status" class="info" style="margin-top:6px;text-align:center"></div>
+      <div class="item-header" style="margin-top:14px"><b>📋 Мои заявки на ввод</b></div>
+      <div id="my_deps" class="info">Загрузка...</div>
+    </div>
+
+    <div id="wallet-wd" class="hidden">
+      <div class="item-card" style="background:#0d1520;margin-bottom:8px">
+        <div class="item-desc" style="font-size:11px">1. Сохрани адрес своего кошелька<br>
+        2. Создай заявку на вывод → деньги спишутся<br>
+        3. Админ переведёт вручную</div>
+      </div>
+      <div class="item-card">
+        <div class="item-header"><b>🔗 Мой адрес</b></div>
+        <input id="w_addr" placeholder="Адрес твоего кошелька" value="${esc(myAddr)}" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px;font-size:12px">
+        <button class="admin-btn gold" style="width:100%;margin-top:8px" onclick="saveWalletAddress()">💾 Сохранить</button>
+        <div id="w_addr_status" class="info" style="margin-top:6px;text-align:center"></div>
+      </div>
+      <div class="item-card">
+        <div class="item-header"><b>📤 Создать заявку на вывод</b></div>
+        ${st.withdraw_enabled?'':'<div class="info" style="color:#f6465d">Вывод временно отключён</div>'}
+        <select id="w_tok" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">${ALL_TOKENS.map(t=>`<option value="${t.symbol}">${t.symbol} — ${esc(t.name||'')}</option>`).join('')}</select>
+        <input id="w_amt" type="number" step="any" placeholder="Сумма" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px;margin-top:8px">
+        <button class="admin-btn gold" style="width:100%;margin-top:8px;${st.withdraw_enabled?'':'opacity:.5;pointer-events:none'}" onclick="submitWithdrawal()">📤 Отправить заявку</button>
+        <div id="w_wd_status" class="info" style="margin-top:6px;text-align:center"></div>
+      </div>
+      <div class="item-card">
+        <div class="item-header"><b>📋 Мои заявки на вывод</b></div>
+        <div id="w_my_wd" class="info">Загрузка...</div>
+      </div>
+    </div>
+
+    <button class="admin-btn sec" style="width:100%;margin-top:8px" onclick="closeModal()">Закрыть</button>
+  `);
+  loadMyDeposits();
+  loadMyWithdrawals();
 }
-function closeAdModal(){
-  const video=$('adVideo');
-  if(video){try{video.pause();video.removeAttribute('src');video.load();}catch(e){}}
-  if(__AD_TIMER){clearInterval(__AD_TIMER);__AD_TIMER=null;}
-  __CURRENT_AD=null;__AD_TIME_LEFT=0;
-  $('adModal')?.classList.remove('show');
+function walletTab(t){
+  const dep=$('wallet-dep'),wd=$('wallet-wd');
+  const bd=$('wt-dep'),bw=$('wt-wd');
+  if(t==='dep'){dep.classList.remove('hidden');wd.classList.add('hidden');bd.classList.add('active');bw.classList.remove('active');}
+  else{wd.classList.remove('hidden');dep.classList.add('hidden');bw.classList.add('active');bd.classList.remove('active');}
 }
-async function claimAdReward(){
-  if(!__CURRENT_AD){closeAdModal();return;}
-  const ad=__CURRENT_AD;
-  const campId=ad.id || ad.campaign_id;
-  const btn=$('adClaimBtn');
-  if(btn){btn.disabled=true;btn.textContent='⏳ Начисляем...';}
-  try{
-    const{data,error}=await sb.rpc('claim_ad_reward',{
-      p_telegram_id:UID,
-      p_campaign_id:campId
-    });
-    if(error){
-      msg('❌ '+(error.message||'Ошибка'),'error');
-      if(btn){btn.disabled=false;btn.textContent='🎁 ПОЛУЧИТЬ';}
-      return;
-    }
-    if(!data||data.ok===false){
-      const err=data?.error||'unknown';
-      if(err==='Слишком рано'){
-        msg(`⏳ Подождите ${data.wait_seconds} сек`,'info');
-      }else if(err==='Дневной лимит исчерпан'){
-        msg(`📊 Лимит: ${data.views_today}/${data.daily_limit}`,'info');
-      }else{
-        msg('❌ '+err,'error');
-      }
-      if(btn){btn.disabled=false;btn.textContent='🎁 ПОЛУЧИТЬ';}
-      return;
-    }
-    const reward=Number(data.reward||0);
-    const token=data.reward_token||'TUSD';
-    const addedToStake=Number(data.accumulated_added||0);
-    closeAdModal();
-    showAdRewardPopup(reward, token, `📺 ЗАЧИСЛЕНО В СТЕЙКИНГ +${f(addedToStake,5)} TUSD`);
-    msg(`✅ +${f(addedToStake,5)} TUSD в копилку стейкинга`,'success');
-    await refreshAll();
-    if(currentIncomeTab==='ads') showIncomeTab('ads');
-  }catch(e){
-    msg('❌ '+e.message,'error');
-    if(btn){btn.disabled=false;btn.textContent='🎁 ПОЛУЧИТЬ';}
+function copyText(t){navigator.clipboard?.writeText(t).then(()=>msg('Скопировано','success'),()=>msg('Ошибка','error'));}
+async function saveWalletAddress(){
+  const addr=($('w_addr')?.value||'').trim();
+  const st=$('w_addr_status');
+  if(!addr){st.textContent='Введите адрес';return;}
+  st.textContent='Сохранение...';
+  const{data,error}=await sb.rpc('user_set_wallet_address',{p_address:addr});
+  if(error||!data||data.ok===false){
+    const err=data?.error||error?.message||'Ошибка';
+    if(err==='wallet_disabled') st.textContent='Кошелёк отключён';
+    else if(err==='invalid_address') st.textContent='Слишком короткий адрес';
+    else st.textContent='Ошибка: '+err;
+    return;
   }
+  st.innerHTML='<span class="ok">✅ Сохранено</span>';
+  msg('✅ Адрес сохранён','success');
 }
+async function submitWithdrawal(){
+  const tok=$('w_tok')?.value;
+  const amt=n($('w_amt')?.value);
+  const addr=($('w_addr')?.value||'').trim();
+  const st=$('w_wd_status');
+  if(!addr){st.textContent='Сначала сохраните адрес';return;}
+  if(amt<=0){st.textContent='Введите сумму';return;}
+  st.textContent='Отправка...';
+  const{data,error}=await sb.rpc('user_request_withdrawal',{p_token:tok,p_amount:amt,p_wallet_address:addr});
+  if(error||!data||data.ok===false){
+    const err=data?.error||error?.message||'Ошибка';
+    if(err==='wallet_disabled') st.textContent='Кошелёк отключён';
+    else if(err==='withdraw_disabled') st.textContent='Вывод отключён';
+    else if(err==='insufficient_balance') st.textContent=`Недостаточно (есть ${f(data.have,6)})`;
+    else if(err==='below_min') st.textContent=`Минимум: ${f(data.min,6)}`;
+    else if(err==='token_inactive') st.textContent='Токен недоступен для вывода';
+    else st.textContent='Ошибка: '+err;
+    return;
+  }
+  st.innerHTML='<span class="ok">✅ Заявка отправлена</span>';
+  msg('✅ Заявка на вывод отправлена','success');
+  $('w_amt').value='';
+  loadMyWithdrawals();
+  await refreshAll();
+}
+async function loadMyWithdrawals(){
+  const box=$('w_my_wd'); if(!box) return;
+  box.innerHTML='Загрузка...';
+  try{
+    const{data}=await sb.rpc('user_my_withdrawals');
+    if(!data||data.ok===false){box.innerHTML='Ошибка';return;}
+    const items=data.items||[];
+    if(!items.length){box.innerHTML='<div class="info">Заявок нет</div>';return;}
+    const ST={pending:'⏳',approved:'✅',rejected:'❌'};
+    box.innerHTML=items.map(w=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #1a2534;font-size:12px">
+      <span>${ST[w.status]||''} ${esc(w.token_symbol)}</span>
+      <span style="color:var(--gold)">${f(w.amount,6)}</span>
+    </div>`).join('');
+  }catch(e){box.innerHTML='Ошибка';}
+}
+async function submitDeposit(){
+  const tok=$('d_tok')?.value;
+  const amt=n($('d_amt')?.value);
+  const tx=($('d_tx')?.value||'').trim()||null;
+  const cmt=($('d_cmt')?.value||'').trim()||null;
+  const st=$('d_status');
+  if(amt<=0){st.textContent='Введите сумму';return;}
+  st.textContent='Отправка...';
+  const{data,error}=await sb.rpc('user_create_deposit',{p_token:tok,p_amount:amt,p_tx_hash:tx,p_comment:cmt});
+  if(error||!data||data.ok===false){st.textContent='Ошибка: '+(data?.error||error?.message||'unknown');return;}
+  st.innerHTML='<span class="ok">✅ Заявка отправлена. Жди подтверждения.</span>';
+  msg('✅ Заявка на пополнение отправлена','success');
+  $('d_amt').value='';$('d_tx').value='';$('d_cmt').value='';
+  loadMyDeposits();
+}
+async function loadMyDeposits(){
+  const box=$('my_deps'); if(!box) return;
+  box.innerHTML='Загрузка...';
+  try{
+    const{data}=await sb.rpc('user_my_deposits');
+    if(!data||data.ok===false){box.innerHTML='Ошибка';return;}
+    const items=data.items||[];
+    if(!items.length){box.innerHTML='<div class="info">Заявок нет</div>';return;}
+    const ST={pending:'⏳',approved:'✅',rejected:'❌'};
+    box.innerHTML=items.map(w=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #1a2534;font-size:12px">
+      <span>${ST[w.status]||''} ${esc(w.token_symbol||'?')}</span>
+      <span style="color:#39d98a">+${f(w.amount,6)}</span>
+    </div>`).join('');
+  }catch(e){box.innerHTML='Ошибка';}
+}
+
+/* ═══════ Стекинг/чекин/задания ═══════ */
 async function claimStaking(){
   const{data,error}=await sb.rpc('claim_staking',{p_user_id:String(UID)});
   if(error||!data||data.ok===false){msg(data?.error||'Нечего собирать','error');return;}
@@ -3010,6 +3359,8 @@ async function gearBuyListing(id){
   if(error||!data||data.ok===false){msg(data?.error||'Ошибка','error');return;}
   msg('✅ Куплено','success');await refreshAll();
 }
+
+/* ═══════ REFRESH ALL ═══════ */
 async function refreshAll(){
   await loadUser();
   await loadMyItems();
@@ -3024,6 +3375,8 @@ async function refreshAll(){
   if(!$('view-rating').classList.contains('hidden')) renderRating();
   if(!$('view-chatbonus').classList.contains('hidden')) renderChatBonus();
 }
+
+/* ═══════ INIT ═══════ */
 document.addEventListener('DOMContentLoaded',async()=>{
   await refreshJwt();
   await loadUiSettingsPublic();
