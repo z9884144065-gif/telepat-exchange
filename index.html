@@ -1933,13 +1933,21 @@ async function loadAvailableTasks(){
 
   try{const{data:act}=await sb.from('telepat_ad_actions').select('campaign_id,status').eq('telegram_id',UID);(act||[]).forEach(a=>{if(a.status==='completed') myDoneCampaigns.push(String(a.campaign_id));});}catch(e){}
   try{
-    const{data,error}=await sb.from('telepat_ad_campaigns').select('*').in('admin_status',['approved','completed']).in('campaign_type',['channel','bot','link','video']).order('created_at',{ascending:false}).limit(100);
+    /* ✅ ФИКС: скрываем свои кампании, cancelled, completed — и исчерпанные */
+    const{data,error}=await sb.from('telepat_ad_campaigns')
+      .select('*')
+      .eq('admin_status','approved')
+      .in('campaign_type',['channel','bot','link','video'])
+      .neq('advertiser_telegram_id',UID)
+      .order('created_at',{ascending:false})
+      .limit(100);
     if(!error && data){
       data.forEach(c=>{
         const id='camp:'+c.id;
         const done=myDoneCampaigns.includes(String(c.id));
+        /* ✅ ФИКС: исчерпанные скрываем безусловно */
         const limitReached=c.target_actions && c.completed_actions >= c.target_actions;
-        if(limitReached && !done) return;
+        if(limitReached) return;
         const obj={
           id, source:'campaigns', raw_id:c.id,
           title:c.title||'Задание',
@@ -2197,7 +2205,7 @@ function changeToClaimBtn(taskId){
   if(div) div.innerHTML=`<button class="admin-btn sm gold" style="flex:1" onclick="taskClaim('${taskId}')">🎁 ЗАБРАТЬ НАГРАДУ</button>`;
 }
 
-/* ═══════ ✅ ФИКС: ОБЪЯВЛЕНИЕ taskClaim ═══════ */
+/* ✅ ФИКС: объявлена функция taskClaim */
 async function taskClaim(taskId){
   const statusEl=$('task-status-'+taskId);
   const t=window.__TASKS_CACHE[taskId];
@@ -2220,14 +2228,13 @@ async function taskClaim(taskId){
       if(err==='too_early'){if(statusEl) statusEl.textContent=`⏳ Подожди ${data.wait} сек`;}
       else if(err==='already_completed'){if(statusEl) statusEl.textContent='✅ Уже выполнено';}
       else if(err==='not_started'){if(statusEl) statusEl.textContent='▶️ Нажми Выполнить';}
-      else if(err==='limit_reached'){if(statusEl) statusEl.innerHTML='<span class="er">⏸ Лимит исчерпан. Средства у рекламодателя закончились.</span>';}
+      else if(err==='limit_reached'){if(statusEl) statusEl.innerHTML='<span class="er">⏸ Задание больше недоступно</span>';}
       else if(err==='campaign_paused'){if(statusEl) statusEl.textContent='⏸ Кампания на паузе';}
       else if(statusEl) statusEl.textContent='❌ '+err;
       return;
     }
     const reward=Number(data.reward||data.amount||t.reward||0);
     const token=data.reward_token||data.token||t.reward_token||'TUSD';
-    /* ✅ ФИКС: используем ?? вместо || чтобы 0 не перескакивал */
     const payout=Number(data.payout_tusd ?? data.accumulated_added ?? reward ?? 0);
     if(statusEl) statusEl.innerHTML='<span class="ok">✅ Получено!</span>';
     showAdRewardPopup(reward, token, `📋 +${f(payout,5)} ${token}`);
@@ -2758,6 +2765,7 @@ async function adminTransferReferrals(){
 async function loadAdminSettings(){
   const box=$('adminSettingsList');if(!box) return;box.innerHTML='Загрузка...';
   try{const{data}=await sb.from('telepat_settings').select('*').order('setting_key');if(!data||!data.length){box.innerHTML='Пусто';return;}
+    /* ✅ ФИКС: добавлен shop_revenue_reset_at в skip */
     const skip=['banner_height','banner_radius','banner_title_size','banner_count','ui_bg','ui_bg_radial','ui_accent','ui_card','wallet_enabled','wallet_withdraw_enabled','wallet_deposit_enabled','shop_revenue_reset_at'];
     const items=data.filter(r=>!skip.includes(r.setting_key));
     box.innerHTML=items.map(r=>{const label=r.description||r.setting_key;const isPct=r.setting_key.includes('percent')||r.setting_key.includes('pct')||r.setting_key.includes('commission');const suf=isPct?' %':'';
