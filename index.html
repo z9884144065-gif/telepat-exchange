@@ -411,6 +411,7 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 </div>
 <div class="item-card"><div class="item-header"><b>📋 Мои раздачи</b></div><div id="myChatBonusList"><div class="info">Загрузка...</div></div><button class="admin-btn sec" style="width:100%;margin-top:8px" onclick="loadMyChatBonus()">🔄 Обновить</button></div>
 </div>
+
 <div id="view-admin" class="hidden">
 <h2>👑 Админ-панель</h2>
 
@@ -1757,8 +1758,7 @@ async function confirmListOnMarket(userItemId){
   await refreshAll();
   setTimeout(closeModal,700);
 }
-  
-/* ═══════ INCOME ═══════ */
+  /* ═══════ INCOME ═══════ */
 function renderIncome(){showIncomeTab(currentIncomeTab);}
 async function showIncomeTab(tab){
   currentIncomeTab=tab;
@@ -1992,7 +1992,7 @@ function taskCard(t){
 
   let statusHtml = '';
   let btnHtml = '';
-  
+
   if (done) {
     statusHtml = '<div style="color:#39d98a;font-weight:700;font-size:11px;margin-top:4px">✅ Выполнено</div>';
     btnHtml = '<button class="admin-btn sm sec" style="flex:1;opacity:.6" disabled>✅ ВЫПОЛНЕНО</button>';
@@ -2196,6 +2196,9 @@ function changeToClaimBtn(taskId){
   const div=card.querySelector('.task-actions');
   if(div) div.innerHTML=`<button class="admin-btn sm gold" style="flex:1" onclick="taskClaim('${taskId}')">🎁 ЗАБРАТЬ НАГРАДУ</button>`;
 }
+
+/* ═══════ ✅ ФИКС: ОБЪЯВЛЕНИЕ taskClaim ═══════ */
+async function taskClaim(taskId){
   const statusEl=$('task-status-'+taskId);
   const t=window.__TASKS_CACHE[taskId];
   if(!t){if(statusEl) statusEl.textContent='❌ Потеряно';return;}
@@ -2224,7 +2227,8 @@ function changeToClaimBtn(taskId){
     }
     const reward=Number(data.reward||data.amount||t.reward||0);
     const token=data.reward_token||data.token||t.reward_token||'TUSD';
-    const payout=Number(data.payout_tusd||data.accumulated_added||reward);
+    /* ✅ ФИКС: используем ?? вместо || чтобы 0 не перескакивал */
+    const payout=Number(data.payout_tusd ?? data.accumulated_added ?? reward ?? 0);
     if(statusEl) statusEl.innerHTML='<span class="ok">✅ Получено!</span>';
     showAdRewardPopup(reward, token, `📋 +${f(payout,5)} ${token}`);
     msg('✅ Награда зачислена','success');
@@ -2498,8 +2502,7 @@ async function showRatingTab(tab){
     return `<div class="lead-row" style="${isMe?'border-color:var(--gold)':''}"><div class="lead-place ${cls}">${place}</div><div class="lead-info"><div class="lead-name">${esc(nm)}${isMe?' (вы)':''}</div><div class="lead-rank">👑 ${esc(u.rank_name||RANKS[u.rank_level||0]||'Новичок')}</div></div><div class="lead-value"><b>${val}</b></div></div>`;
   }).join('');
 }
-
-/* ═══════ ADMIN — базовый рендер ═══════ */
+  /* ═══════ ADMIN — базовый рендер ═══════ */
 function renderAdmin(){
   if(UID!==AID){msg('Нет доступа','error');return;}
   loadAdminRevenue();loadAdminAccounts();loadAdminWalletFlags();loadAdminWithdrawals();loadAdminTokensForWallet();loadAdminReceiveWallets();loadAdminDeposits();
@@ -2677,7 +2680,7 @@ async function loadAdminRevenue(){
     const hist=$('adPurchaseHistory');if(hist) hist.innerHTML=(data.items||[]).slice(0,10).map(p=>`<div class="history-row"><span>${esc(p.item||'')}</span><b>+$${f(p.amount,2)}</b></div>`).join('')||'<div class="info" style="text-align:center">Пусто</div>';
   }catch(e){}
 }
-async function adminClearRevenue(){if(!confirm('Очистить?')) return;const{error}=await sb.rpc('admin_clear_revenue');if(error){msg(error.message,'error');return;}msg('💰','success');loadAdminRevenue();}
+async function adminClearRevenue(){if(!confirm('Очистить?')) return;const{data,error}=await sb.rpc('admin_clear_revenue');if(error||!data||data.ok===false){msg('Ошибка','error');return;}msg('💰','success');loadAdminRevenue();}
 async function loadAdminStats(){
   const{data,error}=await sb.rpc('telepat_admin_all_balances');
   if(error){msg(error.message,'error');return;}
@@ -2755,7 +2758,7 @@ async function adminTransferReferrals(){
 async function loadAdminSettings(){
   const box=$('adminSettingsList');if(!box) return;box.innerHTML='Загрузка...';
   try{const{data}=await sb.from('telepat_settings').select('*').order('setting_key');if(!data||!data.length){box.innerHTML='Пусто';return;}
-    const skip=['banner_height','banner_radius','banner_title_size','banner_count','ui_bg','ui_bg_radial','ui_accent','ui_card','wallet_enabled','wallet_withdraw_enabled','wallet_deposit_enabled'];
+    const skip=['banner_height','banner_radius','banner_title_size','banner_count','ui_bg','ui_bg_radial','ui_accent','ui_card','wallet_enabled','wallet_withdraw_enabled','wallet_deposit_enabled','shop_revenue_reset_at'];
     const items=data.filter(r=>!skip.includes(r.setting_key));
     box.innerHTML=items.map(r=>{const label=r.description||r.setting_key;const isPct=r.setting_key.includes('percent')||r.setting_key.includes('pct')||r.setting_key.includes('commission');const suf=isPct?' %':'';
       return `<div class="pc"><div class="pt" style="font-size:13px">${esc(label)}</div><div class="info" style="font-size:10px">${esc(r.setting_key)}</div><div style="display:flex;gap:8px;margin-top:8px"><input type="number" id="set_${esc(r.setting_key)}" value="${esc(r.setting_value)}" step="any" style="flex:1;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px"><span style="align-self:center;color:var(--gold);font-weight:700;font-size:12px">${suf}</span><button class="admin-btn sm gold" onclick="saveAdminSetting('${esc(r.setting_key)}')">💾</button></div></div>`;}).join('');
@@ -2983,7 +2986,7 @@ function applyUiColors(colors){
   document.body.style.background=`radial-gradient(circle at 50% -10%,${colors.ui_bg_radial} 0,${colors.ui_bg} 42%),${colors.ui_bg}`;
 }
 async function loadUiSettingsPublic(){try{const{data}=await sb.rpc('get_ui_settings');applyUiColors(Object.assign({},UI_DEFAULTS,data||{}));}catch(e){}}
-  
+
 /* ═══════ WELCOME BONUS ═══════ */
 async function loadWelcomeBonusStatus(){
   const card=$('bonusCard');if(!card) return;card.style.display='none';
@@ -3258,7 +3261,7 @@ async function editMyCampaign(id){
   const isVideo=c.campaign_type==='video';
   const isLink=c.campaign_type==='link';
   const ico={video:'📺',channel:'📢',bot:'🤖',link:'🔗'}[c.campaign_type]||'📢';
-  
+
   openModal(`${ico} Редактирование`,`
     <div class="item-card" style="background:#0d1520;margin-bottom:10px">
       <div class="info" style="font-size:11px">Осталось выполнений: <b style="color:var(--gold)">${c.target_actions - c.completed_actions}</b></div>
