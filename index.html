@@ -2018,6 +2018,13 @@ async function taskStart(taskId){
   const statusEl=$('task-status-'+taskId);
   const t=window.__TASKS_CACHE[taskId];
   if(!t){if(statusEl) statusEl.textContent='❌ Потеряно';return;}
+
+  if(t.type==='video'){
+    if(!t.video_url){if(statusEl) statusEl.textContent='❌ Нет видео';return;}
+    playInlineVideo(t, statusEl, taskId);
+    return;
+  }
+
   const url=(t.url||'').trim();
   if(!url){if(statusEl) statusEl.textContent='❌ Нет ссылки';return;}
 
@@ -2059,16 +2066,136 @@ async function taskStart(taskId){
       }
     },1000);
   } else {
-    if(statusEl) statusEl.innerHTML='✅ Выполните и заберите';
-    changeToClaimBtn(taskId);
+    if(statusEl) statusEl.innerHTML='👉 Вернулись? Нажмите кнопку ниже';
+    changeToCheckBtn(taskId);
   }
 }
+
+function playInlineVideo(t, statusEl, taskId){
+  __CURRENT_AD = {
+    id: t.raw_id, campaign_id: t.raw_id,
+    title: t.title || 'Видео',
+    video_url: t.video_url,
+    duration_seconds: t.duration_seconds || 15,
+    reward_per_action: t.reward || 0.0005,
+    reward_token: 'TUSD'
+  };
+
+  const video=$('adVideo'),timerEl=$('adTimer'),titleEl=$('adTitle'),btn=$('adClaimBtn'),bar=$('adProgressBar');
+  const adStatus=$('adStatus');
+  if(!video){if(statusEl) statusEl.textContent='❌ Ошибка плеера';return;}
+
+  const duration = Math.max(5, Number(t.duration_seconds||15));
+  __AD_TIME_LEFT = duration;
+
+  titleEl.textContent = t.title || 'Видео';
+  adStatus.textContent = '⏳ Смотрите до конца';
+  adStatus.style.color = '#e8e8e8';
+  btn.disabled = true; btn.textContent = '🎁 ПОЛУЧИТЬ';
+  if(bar) bar.style.width='0%';
+  timerEl.textContent = fmtAdTime(__AD_TIME_LEFT);
+
+  video.pause(); video.removeAttribute('src'); video.load();
+  video.src = t.video_url;
+  video.muted = false; video.playsInline = true;
+  video.onerror = () => { adStatus.textContent='❌ Ошибка видео'; adStatus.style.color='#f6465d'; };
+
+  $('adModal').classList.add('show');
+  try { video.play(); } catch(e) {}
+
+  if(__AD_TIMER) clearInterval(__AD_TIMER);
+  __AD_TIMER = setInterval(() => {
+    __AD_TIME_LEFT--;
+    if(timerEl) timerEl.textContent = fmtAdTime(Math.max(0,__AD_TIME_LEFT));
+    if(bar){const pct=((duration-__AD_TIME_LEFT)/duration)*100;bar.style.width=Math.min(100,pct)+'%';}
+    if(__AD_TIME_LEFT<=0){
+      clearInterval(__AD_TIMER); __AD_TIMER=null;
+      if(bar) bar.style.width='100%';
+      if(adStatus){adStatus.textContent='✅ Можно получить';adStatus.style.color='#39d98a';}
+      if(btn) btn.disabled=false;
+    }
+  }, 1000);
+
+  video.onended = () => {
+    if(__AD_TIME_LEFT > 0){
+      __AD_TIME_LEFT = 0;
+      if(timerEl) timerEl.textContent='0:00';
+      if(bar) bar.style.width='100%';
+      if(adStatus){adStatus.textContent='✅ Можно получить';adStatus.style.color='#39d98a';}
+      if(btn) btn.disabled=false;
+    }
+  };
+}
+
+function changeToCheckBtn(taskId){
+  const card=$('task-'+taskId);if(!card) return;
+  const div=card.querySelector('.task-actions');
+  if(div) div.innerHTML=`<button class="admin-btn sm gold" style="flex:1" onclick="taskCheckSubscription('${taskId}')">🔍 Проверить выполнение</button>`;
+}
+
+async function taskCheckSubscription(taskId){
+  const statusEl=$('task-status-'+taskId);
+  const t=window.__TASKS_CACHE[taskId];
+  if(!t){if(statusEl) statusEl.textContent='❌ Потеряно';return;}
+  if(statusEl) statusEl.innerHTML='⏳ Проверяем...';
+
+  if(t.type==='channel' || t.type==='bot'){
+    const chatId = extractChatId(t.url);
+    if(!chatId){
+      if(statusEl) statusEl.innerHTML='<span class="er">❌ Не могу определить канал</span>';
+      return;
+    }
+    try{
+      const r = await fetch(SU+'/functions/v1/check-subscription',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':'Bearer '+SK,'apikey':SK},
+        body:JSON.stringify({chat_id:chatId,user_id:UID,type:t.type})
+      });
+      const d = await r.json();
+
+      if(!d.ok && d.error && d.error !== 'telegram_api_error'){
+        if(statusEl) statusEl.innerHTML=`<span class="er">❌ ${esc(d.error)}<br><small>Бот должен быть админом в канале</small></span>`;
+        return;
+      }
+
+      if(!d.is_member){
+        if(statusEl) statusEl.innerHTML='<span class="er">❌ Вы не подписаны. Подпишитесь и нажмите снова.</span>';
+        const card=$('task-'+taskId);
+        if(card){
+          const div=card.querySelector('.task-actions');
+          if(div) div.innerHTML=`<button class="admin-btn sm sec" style="flex:1" onclick="taskStart('${taskId}')">🔗 Открыть канал</button>`;
+        }
+        return;
+      }
+
+      if(statusEl) statusEl.innerHTML='<span class="ok">✅ Проверено! Начисляем...</span>';
+      await taskClaim(taskId);
+
+    }catch(e){
+      if(statusEl) statusEl.innerHTML=`<span class="er">❌ Ошибка проверки: ${esc(e.message)}</span>`;
+    }
+    return;
+  }
+
+  await taskClaim(taskId);
+}
+
+function extractChatId(url){
+  if(!url) return null;
+  url = String(url).trim();
+  if(url.startsWith('@')) return url;
+  let m = url.match(/t\.me\/([a-zA-Z0-9_]+)/);
+  if(m) return '@'+m[1];
+  if(/^-?\d+$/.test(url)) return url;
+  if(/^[a-zA-Z0-9_]+$/.test(url)) return '@'+url;
+  return null;
+}
+
 function changeToClaimBtn(taskId){
   const card=$('task-'+taskId);if(!card) return;
   const div=card.querySelector('.task-actions');
   if(div) div.innerHTML=`<button class="admin-btn sm gold" style="flex:1" onclick="taskClaim('${taskId}')">🎁 ЗАБРАТЬ НАГРАДУ</button>`;
 }
-async function taskClaim(taskId){
   const statusEl=$('task-status-'+taskId);
   const t=window.__TASKS_CACHE[taskId];
   if(!t){if(statusEl) statusEl.textContent='❌ Потеряно';return;}
