@@ -1030,22 +1030,31 @@ function renderShop(){
   if(!c) return;
   c.innerHTML = '<div class="item-card"><div class="item-desc">Загрузка товаров...</div></div>';
   
-  sb.from('telepat_items').select('*').eq('active', true).order('price_usd', { ascending: true }).then(({data, error}) => {
-    if (error || !data || !data.length) {
-      c.innerHTML = '<div class="item-card"><div class="item-desc" style="text-align:center">Товаров пока нет</div></div>';
+  // Запрашиваем ВСЁ без фильтров базы, чтобы ничего не потерялось
+  sb.from('telepat_items').select('*').then(({data, error}) => {
+    if (error) {
+      c.innerHTML = `<div class="item-card"><div class="item-desc" style="color:red;text-align:center">Ошибка БД: ${error.message}</div></div>`;
       return;
     }
     
+    if (!data || !data.length) {
+      c.innerHTML = '<div class="item-card"><div class="item-desc" style="text-align:center">База данных вернула пустой список (возможно, включен RLS)</div></div>';
+      return;
+    }
+
     const tab = currentShopTab || 'gear';
-    let filtered = data;
-    if (tab === 'gear') filtered = data.filter(i => i.category === 'gear' || ['weapon','body','legs','armor','shield','cloak'].includes(i.slot));
-    else if (tab === 'titles') filtered = data.filter(i => i.category === 'title' || i.slot === 'titleSlot');
-    else if (tab === 'artifacts') filtered = data.filter(i => i.category === 'artifact');
-    else if (tab === 'certs') filtered = data.filter(i => i.category === 'license');
-    else if (tab === 'extras') filtered = data.filter(i => ['ring','bag','pet','aura'].includes(i.slot));
+    // Фильтруем только активные товары уже в JS
+    let filtered = data.filter(i => i.active === true); 
+    
+    // Улучшенный фильтр: ищем и по слоту, и по категории
+    if (tab === 'gear') filtered = filtered.filter(i => ['weapon','body','legs','armor','shield','cloak'].includes(i.slot) || ['weapon','clothes','armor'].includes(i.category));
+    else if (tab === 'titles') filtered = filtered.filter(i => i.category === 'title' || i.slot === 'titleSlot');
+    else if (tab === 'artifacts') filtered = filtered.filter(i => i.category === 'artifact');
+    else if (tab === 'certs') filtered = filtered.filter(i => i.category === 'license');
+    else if (tab === 'extras') filtered = filtered.filter(i => ['ring','bag','pet','aura'].includes(i.slot));
 
     if (!filtered.length) {
-      c.innerHTML = '<div class="item-card"><div class="item-desc" style="text-align:center">В этой категории пусто</div></div>';
+      c.innerHTML = `<div class="item-card"><div class="item-desc" style="text-align:center">В категории нет активных товаров</div></div>`;
       return;
     }
 
@@ -1053,7 +1062,7 @@ function renderShop(){
       <div class="item-card">
         <div class="item-header">
           <span class="item-name">${it.emoji||'🎁'} ${esc(it.name)}</span>
-          <span class="rarity ${it.min_rank>5?'rare':'common'}">Ур. ${it.min_rank||0}+</span>
+          <span class="rarity ${it.min_rank>5?'rare':'common'}">Ур. ${it.min_rank||0}</span>
         </div>
         <div class="item-footer">
           <span class="item-price">$${f(it.price_usd, 2)}</span>
