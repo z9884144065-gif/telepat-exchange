@@ -1523,47 +1523,36 @@ async function switchP2PTab(t){
   `;
   container.innerHTML = tabsHtml;
   await renderP2PList();
-}
-async function renderP2PList(){
+}async function renderP2PList(){
   const box=$('p2pList');if(!box) return;
   box.innerHTML='<div class="item-card"><div class="item-desc">Загрузка...</div></div>';
   
-  try {
-    let orders=[];
-    // Запрашиваем ордера из базы
-    const r=await sb.from('p2p_orders').select('*').limit(500);
-    
-    // Если база выдала ошибку (например, блокировка RLS), показываем её на экране
-    if(r.error) {
-        box.innerHTML='<div class="item-card"><div class="item-desc" style="color:red;text-align:center">Ошибка БД: '+r.error.message+'</div></div>';
-        return;
-    }
+  // Делаем запрос к базе
+  const r = await sb.from('p2p_orders').select('*');
+  
+  // Выводим в консоль (F12), что именно пришло из базы
+  console.log("ОТВЕТ ОТ БАЗЫ:", r);
 
-    // Оставляем только открытые ордера
-    orders = (r.data || []).filter(o=>String(o.status||'').toLowerCase()==='open');
-    
-    __P2P_ALL_ORDERS=orders;
-    
-    if(currentP2PTab==='mine'){
-      orders=orders.filter(o=>String(o.creator_id)===String(UID));
-    } else {
-      const my=orders.filter(o=>String(o.creator_id)===String(UID));
-      const other=orders.filter(o=>String(o.creator_id)!==String(UID));
-      orders=[...my,...other];
-    }
-    
-    if(!orders.length){
-      box.innerHTML='<div class="item-card"><div class="item-desc" style="text-align:center">Ордеров нет.<br>Жми ➕ Создать</div></div>';
+  if (r.error) {
+      box.innerHTML = '<div class="item-card" style="color:red;font-weight:bold;">ОШИБКА БАЗЫ: ' + r.error.message + '</div>';
       return;
-    }
-    
-    // Отрисовываем карточки (пока без ников, чтобы проверить, грузятся ли вообще ордера)
-    box.innerHTML=orders.map(o=>orderCard(o)).join('');
-    
-  } catch(err) {
-    // Показываем любую другую ошибку
-    box.innerHTML='<div class="item-card"><div class="item-desc" style="color:#f6465d;text-align:center;font-weight:bold;">Ошибка: '+err.message+'</div></div>';
   }
+  
+  if (!r.data || r.data.length === 0) {
+      box.innerHTML = '<div class="item-card" style="color:red;font-weight:bold;">База вернула 0 ордеров (RLS блокирует)</div>';
+      return;
+  }
+
+  // Фильтруем открытые
+  const openOrders = r.data.filter(o => String(o.status).toLowerCase() === 'open');
+  
+  if (openOrders.length === 0) {
+      box.innerHTML = '<div class="item-card" style="color:#f4cf70;">Всего ордеров в базе: ' + r.data.length + ', но открытых нет.</div>';
+      return;
+  }
+
+  // Если всё ок — показываем зеленый текст об успехе
+  box.innerHTML = '<div class="item-card" style="color:#39d98a;font-weight:bold;text-align:center">Успех! База отдала ' + openOrders.length + ' открытых ордеров.</div>' + openOrders.map(o=>orderCard(o)).join('');
 }
 function orderCard(o){
   ORDER_CACHE[String(o.id)]=o;
