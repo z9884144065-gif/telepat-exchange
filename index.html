@@ -1637,8 +1637,9 @@ async function cancelP2POrder(id){
 }
 async function quickBuyOrder(id){
   if(!confirm('Выкупить?')) return;
-  const{error}=await sb.rpc('accept_p2p_order_v2',{p_order_id:id});
+  const{data,error}=await sb.rpc('accept_p2p_order_v2', { p_order_id: Number(id), p_taker_id: UID });
   if(error){msg(error.message,'error');return;}
+  if(data && data.ok === false) { msg(data.message, 'error'); return; }
   msg('✅ Куплено','success');await refreshAll();
   if(currentIncomeTab==='p2p') await renderP2PContent($('incomeContent'));
 }
