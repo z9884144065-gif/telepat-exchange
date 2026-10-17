@@ -1241,6 +1241,20 @@ function renderHome(){
     if(eq[s]){el.classList.add('filled');el.innerHTML=`<span class="slot-label">${SLOT_LABEL[s]||s}</span>${eq[s].emoji||'🎁'}`;}
     else{el.classList.add('unlocked-empty');const ic={weapon:'🗡️',body:'👕',legs:'👖',armor:'⛑️',ring:'💍'}[s];el.innerHTML=`<span class="slot-label">${SLOT_LABEL[s]||s}</span>${ic}`;}
   });
+      // Отрисовка надетого титула
+  const titleItem = MY_ITEMS.find(i => i.is_equipped && (i.slot === 'titleSlot' || i.category === 'title'));
+  const titleSlotEl = $('slot-titleSlot');
+  if(titleSlotEl) {
+    if(titleItem) {
+      titleSlotEl.classList.add('filled');
+      titleSlotEl.classList.remove('unlocked-empty');
+      titleSlotEl.innerHTML = `<span class="slot-label">Титул</span>${titleItem.emoji || '🏷️'}`;
+    } else {
+      titleSlotEl.classList.remove('filled');
+      titleSlotEl.classList.add('unlocked-empty');
+      titleSlotEl.innerHTML = `<span class="slot-label">Титул</span>🏷️`;
+    }
+  }
   const inv=MY_ITEMS.filter(i=>!i.is_equipped&&!i.is_listed);
   $('invCount').textContent=inv.length+' / 10';
   const grid=$('invGrid');grid.innerHTML='';
