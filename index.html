@@ -1672,7 +1672,7 @@ async function confirmBuyOrder(){
   btn.disabled=true;$('buyStatus').textContent='⏳...';
   const isFull=getAmt>=fromTotal-1e-9;
   try{
-    if(isFull){const{error}=await sb.rpc('accept_p2p_order_v2',{p_order_id:String(o.id)});if(error){$('buyStatus').textContent=error.message;btn.disabled=false;return;}$('buyStatus').innerHTML='<span class="ok">✅ Полностью</span>';}
+    if(isFull){const{error}=await sb.rpc('accept_p2p_order_v2',{p_order_id:Number(o.id), p_taker_id: UID});if(error){$('buyStatus').textContent=error.message;btn.disabled=false;return;}$('buyStatus').innerHTML='<span class="ok">✅ Полностью</span>';}
     else{const{data,error}=await sb.rpc('accept_p2p_order_chat_partial',{p_order_id:String(o.id),p_taker_id:String(UID),p_get_amount:getAmt});if(error){$('buyStatus').textContent=error.message;btn.disabled=false;return;}$('buyStatus').innerHTML='<span class="ok">✅ '+f(getAmt,8)+'</span>';}
     msg('✅ Куплено','success');await refreshAll();setTimeout(closeBuyModal,900);
     if(currentIncomeTab==='p2p') await renderP2PContent($('incomeContent'));
