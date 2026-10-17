@@ -1515,23 +1515,43 @@ async function switchP2PTab(t){
 async function renderP2PList(){
   const box=$('p2pList');if(!box) return;
   box.innerHTML='<div class="item-card"><div class="item-desc">Загрузка...</div></div>';
-  let orders=[];
-  try{const r=await sb.from('p2p_orders').select('*').limit(500);if(!r.error&&Array.isArray(r.data)){orders=r.data.filter(o=>String(o.status||'').toLowerCase()==='open');}}catch(e){}
-  if(!orders.length){try{const r2=await sb.rpc('get_p2p_orders',{p_from_token:null,p_to_token:null,p_sort:'rank'});if(!r2.error&&Array.isArray(r2.data)) orders=r2.data;}catch(e){}}
-  if(orders.length){
-    try{
-      const ids=[...new Set(orders.map(o=>Number(o.creator_id)).filter(Boolean))];
-      const u=await sb.from('users').select('telegram_id,username,first_name,rank_name,rank_level,trades_new').in('telegram_id',ids);
-      const map={};(u.data||[]).forEach(x=>{map[String(x.telegram_id)]=x;});
-      orders=orders.map(o=>{const uu=map[String(o.creator_id)]||{};const fA=n(o.from_amount),tA=n(o.to_amount);
-        return Object.assign({},o,{creator_username:uu.username||null,creator_first_name:uu.first_name||null,creator_rank_name:uu.rank_name||'Новичок',creator_rank_level:Number(uu.rank_level||0),likes:n(o.likes),dislikes:n(o.dislikes),completed_trades:Number(uu.trades_new||0),rate:fA>0?tA/fA:n(o.rate)});});
-    }catch(e){}
+  
+  try {
+    let orders=[];
+    // Запрашиваем ордера из базы
+    const r=await sb.from('p2p_orders').select('*').limit(500);
+    
+    // Если база выдала ошибку (например, блокировка RLS), показываем её на экране
+    if(r.error) {
+        box.innerHTML='<div class="item-card"><div class="item-desc" style="color:red;text-align:center">Ошибка БД: '+r.error.message+'</div></div>';
+        return;
+    }
+
+    // Оставляем только открытые ордера
+    orders = (r.data || []).filter(o=>String(o.status||'').toLowerCase()==='open');
+    
+    __P2P_ALL_ORDERS=orders;
+    
+    if(currentP2PTab==='mine'){
+      orders=orders.filter(o=>String(o.creator_id)===String(UID));
+    } else {
+      const my=orders.filter(o=>String(o.creator_id)===String(UID));
+      const other=orders.filter(o=>String(o.creator_id)!==String(UID));
+      orders=[...my,...other];
+    }
+    
+    if(!orders.length){
+      box.innerHTML='<div class="item-card"><div class="item-desc" style="text-align:center">Ордеров нет.<br>Жми ➕ Создать</div></div>';
+      return;
+    }
+    
+    // Отрисовываем карточки (пока без ников, чтобы проверить, грузятся ли вообще ордера)
+    box.innerHTML=orders.map(o=>orderCard(o)).join('');
+    
+  } catch(err) {
+    // Показываем любую другую ошибку
+    box.innerHTML='<div class="item-card"><div class="item-desc" style="color:#f6465d;text-align:center;font-weight:bold;">Ошибка: '+err.message+'</div></div>';
   }
-  __P2P_ALL_ORDERS=orders;
-  if(currentP2PTab==='mine'){orders=orders.filter(o=>String(o.creator_id)===String(UID));}
-  else{const my=orders.filter(o=>String(o.creator_id)===String(UID));const other=orders.filter(o=>String(o.creator_id)!==String(UID));orders=[...my,...other];}
-  if(!orders.length){box.innerHTML='<div class="item-card"><div class="item-desc" style="text-align:center">Ордеров нет.<br>Жми ➕ Создать</div></div>';return;}
-  box.innerHTML=orders.map(o=>orderCard(o)).join('');
 }
 function orderCard(o){
   ORDER_CACHE[String(o.id)]=o;
