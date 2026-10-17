@@ -1154,7 +1154,9 @@ function showShopTab(tab){
 async function buyItem(id, name, price) {
   if(!confirm(`Купить "${name}" за $${price}?`)) return;
   
-  const {data, error} = await sb.rpc('buy_item', { p_item_id: id });
+  // Передаем UID прямо в базу
+  const {data, error} = await sb.rpc('buy_item', { p_item_id: id, p_telegram_id: UID });
+  
   if(error || (data && data.ok === false)) {
     msg('Ошибка покупки: ' + (error?.message || data?.error || 'Недостаточно средств'), 'error');
     return;
@@ -1165,7 +1167,8 @@ async function buyItem(id, name, price) {
   // Если куплен титул — надеваем его сразу
   const item = (SHOP_ITEMS || []).find(i => String(i.id) === String(id));
   if(item && (item.category === 'title' || item.slot === 'titleSlot')) {
-    await sb.rpc('equip_title', { p_title_id: id });
+    // Передаем UID и сюда тоже
+    await sb.rpc('equip_title', { p_title_id: id, p_telegram_id: UID });
   }
   
   await refreshAll();
