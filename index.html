@@ -1027,9 +1027,59 @@ function clickSlot(slot){ msg('Слот ' + slot + ' в разработке'); 
 function openItemModal(id){ msg('Предмет #' + id + ' в разработке'); }
 function renderShop(){ 
   const c=$('shopContent'); 
-  if(c) c.innerHTML='<div class="item-card" style="text-align:center;padding:30px"><div class="title">🏪 Магазин в разработке</div><div class="info">Скоро здесь появятся товары</div></div>'; 
+  if(!c) return;
+  c.innerHTML = '<div class="item-card"><div class="item-desc">Загрузка товаров...</div></div>';
+  
+  sb.from('telepat_items').select('*').eq('active', true).order('price_usd', { ascending: true }).then(({data, error}) => {
+    if (error || !data || !data.length) {
+      c.innerHTML = '<div class="item-card"><div class="item-desc" style="text-align:center">Товаров пока нет</div></div>';
+      return;
+    }
+    
+    const tab = currentShopTab || 'gear';
+    let filtered = data;
+    if (tab === 'gear') filtered = data.filter(i => i.category === 'gear' || ['weapon','body','legs','armor','shield','cloak'].includes(i.slot));
+    else if (tab === 'titles') filtered = data.filter(i => i.category === 'title' || i.slot === 'titleSlot');
+    else if (tab === 'artifacts') filtered = data.filter(i => i.category === 'artifact');
+    else if (tab === 'certs') filtered = data.filter(i => i.category === 'license');
+    else if (tab === 'extras') filtered = data.filter(i => ['ring','bag','pet','aura'].includes(i.slot));
+
+    if (!filtered.length) {
+      c.innerHTML = '<div class="item-card"><div class="item-desc" style="text-align:center">В этой категории пусто</div></div>';
+      return;
+    }
+
+    c.innerHTML = filtered.map(it => `
+      <div class="item-card">
+        <div class="item-header">
+          <span class="item-name">${it.emoji||'🎁'} ${esc(it.name)}</span>
+          <span class="rarity ${it.min_rank>5?'rare':'common'}">Ур. ${it.min_rank||0}+</span>
+        </div>
+        <div class="item-footer">
+          <span class="item-price">$${f(it.price_usd, 2)}</span>
+          <button class="gold" onclick="buyItem('${it.id}', '${esc(it.name)}', ${it.price_usd})">Купить</button>
+        </div>
+      </div>
+    `).join('');
+  });
 }
-function showShopTab(tab){ msg('Раздел: ' + tab); }
+
+function showShopTab(tab){ 
+  currentShopTab = tab;
+  document.querySelectorAll('#shopTabs .tab').forEach(b=>b.classList.toggle('active', b.dataset.tab===tab));
+  renderShop();
+}
+
+async function buyItem(id, name, price) {
+  if(!confirm(`Купить "${name}" за $${price}?`)) return;
+  const {data, error} = await sb.rpc('buy_item', { p_item_id: id });
+  if(error || (data && data.ok === false)) {
+    msg('Ошибка покупки: ' + (error?.message || data?.error || 'Недостаточно средств'), 'error');
+    return;
+  }
+  msg('✅ Успешно куплено!', 'success');
+  await refreshAll();
+}
 function renderChatBonus(){ /* Заглушка */ }
 
 /* ═══════ NAVIGATION ═══════ */
