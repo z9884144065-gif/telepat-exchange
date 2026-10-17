@@ -1024,7 +1024,47 @@ async function loadRewardFunds(){
 /* ═══════ ЗАГЛУШКИ ДЛЯ ОТСУТСТВУЮЩИХ ФУНКЦИЙ ═══════ */
 function checkMyAdsAlerts(){ /* Заглушка */ }
 function clickSlot(slot){ msg('Слот ' + slot + ' в разработке'); }
-function openItemModal(id){ msg('Предмет #' + id + ' в разработке'); }
+function openItemModal(id){
+  const item = MY_ITEMS.find(i => String(i.id) === String(id));
+  if (!item) return msg('Предмет не найден', 'error');
+
+  // Определяем слот и иконку
+  const slotLabel = SLOT_LABEL[item.slot] || item.slot || 'Предмет';
+  
+  openModal(`${item.emoji || '🎁'} ${esc(item.name)}`, `
+    <div style="text-align: center; margin-bottom: 15px;">
+      <div style="font-size: 48px; margin-bottom: 5px;">${item.emoji || '🎁'}</div>
+      <div style="color: var(--gold); font-weight: bold; font-size: 18px;">${esc(item.name)}</div>
+      <div class="info">Слот: ${slotLabel}</div>
+    </div>
+
+    <div style="background: #0d1520; padding: 10px; border-radius: 8px; margin-bottom: 15px;">
+      <div class="history-row"><span>Куплен за:</span> <b>$${f(item.purchase_price_usd, 2)}</b></div>
+      <div class="history-row"><span>Статус:</span> <b style="color:${item.is_equipped ? '#39d98a' : '#8a94a6'}">${item.is_equipped ? 'Надет' : 'В сумке'}</b></div>
+    </div>
+
+    ${item.is_equipped 
+      ? `<button class="admin-btn danger" style="width:100%;" onclick="toggleItemEquip('${item.id}', false)">Снять</button>`
+      : `<button class="admin-btn green" style="width:100%;" onclick="toggleItemEquip('${item.id}', true)">Надеть</button>`
+    }
+    
+    <button class="admin-btn sec" style="width:100%; margin-top:8px;" onclick="closeModal()">Закрыть</button>
+  `);
+}
+
+async function toggleItemEquip(itemId, equip) {
+  const rpcName = equip ? 'equip_item' : 'unequip_item';
+  const {data, error} = await sb.rpc(rpcName, { p_item_id: itemId, p_telegram_id: UID });
+  
+  if (error || (data && data.ok === false)) {
+    msg('Ошибка: ' + (error?.message || data?.error || 'Не удалось'), 'error');
+    return;
+  }
+  
+  msg(equip ? '✅ Надето' : '✅ Снято', 'success');
+  closeModal();
+  await refreshAll(); // Перерисовываем экран с новыми шмотками
+}
 function renderShop(){ 
   const c=$('shopContent'); 
   if(!c) return;
