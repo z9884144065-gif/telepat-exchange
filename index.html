@@ -1523,6 +1523,7 @@ async function switchP2PTab(t){
   `;
   container.innerHTML = tabsHtml;
   await renderP2PList();
+        }
 function renderP2PList(){
   const box=$('p2pList');if(!box) return;
   box.innerHTML='<div class="item-card"><div class="item-desc">Загрузка...</div></div>';
