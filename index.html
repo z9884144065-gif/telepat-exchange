@@ -1614,9 +1614,17 @@ async function confirmCreateOrder(){
   const fromAmt=n($('newFromAmt').value),toAmt=n($('newToAmt').value);
   if(from===to||fromAmt<=0||toAmt<=0){msg('Заполните поля','error');return;}
   if(fromAmt*1.001>tb(from)){msg('Мало '+from,'error');return;}
-  const{data,error}=await sb.rpc('create_p2p_order_v2',{p_from_token:from,p_to_token:to,p_from_amount:fromAmt,p_to_amount:toAmt});
+  
+  const{data,error}=await sb.rpc('create_p2p_order_v2',{
+    p_creator_id: UID,
+    p_from_token:from, 
+    p_to_token:to, 
+    p_from_amount:fromAmt, 
+    p_to_amount:toAmt
+  });
+  
   if(error){msg(error.message,'error');return;}
-  if(data&&data.ok===false){msg(data.error||data.message||'Ошибка','error');return;}
+  if(data&&data.ok===false){msg(data.message||'Ошибка','error');return;}
   msg('🚀 Ордер создан','success');closeModal();await refreshAll();
   if(currentIncomeTab==='p2p'){currentP2PTab='mine';await renderP2PContent($('incomeContent'));}
 }
