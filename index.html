@@ -1523,20 +1523,25 @@ async function switchP2PTab(t){
   `;
   container.innerHTML = tabsHtml;
   await renderP2PList();
-async function renderP2PList(){
+function renderP2PList(){
   const box=$('p2pList');if(!box) return;
   box.innerHTML='<div class="item-card"><div class="item-desc">Загрузка...</div></div>';
   
-  try {
-    // 1. Запрашиваем все ордера из базы
-    const r = await sb.from('p2p_orders').select('*');
+  // Таймер на 5 секунд, чтобы бот не висел вечно
+  const timeout = setTimeout(() => {
+    if(box.innerHTML.includes('Загрузка')) {
+      box.innerHTML = '<div class="item-card"><div class="item-desc" style="color:red;text-align:center">Сеть не отвечает. Проверьте интернет или обновите бота.</div></div>';
+    }
+  }, 5000);
+
+  sb.from('p2p_orders').select('*').then(r => {
+    clearTimeout(timeout); 
     
     if (r.error) {
         box.innerHTML='<div class="item-card"><div class="item-desc" style="color:red;text-align:center">Ошибка БД: '+r.error.message+'</div></div>';
         return;
     }
 
-    // 2. Фильтруем только открытые
     let orders = (r.data || []).filter(o => String(o.status||'').toLowerCase() === 'open');
 
     if (orders.length === 0) {
@@ -1544,10 +1549,9 @@ async function renderP2PList(){
         return;
     }
 
-    // 3. Подтягиваем ники и ранги создателей
-    try {
-        const ids = [...new Set(orders.map(o => Number(o.creator_id)).filter(Boolean))];
-        const u = await sb.from('users').select('telegram_id,username,first_name,rank_name,rank_level').in('telegram_id', ids);
+    // Подтягиваем ники
+    const ids = [...new Set(orders.map(o => Number(o.creator_id)).filter(Boolean))];
+    sb.from('users').select('telegram_id,username,first_name,rank_name,rank_level').in('telegram_id', ids).then(u => {
         const map = {};
         (u.data || []).forEach(x => { map[String(x.telegram_id)] = x; });
         
@@ -1558,36 +1562,36 @@ async function renderP2PList(){
                 creator_first_name: uu.first_name || null,
                 creator_rank_name: uu.rank_name || 'Новичок',
                 creator_rank_level: Number(uu.rank_level || 0),
-                likes: o.likes || 0,
-                dislikes: o.dislikes || 0,
+                likes: 0,
+                dislikes: 0,
                 completed_trades: 0,
                 rate: (Number(o.from_amount) > 0) ? (Number(o.to_amount) / Number(o.from_amount)) : 1
             });
         });
-    } catch (e) {
-        console.log("Ошибка загрузки ников:", e);
-    }
 
-    // 4. Свои ордера показываем первыми
-    if(currentP2PTab==='mine'){
-      orders=orders.filter(o=>String(o.creator_id)===String(UID));
-    } else {
-      const my=orders.filter(o=>String(o.creator_id)===String(UID));
-      const other=orders.filter(o=>String(o.creator_id)!==String(UID));
-      orders=[...my,...other];
-    }
+        // Сортируем: свои ордера первыми
+        if(currentP2PTab==='mine'){
+          orders=orders.filter(o=>String(o.creator_id)===String(UID));
+        } else {
+          const my=orders.filter(o=>String(o.creator_id)===String(UID));
+          const other=orders.filter(o=>String(o.creator_id)!==String(UID));
+          orders=[...my,...other];
+        }
 
-    if (orders.length === 0) {
-        box.innerHTML = '<div class="item-card"><div class="item-desc" style="text-align:center">У вас нет открытых ордеров</div></div>';
-        return;
-    }
-    
-    // 5. Отрисовываем красивые карточки
-    box.innerHTML=orders.map(o=>orderCard(o)).join('');
-    
-  } catch(err) {
-    box.innerHTML='<div class="item-card"><div class="item-desc" style="color:#f6465d;text-align:center;font-weight:bold;">Ошибка: '+err.message+'</div></div>';
-  }
+        if (orders.length === 0) {
+            box.innerHTML = '<div class="item-card"><div class="item-desc" style="text-align:center">У вас нет открытых ордеров</div></div>';
+            return;
+        }
+        
+        box.innerHTML=orders.map(o=>orderCard(o)).join('');
+    }).catch(e => {
+        clearTimeout(timeout);
+        box.innerHTML='<div class="item-card"><div class="item-desc" style="color:red;text-align:center">Ошибка профилей: '+e.message+'</div></div>';
+    });
+  }).catch(err => {
+    clearTimeout(timeout);
+    box.innerHTML='<div class="item-card"><div class="item-desc" style="color:red;text-align:center">Сетевая ошибка: '+err.message+'</div></div>';
+  });
 }
 function orderCard(o){
   ORDER_CACHE[String(o.id)]=o;
