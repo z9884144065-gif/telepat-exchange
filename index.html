@@ -1316,14 +1316,51 @@ ${REWARD_FUNDS.length?REWARD_FUNDS.map(fd=>`<div style="padding:8px 0;border-bot
 
 /* ═══════ P2P ═══════ */
 let __P2P_ALL_ORDERS=[];
-async function renderP2PContent(container){
-  const tabsHtml=`<div class="tabs tabs-3" style="margin-bottom:12px">
-<button class="tab ${currentP2PTab==='all'?'active':''}" onclick="switchP2PTab('all')"><span class="tab-icon">🌐</span>Все</button>
-<button class="tab ${currentP2PTab==='mine'?'active':''}" onclick="switchP2PTab('mine')"><span class="tab-icon">📋</span>Мои</button>
-<button class="tab tab-gold" onclick="switchP2PTab('create')"><span class="tab-icon">➕</span>Создать</button>
-</div><div id="p2pList"></div>`;
-  container.innerHTML=tabsHtml;
-  await renderP2PList();
+async function loadAdminDeposits(status){
+  const box=$('adminDepList'); if(!box) return;
+  box.innerHTML='Загрузка...';
+  
+  try {
+    // Берем заявки из НОВОЙ таблицы deposit_requests
+    let query = sb.from('deposit_requests').select('*').order('created_at', {ascending: false}).limit(50);
+    if (status) query = query.eq('status', status);
+    
+    const {data, error} = await query;
+    
+    if (error || !data) {
+      box.innerHTML = 'Ошибка загрузки';
+      return;
+    }
+    if (!data.length) {
+      box.innerHTML = 'Нет заявок';
+      return;
+    }
+
+    const ST = {pending:'⏳', approved:'✅', rejected:'❌'};
+    
+    box.innerHTML = data.map(w => `
+      <div style="background:#1a2230; padding:10px; border-radius:8px; margin-bottom:10px; border-left:4px solid ${w.status==='pending'?'#f4cf70':'#39d98a'};">
+        <div style="display:flex; justify-content:space-between;">
+          <div><b>${esc(w.token_symbol)}</b> — ${f(w.amount, 2)}</div>
+          <div>${ST[w.status] || w.status}</div>
+        </div>
+        <div style="font-size:13px; color:#aaa; margin-top:5px;">
+          👤 Клиент: <b>@${esc(w.username || 'Нет юзернейма')}</b> (ID: ${w.user_telegram_id})
+        </div>
+        ${w.tx_hash ? `<div style="font-size:11px; color:#888; word-break:break-all; margin-top:5px;">Tx: ${esc(w.tx_hash)}</div>` : ''}
+        <div style="font-size:11px; color:#555; margin-top:5px;">${new Date(w.created_at).toLocaleString('ru-RU')}</div>
+        
+        ${w.status === 'pending' ? `
+          <div style="display:flex; gap:10px; margin-top:10px;">
+            <button class="btn" style="flex:1; background:#39d98a; color:#000;" onclick="doApproveDep(${w.id})">✅ Зачислить</button>
+            <button class="btn" style="flex:1; background:#f6465d; color:#fff;" onclick="doRejectDep(${w.id})">❌ Отклонить</button>
+          </div>
+        ` : ''}
+      </div>
+    `).join('');
+  } catch(e) {
+    box.innerHTML = 'Ошибка';
+  }
 }
 async function switchP2PTab(t){
   if(t==='create'){openCreateOrder();return;}
