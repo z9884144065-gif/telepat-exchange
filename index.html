@@ -1512,6 +1512,18 @@ async function switchP2PTab(t){
   if(tabsEls.length>=2){tabsEls[0].classList.toggle('active',t==='all');tabsEls[1].classList.toggle('active',t==='mine');}
   await renderP2PList();
 }
+    async function renderP2PContent(container){
+  const tabsHtml=`
+    <div class="tabs" style="margin-bottom:15px;">
+      <div class="tab ${currentP2PTab==='all'?'active':''}" onclick="switchP2PTab('all')">🌐 Все</div>
+      <div class="tab ${currentP2PTab==='mine'?'active':''}" onclick="switchP2PTab('mine')">📋 Мои</div>
+      <div class="tab" onclick="openCreateOrder()">➕ Создать</div>
+    </div>
+    <div id="p2pList">Загрузка...</div>
+  `;
+  container.innerHTML = tabsHtml;
+  await renderP2PList();
+}
 async function renderP2PList(){
   const box=$('p2pList');if(!box) return;
   box.innerHTML='<div class="item-card"><div class="item-desc">Загрузка...</div></div>';
