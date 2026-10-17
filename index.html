@@ -1028,9 +1028,60 @@ function openItemModal(id){ msg('Предмет #' + id + ' в разработ�
 function renderShop(){ 
   const c=$('shopContent'); 
   if(!c) return;
+  
+  const tab = currentShopTab || 'gear';
+
+  // 1. ВКЛАДКА РЕФЕРАЛОВ
+  if (tab === 'referrals') {
+    c.innerHTML = '<div class="item-card"><div class="item-desc">Загрузка рынка рефералов...</div></div>';
+    sb.rpc('referral_market_list').then(({data, error}) => {
+      if (error || !data || !data.items || !data.items.length) {
+        c.innerHTML = '<div class="item-card"><div class="item-desc" style="text-align:center">На рынке пока нет рефералов</div></div>';
+        return;
+      }
+      c.innerHTML = data.items.map(l => `
+        <div class="item-card">
+          <div class="item-header">
+            <span class="item-name">👤 ${l.username || l.first_name || 'ID '+l.ref_id}</span>
+            <span class="rarity rare">${esc(l.rank_name)}</span>
+          </div>
+          <div class="item-footer">
+            <span class="item-price">$${f(l.price_tusd, 2)}</span>
+            <button class="gold" onclick="buyReferral('${l.id}')">Купить</button>
+          </div>
+        </div>
+      `).join('');
+    });
+    return;
+  }
+
+  // 2. ВКЛАДКА АУКЦИОНА
+  if (tab === 'auction') {
+    c.innerHTML = '<div class="item-card"><div class="item-desc">Загрузка аукциона...</div></div>';
+    sb.rpc('auction_list').then(({data, error}) => {
+      if (error || !data || !data.items || !data.items.length) {
+        c.innerHTML = '<div class="item-card"><div class="item-desc" style="text-align:center">Активных лотов нет</div></div>';
+        return;
+      }
+      c.innerHTML = data.items.map(l => `
+        <div class="item-card">
+          <div class="item-header">
+            <span class="item-name">${l.emoji||'🎁'} ${esc(l.item_name)}</span>
+            <span class="rarity">⏱ ${fmtAucTime(l.seconds_left)}</span>
+          </div>
+          <div class="item-footer">
+            <span class="item-price">$${f(l.current_bid || l.start_price, 2)}</span>
+            <button class="gold" onclick="bidAuction('${l.id}')">Ставка</button>
+          </div>
+        </div>
+      `).join('');
+    });
+    return;
+  }
+
+  // 3. ВКЛАДКИ С ПРЕДМЕТАМИ (Амуниция, Титулы, Артефакты и т.д.)
   c.innerHTML = '<div class="item-card"><div class="item-desc">Загрузка товаров...</div></div>';
   
-  // Запрашиваем ВСЁ без фильтров базы, чтобы ничего не потерялось
   sb.from('telepat_items').select('*').then(({data, error}) => {
     if (error) {
       c.innerHTML = `<div class="item-card"><div class="item-desc" style="color:red;text-align:center">Ошибка БД: ${error.message}</div></div>`;
@@ -1038,15 +1089,12 @@ function renderShop(){
     }
     
     if (!data || !data.length) {
-      c.innerHTML = '<div class="item-card"><div class="item-desc" style="text-align:center">База данных вернула пустой список (возможно, включен RLS)</div></div>';
+      c.innerHTML = '<div class="item-card"><div class="item-desc" style="text-align:center">Товаров нет</div></div>';
       return;
     }
 
-    const tab = currentShopTab || 'gear';
-    // Фильтруем только активные товары уже в JS
     let filtered = data.filter(i => i.active === true); 
     
-    // Улучшенный фильтр: ищем и по слоту, и по категории
     if (tab === 'gear') filtered = filtered.filter(i => ['weapon','body','legs','armor','shield','cloak'].includes(i.slot) || ['weapon','clothes','armor'].includes(i.category));
     else if (tab === 'titles') filtered = filtered.filter(i => i.category === 'title' || i.slot === 'titleSlot');
     else if (tab === 'artifacts') filtered = filtered.filter(i => i.category === 'artifact');
@@ -1071,6 +1119,30 @@ function renderShop(){
       </div>
     `).join('');
   });
+}
+
+// Вспомогательные функции для кнопок
+async function buyReferral(id) {
+  if(!confirm('Купить этого реферала?')) return;
+  const {data, error} = await sb.rpc('referral_buy', { p_lot_id: id });
+  if(error || (data && data.ok === false)) {
+    msg('Ошибка: ' + (error?.message || data?.error || 'Не удалось купить'), 'error');
+    return;
+  }
+  msg('✅ Реферал куплен!', 'success');
+  renderShop();
+}
+
+async function bidAuction(id) {
+  const bid = prompt('Введите вашу ставку в $:');
+  if(!bid || isNaN(bid)) return;
+  const {data, error} = await sb.rpc('auction_bid', { p_lot_id: id, p_bid_amount: Number(bid) });
+  if(error || (data && data.ok === false)) {
+    msg('Ошибка: ' + (error?.message || data?.error || 'Ставка не принята'), 'error');
+    return;
+  }
+  msg('✅ Ставка сделана!', 'success');
+  renderShop();
 }
 
 function showShopTab(tab){ 
