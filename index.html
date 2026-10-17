@@ -1153,12 +1153,21 @@ function showShopTab(tab){
 
 async function buyItem(id, name, price) {
   if(!confirm(`Купить "${name}" за $${price}?`)) return;
+  
   const {data, error} = await sb.rpc('buy_item', { p_item_id: id });
   if(error || (data && data.ok === false)) {
     msg('Ошибка покупки: ' + (error?.message || data?.error || 'Недостаточно средств'), 'error');
     return;
   }
+  
   msg('✅ Успешно куплено!', 'success');
+  
+  // Если куплен титул — надеваем его сразу
+  const item = (SHOP_ITEMS || []).find(i => String(i.id) === String(id));
+  if(item && (item.category === 'title' || item.slot === 'titleSlot')) {
+    await sb.rpc('equip_title', { p_title_id: id });
+  }
+  
   await refreshAll();
 }
 function renderChatBonus(){ /* Заглушка */ }
