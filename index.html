@@ -843,7 +843,9 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 <button class="nav-btn nav-wide" id="nav-chatbonus" onclick="goView('chatbonus')"><span class="nav-icon">🎁</span> Заказать</button>
 </div>
 </div>
-/* ═══════ CONFIG ═══════ */
+
+<script>
+/* ═══════ CONFIG ═══════ */ 
 const SU='https://jutszxuzjzyfxarceydw.supabase.co';
 const SK='sb_publishable_geRczpRc3faUHRGto2ue7A_eFFiJDwO';
 const EF=SU+'/functions/v1/telegram-auth';
@@ -870,12 +872,11 @@ let __TASK_TIMERS={};
 let __AUC_TIMER=null;
 const UI_DEFAULTS={ui_bg:'#0b1018',ui_bg_radial:'#26334a',ui_accent:'#f4cf70',ui_card:'#141c28'};
 
-// ✅ НОВЫЕ РАНГИ (22 уровня) И ИХ ТРЕБОВАНИЯ
+// ✅ НОВЫЕ РАНГИ (22 уровня)
 const RANKS=['Новичок','Крестьянин','Вольный','Гражданин','Оруженосец','Мечник','Десятник','Сотник','Тысячник','Рыцарь','Железный','Бронзовый','Серебряный','Золотой','Барон','Виконт','Граф','Маркиз','Герцог','Князь','Король','Император'];
 const RANK_STAKE=[0, 0.5, 1, 2, 3, 4, 5, 6, 7, 8, 16, 32, 64, 128, 500, 2000, 10000, 16000, 25000, 40000, 63000, 100000];
 const RANK_TRADES=[0, 1, 2, 5, 10, 15, 20, 25, 30, 40, 50, 70, 90, 120, 150, 200, 250, 350, 500, 750, 1000, 1500];
 const RANK_REFS=[0, 0, 1, 2, 4, 6, 8, 10, 13, 16, 19, 22, 25, 29, 33, 37, 42, 47, 52, 100, 200, 500];
-// Лимиты отклонения для P2P (от 0.25% до 10%)
 const RANK_DEVIATIONS = [0.25, 0.30, 0.40, 0.50, 0.65, 0.80, 1.00, 1.20, 1.50, 1.80, 2.10, 2.50, 2.90, 3.40, 3.90, 4.50, 5.20, 6.00, 7.00, 8.00, 9.00, 10.00];
 
 const RC=['#fff','#d8d8d8','#b9c5b9','#75c99a','#58b5e9','#4f8cff','#3974d9','#6673e8','#4169e1','#7389bd','#b87333','#bfc2c9','#e0bd45','#9b59b6','#8e44ad','#e0b72f','#e68a27','#24c8aa','#f5cf3d','#f7b83f','#ffd700'];
@@ -1011,6 +1012,17 @@ async function loadRewardFunds(){
   }catch(e){}
 }
 
+/* ═══════ ЗАГЛУШКИ ДЛЯ ОТСУТСТВУЮЩИХ ФУНКЦИЙ ═══════ */
+function checkMyAdsAlerts(){ /* Заглушка */ }
+function clickSlot(slot){ msg('Слот ' + slot + ' в разработке'); }
+function openItemModal(id){ msg('Предмет #' + id + ' в разработке'); }
+function renderShop(){ 
+  const c=$('shopContent'); 
+  if(c) c.innerHTML='<div class="item-card" style="text-align:center;padding:30px"><div class="title">🏪 Магазин в разработке</div><div class="info">Скоро здесь появятся товары</div></div>'; 
+}
+function showShopTab(tab){ msg('Раздел: ' + tab); }
+function renderChatBonus(){ /* Заглушка */ }
+
 /* ═══════ NAVIGATION ═══════ */
 function goView(v){
   ['home','shop','income','friends','rating','chatbonus','admin'].forEach(x=>{
@@ -1064,7 +1076,6 @@ function renderHome(){
   const rl=Number(CU.rank_level||0);
   const rn=CU.rank_name||RANKS[rl]||'Новичок';
   $('userRank').textContent='👑 '+rn;$('rankName').textContent=rn;$('rankSub').textContent=`Уровень ${rl} из 21`;$('statLevel').textContent=rl;
-  // ✅ РЕЙТИНГ ИЗ БАЗЫ
   $('statRating').textContent=CU.rating_points||0;
   let totalUSD=n(CU.tg_balance)*100+n(CU.ai_balance)*0.0001+n(CU.tusd_balance);
   Object.keys(CB).forEach(sym=>{if(['TG','AI','TUSD'].includes(sym)) return;totalUSD+=n(CB[sym])*priceOf(sym);});
@@ -1115,7 +1126,7 @@ function renderHome(){
   setKnightSpeech(rl>=21?'Я — Император!':(rl===0?'Славный путь начинается!':`Я — ${rn}!`));
 }
 
-/* ═══════ КОШЕЛЁК ЮЗЕРА (ИСПРАВЛЕННЫЙ) ═══════ */
+/* ═══════ КОШЕЛЁК ЮЗЕРА ═══════ */
 async function openWallet(){
   if(!UID) return;
   const{data:st}=await sb.rpc('get_wallet_status');
@@ -1125,13 +1136,13 @@ async function openWallet(){
   const linked=my&&my.linked;const myAddr=linked?my.address:'';
   const{data:rw}=await sb.rpc('user_get_receive_wallets');
   const wallets=(rw&&rw.ok&&rw.items)?rw.items:[];
-  // ✅ ФИКС: Всегда берем ID текущего пользователя (клиента), а не админа
+  
+  // ✅ ФИКС: Берем ID текущего юзера
   const myId = UID;
   
   const recvHtml=wallets.length?wallets.map(w=>`<div class="pc"><div class="pt">${esc(w.token_symbol)}</div><div class="info" style="font-size:11px;word-break:break-all">📍 ${esc(w.wallet_address)}</div>${w.memo?`<div class="info" style="font-size:11px">📝 ${esc(w.memo)}</div>`:''}<div class="info" style="font-size:10px;color:#f4cf70">⚠️ Комментарий: <b>${myId}</b></div><button class="admin-btn sm sec" style="width:100%;margin-top:6px" onclick="copyText('${esc(w.wallet_address)}')">📋 Скопировать</button></div>`).join(''):'<div class="info">Реквизиты не настроены</div>';
   
   openModal('💼 Кошелёк',`
-    <!-- ✅ НОВЫЙ БЛОК: Показываем два кошелька -->
     <div style="display:flex; gap:8px; margin-bottom:12px;">
       <div style="flex:1; background:#151a21; border:1px solid #2d3a4c; border-radius:12px; padding:10px; text-align:center;">
         <div style="font-size:10px; color:#8a94a6;">ТОРГОВЫЙ</div>
@@ -1171,7 +1182,7 @@ async function openWallet(){
   `);
   loadMyDeposits();loadMyWithdrawals();
 }
-    function walletTab(t){
+function walletTab(t){
   const dep=$('wallet-dep'),wd=$('wallet-wd'),bd=$('wt-dep'),bw=$('wt-wd');
   if(t==='dep'){dep.classList.remove('hidden');wd.classList.add('hidden');bd.classList.add('active');bw.classList.remove('active');}
   else{wd.classList.remove('hidden');dep.classList.add('hidden');bw.classList.add('active');bd.classList.remove('active');}
@@ -1657,7 +1668,8 @@ async function renderAdsTab(c){
 
   await loadAvailableTasks();
 }
-    /* ═══════ ЗАДАНИЯ (ОБЪЕДИНЕННЫЕ) ═══════ */
+
+/* ═══════ ЗАДАНИЯ (ОБЪЕДИНЕННЫЕ) ═══════ */
 const TL_TYPES={subscribe_channel:'📢 Канал',subscribe_bot:'🤖 Бот',video:'📺 Видео',click:'🔗 Ссылка'};
 function mapOldType(t){
   if(t==='subscribe_channel') return 'channel';
@@ -2100,7 +2112,6 @@ async function loadAdminDeposits(status){
 async function doApproveDep(id){if(!confirm('Зачислить?')) return;const{data,error}=await sb.rpc('admin_approve_deposit',{p_id:id,p_comment:'OK'});if(error||!data||data.ok===false){msg('Ошибка','error');return;}msg('✅ Зачислено','success');loadAdminDeposits();}
 async function doRejectDep(id){const reason=prompt('Причина:')||'Отклонено';const{data,error}=await sb.rpc('admin_reject_deposit',{p_id:id,p_reason:reason});if(error||!data||data.ok===false){msg('Ошибка','error');return;}msg('❌','success');loadAdminDeposits();}
 
-/* Админ рынок рефералов */
 async function loadAdminRefStats(){
   const box=$('adminRefStats');if(!box) return;box.innerHTML='Загрузка...';
   try{const{data}=await sb.rpc('referral_admin_stats');
@@ -2158,7 +2169,6 @@ async function loadAdminAuctions(){
   }catch(e){box.innerHTML='Ошибка';}
 }
 
-/* Остальные админ функции */
 async function loadAdminItemPrices(){
   const box=$('adminItemPricesList');if(!box) return;
   const cat=$('adItemCat')?.value||'all';box.innerHTML='Загрузка...';
