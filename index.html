@@ -2154,13 +2154,7 @@ async function saveReceiveWallet(){
 }
 async function deleteReceiveWallet(token){if(!confirm('Удалить?')) return;const{data,error}=await sb.rpc('admin_delete_receive_wallet',{p_token:token});if(error||!data||data.ok===false){msg('Ошибка','error');return;}msg('🗑','success');loadAdminReceiveWallets();}
 async function loadAdminDeposits(status){
-  const box=$('adminDepList');if(!box) return;box.innerHTML='Загрузка...';
-  try{const{data,error}=await sb.rpc('admin_list_deposits',{p_status:status||null});if(error||!data||data.ok===false){box.innerHTML='Ошибка';return;}
-    const items=data.items||[];if(!items.length){box.innerHTML='<div class="info">Нет заявок</div>';return;}
-    const ST={pending:'⏳',approved:'✅',rejected:'❌'};
-    box.innerHTML=items.map(w=>`<div class="pc"><div class="pt">${esc(w.token_symbol)} — ${f(w.amount,8)}</div><div class="info">👤 ${esc(w.username||w.first_name||w.telegram_id)}</div>${w.tx_hash?`<div class="info" style="font-size:10px;word-break:break-all">Tx: ${esc(w.tx_hash)}</div>`:''}${w.user_comment?`<div class="info">💬 ${esc(w.user_comment)}</div>`:''}<div class="info">${ST[w.status]||w.status}</div><div class="info" style="font-size:10px">${new Date(w.created_at).toLocaleString('ru-RU')}</div>${w.status==='pending'?`<div class="admin-btn-row"><button class="admin-btn sm gold" onclick="doApproveDep('${w.id}')">✅</button><button class="admin-btn sm danger" onclick="doRejectDep('${w.id}')">❌</button></div>`:''}</div>`).join('');
-  }catch(e){box.innerHTML='Ошибка';}
-}
+  
 async function doApproveDep(id){if(!confirm('Зачислить?')) return;const{data,error}=await sb.rpc('admin_approve_deposit',{p_id:id,p_comment:'OK'});if(error||!data||data.ok===false){msg('Ошибка','error');return;}msg('✅ Зачислено','success');loadAdminDeposits();}
 async function doRejectDep(id){const reason=prompt('Причина:')||'Отклонено';const{data,error}=await sb.rpc('admin_reject_deposit',{p_id:id,p_reason:reason});if(error||!data||data.ok===false){msg('Ошибка','error');return;}msg('❌','success');loadAdminDeposits();}
 
