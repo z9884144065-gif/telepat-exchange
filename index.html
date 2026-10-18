@@ -2832,7 +2832,7 @@ async function adminAdLoad(status){
     const ST={pending:'⏳',approved:'✅',rejected:'❌',paused:'⏸',completed:'🏁',cancelled:'🚫'};
     const TP={video:'📺',channel:'📢',bot:'🤖',link:'🔗'};
     box.innerHTML=data.map(a=>{const sp=n(a.completed_actions),tt=n(a.target_actions);const ico=TP[a.campaign_type]||'📢';
-      return `<div class="pc"><div class="pt">${ico} ${esc(a.title||'')}</div><div class="info">${ST[a.admin_status]||a.admin_status} • 👤 ${a.advertiser_telegram_id}</div>${a.description?`<div class="info" style="font-size:11px">${esc(a.description)}</div>`:''}${a.url?`<div class="info" style="font-size:11px;word-break:break-all">🔗 ${esc(a.url)}</div>`:''}${a.visit_seconds>0?`<div class="info" style="font-size:11px">⏱ ${a.visit_seconds} сек</div>`:''}${a.video_url?`<div class="info" style="font-size:11px">🎬 ${a.duration_seconds||15} сек</div>`:''}<div class="info" style="font-size:11px">💰 ${f(a.reward_per_action,5)} TUSD × ${tt} • 👀 ${sp}/${tt}</div>${a.video_url?`<button class="admin-btn sm sec" style="margin-top:6px" onclick="previewAdminAd('${esc(a.id)}')">👁 Превью</button>`:''}<div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">${a.admin_status==='pending'?`<button class="admin-btn sm gold" onclick="adminAdStatus('${a.id}','approved')">✅</button><button class="admin-btn sm danger" onclick="adminAdStatus('${a.id}','rejected')">❌</button>`:''}${a.admin_status==='approved'?`<button class="admin-btn sm sec" onclick="adminAdStatus('${a.id}','paused')">⏸</button>`:''}${a.admin_status==='paused'?`<button class="admin-btn sm gold" onclick="adminAdStatus('${a.id}','approved')">▶</button>`:''}<button class="admin-btn sm danger" onclick="adminAdDelete('${a.id}')">🗑</button></div></div>`;}).join('');
+return `<div class="pc"><div class="pt">${ico} ${esc(a.title||'')}</div><div class="info">${ST[a.admin_status]||a.admin_status} • 👤 ${a.advertiser_telegram_id}</div>${a.description?`<div class="info" style="font-size:11px">${esc(a.description)}</div>`:''}${a.url?`<div class="info" style="font-size:11px;word-break:break-all">🔗 ${esc(a.url)}</div>`:''}${a.visit_seconds>0?`<div class="info" style="font-size:11px">⏱ ${a.visit_seconds} сек</div>`:''}${a.video_url?`<div class="info" style="font-size:11px">🎬 ${a.duration_seconds||15} сек</div>`:''}<div class="info" style="font-size:11px">💰 ${f(a.reward_per_action,5)} TUSD × ${tt} • 👀 ${sp}/${tt}</div>${a.video_url?`<button class="admin-btn sm sec" style="margin-top:6px" onclick="previewAdminAd('${esc(a.id)}')">👁 Превью</button>`:''}<div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">${a.admin_status==='pending'?`<button class="admin-btn sm gold" onclick="adminAdStatus('${a.id}','approved')">✅</button><button class="admin-btn sm danger" onclick="adminAdStatus('${a.id}','rejected')">❌</button>`:''}${a.admin_status==='approved'?`<button class="admin-btn sm sec" onclick="adminAdStatus('${a.id}','paused')">⏸</button>`:''}${a.admin_status==='paused'?`<button class="admin-btn sm gold" onclick="adminAdStatus('${a.id}','approved')">▶</button>`:''}<button class="admin-btn sm primary" onclick="editAdminAd('${a.id}')">✏️</button><button class="admin-btn sm danger" onclick="adminAdDelete('${a.id}')">🗑</button></div></div>`;}).join('');
   }catch(e){box.innerHTML='Ошибка';}
 }
 function previewAdminAd(id){
@@ -3470,6 +3470,67 @@ document.addEventListener('DOMContentLoaded',async()=>{
       initMarketEvents();
     initRealtimeUpdates();
 });
+    function openTransferWalletModal() {
+  openModal('🔄 Перевод средств', `
+    <div class="item-card" style="background:#0d1520; margin-bottom:12px">
+      <div class="info" style="font-size:11px">Переводите деньги между Торговым (основным) и Рекламным балансом без комиссии.</div>
+    </div>
+    
+    <label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px">Откуда перевести</label>
+    <select id="tw_from" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+      <option value="main">Торговый ($${f(CU?.tusd_balance||0, 2)})</option>
+      <option value="ad">Рекламный ($${f(CU?.ad_balance||0, 2)})</option>
+    </select>
+
+    <label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">Куда перевести</label>
+    <select id="tw_to" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+      <option value="ad">Рекламный</option>
+      <option value="main">Торговый (основной)</option>
+    </select>
+
+    <label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">Сумма (TUSD)</label>
+    <input id="tw_amount" type="number" step="any" placeholder="0.00" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+
+    <button class="admin-btn gold" style="width:100%;margin-top:12px" onclick="doTransferWallet()">✅ ПЕРЕВЕСТИ</button>
+    <button class="admin-btn sec" style="width:100%;margin-top:8px" onclick="closeModal()">Отмена</button>
+    <div id="tw_status" class="info" style="text-align:center;margin-top:8px"></div>
+  `);
+
+  $('tw_from').onchange = (e) => {
+    $('tw_to').value = e.target.value === 'main' ? 'ad' : 'main';
+  };
+}
+
+async function doTransferWallet() {
+  const from = $('tw_from').value;
+  const to = $('tw_to').value;
+  const amount = Number($('tw_amount').value);
+  const st = $('tw_status');
+
+  if (amount <= 0) { st.textContent = 'Введите сумму'; return; }
+  st.textContent = 'Перевод...';
+
+  const { data, error } = await sb.rpc('user_transfer_funds', {
+    p_user_id: UID,
+    p_from: from,
+    p_to: to,
+    p_amount: amount
+  });
+
+  if (error || !data || data.ok === false) {
+    st.textContent = 'Ошибка: ' + (data?.error || error?.message);
+    return;
+  }
+
+  st.innerHTML = '<span class="ok">✅ Успешно переведено!</span>';
+  msg('✅ Перевод выполнен', 'success');
+  
+  await refreshAll();
+  setTimeout(() => {
+    closeModal();
+    openWallet(); 
+  }, 1000);
+}
 </script>
 </body>
 </html>
