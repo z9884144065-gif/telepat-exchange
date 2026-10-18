@@ -1369,7 +1369,7 @@ async function openWallet(){
     <div style="display:flex; gap:8px; margin-bottom:12px;">
       <div style="flex:1; background:#151a21; border:1px solid #2d3a4c; border-radius:12px; padding:10px; text-align:center;">
         <div style="font-size:10px; color:#8a94a6;">ТОРГОВЫЙ</div>
-        <div style="font-size:16px; color:#f4cf70; font-weight:bold;">$${f(CU?.usdt_balance||0, 2)}</div>
+        <div style="font-size:16px; color:#f4cf70; font-weight:bold;">$${f(CU?.tusd_balance||0, 2)}</div>
       </div>
       <div style="flex:1; background:#12201a; border:1px solid #2d5a3d; border-radius:12px; padding:10px; text-align:center;">
         <div style="font-size:10px; color:#39d98a;">РЕКЛАМНЫЙ</div>
@@ -3401,6 +3401,27 @@ async function refreshAll(){
   if(!$('view-rating').classList.contains('hidden')) renderRating();
   if(!$('view-chatbonus').classList.contains('hidden')) renderChatBonus();
 }
+    function initRealtimeUpdates() {
+  if(!UID) return;
+  
+  sb.channel('user-live-updates')
+    .on('postgres_changes', { 
+        event: 'UPDATE', 
+        schema: 'public', 
+        table: 'users',
+        filter: `telegram_id=eq.${UID}`
+    }, payload => {
+        // Как только база обновляет твои данные (баланс, рейтинг, уровень)
+        console.log('⚡ Прилетело обновление из базы:', payload.new);
+        
+        // Обновляем объект пользователя в памяти
+        CU = { ...CU, ...payload.new };
+        
+        // Перерисовываем главный экран
+        renderHome();
+    })
+    .subscribe();
+}
 document.addEventListener('DOMContentLoaded',async()=>{
   await refreshJwt();
   await loadUiSettingsPublic();
@@ -3418,6 +3439,7 @@ document.addEventListener('DOMContentLoaded',async()=>{
   setInterval(refreshJwt,30*60*1000);
   setInterval(loadRewardFunds,60*1000);
       initMarketEvents();
+    initRealtimeUpdates();
 });
 </script>
 </body>
