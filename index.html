@@ -2936,62 +2936,22 @@ async function claimWelcomeBonus(){
 /* ═══════ РЕКЛАМА — ПРОСМОТР ═══════ */
 async function fetchNextAd(){
   try{
-    // 1. Сначала пробуем получить видео через серверную функцию Supabase
+    // Просто просим базу дать нам новое видео, которое мы еще не видели
     const{data,error}=await sb.rpc('get_active_ad',{p_telegram_id:UID});
+    
     if(!error && data){
       if(data.ok===false){
+        // Если база говорит, что лимит или видео кончились
         if(data.reason==='daily_limit'){return {__blocked:true, reason:'daily_limit', views_today:data.views_today, daily_limit:data.daily_limit};}
+        if(data.reason==='no_ads'){return null;}
       }
       const ad=data.campaign || data.ad || data;
       if(ad && (ad.id || ad.campaign_id)) return ad;
     }
-  }catch(e){}
-
-  // 2. Если серверная функция не сработала, ищем видео сами
-  try{
-    // Сначала узнаем, какие видео ты УЖЕ посмотрел
-    const {data: watched} = await sb.from('telepat_ad_actions')
-      .select('campaign_id')
-      .eq('telegram_id', UID)
-      .eq('status', 'completed');
-    
-    // Собираем их ID в список
-    const watchedIds = (watched || []).map(w => String(w.campaign_id));
-
-    // Теперь берем все активные видеокампании
-    const{data,error}=await sb.from('telepat_ad_campaigns')
-      .select('*')
-      .eq('admin_status','approved')
-      .eq('payment_status','paid')
-      .not('video_url','is',null)
-      .limit(50);
-
-    if(error||!data||!data.length) return null;
-
-    // Фильтруем: убираем не-видео, убираем те, где кончился лимит, и УБИРАЕМ УЖЕ ПРОСМОТРЕННЫЕ
-    const ready=data.filter(a=>{
-      if(a.campaign_type && a.campaign_type!=='video') return false;
-      if(!a.video_url) return false;
-      
-      const done = Number(a.completed_actions || 0);
-      const tgt = Number(a.target_actions || 0);
-      if(tgt > 0 && done >= tgt) return false;
-      
-      // Если видео есть в списке просмотренных — не показываем его
-      if(watchedIds.includes(String(a.id))) return false; 
-      
-      return true;
-    });
-
-    // Если после фильтрации не осталось новых видео
-    if(!ready.length) return null;
-
-    // Возвращаем случайное из оставшихся
-    return ready[Math.floor(Math.random()*ready.length)];
-
   }catch(e){
-    return null;
+    console.error("Ошибка:", e);
   }
+  return null;
 }
 async function watchAd(){
   if(!UID){msg('Открой через Telegram','error');return;}
