@@ -2988,7 +2988,20 @@ async function watchAd(){
   timerEl.textContent=fmtAdTime(__AD_TIME_LEFT);
   video.pause();video.removeAttribute('src');video.load();
   if(ad.video_url){video.src=ad.video_url;video.muted=false;video.playsInline=true;video.onerror=()=>{statusEl.textContent='❌ Ошибка видео';statusEl.style.color='#f6465d';};try{await video.play();}catch(e){}}
-  $('adModal').classList.add('show');
+    // Показываем кнопку перехода по ссылке
+  const linkBtn = $('adLinkBtn');
+  if (linkBtn) {
+      if (ad.url) {  // <--- Обрати внимание, здесь ad.url, а не t.url!
+          linkBtn.style.display = 'block';
+          linkBtn.onclick = () => {
+              if (window.Telegram?.WebApp?.openLink) window.Telegram.WebApp.openLink(ad.url);
+              else window.open(ad.url, '_blank');
+          };
+      } else {
+          linkBtn.style.display = 'none';
+      }
+  }
+    $('adModal').classList.add('show');
   if(__AD_TIMER) clearInterval(__AD_TIMER);
   __AD_TIMER=setInterval(()=>{
     __AD_TIME_LEFT--;
