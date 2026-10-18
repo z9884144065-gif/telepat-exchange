@@ -2501,7 +2501,20 @@ async function saveReceiveWallet(){
 async function deleteReceiveWallet(token){if(!confirm('Удалить?')) return;const{data,error}=await sb.rpc('admin_delete_receive_wallet',{p_token:token});if(error||!data||data.ok===false){msg('Ошибка','error');return;}msg('🗑','success');loadAdminReceiveWallets();}
 
   
-async function doApproveDep(id){if(!confirm('Зачислить?')) return;const{data,error}=await sb.rpc('admin_approve_deposit',{p_id:id,p_comment:'OK'});if(error||!data||data.ok===false){msg('Ошибка','error');return;}msg('✅ Зачислено','success');loadAdminDeposits();}
+async function doApproveDep(id){
+  if(!confirm('Зачислить?')) return;
+  
+  const {data, error} = await sb.rpc('admin_approve_deposit', {p_id: id, p_comment: 'OK'});
+  
+  if(error || !data || data.ok === false){
+    // Теперь мы выводим конкретную причину ошибки
+    msg('Ошибка: ' + (error?.message || data?.error || 'Неизвестно'), 'error');
+    return;
+  }
+  
+  msg('✅ Зачислено', 'success');
+  loadAdminDeposits(); // Обновляем список заявок
+}
 async function doRejectDep(id){const reason=prompt('Причина:')||'Отклонено';const{data,error}=await sb.rpc('admin_reject_deposit',{p_id:id,p_reason:reason});if(error||!data||data.ok===false){msg('Ошибка','error');return;}msg('❌','success');loadAdminDeposits();}
 
 async function loadAdminRefStats(){
