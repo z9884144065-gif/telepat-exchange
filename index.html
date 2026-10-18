@@ -1448,7 +1448,7 @@ async function submitDeposit(){
   const tx=($('d_tx')?.value||'').trim()||null,cmt=($('d_cmt')?.value||'').trim()||null;
   const st=$('d_status');if(amt<=0){st.textContent='Введите сумму';return;}
   st.textContent='Отправка...';
-  const{data,error}=await sb.rpc('user_create_deposit',{p_token:tok,p_amount:amt,p_tx_hash:tx,p_comment:cmt});
+    const{data,error}=await sb.rpc('user_create_deposit',{p_token:tok,p_amount:amt,p_tx_hash:tx,p_comment:cmt,p_telegram_id:UID});
   if(error||!data||data.ok===false){st.textContent='Ошибка: '+(data?.error||error?.message||'unknown');return;}
   st.innerHTML='<span class="ok">✅ Отправлено</span>';msg('✅','success');
   $('d_amt').value='';$('d_tx').value='';$('d_cmt').value='';loadMyDeposits();
