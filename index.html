@@ -1284,27 +1284,37 @@ function renderHome(){
   $('userDays').textContent='📅 '+Math.floor((Date.now()-reg.getTime())/DAY_MS)+' дней';
   const ki=$('knightImg');
   if(ki){const g=getKnightGroup(rl);const ns=GROUP_IMAGE[g];const cf=ki.src.split('/').pop();if(cf!==ns){ki.src=ns;}}
-  const eq={};MY_ITEMS.filter(i=>i.is_equipped).forEach(i=>{eq[i.slot]=i;});
-  ['weapon','body','legs','armor','ring'].forEach(s=>{
-    const elId=s==='armor'?'helmet':s;const el=$('slot-'+elId);if(!el) return;
-    el.classList.remove('empty','locked','filled','unlocked-empty');
-    if(eq[s]){el.classList.add('filled');el.innerHTML=`<span class="slot-label">${SLOT_LABEL[s]||s}</span>${eq[s].emoji||'🎁'}`;}
-    else{el.classList.add('unlocked-empty');const ic={weapon:'🗡️',body:'👕',legs:'👖',armor:'⛑️',ring:'💍'}[s];el.innerHTML=`<span class="slot-label">${SLOT_LABEL[s]||s}</span>${ic}`;}
+
+  // --- ОТРИСОВКА ВСЕХ СЛОТОВ ---
+  const slotMapping = {
+    'weapon': 'weapon', 'body': 'body', 'legs': 'legs',
+    'armor': 'helmet', 'shield': 'shield', 'cloak': 'cloak',
+    'ring': 'ring', 'bag': 'bag', 'pet': 'pet',
+    'titleSlot': 'titleSlot', 'aura': 'aura'
+  };
+  const emptyIcons = { 
+    weapon:'🗡️', body:'👕', legs:'👖', armor:'⛑️', shield:'🛡️', 
+    cloak:'🧥', ring:'💍', bag:'🎒', pet:'🐺', titleSlot:'🏷️', aura:'✨' 
+  };
+
+  Object.keys(slotMapping).forEach(slotKey => {
+      const htmlId = slotMapping[slotKey];
+      const el = $('slot-' + htmlId);
+      if(!el) return;
+
+      el.classList.remove('empty','locked','filled','unlocked-empty');
+      // Ищем надетый предмет
+      const equippedItem = MY_ITEMS.find(i => i.is_equipped && (i.slot === slotKey || (slotKey === 'armor' && i.slot === 'helmet')));
+      
+      if(equippedItem) {
+          el.classList.add('filled');
+          el.innerHTML = `<span class="slot-label">${SLOT_LABEL[slotKey] || slotKey}</span>${equippedItem.emoji || '🎁'}`;
+      } else {
+          el.classList.add('unlocked-empty');
+          el.innerHTML = `<span class="slot-label">${SLOT_LABEL[slotKey] || slotKey}</span>${emptyIcons[slotKey] || '❓'}`;
+      }
   });
-      // Отрисовка надетого титула
-  const titleItem = MY_ITEMS.find(i => i.is_equipped && (i.slot === 'titleSlot' || i.category === 'title'));
-  const titleSlotEl = $('slot-titleSlot');
-  if(titleSlotEl) {
-    if(titleItem) {
-      titleSlotEl.classList.add('filled');
-      titleSlotEl.classList.remove('unlocked-empty');
-      titleSlotEl.innerHTML = `<span class="slot-label">Титул</span>${titleItem.emoji || '🏷️'}`;
-    } else {
-      titleSlotEl.classList.remove('filled');
-      titleSlotEl.classList.add('unlocked-empty');
-      titleSlotEl.innerHTML = `<span class="slot-label">Титул</span>🏷️`;
-    }
-  }
+
   const inv=MY_ITEMS.filter(i=>!i.is_equipped&&!i.is_listed);
   $('invCount').textContent=inv.length+' / 10';
   const grid=$('invGrid');grid.innerHTML='';
@@ -1314,6 +1324,7 @@ function renderHome(){
     else{slot.classList.add('unlocked-empty');slot.innerHTML='🎒';slot.style.opacity='0.4';}
     grid.appendChild(slot);
   }
+  
   const stakeUSD=Number(CU.stake_usd_locked||0),deals=Number(CU.completed_trades||0),refs=Number(CU.refs_new||0);
   const nextLv=Math.min(21,rl+1);
   const needStake=RANK_STAKE[nextLv]||stakeUSD;
@@ -1325,6 +1336,7 @@ function renderHome(){
   $('scStake').style.width=(needStake>0?Math.min(100,stakeUSD/needStake*100):100)+'%';
   $('scDeals').style.width=(needDeals>0?Math.min(100,deals/needDeals*100):100)+'%';
   $('scRefs').style.width=(needRefs>0?Math.min(100,refs/needRefs*100):100)+'%';
+  
   const nlBox=$('nextLevelBox');
   if(nlBox){
     if(rl>=21){nlBox.innerHTML=`<div class="nl-title">🏆 МАКСИМУМ</div><div class="nl-row done"><span class="nl-icon">👑</span><span class="nl-text"><b>Император!</b></span></div>`;}
@@ -1338,7 +1350,6 @@ function renderHome(){
   }
   setKnightSpeech(rl>=21?'Я — Император!':(rl===0?'Славный путь начинается!':`Я — ${rn}!`));
 }
-
 /* ═══════ КОШЕЛЁК ЮЗЕРА ═══════ */
 async function openWallet(){
   if(!UID) return;
