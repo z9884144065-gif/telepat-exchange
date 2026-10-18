@@ -2286,7 +2286,20 @@ function playInlineVideo(t, statusEl, taskId){
   video.muted = false; video.playsInline = true;
   video.onerror = () => { adStatus.textContent='❌ Ошибка видео'; adStatus.style.color='#f6465d'; };
 
-  $('adModal').classList.add('show');
+    // Показываем кнопку перехода по ссылке
+  const linkBtn = $('adLinkBtn');
+  if (linkBtn) {
+      if (t.url) {
+          linkBtn.style.display = 'block';
+          linkBtn.onclick = () => {
+              if (window.Telegram?.WebApp?.openLink) window.Telegram.WebApp.openLink(t.url);
+              else window.open(t.url, '_blank');
+          };
+      } else {
+          linkBtn.style.display = 'none';
+      }
+  }
+    $('adModal').classList.add('show');
   try { video.play(); } catch(e) {}
 
   if(__AD_TIMER) clearInterval(__AD_TIMER);
