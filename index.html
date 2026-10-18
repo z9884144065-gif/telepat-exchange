@@ -2989,6 +2989,7 @@ function closeAdModal(){
   const video=$('adVideo');if(video){try{video.pause();video.removeAttribute('src');video.load();}catch(e){}}
   if(__AD_TIMER){clearInterval(__AD_TIMER);__AD_TIMER=null;}
   __CURRENT_AD=null;__AD_TIME_LEFT=0;$('adModal')?.classList.remove('show');
+  if($('adLinkBtn')) $('adLinkBtn').style.display = 'none';
 }
 async function claimAdReward(){
   if(!__CURRENT_AD){closeAdModal();return;}
