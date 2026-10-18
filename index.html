@@ -1023,7 +1023,14 @@ async function loadRewardFunds(){
 
 /* ═══════ ЗАГЛУШКИ ДЛЯ ОТСУТСТВУЮЩИХ ФУНКЦИЙ ═══════ */
 function checkMyAdsAlerts(){ /* Заглушка */ }
-function clickSlot(slot){ msg('Слот ' + slot + ' в разработке'); }
+function clickSlot(slot) {
+  const eq = MY_ITEMS.find(i => i.is_equipped && (i.slot === slot || (slot === 'armor' && i.slot === 'helmet')));
+  if (eq) {
+      openItemModal(eq.id);
+  } else {
+      msg('В этом слоте пусто. Откройте инвентарь ниже, чтобы надеть предмет.', 'info');
+  }
+}
 function openItemModal(id){
   const item = MY_ITEMS.find(i => String(i.id) === String(id));
   if (!item) return msg('Предмет не найден', 'error');
