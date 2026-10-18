@@ -1567,7 +1567,7 @@ async function loadAdminDeposits(status){
     box.innerHTML = data.map(w => `
       <div style="background:#1a2230; padding:10px; border-radius:8px; margin-bottom:10px; border-left:4px solid ${w.status==='pending'?'#f4cf70':'#39d98a'};">
         <div style="display:flex; justify-content:space-between;">
-          <div><b>${esc(w.token_symbol)}</b> — ${f(w.amount, 2)}</div>
+          <div><b>${esc(w.currency)}</b> — ${f(w.amount_requested, 2)}</div>
           <div>${ST[w.status] || w.status}</div>
         </div>
         <div style="font-size:13px; color:#aaa; margin-top:5px;">
