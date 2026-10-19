@@ -3008,10 +3008,12 @@ async function watchAd(){
   if (linkBtn) {
       if (ad.url) {  // <--- Обрати внимание, здесь ad.url, а не t.url!
           linkBtn.style.display = 'block';
-          linkBtn.onclick = () => {
-              if (window.Telegram?.WebApp?.openLink) window.Telegram.WebApp.openLink(ad.url);
-              else window.open(ad.url, '_blank');
-          };
+                linkBtn.onclick = () => {
+                let finalUrl = ad.url;
+                if (finalUrl && !finalUrl.startsWith('http')) finalUrl = 'https://' + finalUrl;
+                if (window.Telegram?.WebApp?.openLink) window.Telegram.WebApp.openLink(finalUrl);
+                else window.open(finalUrl, '_blank');
+            };
       } else {
           linkBtn.style.display = 'none';
       }
