@@ -2112,7 +2112,7 @@ async function loadAvailableTasks(){
   }catch(e){console.warn('tasks load:',e);}
 
   try{const{data:act}=await sb.from('telepat_ad_actions').select('campaign_id,status').eq('telegram_id',UID);(act||[]).forEach(a=>{if(a.status==='completed') myDoneCampaigns.push(String(a.campaign_id));});}catch(e){}
-  try{
+   try{
     const{data,error}=await sb.from('telepat_ad_campaigns')
       .select('*')
       .eq('admin_status','approved')
@@ -2120,12 +2120,34 @@ async function loadAvailableTasks(){
       .neq('advertiser_telegram_id',UID)
       .order('created_at',{ascending:false})
       .limit(100);
+      
     if(!error && data){
-      data.forEach(c=>{
+      // 1. Собираем ID всех рекламодателей
+      const advertiserIds = [...new Set(data.map(c => c.advertiser_telegram_id).filter(Boolean))];
+      
+      // 2. Запрашиваем их балансы TUSD
+      let advertiserBalances = {};
+      if (advertiserIds.length > 0) {
+        const { data: users } = await sb.from('users').select('telegram_id, tusd_balance').in('telegram_id', advertiserIds);
+        if (users) {
+          users.forEach(u => advertiserBalances[u.telegram_id] = Number(u.tusd_balance) || 0);
+        }
+      }
+
+      // 3. Фильтруем: скрываем задания, где у автора не хватает денег
+      const validCampaigns = data.filter(c => {
+        const advBal = advertiserBalances[c.advertiser_telegram_id] || 0;
+        const reward = Number(c.reward_per_action) || 0;
+        return advBal >= reward;
+      });
+
+      // 4. Добавляем в общий список только "богатые" кампании
+      validCampaigns.forEach(c=>{
         const id='camp:'+c.id;
         const done=myDoneCampaigns.includes(String(c.id));
         const limitReached=c.target_actions && c.completed_actions >= c.target_actions;
         if(limitReached) return;
+        
         const obj={
           id, source:'campaigns', raw_id:c.id,
           title:c.title||'Задание',
@@ -2145,7 +2167,6 @@ async function loadAvailableTasks(){
       });
     }
   }catch(e){console.warn('campaigns load:',e);}
-
   const priority={channel:1,bot:2,link:3,video:4};
   all.sort((a,b)=>{
     if(a.completed !== b.completed) return a.completed?1:-1;
