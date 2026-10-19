@@ -2134,15 +2134,8 @@ async function loadAvailableTasks(){
         }
       }
 
-      // 3. Фильтруем: скрываем задания, где у автора не хватает денег
-      const validCampaigns = data.filter(c => {
-        const advBal = advertiserBalances[c.advertiser_telegram_id] || 0;
-        const reward = Number(c.reward_per_action) || 0;
-        return advBal >= reward;
-      });
-
-      // 4. Добавляем в общий список только "богатые" кампании
-      validCampaigns.forEach(c=>{
+         // 3. Добавляем в общий список все активные кампании
+    data.forEach(c=>{
         const id='camp:'+c.id;
         const done=myDoneCampaigns.includes(String(c.id));
         const limitReached=c.target_actions && c.completed_actions >= c.target_actions;
