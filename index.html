@@ -2226,7 +2226,8 @@ async function taskStart(taskId){
     return;
   }
 
-  const url=(t.url||'').trim();
+    let url=(t.url||'').trim();
+  if(url && !url.startsWith('http')) url = 'https://' + url;
   if(!url){if(statusEl) statusEl.textContent='❌ Нет ссылки';return;}
 
   try{
