@@ -3548,6 +3548,66 @@ async function doTransferWallet() {
     openWallet(); 
   }, 1000);
 }
+    /* --- ФУНКЦИИ ДЛЯ РЕДАКТИРОВАНИЯ РЕКЛАМЫ --- */
+async function editAdminAd(id) {
+  const {data, error} = await sb.from('telepat_ad_campaigns').select('*').eq('id', id).single();
+  if (error || !data) { msg('Ошибка загрузки', 'error'); return; }
+
+  openModal('✏️ Редактировать рекламу', `
+    <div class="item-card" style="margin-bottom:10px">
+      <label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px">Название</label>
+      <input id="edit_ad_title" value="${esc(data.title || '')}" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+      
+      <label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">Описание</label>
+      <input id="edit_ad_desc" value="${esc(data.description || '')}" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+      
+      <label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">Ссылка (при клике)</label>
+      <input id="edit_ad_url" value="${esc(data.url || '')}" placeholder="https://t.me/..." style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+      
+      <label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">Награда (TUSD)</label>
+      <input id="edit_ad_reward" type="number" step="0.0001" value="${data.reward_per_action}" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+      
+      <label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">Всего действий (просмотров)</label>
+      <input id="edit_ad_actions" type="number" value="${data.target_actions}" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+    </div>
+    <button class="admin-btn gold" style="width:100%" onclick="saveAdminAdEdit('${id}')">💾 СОХРАНИТЬ</button>
+    <button class="admin-btn sec" style="width:100%;margin-top:8px" onclick="closeModal()">Отмена</button>
+    <div id="edit_ad_status" class="info" style="text-align:center;margin-top:8px"></div>
+  `);
+}
+
+async function saveAdminAdEdit(id) {
+  const st = $('edit_ad_status');
+  if(st) st.textContent = 'Сохранение...';
+  
+  const title = $('edit_ad_title').value.trim();
+  const desc = $('edit_ad_desc').value.trim();
+  let url = $('edit_ad_url').value.trim();
+  
+  // Умная проверка ссылки (если забыли https://)
+  if (url && !url.startsWith('http')) {
+      if (url.startsWith('t.me/')) url = 'https://' + url;
+      else url = 'https://t.me/' + url;
+  }
+
+  const reward = Number($('edit_ad_reward').value);
+  const target = Number($('edit_ad_actions').value);
+
+  // Используем RPC функцию, чтобы обойти защиту базы
+  const {data, error} = await sb.rpc('admin_update_campaign', {
+    p_id: id, p_title: title, p_description: desc, p_url: url, p_reward: reward, p_target: target
+  });
+
+  if (error || (data && data.ok === false)) { 
+    if(st) st.textContent = 'Ошибка: ' + (error?.message || 'Не удалось сохранить'); 
+    return; 
+  }
+  
+  if(st) st.textContent = '✅ Сохранено!';
+  msg('✅ Реклама обновлена', 'success');
+  
+  setTimeout(() => { closeModal(); adminAdLoad(); }, 1000);
+}
 </script>
 </body>
 </html>
