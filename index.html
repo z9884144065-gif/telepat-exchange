@@ -3651,6 +3651,16 @@ async function saveAdminAdEdit(id) {
   
   setTimeout(() => { closeModal(); adminAdLoad(); }, 1000);
 }
+    function goToBotChat() {
+  if (!__BUY_ORDER) return;
+  const url = `https://t.me/TELEPATp2p_bot?start=order_${__BUY_ORDER.id}`;
+  
+  if (window.Telegram?.WebApp?.openTelegramLink) {
+    window.Telegram.WebApp.openTelegramLink(url);
+  } else {
+    window.open(url, '_blank');
+  }
+}
 </script>
 </body>
 </html>
