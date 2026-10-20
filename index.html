@@ -1798,29 +1798,50 @@ function openBuyModal(orderId){
   $('buyAmount').value='';$('buyStatus').textContent='';updateBuyPreview();$('buyModal').classList.add('show');
 }
 function closeBuyModal(e){if(e&&e.target!==$('buyModal')) return;$('buyModal').classList.remove('show');__BUY_ORDER=null;}
-function setBuyPct(pct){if(!__BUY_ORDER) return;const max=n(__BUY_ORDER.from_amount);$('buyAmount').value=String(max*pct/100);updateBuyPreview();}
+function setBuyPct(pct){
+  if(!__BUY_ORDER) return;
+  const max = n(__BUY_ORDER.from_amount_remaining != null ? __BUY_ORDER.from_amount_remaining : __BUY_ORDER.from_amount);
+  $('buyAmount').value=String(max*pct/100);
+  updateBuyPreview();
+}
 function updateBuyPreview(){
   if(!__BUY_ORDER) return;
-  const o=__BUY_ORDER;const fromTotal=n(o.from_amount),toTotal=n(o.to_amount);const rate=fromTotal>0?toTotal/fromTotal:0;
-  const getAmt=Math.max(0,Math.min(fromTotal,n($('buyAmount').value)));const payAmt=getAmt*rate;
+  const o=__BUY_ORDER;
+  const fromTotal = n(o.from_amount_remaining != null ? o.from_amount_remaining : o.from_amount);
+  const toTotal = n(o.to_amount_remaining != null ? o.to_amount_remaining : o.to_amount);
+  const rate = fromTotal > 0 ? toTotal / fromTotal : 0;
+
+  const getAmt = Math.max(0, Math.min(fromTotal, n($('buyAmount').value)));
+  const payAmt = getAmt * rate;
+
   $('buyPay').textContent=`${f(payAmt,8)} ${o.to_token}`;
   $('buyRemaining').textContent=`${f(Math.max(0,fromTotal-getAmt),8)} ${o.from_token}`;
   $('buyAvail').textContent=`${f(tb(o.to_token),8)} ${o.to_token}`;
+  
   const btn=$('buyConfirmBtn');
   if(getAmt<=0){btn.disabled=true;btn.textContent='✅ Выкупить';}
-  else if(getAmt>=fromTotal-1e-12){btn.disabled=false;btn.textContent='✅ Выкупить полностью';}
+  else if(getAmt>=fromTotal-1e-12){btn.disabled=false;btn.textContent='✅ Выкупить остаток';}
   else{btn.disabled=false;btn.textContent='✅ Выкупить часть';}
 }
 async function confirmBuyOrder(){
   if(!__BUY_ORDER||!UID) return;
-  const o=__BUY_ORDER;const fromTotal=n(o.from_amount);const getAmt=n($('buyAmount').value);
-  const btn=$('buyConfirmBtn');if(getAmt<=0){msg('Введите кол-во','error');return;}
+  const o=__BUY_ORDER;
+  const getAmt = n($('buyAmount').value);
+  const btn=$('buyConfirmBtn');
+  if(getAmt<=0){msg('Введите кол-во','error');return;}
+  
   btn.disabled=true;$('buyStatus').textContent='⏳...';
-  const isFull=getAmt>=fromTotal-1e-9;
   try{
-    if(isFull){const{error}=await sb.rpc('accept_p2p_order_v2',{p_order_id:Number(o.id), p_taker_id: UID});if(error){$('buyStatus').textContent=error.message;btn.disabled=false;return;}$('buyStatus').innerHTML='<span class="ok">✅ Полностью</span>';}
-    else{const{data,error}=await sb.rpc('accept_p2p_order_chat_partial',{p_order_id:String(o.id),p_taker_id:String(UID),p_get_amount:getAmt});if(error){$('buyStatus').textContent=error.message;btn.disabled=false;return;}$('buyStatus').innerHTML='<span class="ok">✅ '+f(getAmt,8)+'</span>';}
-    msg('✅ Куплено','success');await refreshAll();setTimeout(closeBuyModal,900);
+    // ВСЕГДА используем частичную функцию, она сама закроет ордер, если выкуплен остаток
+    const{data,error}=await sb.rpc('accept_p2p_order_chat_partial',{
+        p_order_id:String(o.id),
+        p_taker_id:String(UID),
+        p_get_amount:getAmt
+    });
+    if(error){$('buyStatus').textContent=error.message;btn.disabled=false;return;}
+    $('buyStatus').innerHTML='<span class="ok">✅ Куплено '+f(getAmt,8)+'</span>';
+    msg('✅ Куплено','success');
+    await refreshAll();setTimeout(closeBuyModal,900);
     if(currentIncomeTab==='p2p') await renderP2PContent($('incomeContent'));
   }catch(e){$('buyStatus').textContent=e.message;btn.disabled=false;}
 }
