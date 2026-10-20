@@ -2367,9 +2367,21 @@ function playInlineVideo(t, statusEl, taskId){
   if (linkBtn) {
       if (t.url) {
           linkBtn.style.display = 'block';
-          linkBtn.onclick = () => {
-              if (window.Telegram?.WebApp?.openLink) window.Telegram.WebApp.openLink(t.url);
-              else window.open(t.url, '_blank');
+                    linkBtn.onclick = () => {
+              let finalUrl = (t.url || '').trim();
+              
+              // Убираем протокол для проверки
+              let checkUrl = finalUrl.replace(/^https?:\/\//, '');
+              
+              // Если это имя бота (без точек и слэшей), исправляем на правильную ссылку
+              if (!checkUrl.includes('.') && !checkUrl.startsWith('t.me/')) {
+                  finalUrl = 'https://t.me/' + checkUrl.replace(/\/$/, '');
+              } else if (!finalUrl.startsWith('http')) {
+                  finalUrl = 'https://' + finalUrl;
+              }
+
+              if (window.Telegram?.WebApp?.openLink) window.Telegram.WebApp.openLink(finalUrl);
+              else window.open(finalUrl, '_blank');
           };
       } else {
           linkBtn.style.display = 'none';
