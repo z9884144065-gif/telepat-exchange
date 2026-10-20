@@ -1508,15 +1508,26 @@ ${myListings.length?`<div class="item-card"><div class="item-header"><b>📋 М�
 <button class="swap-btn" id="swapBtn" onclick="doSwap()" disabled>Обменять</button>`;
     SWAP_QUOTE=null;
   }
-  else if(tab==='staking'){
+    else if(tab==='staking'){
     await loadStakeState();await loadRewardFunds();
     const acc=STAKE_DISPLAY;let dailyUSD=0;(REWARD_FUNDS||[]).forEach(fd=>{dailyUSD+=Number(fd.my_per_day_tusd)||0;});
+    
     c.innerHTML=`
 <div class="item-card"><div class="item-header"><b>💎 Стейкинг</b></div>
 <div style="text-align:center;margin:12px 0"><div style="font-size:11px;color:#8a94a6">НАКОПЛЕНО</div><div style="font-size:28px;font-weight:800;color:#39d98a">$<span>${f(acc,6)}</span></div><div style="font-size:12px;color:#39d98a;margin-top:6px">+$${dailyUSD.toFixed(4)}/день</div></div>
 <button class="stake-collect" onclick="claimStaking()">💵 СОБРАТЬ В TUSD</button></div>
-<div class="item-card"><div class="item-header"><b>🎁 Фонды наград</b></div>
-${REWARD_FUNDS.length?REWARD_FUNDS.map(fd=>`<div style="padding:8px 0;border-bottom:1px solid #252b36"><div style="display:flex;align-items:center;gap:8px">${tokenIconHTML(fd.token_symbol,'sm')}<b>${esc(fd.token_symbol)}</b></div><div class="item-desc" style="font-size:11px">Фонд: ${f(fd.fund_amount,6)} • ${fd.hourly_rate_pct}%/час</div><div class="item-desc" style="color:#39d98a;font-size:11px">Мне: +${f(fd.my_per_day,6)}/день</div></div>`).join(''):'<div class="item-desc">Нет фондов</div>'}</div>`;
+
+<div class="item-card"><div class="item-header"><b>🎁 Фонды наград (Пуллы)</b></div>
+${REWARD_FUNDS.length?REWARD_FUNDS.map(fd=>`
+<div style="padding:12px 0;border-bottom:1px solid #252b36; display:flex; justify-content:space-between; align-items:center;">
+    <div>
+        <div style="display:flex;align-items:center;gap:8px; margin-bottom:4px;">
+            ${tokenIconHTML(fd.token_symbol,'sm')} <b>${esc(fd.token_symbol)}</b>
+        </div>
+        <div class="item-desc" style="font-size:11px">Фонд: ${f(fd.fund_amount,2)} • ${fd.hourly_rate_pct}%/час</div>
+    </div>
+    <button class="admin-btn gold" style="width:auto; padding:8px 12px; font-size:12px;" onclick="openTokenStakingDetails('${fd.token_symbol}')">Управлять</button>
+</div>`).join(''):'<div class="item-desc">Нет фондов</div>'}</div>`;
   }
   else if(tab==='checkin'){
     const{data}=await sb.rpc('get_checkin_status');
