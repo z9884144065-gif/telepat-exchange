@@ -3524,7 +3524,11 @@ document.addEventListener('DOMContentLoaded',async()=>{
   await loadStakeState();
   await loadTopBanner();
   renderHome();
-  if(__START_ORDER_ID){setTimeout(()=>{goView('income');showIncomeTab('p2p');},500);}
+  if(__START_ORDER_ID){
+    setTimeout(() => {
+        openDirectOrder(__START_ORDER_ID);
+    }, 500);
+}
   setInterval(refreshJwt,30*60*1000);
   setInterval(loadRewardFunds,60*1000);
       initMarketEvents();
@@ -3660,6 +3664,39 @@ async function saveAdminAdEdit(id) {
   } else {
     window.open(url, '_blank');
   }
+}
+    async function openDirectOrder(orderId) {
+    goView('income');
+    await showIncomeTab('p2p'); // Запускаем загрузку списка в фоне
+
+    // 🔥 СРАЗУ ЗАПРАШИВАЕМ КОНКРЕТНЫЙ ОРДЕР ИЗ БАЗЫ
+    const {data, error} = await sb.from('p2p_orders').select('*').eq('id', orderId).maybeSingle();
+    
+    if (error || !data) {
+        msg('Ордер не найден или уже закрыт', 'error');
+        return;
+    }
+    if (data.status !== 'open') {
+        msg('Этот ордер уже выкуплен или отменен', 'error');
+        return;
+    }
+
+    // Подтягиваем данные продавца
+    const {data: u} = await sb.from('users').select('username,first_name,rank_name,rank_level').eq('telegram_id', data.creator_id).maybeSingle();
+    const uu = u || {};
+    
+    // Формируем объект для окна выкупа
+    const o = Object.assign({}, data, {
+        creator_username: uu.username,
+        creator_first_name: uu.first_name,
+        creator_rank_name: uu.rank_name || 'Новичок',
+        creator_rank_level: uu.rank_level || 0,
+        likes: 0, dislikes: 0, completed_trades: 0,
+        rate: (Number(data.from_amount) > 0) ? (Number(data.to_amount) / Number(data.from_amount)) : 1
+    });
+    
+    ORDER_CACHE[String(o.id)] = o;
+    openBuyModal(o.id); // Открываем окно выкупа
 }
 </script>
 </body>
