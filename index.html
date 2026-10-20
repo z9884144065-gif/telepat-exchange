@@ -557,13 +557,19 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 <div class="acc-item" id="acc-revenue">
 <div class="acc-header" onclick="toggleAcc('acc-revenue')"><span>💰 Доход магазина</span><span class="acc-arrow">▶</span></div>
 <div class="acc-body">
-<div style="background:linear-gradient(135deg,#1a2e1a,#0d1f0d);border:1px solid var(--green);border-radius:12px;padding:14px;text-align:center">
+<div style="background:linear-gradient(135deg,#1a2e1a,#0d1f0d);border:1px solid var(--green);border-radius:12px;padding:14px;text-align:center;margin-bottom:12px;">
 <div style="font-size:26px;font-weight:800;color:var(--green)" id="adRevenue">$0</div>
-<div class="info" style="text-transform:uppercase;margin-top:4px">Заработано с покупок</div>
+<div class="info" style="text-transform:uppercase;margin-top:4px">Доступно для перевода</div>
 </div>
-<div class="info" style="text-align:center;margin:8px 0">Всего покупок: <b id="adPurchasesCount">0</b></div>
-<button class="admin-btn sec" style="width:100%" onclick="loadAdminRevenue()">🔄 Обновить</button>
-<button class="admin-btn danger" style="width:100%;margin-top:8px" onclick="adminClearRevenue()">🗑 Очистить счётчик</button>
+
+<div class="admin-btn-row" style="flex-direction:column;gap:8px;">
+<button class="admin-btn gold" style="width:100%" onclick="withdrawShopRevenue('main')">💵 В основной кошелек</button>
+<button class="admin-btn primary" style="width:100%" onclick="withdrawShopRevenue('ad')">📢 В рекламный кошелек</button>
+</div>
+<div id="shop_withdraw_status" class="info" style="text-align:center; margin-top:8px;"></div>
+
+<div class="info" style="text-align:center;margin:14px 0 8px;">Всего покупок: <b id="adPurchasesCount">0</b></div>
+<button class="admin-btn sec" style="width:100%" onclick="loadAdminRevenue()">🔄 Обновить данные</button>
 <div id="adPurchaseHistory" style="margin-top:10px"></div>
 </div>
 </div>
