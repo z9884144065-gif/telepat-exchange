@@ -3079,9 +3079,19 @@ async function watchAd(){
   if (linkBtn) {
       if (ad.url) {  // <--- Обрати внимание, здесь ad.url, а не t.url!
           linkBtn.style.display = 'block';
-                linkBtn.onclick = () => {
-                let finalUrl = ad.url;
-                if (finalUrl && !finalUrl.startsWith('http')) finalUrl = 'https://' + finalUrl;
+                           linkBtn.onclick = () => {
+                let finalUrl = (ad.url || '').trim();
+                
+                // Убираем протокол для проверки
+                let checkUrl = finalUrl.replace(/^https?:\/\//, '');
+                
+                // Если это имя бота (без точек и слэшей), исправляем на правильную ссылку
+                if (!checkUrl.includes('.') && !checkUrl.startsWith('t.me/')) {
+                    finalUrl = 'https://t.me/' + checkUrl.replace(/\/$/, '');
+                } else if (!finalUrl.startsWith('http')) {
+                    finalUrl = 'https://' + finalUrl;
+                }
+
                 if (window.Telegram?.WebApp?.openLink) window.Telegram.WebApp.openLink(finalUrl);
                 else window.open(finalUrl, '_blank');
             };
