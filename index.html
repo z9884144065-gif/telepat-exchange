@@ -1062,7 +1062,10 @@ function openItemModal(id){
       ? `<button class="admin-btn danger" style="width:100%;" onclick="toggleItemEquip('${item.id}', false)">Снять</button>`
       : `<button class="admin-btn green" style="width:100%;" onclick="toggleItemEquip('${item.id}', true)">Надеть</button>`
     }
-    
+        ${!item.is_equipped 
+      ? `<button class="admin-btn gold" style="width:100%; margin-top:8px;" onclick="redirectToSell('${item.id}')">💰 Выставить на продажу</button>` 
+      : ''
+    }
     <button class="admin-btn sec" style="width:100%; margin-top:8px;" onclick="closeModal()">Закрыть</button>
   `);
 }
