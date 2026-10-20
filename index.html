@@ -3698,6 +3698,25 @@ async function saveAdminAdEdit(id) {
     ORDER_CACHE[String(o.id)] = o;
     openBuyModal(o.id); // Открываем окно выкупа
 }
+    async function withdrawShopRevenue(target) {
+    const st = $('shop_withdraw_status');
+    if (st) st.textContent = 'Перевод...';
+    
+    const {data, error} = await sb.rpc('admin_withdraw_shop_balance', { p_target_wallet: target });
+    
+    if (error || !data || data.ok === false) {
+        if (st) st.textContent = 'Ошибка: ' + (data?.error || error?.message || 'Не удалось перевести');
+        return;
+    }
+    
+    if (st) st.innerHTML = `<span class="ok">✅ Переведено $${f(data.amount, 2)}</span>`;
+    msg('✅ Деньги переведены', 'success');
+    
+    // Обновляем экран
+    await refreshAll();
+    loadAdminRevenue();
+    setTimeout(() => { if(st) st.textContent = ''; }, 3000);
+}
 </script>
 </body>
 </html>
