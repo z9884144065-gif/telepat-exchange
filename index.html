@@ -2673,11 +2673,21 @@ async function createAdminItem(){
   try{const{error}=await sb.from('telepat_items').insert({symbol,name,slot,category,min_rank,price_usd,emoji,active:true});if(error){st.textContent='Ошибка';return;}st.textContent='✅ '+name;msg('✅','success');$('ni_name').value='';$('ni_symbol').value='';$('ni_emoji').value='';await loadAdminItemPrices();await loadShopItems();}catch(e){st.textContent='Ошибка';}
 }
 async function loadAdminRevenue(){
-  try{const{data}=await sb.rpc('admin_get_purchase_history',{p_limit:20});if(!data||!data.ok) return;
-    if($('adRevenue')) $('adRevenue').textContent='$'+f(Number(data.total_revenue)||0,2);
-    if($('adPurchasesCount')) $('adPurchasesCount').textContent=data.purchases_count||0;
-    const hist=$('adPurchaseHistory');if(hist) hist.innerHTML=(data.items||[]).slice(0,10).map(p=>`<div class="history-row"><span>${esc(p.item||'')}</span><b>+$${f(p.amount,2)}</b></div>`).join('')||'<div class="info" style="text-align:center">Пусто</div>';
-  }catch(e){}
+  try {
+    // 1. Показываем общую статистику покупок
+    const{data}=await sb.rpc('admin_get_purchase_history',{p_limit:20});
+    if(data&&data.ok){
+      if($('adPurchasesCount')) $('adPurchasesCount').textContent=data.purchases_count||0;
+      const hist=$('adPurchaseHistory');
+      if(hist) hist.innerHTML=(data.items||[]).slice(0,10).map(p=>`<div class="history-row"><span>${esc(p.item||'')}</span><b>+$${f(p.amount,2)}</b></div>`).join('')||'<div class="info" style="text-align:center">Пусто</div>';
+    }
+
+    // 2. Показываем баланс магазина (сколько доступно для перевода)
+    const {data: u} = await sb.from('users').select('shop_balance').eq('telegram_id', AID).maybeSingle();
+    if ($('adRevenue')) {
+        $('adRevenue').textContent = '$' + f(u?.shop_balance || 0, 2);
+    }
+  }catch(e){ console.log('revenue error', e); }
 }
 async function adminClearRevenue(){if(!confirm('Очистить?')) return;const{data,error}=await sb.rpc('admin_clear_revenue');if(error||!data||data.ok===false){msg('Ошибка','error');return;}msg('💰','success');loadAdminRevenue();}
 async function loadAdminStats(){
