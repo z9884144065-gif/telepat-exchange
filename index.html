@@ -1497,6 +1497,13 @@ ${inv.length?`<select id="gear_sell_item" style="width:100%;background:var(--bg)
 ${myListings.length?`<div class="item-card"><div class="item-header"><b>📋 Мои лоты</b></div>${myListings.map(l=>`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #252b36"><div><div style="font-size:13px;color:#fff">${esc(l.item_name)}</div><div class="info" style="font-size:11px">$${f(l.price_tusd,2)} • ${l.status}</div></div>${l.status==='active'?`<button class="admin-btn sm danger" onclick="gearCancelListing('${l.id}')">❌</button>`:''}</div>`).join('')}</div>`:''}
 <div class="item-card"><div class="item-header"><b>🛒 На продаже (${listings.length})</b></div>${listings.length?listings.map(l=>`<div class="item-card" style="background:#0d1520"><div class="item-header"><span class="item-name">${esc(l.emoji||'🎁')} ${esc(l.item_name)}</span></div><div class="item-footer"><span class="item-price">$${f(l.price_tusd,2)}</span><button onclick="gearBuyListing('${l.id}')">🛒</button></div></div>`).join(''):'<div class="info">Пусто</div>'}</div>`;
   }
+          // 🔥 АВТОВЫБОР ПРЕДМЕТА
+    setTimeout(() => {
+        if (__SELL_ITEM_ID && $('gear_sell_item')) {
+            $('gear_sell_item').value = __SELL_ITEM_ID;
+            __SELL_ITEM_ID = null; 
+        }
+    }, 100);
   else if(tab==='swap'){
     const fromBal=tb(state_swapFrom),fromPrice=priceOf(state_swapFrom),toPrice=priceOf(state_swapTo);
     c.innerHTML=`
