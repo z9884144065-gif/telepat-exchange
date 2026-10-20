@@ -1782,11 +1782,24 @@ async function cancelP2POrder(id){
   if(currentIncomeTab==='p2p') await renderP2PContent($('incomeContent'));
 }
 async function quickBuyOrder(id){
-  if(!confirm('Выкупить?')) return;
-  const{data,error}=await sb.rpc('accept_p2p_order_v2', { p_order_id: Number(id), p_taker_id: UID });
+  if(!confirm('Выкупить остаток?')) return;
+  const o = ORDER_CACHE[String(id)];
+  if(!o) return;
+  
+  // Вычисляем, сколько осталось в ордере
+  const max = n(o.from_amount_remaining != null ? o.from_amount_remaining : o.from_amount);
+  
+  const{data,error}=await sb.rpc('accept_p2p_order_chat_partial',{
+      p_order_id:String(o.id),
+      p_taker_id:String(UID),
+      p_get_amount:max
+  });
+  
   if(error){msg(error.message,'error');return;}
   if(data && data.ok === false) { msg(data.message, 'error'); return; }
-  msg('✅ Куплено','success');await refreshAll();
+  
+  msg('✅ Куплено','success');
+  await refreshAll();
   if(currentIncomeTab==='p2p') await renderP2PContent($('incomeContent'));
 }
 function openBuyModal(orderId){
