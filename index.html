@@ -3744,6 +3744,126 @@ async function saveAdminAdEdit(id) {
     loadAdminRevenue();
     setTimeout(() => { if(st) st.textContent = ''; }, 3000);
 }
+    let currentStakeAction = { type: 'stake', max: 0 };
+
+async function openTokenStakingDetails(symbol) {
+    try {
+        // Запрашиваем данные из базы
+        const {data, error} = await sb.rpc('get_staking_info', { p_telegram_id: UID, p_token_symbol: symbol });
+        
+        if (error) {
+            msg('Ошибка БД: ' + error.message, 'error');
+            console.error(error);
+            return;
+        }
+        if (!data) {
+            msg('Ошибка: нет данных от сервера', 'error');
+            return;
+        }
+
+        const walletBal = f(data.wallet_balance, 6);
+        const stakedBal = f(data.staked_balance, 6);
+        const totalStaked = f(data.total_staked, 6);
+        const share = f(data.share_pct, 6);
+        const rate = f(data.hourly_rate, 4);
+
+        const safeWallet = Number(data.wallet_balance) || 0;
+        const safeStaked = Number(data.staked_balance) || 0;
+
+        openModal(`💎 Стейкинг ${symbol}`, `
+            <div style="display:flex; flex-direction:column; gap:12px;">
+                <!-- 1. В сокровищнице -->
+                <div class="item-card" style="background:#1e293b; border-color:#334155;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <div class="info" style="font-size:11px;">В сокровищнице (Кошелек)</div>
+                            <div style="font-size:20px; font-weight:bold; color:#fff;">${walletBal} ${symbol}</div>
+                        </div>
+                        <button class="admin-btn sec" onclick="showStakeInput('${symbol}', 'stake', ${safeWallet})">Застейкать</button>
+                    </div>
+                </div>
+
+                <!-- 2. В стейкинге -->
+                <div class="item-card" style="background:#1e293b; border-color:#334155;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <div class="info" style="font-size:11px;">В стейкинге (Ваша доля)</div>
+                            <div style="font-size:20px; font-weight:bold; color:#39d98a;">${stakedBal} ${symbol}</div>
+                        </div>
+                        <button class="admin-btn danger" onclick="showStakeInput('${symbol}', 'unstake', ${safeStaked})">Снять</button>
+                    </div>
+                </div>
+
+                <!-- 3. Аналитика -->
+                <div class="item-card" style="background:#0d1520; border-color:#2d3a4c; padding:14px;">
+                    <div class="history-row"><span>Всего в стейкинге (Пул):</span><b>${totalStaked} ${symbol}</b></div>
+                    <div class="history-row"><span>Ваша доля в пуле:</span><b>${share}%</b></div>
+                    <div class="history-row"><span>Ставка доходности:</span><b>${rate}% в час</b></div>
+                </div>
+
+                <!-- Скрытый инпут для ввода суммы -->
+                <div id="stake_action_box" class="hidden">
+                    <div class="item-card" style="border-color:var(--gold)">
+                        <div id="stake_action_title" style="font-weight:bold; margin-bottom:8px;"></div>
+                        <input id="stake_input_amount" type="number" step="any" placeholder="Введите сумму" style="width:100%; background:var(--bg); border:1px solid var(--line); color:#fff; padding:8px; border-radius:8px;">
+                        <div style="display:flex; gap:8px; margin-top:8px;">
+                            <button class="admin-btn sec" style="flex:1" onclick="setMaxStake()">MAX</button>
+                            <button id="stake_submit_btn" class="admin-btn gold" style="flex:2" onclick="submitStakeAction('${symbol}')">Подтвердить</button>
+                        </div>
+                        <div id="stake_action_status" class="info" style="margin-top:8px; text-align:center;"></div>
+                    </div>
+                </div>
+                
+                <button class="admin-btn sec" style="width:100%;margin-top:8px" onclick="closeModal()">Закрыть</button>
+            </div>
+        `);
+    } catch(e) {
+        msg('Системная ошибка: ' + e.message, 'error');
+        console.error(e);
+    }
+}
+
+function showStakeInput(symbol, type, maxAmount) {
+    currentStakeAction.type = type;
+    currentStakeAction.max = maxAmount;
+    
+    const box = $('stake_action_box');
+    box.classList.remove('hidden');
+    
+    if (type === 'stake') {
+        $('stake_action_title').textContent = 'Вложить в стейкинг:';
+        $('stake_submit_btn').textContent = '✅ Застейкать';
+    } else {
+        $('stake_action_title').textContent = 'Вывести из стейкинга:';
+        $('stake_submit_btn').textContent = '📤 Снять';
+    }
+}
+
+function setMaxStake() {
+    $('stake_input_amount').value = currentStakeAction.max;
+}
+
+async function submitStakeAction(symbol) {
+    const amt = Number($('stake_input_amount').value);
+    const st = $('stake_action_status');
+    if (amt <= 0) { st.textContent = 'Введите сумму'; return; }
+    
+    st.textContent = 'Обработка...';
+    
+    const rpcName = currentStakeAction.type === 'stake' ? 'stake_tokens' : 'unstake_tokens';
+    const {data, error} = await sb.rpc(rpcName, { p_telegram_id: UID, p_token_symbol: symbol, p_amount: amt });
+
+    if (error || !data || data.ok === false) {
+        st.textContent = 'Ошибка: ' + (data?.error || error?.message || 'Не удалось');
+        return;
+    }
+
+    st.innerHTML = '<span class="ok">✅ Успешно!</span>';
+    msg('Готово', 'success');
+    
+    await refreshAll(); 
+    setTimeout(() => openTokenStakingDetails(symbol), 1000); 
+}
 </script>
 </body>
 </html>
