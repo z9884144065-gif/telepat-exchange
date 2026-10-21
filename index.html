@@ -2094,7 +2094,6 @@ async function renderAdsTab(c){
   let settings={reward_per_view:0.00015,daily_limit:150};
   try{const{data}=await sb.from('telepat_ad_settings').select('reward_per_view,daily_limit').eq('id',1).maybeSingle();if(data) settings=data;}catch(e){}
    let todayCount=0;
-    let todayCount = 0;
   try {
       // 🔥 Просим базу посчитать через безопасную функцию
       const { data: countData } = await sb.rpc('get_today_ad_count', { p_telegram_id: UID });
