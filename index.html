@@ -2093,8 +2093,20 @@ function showAdRewardPopup(reward,token,extra){
 async function renderAdsTab(c){
   let settings={reward_per_view:0.00015,daily_limit:150};
   try{const{data}=await sb.from('telepat_ad_settings').select('reward_per_view,daily_limit').eq('id',1).maybeSingle();if(data) settings=data;}catch(e){}
-  let todayCount=0;
-  try{const start=new Date();start.setHours(0,0,0,0);const{count}=await sb.from('telepat_ad_views').select('*',{count:'exact',head:true}).eq('telegram_id',UID).gte('created_at',start.toISOString());todayCount=count||0;}catch(e){}
+   let todayCount=0;
+  try {
+      const start = new Date();
+      start.setHours(0, 0, 0, 0);
+      
+      // 🔥 Читаем из правильной таблицы
+      const { count } = await sb.from('telepat_ad_actions')
+          .select('*', { count: 'exact', head: true })
+          .eq('telegram_id', UID)
+          .eq('status', 'completed')
+          .gte('created_at', start.toISOString());
+          
+      todayCount = count || 0;
+  } catch(e) {}
   const nextAd=await fetchNextAd();
   const adReady=!!nextAd && !nextAd.__blocked;
 
@@ -2103,7 +2115,8 @@ async function renderAdsTab(c){
 <div class="item-header"><b>📺 Смотреть видео</b>${adReady?'<span class="ad-badge">готово</span>':'<span class="ad-badge" style="background:#8a94a6;color:#fff">нет</span>'}</div>
 <div class="ad-stat-row"><span>Доступно:</span><b style="color:${adReady?'#39d98a':'#f4cf70'}">${nextAd&&nextAd.title?esc(nextAd.title):'—'}</b></div>
 <div class="ad-stat-row"><span>Награда:</span><b style="color:#39d98a">+${f(settings.reward_per_view,5)} TUSD → в стейкинг</b></div>
-<div class="ad-stat-row"><span>Сегодня:</span><b>${todayCount}/${settings.daily_limit}</b></div>
+<div class="ad-stat-row"><span>Просмотрено сегодня:</span><b>${todayCount} раз</b></div>
+<div class="ad-stat-row" style="border-bottom:0;padding-bottom:0;"><span style="font-size:10px;color:var(--muted)">Лимит: 10 раз на каждое видео</span></div>
 <button class="stake-collect" style="margin-top:10px;${adReady?'':'opacity:.5;pointer-events:none'}" onclick="watchAd()">${adReady?'▶️ СМОТРЕТЬ СЕЙЧАС':'📺 НЕТ РЕКЛАМЫ'}</button>
 </div>
 
