@@ -3142,9 +3142,16 @@ async function claimAdReward(){
   if(!__CURRENT_AD){closeAdModal();return;}
   const ad=__CURRENT_AD;const campId=ad.id || ad.campaign_id;
   const btn=$('adClaimBtn');if(btn){btn.disabled=true;btn.textContent='⏳ Начисляем...';}
+  
   try{
     const{data,error}=await sb.rpc('credit_ad_reward',{p_telegram_id:UID,p_source:'video',p_zone_id:String(campId)});
-    if(error){msg('❌ '+(error.message||'Ошибка'),'error');if(btn){btn.disabled=false;btn.textContent='🎁 ПОЛУЧИТЬ';}return;}
+    
+    if(error){
+        msg('❌ '+(error.message||'Ошибка'),'error');
+        if(btn){btn.disabled=false;btn.textContent='🎁 ПОЛУЧИТЬ';}
+        return;
+    }
+    
     if(!data||data.ok===false){
       const err=data?.error||'unknown';
       if(err.includes('лимит')) msg(`📊 ${err}`,'info');
@@ -3152,17 +3159,33 @@ async function claimAdReward(){
       if(btn){btn.disabled=false;btn.textContent='🎁 ПОЛУЧИТЬ';}
       return;
     }
+    
     const reward=Number(data.reward||0);
     const token=data.reward_token||'TUSD';
     const addedToStake=Number(data.accumulated_added||data.payout_tusd||0);
+    
     closeAdModal();
     showAdRewardPopup(reward, token, `📺 В СТЕЙКИНГ +${f(addedToStake,5)} TUSD`);
     msg(`✅ +${f(addedToStake,5)} TUSD в стейкинг`,'success');
-    await refreshAll();
-    if(currentIncomeTab==='ads') showIncomeTab('ads');
-  }catch(e){msg('❌ '+e.message,'error');if(btn){btn.disabled=false;btn.textContent='🎁 ПОЛУЧИТЬ';}}
+    
+    // 1. Обновляем балансы
+    await refreshAll(); 
+    
+    // 2. Обновляем историю, если она открыта
+    if ($('historyModal') && $('historyModal').classList.contains('show')) {
+        HISTORY_OFFSET = 0;
+        HISTORY_ITEMS = [];
+        loadHistory();
+    }
+    
+    // 3. Обновляем вкладку рекламы
+    if(currentIncomeTab==='ads') showIncomeTab('ads'); 
+    
+  }catch(e){
+    msg('❌ '+e.message,'error');
+    if(btn){btn.disabled=false;btn.textContent='🎁 ПОЛУЧИТЬ';}
+  }
 }
-
 /* ═══════ ЗАКАЗ РЕКЛАМЫ ═══════ */
 async function openAdMenu(){
   if(!UID){msg('Открой через Telegram','error');return;}
