@@ -55,45 +55,12 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 .scale-item{margin-bottom:10px}
 .scale-header{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:4px}
 .scale-header b{color:#fff}
-/* Обновленный стиль шкал (Зарядка батареи) */
-.scale-bar-bg {
-    height: 14px;
-    background: #080b10;
-    border: 1px solid #2a3242;
-    border-radius: 4px;
-    overflow: hidden;
-    position: relative;
-    box-shadow: inset 0 2px 5px rgba(0,0,0,0.8);
-}
-
-.scale-bar-fill {
-    height: 100%;
-    border-radius: 4px;
-    transition: width .8s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-    -webkit-mask-image: repeating-linear-gradient(90deg, #000 0, #000 10px, transparent 10px, transparent 13px);
-    mask-image: repeating-linear-gradient(90deg, #000 0, #000 10px, transparent 10px, transparent 13px);
-    animation: chargingPulse 2s infinite;
-}
-
-.scale-bar-fill.blue {
-    background: linear-gradient(90deg, #2f80ed, #4f8cff);
-    filter: drop-shadow(0 0 4px rgba(79, 140, 255, 0.8));
-}
-.scale-bar-fill.green {
-    background: linear-gradient(90deg, #26a17b, #39d98a);
-    filter: drop-shadow(0 0 4px rgba(57, 217, 138, 0.8));
-}
-.scale-bar-fill.gold {
-    background: linear-gradient(90deg, #c99629, #f5d477);
-    filter: drop-shadow(0 0 4px rgba(245, 212, 119, 0.8));
-}
-
-@keyframes chargingPulse {
-    0% { opacity: 1; }
-    50% { opacity: 0.85; filter: brightness(1.2); }
-    100% { opacity: 1; }
-}
+.scale-bar-bg{height:14px;background:#080b10;border:1px solid #2a3242;border-radius:4px;overflow:hidden;position:relative;box-shadow:inset 0 2px 5px rgba(0,0,0,0.8);}
+.scale-bar-fill{height:100%;border-radius:4px;transition:width .8s cubic-bezier(0.4,0,0.2,1);position:relative;-webkit-mask-image:repeating-linear-gradient(90deg,#000 0,#000 10px,transparent 10px,transparent 13px);mask-image:repeating-linear-gradient(90deg,#000 0,#000 10px,transparent 10px,transparent 13px);animation:chargingPulse 2s infinite;}
+.scale-bar-fill.blue{background:linear-gradient(90deg,#2f80ed,#4f8cff);filter:drop-shadow(0 0 4px rgba(79,140,255,0.8));}
+.scale-bar-fill.green{background:linear-gradient(90deg,#26a17b,#39d98a);filter:drop-shadow(0 0 4px rgba(57,217,138,0.8));}
+.scale-bar-fill.gold{background:linear-gradient(90deg,#c99629,#f5d477);filter:drop-shadow(0 0 4px rgba(245,212,119,0.8));}
+@keyframes chargingPulse{0%{opacity:1}50%{opacity:.85;filter:brightness(1.2)}100%{opacity:1}}
 .rule-line{margin-top:10px;padding:8px;background:#0d1520;border:1px solid #2a3242;border-radius:10px;font-size:11px;color:var(--muted);text-align:center}
 .rule-line b{color:var(--gold)}
 .quick-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
@@ -454,7 +421,6 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 </div>
 <div class="item-card"><div class="item-header"><b>📋 Мои раздачи</b></div><div id="myChatBonusList"><div class="info">Загрузка...</div></div><button class="admin-btn sec" style="width:100%;margin-top:8px" onclick="loadMyChatBonus()">🔄 Обновить</button></div>
 </div>
-
 <div id="view-admin" class="hidden">
 <h2>👑 Админ-панель</h2>
 
@@ -807,6 +773,29 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 <div id="uiSettingsStatus" class="info" style="margin-top:8px;text-align:center"></div>
 </div>
 </div>
+
+<!-- ✅ НОВЫЙ БЛОК: Фон приложения -->
+<div class="acc-item" id="acc-bg">
+<div class="acc-header" onclick="toggleAcc('acc-bg')"><span>🖼️ Фон приложения</span><span class="acc-arrow">▶</span></div>
+<div class="acc-body">
+<div class="item-card" style="background:#0d1520;border-color:#2d3a4c">
+<div class="info" style="font-size:11px;line-height:1.6">Загрузите изображение (замок, пейзаж и т.п.) — оно ляжет на задний план всего приложения. Сверху автоматически накладывается затемнение, чтобы карточки и кнопки оставались читаемыми.</div>
+</div>
+<div class="title" style="font-size:12px;margin-top:10px">📤 Загрузить файл</div>
+<input type="file" id="ui-bg-image-file" accept="image/*" style="width:100%;padding:8px;color:#fff;font-size:12px;background:var(--bg);border:1px solid var(--line);border-radius:8px">
+<button class="admin-btn gold" style="width:100%;margin-top:8px" onclick="uploadBgImage()">📤 Загрузить</button>
+<div class="info" style="font-size:10px;text-align:center;margin:12px 0;color:#8a94a6">— ИЛИ вставить ссылку —</div>
+<div class="title" style="font-size:12px">🔗 URL картинки</div>
+<input type="text" id="ui-bg-image" placeholder="https://example.com/castle.jpg" style="width:100%;padding:8px;background:var(--bg);border:1px solid var(--line);color:#fff;border-radius:8px;font-size:12px;margin-top:6px">
+<div id="uiBgPreview" style="margin-top:12px"></div>
+<div class="admin-btn-row" style="margin-top:12px">
+<button class="admin-btn gold" onclick="saveBgSettings()">💾 Сохранить</button>
+<button class="admin-btn danger" onclick="removeBgImage()">🗑 Удалить фон</button>
+</div>
+<div id="bgSettingsStatus" class="info" style="margin-top:8px;text-align:center"></div>
+</div>
+</div>
+
 </div>
 
 <div id="modal" class="modal-overlay" onclick="closeModal(event)"><div class="modal-box" id="modalBox" onclick="event.stopPropagation()"></div></div>
@@ -846,11 +835,14 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 <label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px">Сколько получить (в <span id="buyFromSym">—</span>)</label>
 <input id="buyAmount" type="number" step="any" placeholder="0" oninput="updateBuyPreview()" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
 <div class="buy-pct-row">
-<button onclick="setBuyPct(25)">25%</button><button onclick="setBuyPct(50)">50%</button><button onclick="setBuyPct(75)">75%</button><button onclick="setBuyPct(100)">100%</button>
+<button onclick="setBuyPct(25)">25%</button>
+<button onclick="setBuyPct(50)">50%</button>
+<button onclick="setBuyPct(75)">75%</button>
+<button onclick="setBuyPct(100)" style="background:linear-gradient(135deg,#39d98a,#2ba86a);color:#fff;font-weight:800">100% ОСТАТОК</button>
 </div>
 <div class="prev">
 <div class="history-row"><span>Заплатите</span><b id="buyPay">—</b></div>
-<div class="history-row"><span>Остаток</span><b id="buyRemaining">—</b></div>
+<div class="history-row"><span>Останется в ордере</span><b id="buyRemaining">—</b></div>
 <div class="history-row"><span>Доступно у вас</span><b id="buyAvail">—</b></div>
 </div>
 <button id="buyConfirmBtn" class="admin-btn primary" style="width:100%;margin-top:12px" onclick="confirmBuyOrder()" disabled>✅ Выкупить</button>
@@ -894,7 +886,6 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 <button class="nav-btn nav-wide" id="nav-chatbonus" onclick="goView('chatbonus')"><span class="nav-icon">🎁</span> Заказать</button>
 </div>
 </div>
-
 <script>
 /* ═══════ CONFIG ═══════ */ 
 const SU='https://jutszxuzjzyfxarceydw.supabase.co';
@@ -921,6 +912,7 @@ window.__cbSelectedChatId=0;window.__cbSelectedChatTitle='';
 let __CURRENT_AD=null,__AD_TIMER=null,__AD_TIME_LEFT=0;
 let __TASK_TIMERS={};
 let __AUC_TIMER=null;
+let CURRENT_BG_URL='';   // ✅ хранит активный фон
 const UI_DEFAULTS={ui_bg:'#0b1018',ui_bg_radial:'#26334a',ui_accent:'#f4cf70',ui_card:'#141c28'};
 
 // ✅ НОВЫЕ РАНГИ (22 уровня)
@@ -1077,7 +1069,6 @@ function openItemModal(id){
   const item = MY_ITEMS.find(i => String(i.id) === String(id));
   if (!item) return msg('Предмет не найден', 'error');
 
-  // Определяем слот и иконку
   const slotLabel = SLOT_LABEL[item.slot] || item.slot || 'Предмет';
   
   openModal(`${item.emoji || '🎁'} ${esc(item.name)}`, `
@@ -1115,7 +1106,7 @@ async function toggleItemEquip(itemId, equip) {
   
   msg(equip ? '✅ Надето' : '✅ Снято', 'success');
   closeModal();
-  await refreshAll(); // Перерисовываем экран с новыми шмотками
+  await refreshAll();
 }
 function renderShop(){ 
   const c=$('shopContent'); 
@@ -1123,7 +1114,6 @@ function renderShop(){
   
   const tab = currentShopTab || 'gear';
 
-  // 1. ВКЛАДКА РЕФЕРАЛОВ
   if (tab === 'referrals') {
     c.innerHTML = '<div class="item-card"><div class="item-desc">Загрузка рынка рефералов...</div></div>';
     sb.rpc('referral_market_list').then(({data, error}) => {
@@ -1147,7 +1137,6 @@ function renderShop(){
     return;
   }
 
-  // 2. ВКЛАДКА АУКЦИОНА
   if (tab === 'auction') {
     c.innerHTML = '<div class="item-card"><div class="item-desc">Загрузка аукциона...</div></div>';
     sb.rpc('auction_list').then(({data, error}) => {
@@ -1171,7 +1160,6 @@ function renderShop(){
     return;
   }
 
-  // 3. ВКЛАДКИ С ПРЕДМЕТАМИ (Амуниция, Титулы, Артефакты и т.д.)
   c.innerHTML = '<div class="item-card"><div class="item-desc">Загрузка товаров...</div></div>';
   
   sb.from('telepat_items').select('*').then(({data, error}) => {
@@ -1213,7 +1201,6 @@ function renderShop(){
   });
 }
 
-// Вспомогательные функции для кнопок
 async function buyReferral(id) {
   if(!confirm('Купить этого реферала?')) return;
   const {data, error} = await sb.rpc('referral_buy', { p_lot_id: id });
@@ -1255,7 +1242,6 @@ async function buyItem(id, name, price) {
   
   msg('✅ Успешно куплено!', 'success');
   
-  // Если куплен титул — надеваем его сразу через новую функцию
   const item = (SHOP_ITEMS || []).find(i => String(i.id) === String(id));
   if(item && (item.category === 'title' || item.slot === 'titleSlot') && data.user_item_id) {
     await sb.rpc('equip_item', { p_item_id: data.user_item_id, p_telegram_id: UID });
@@ -1329,7 +1315,6 @@ function renderHome(){
   const ki=$('knightImg');
   if(ki){const g=getKnightGroup(rl);const ns=GROUP_IMAGE[g];const cf=ki.src.split('/').pop();if(cf!==ns){ki.src=ns;}}
 
-  // --- ОТРИСОВКА ВСЕХ СЛОТОВ ---
   const slotMapping = {
     'weapon': 'weapon', 'body': 'body', 'legs': 'legs',
     'armor': 'helmet', 'shield': 'shield', 'cloak': 'cloak',
@@ -1347,7 +1332,6 @@ function renderHome(){
       if(!el) return;
 
       el.classList.remove('empty','locked','filled','unlocked-empty');
-      // Ищем надетый предмет
       const equippedItem = MY_ITEMS.find(i => i.is_equipped && (i.slot === slotKey || (slotKey === 'armor' && i.slot === 'helmet')));
       
       if(equippedItem) {
@@ -1405,7 +1389,6 @@ async function openWallet(){
   const{data:rw}=await sb.rpc('user_get_receive_wallets');
   const wallets=(rw&&rw.ok&&rw.items)?rw.items:[];
   
-  // ✅ ФИКС: Берем ID текущего юзера
   const myId = UID;
   
   const recvHtml=wallets.length?wallets.map(w=>`<div class="pc"><div class="pt">${esc(w.token_symbol)}</div><div class="info" style="font-size:11px;word-break:break-all">📍 ${esc(w.wallet_address)}</div>${w.memo?`<div class="info" style="font-size:11px">📝 ${esc(w.memo)}</div>`:''}<div class="info" style="font-size:10px;color:#f4cf70">⚠️ Комментарий: <b>${myId}</b></div><button class="admin-btn sm sec" style="width:100%;margin-top:6px" onclick="copyText('${esc(w.wallet_address)}')">📋 Скопировать</button></div>`).join(''):'<div class="info">Реквизиты не настроены</div>';
@@ -1531,7 +1514,6 @@ ${inv.length?`<select id="gear_sell_item" style="width:100%;background:var(--bg)
 ${myListings.length?`<div class="item-card"><div class="item-header"><b>📋 Мои лоты</b></div>${myListings.map(l=>`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #252b36"><div><div style="font-size:13px;color:#fff">${esc(l.item_name)}</div><div class="info" style="font-size:11px">$${f(l.price_tusd,2)} • ${l.status}</div></div>${l.status==='active'?`<button class="admin-btn sm danger" onclick="gearCancelListing('${l.id}')">❌</button>`:''}</div>`).join('')}</div>`:''}
 <div class="item-card"><div class="item-header"><b>🛒 На продаже (${listings.length})</b></div>${listings.length?listings.map(l=>`<div class="item-card" style="background:#0d1520"><div class="item-header"><span class="item-name">${esc(l.emoji||'🎁')} ${esc(l.item_name)}</span></div><div class="item-footer"><span class="item-price">$${f(l.price_tusd,2)}</span><button onclick="gearBuyListing('${l.id}')">🛒</button></div></div>`).join(''):'<div class="info">Пусто</div>'}</div>`;
   
-          // 🔥 АВТОВЫБОР ПРЕДМЕТА
     setTimeout(() => {
         if (__SELL_ITEM_ID && $('gear_sell_item')) {
             $('gear_sell_item').value = __SELL_ITEM_ID;
@@ -1612,7 +1594,6 @@ async function loadAdminDeposits(status){
   box.innerHTML='Загрузка...';
   
   try {
-    // Берем заявки из таблицы deposit_requests
     let query = sb.from('deposit_requests').select('*').order('created_at', {ascending: false}).limit(50);
     if (status) query = query.eq('status', status);
     
@@ -1660,7 +1641,7 @@ async function switchP2PTab(t){
   if(tabsEls.length>=2){tabsEls[0].classList.toggle('active',t==='all');tabsEls[1].classList.toggle('active',t==='mine');}
   await renderP2PList();
 }
-    async function renderP2PContent(container){
+async function renderP2PContent(container){
   const tabsHtml=`
     <div class="tabs" style="margin-bottom:15px;">
       <div class="tab ${currentP2PTab==='all'?'active':''}" onclick="switchP2PTab('all')">🌐 Все</div>
@@ -1671,12 +1652,11 @@ async function switchP2PTab(t){
   `;
   container.innerHTML = tabsHtml;
   await renderP2PList();
-        }
+}
 function renderP2PList(){
   const box=$('p2pList');if(!box) return;
   box.innerHTML='<div class="item-card"><div class="item-desc">Загрузка...</div></div>';
   
-  // Таймер на 5 секунд, чтобы бот не висел вечно
   const timeout = setTimeout(() => {
     if(box.innerHTML.includes('Загрузка')) {
       box.innerHTML = '<div class="item-card"><div class="item-desc" style="color:red;text-align:center">Сеть не отвечает. Проверьте интернет или обновите бота.</div></div>';
@@ -1698,7 +1678,6 @@ function renderP2PList(){
         return;
     }
 
-    // Подтягиваем ники
     const ids = [...new Set(orders.map(o => Number(o.creator_id)).filter(Boolean))];
     sb.from('users').select('telegram_id,username,first_name,rank_name,rank_level').in('telegram_id', ids).then(u => {
         const map = {};
@@ -1718,7 +1697,6 @@ function renderP2PList(){
             });
         });
 
-        // Сортируем: свои ордера первыми
         if(currentP2PTab==='mine'){
           orders=orders.filter(o=>String(o.creator_id)===String(UID));
         } else {
@@ -1742,25 +1720,33 @@ function renderP2PList(){
     box.innerHTML='<div class="item-card"><div class="item-desc" style="color:red;text-align:center">Сетевая ошибка: '+err.message+'</div></div>';
   });
 }
+
+/* ✅ ОБНОВЛЕНО: показываем остаток и прогресс выкупа */
 function orderCard(o){
   ORDER_CACHE[String(o.id)]=o;
   const isMine=String(o.creator_id)===String(UID);
   const c=rk(o.creator_rank_level);const rt=n(o.rate);
   const ownerLabel=o.creator_username?'@'+esc(o.creator_username):'ID '+Number(o.creator_id);
   
-  // Считаем прогресс выкупа
   const totalAmt = n(o.from_amount) || 0;
-  const filledAmt = n(o.filled) || 0;
+  const remainingAmt = n(o.from_amount_remaining != null ? o.from_amount_remaining : o.from_amount);
+  const filledAmt = Math.max(0, totalAmt - remainingAmt);
   const pct = totalAmt > 0 ? Math.min(100, Math.round((filledAmt / totalAmt) * 100)) : 0;
   
   let progressHtml = '';
-  if (pct > 0 && pct < 100) {
+  if (filledAmt > 0 && remainingAmt > 0) {
     progressHtml = `
       <div style="height:4px;background:#080b10;border-radius:99px;margin-top:8px;overflow:hidden">
         <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,#f4cf70,#c99629)"></div>
       </div>
-      <div style="font-size:10px;color:#f4cf70;margin-top:4px;text-align:right">Выкуплено ${pct}%</div>
-    `;
+      <div style="font-size:10px;color:#f4cf70;margin-top:5px;display:flex;justify-content:space-between;align-items:center">
+        <span>Выкуплено ${pct}%</span>
+        <span style="font-weight:700">🟢 Осталось: ${f(remainingAmt)} ${esc(o.from_token)}</span>
+      </div>`;
+  } else if (filledAmt === 0 && remainingAmt > 0) {
+    progressHtml = `<div style="font-size:10px;color:#8a94a6;margin-top:5px">🟢 В продаже полностью: ${f(remainingAmt)} ${esc(o.from_token)}</div>`;
+  } else if (remainingAmt <= 0.00000001) {
+    progressHtml = `<div style="font-size:10px;color:#39d98a;margin-top:5px;font-weight:700">✅ Полностью выкуплено</div>`;
   }
 
   const actionsHtml=isMine
@@ -1849,7 +1835,6 @@ async function quickBuyOrder(id){
   const o = ORDER_CACHE[String(id)];
   if(!o) return;
   
-  // Вычисляем, сколько осталось в ордере
   const max = n(o.from_amount_remaining != null ? o.from_amount_remaining : o.from_amount);
   
   const{data,error}=await sb.rpc('accept_p2p_order_chat_partial',{
@@ -1865,11 +1850,39 @@ async function quickBuyOrder(id){
   await refreshAll();
   if(currentIncomeTab==='p2p') await renderP2PContent($('incomeContent'));
 }
+
+/* ✅ ОБНОВЛЕНО: показываем остаток в модалке */
 function openBuyModal(orderId){
   const o=ORDER_CACHE[String(orderId)];if(!o){msg('Не найден','error');return;}
   __BUY_ORDER=o;
-  const fromTotal=n(o.from_amount),toTotal=n(o.to_amount);const rate=fromTotal>0?toTotal/fromTotal:0;
-  $('buyOrderInfo').innerHTML=`<b>${f(o.from_amount)} ${esc(o.from_token)} → ${f(o.to_amount)} ${esc(o.to_token)}</b>`;
+  
+  const totalFrom = n(o.from_amount) || 0;
+  const totalTo = n(o.to_amount) || 0;
+  const remainingFrom = n(o.from_amount_remaining != null ? o.from_amount_remaining : o.from_amount);
+  const remainingTo = n(o.to_amount_remaining != null ? o.to_amount_remaining : o.to_amount);
+  const alreadyFilled = Math.max(0, totalFrom - remainingFrom);
+  
+  $('buyOrderInfo').innerHTML = `
+    <div style="background:#0d1520;padding:12px;border-radius:10px;margin-bottom:10px;border:1px solid #2d3a4c">
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:8px">
+        <span>Весь ордер:</span>
+        <b style="color:#fff">${f(totalFrom)} ${esc(o.from_token)} → ${f(totalTo)} ${esc(o.to_token)}</b>
+      </div>
+      ${alreadyFilled > 0 ? `
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:8px">
+        <span>Уже выкуплено:</span>
+        <b style="color:#8a94a6">${f(alreadyFilled)} ${esc(o.from_token)}</b>
+      </div>` : ''}
+      <div style="display:flex;justify-content:space-between;font-size:14px;padding:10px;background:#f4cf7015;border-radius:8px;border:1px solid #f4cf7050">
+        <span style="color:#f4cf70;font-weight:700">🟢 Осталось купить:</span>
+        <b style="color:#f4cf70;font-size:15px">${f(remainingFrom,8)} ${esc(o.from_token)}</b>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:8px">
+        <span>Нужно заплатить за остаток:</span>
+        <b style="color:#fff">${f(remainingTo,8)} ${esc(o.to_token)}</b>
+      </div>
+    </div>`;
+  
   $('buyFromSym').textContent=o.from_token;
   $('buyAmount').value='';$('buyStatus').textContent='';updateBuyPreview();$('buyModal').classList.add('show');
 }
@@ -1877,7 +1890,8 @@ function closeBuyModal(e){if(e&&e.target!==$('buyModal')) return;$('buyModal').c
 function setBuyPct(pct){
   if(!__BUY_ORDER) return;
   const max = n(__BUY_ORDER.from_amount_remaining != null ? __BUY_ORDER.from_amount_remaining : __BUY_ORDER.from_amount);
-  $('buyAmount').value=String(max*pct/100);
+  const val = pct >= 100 ? max : max * pct / 100;
+  $('buyAmount').value = String(val);
   updateBuyPreview();
 }
 function updateBuyPreview(){
@@ -1889,15 +1903,27 @@ function updateBuyPreview(){
 
   const getAmt = Math.max(0, Math.min(fromTotal, n($('buyAmount').value)));
   const payAmt = getAmt * rate;
+  const afterBuy = Math.max(0, fromTotal - getAmt);
+  const isFullBuy = getAmt >= fromTotal - 1e-12 && getAmt > 0;
 
-  $('buyPay').textContent=`${f(payAmt,8)} ${o.to_token}`;
-  $('buyRemaining').textContent=`${f(Math.max(0,fromTotal-getAmt),8)} ${o.from_token}`;
-  $('buyAvail').textContent=`${f(tb(o.to_token),8)} ${o.to_token}`;
+  $('buyPay').textContent = `${f(payAmt,8)} ${o.to_token}`;
+  $('buyRemaining').innerHTML = `<span style="color:${afterBuy <= 1e-9 ? '#39d98a' : '#fff'};font-weight:700">${f(afterBuy,8)} ${o.from_token}${afterBuy <= 1e-9 && getAmt > 0 ? ' ✅' : ''}</span>`;
+  $('buyAvail').textContent = `${f(tb(o.to_token),8)} ${o.to_token}`;
   
-  const btn=$('buyConfirmBtn');
-  if(getAmt<=0){btn.disabled=true;btn.textContent='✅ Выкупить';}
-  else if(getAmt>=fromTotal-1e-12){btn.disabled=false;btn.textContent='✅ Выкупить остаток';}
-  else{btn.disabled=false;btn.textContent='✅ Выкупить часть';}
+  const btn = $('buyConfirmBtn');
+  if(getAmt <= 0){
+    btn.disabled = true;
+    btn.textContent = '✅ Выкупить';
+    btn.style.background = '';
+  } else if(isFullBuy){
+    btn.disabled = false;
+    btn.textContent = `✅ ВЫКУПИТЬ ОСТАТОК (${f(fromTotal,4)} ${o.from_token})`;
+    btn.style.background = 'linear-gradient(135deg,#39d98a,#2ba86a)';
+  } else {
+    btn.disabled = false;
+    btn.textContent = '✅ Выкупить часть';
+    btn.style.background = '';
+  }
 }
 async function confirmBuyOrder(){
   if(!__BUY_ORDER||!UID) return;
@@ -1908,7 +1934,6 @@ async function confirmBuyOrder(){
   
   btn.disabled=true;$('buyStatus').textContent='⏳...';
   try{
-    // ВСЕГДА используем частичную функцию, она сама закроет ордер, если выкуплен остаток
     const{data,error}=await sb.rpc('accept_p2p_order_chat_partial',{
         p_order_id:String(o.id),
         p_taker_id:String(UID),
@@ -2025,7 +2050,6 @@ async function showRatingTab(tab){
   
   c.innerHTML = '<div class="item-card"><div class="item-desc">Загрузка...</div></div>';
   
-  // Показываем твой личный рейтинг наверху
   let html = `
     <div class="item-card" style="background:linear-gradient(135deg,#2a1e0c,#1a1206); border-color:var(--gold);">
       <div class="item-header"><b>⭐ Твой рейтинг</b></div>
@@ -2044,7 +2068,6 @@ async function showRatingTab(tab){
     }
   } catch(e) {}
 
-  // Если RPC не сработал, берем напрямую из базы
   if(!list.length) {
     try {
       if(tab === 'refs') {
@@ -2129,7 +2152,6 @@ async function renderAdsTab(c){
   try{const{data}=await sb.from('telepat_ad_settings').select('reward_per_view,daily_limit').eq('id',1).maybeSingle();if(data) settings=data;}catch(e){}
    let todayCount=0;
   try {
-      // 🔥 Просим базу посчитать через безопасную функцию
       const { data: countData } = await sb.rpc('get_today_ad_count', { p_telegram_id: UID });
       todayCount = countData || 0;
   } catch(e) {
@@ -2173,7 +2195,6 @@ async function renderAdsTab(c){
   await loadAvailableTasks();
 }
 
-/* ═══════ ЗАДАНИЯ (ОБЪЕДИНЕННЫЕ) ═══════ */
 const TL_TYPES={subscribe_channel:'📢 Канал',subscribe_bot:'🤖 Бот',video:'📺 Видео',click:'🔗 Ссылка'};
 function mapOldType(t){
   if(t==='subscribe_channel') return 'channel';
@@ -2226,10 +2247,7 @@ async function loadAvailableTasks(){
       .limit(100);
       
     if(!error && data){
-      // 1. Собираем ID всех рекламодателей
       const advertiserIds = [...new Set(data.map(c => c.advertiser_telegram_id).filter(Boolean))];
-      
-      // 2. Запрашиваем их балансы TUSD
       let advertiserBalances = {};
       if (advertiserIds.length > 0) {
         const { data: users } = await sb.from('users').select('telegram_id, tusd_balance').in('telegram_id', advertiserIds);
@@ -2238,7 +2256,6 @@ async function loadAvailableTasks(){
         }
       }
 
-         // 3. Добавляем в общий список все активные кампании
     data.forEach(c=>{
         const id='camp:'+c.id;
         const done=myDoneCampaigns.includes(String(c.id));
@@ -2414,24 +2431,18 @@ function playInlineVideo(t, statusEl, taskId){
   video.muted = false; video.playsInline = true;
   video.onerror = () => { adStatus.textContent='❌ Ошибка видео'; adStatus.style.color='#f6465d'; };
 
-    // Показываем кнопку перехода по ссылке
   const linkBtn = $('adLinkBtn');
   if (linkBtn) {
       if (t.url) {
           linkBtn.style.display = 'block';
                     linkBtn.onclick = () => {
               let finalUrl = (t.url || '').trim();
-              
-              // Убираем протокол для проверки
               let checkUrl = finalUrl.replace(/^https?:\/\//, '');
-              
-              // Если это имя бота (без точек и слэшей), исправляем на правильную ссылку
               if (!checkUrl.includes('.') && !checkUrl.startsWith('t.me/')) {
                   finalUrl = 'https://t.me/' + checkUrl.replace(/\/$/, '');
               } else if (!finalUrl.startsWith('http')) {
                   finalUrl = 'https://' + finalUrl;
               }
-
               if (window.Telegram?.WebApp?.openLink) window.Telegram.WebApp.openLink(finalUrl);
               else window.open(finalUrl, '_blank');
           };
@@ -2583,6 +2594,7 @@ function renderAdmin(){
   loadAdminRevenue();loadAdminAccounts();loadAdminWalletFlags();loadAdminWithdrawals();loadAdminTokensForWallet();loadAdminReceiveWallets();loadAdminDeposits();
   loadAdminRefStats();loadAdminOrphans();loadAdminRefLots();
   loadAdminAuctions();
+  loadBgSettingsToAdmin(); // ✅ Загружаем текущий фон в админку
 }
 
 async function loadAdminAccounts(){
@@ -2654,20 +2666,15 @@ async function saveReceiveWallet(){
 }
 async function deleteReceiveWallet(token){if(!confirm('Удалить?')) return;const{data,error}=await sb.rpc('admin_delete_receive_wallet',{p_token:token});if(error||!data||data.ok===false){msg('Ошибка','error');return;}msg('🗑','success');loadAdminReceiveWallets();}
 
-  
 async function doApproveDep(id){
   if(!confirm('Зачислить?')) return;
-  
   const {data, error} = await sb.rpc('admin_approve_deposit', {p_id: id, p_comment: 'OK'});
-  
   if(error || !data || data.ok === false){
-    // Теперь мы выводим конкретную причину ошибки
     msg('Ошибка: ' + (error?.message || data?.error || 'Неизвестно'), 'error');
     return;
   }
-  
   msg('✅ Зачислено', 'success');
-  loadAdminDeposits(); // Обновляем список заявок
+  loadAdminDeposits();
 }
 async function doRejectDep(id){const reason=prompt('Причина:')||'Отклонено';const{data,error}=await sb.rpc('admin_reject_deposit',{p_id:id,p_reason:reason});if(error||!data||data.ok===false){msg('Ошибка','error');return;}msg('❌','success');loadAdminDeposits();}
 
@@ -2755,15 +2762,12 @@ async function createAdminItem(){
 }
 async function loadAdminRevenue(){
   try {
-    // 1. Показываем общую статистику покупок
     const{data}=await sb.rpc('admin_get_purchase_history',{p_limit:20});
     if(data&&data.ok){
       if($('adPurchasesCount')) $('adPurchasesCount').textContent=data.purchases_count||0;
       const hist=$('adPurchaseHistory');
       if(hist) hist.innerHTML=(data.items||[]).slice(0,10).map(p=>`<div class="history-row"><span>${esc(p.item||'')}</span><b>+$${f(p.amount,2)}</b></div>`).join('')||'<div class="info" style="text-align:center">Пусто</div>';
     }
-
-    // 2. Показываем баланс магазина (сколько доступно для перевода)
     const {data: u} = await sb.from('users').select('shop_balance').eq('telegram_id', AID).maybeSingle();
     if ($('adRevenue')) {
         $('adRevenue').textContent = '$' + f(u?.shop_balance || 0, 2);
@@ -2848,7 +2852,7 @@ async function adminTransferReferrals(){
 async function loadAdminSettings(){
   const box=$('adminSettingsList');if(!box) return;box.innerHTML='Загрузка...';
   try{const{data}=await sb.from('telepat_settings').select('*').order('setting_key');if(!data||!data.length){box.innerHTML='Пусто';return;}
-    const skip=['banner_height','banner_radius','banner_title_size','banner_count','ui_bg','ui_bg_radial','ui_accent','ui_card','wallet_enabled','wallet_withdraw_enabled','wallet_deposit_enabled','shop_revenue_reset_at'];
+    const skip=['banner_height','banner_radius','banner_title_size','banner_count','ui_bg','ui_bg_radial','ui_accent','ui_card','wallet_enabled','wallet_withdraw_enabled','wallet_deposit_enabled','shop_revenue_reset_at','app_bg_image'];
     const items=data.filter(r=>!skip.includes(r.setting_key));
     box.innerHTML=items.map(r=>{const label=r.description||r.setting_key;const isPct=r.setting_key.includes('percent')||r.setting_key.includes('pct')||r.setting_key.includes('commission');const suf=isPct?' %':'';
       return `<div class="pc"><div class="pt" style="font-size:13px">${esc(label)}</div><div class="info" style="font-size:10px">${esc(r.setting_key)}</div><div style="display:flex;gap:8px;margin-top:8px"><input type="number" id="set_${esc(r.setting_key)}" value="${esc(r.setting_value)}" step="any" style="flex:1;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px"><span style="align-self:center;color:var(--gold);font-weight:700;font-size:12px">${suf}</span><button class="admin-btn sm gold" onclick="saveAdminSetting('${esc(r.setting_key)}')">💾</button></div></div>`;}).join('');
@@ -3073,9 +3077,113 @@ function applyUiColors(colors){
   root.style.setProperty('--bg',colors.ui_bg);
   root.style.setProperty('--bg-card',colors.ui_card);
   root.style.setProperty('--gold',colors.ui_accent);
-  document.body.style.background=`radial-gradient(circle at 50% -10%,${colors.ui_bg_radial} 0,${colors.ui_bg} 42%),${colors.ui_bg}`;
+  applyBgLayer(colors);
 }
 async function loadUiSettingsPublic(){try{const{data}=await sb.rpc('get_ui_settings');applyUiColors(Object.assign({},UI_DEFAULTS,data||{}));}catch(e){}}
+
+/* ═══════ 🖼️ ФОН ПРИЛОЖЕНИЯ ═══════ */
+function applyBgLayer(colors){
+  const baseGradient = `radial-gradient(circle at 50% -10%,${colors.ui_bg_radial} 0,${colors.ui_bg} 42%),${colors.ui_bg}`;
+  if(CURRENT_BG_URL){
+    document.body.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.55)), url('${CURRENT_BG_URL}')`;
+    document.body.style.backgroundSize = 'cover';
+    document.body.style.backgroundAttachment = 'fixed';
+    document.body.style.backgroundPosition = 'center center';
+    document.body.style.backgroundRepeat = 'no-repeat';
+    document.body.style.backgroundColor = colors.ui_bg;
+  } else {
+    document.body.style.backgroundImage = '';
+    document.body.style.backgroundSize = '';
+    document.body.style.backgroundAttachment = '';
+    document.body.style.backgroundPosition = '';
+    document.body.style.backgroundRepeat = '';
+    document.body.style.background = baseGradient;
+  }
+}
+async function loadAppBgImage(){
+  try{
+    const{data}=await sb.from('telepat_settings').select('setting_value').eq('setting_key','app_bg_image').maybeSingle();
+    if(data && data.setting_value){ CURRENT_BG_URL = data.setting_value; }
+    else { CURRENT_BG_URL = ''; }
+    // Перерисуем с текущими цветами
+    const{data:ui}=await sb.rpc('get_ui_settings');
+    applyUiColors(Object.assign({},UI_DEFAULTS,ui||{}));
+  }catch(e){ console.warn('bg load',e); }
+}
+async function saveAppBgImage(url){
+  const{data,error}=await sb.rpc('admin_set_app_setting',{p_key:'app_bg_image',p_value:String(url||'')});
+  return !error && (!data || data.ok !== false);
+}
+function loadBgSettingsToAdmin(){
+  if($('ui-bg-image')) $('ui-bg-image').value = CURRENT_BG_URL || '';
+  if($('uiBgPreview')){
+    $('uiBgPreview').innerHTML = CURRENT_BG_URL
+      ? `<div style="position:relative"><img src="${esc(CURRENT_BG_URL)}" style="width:100%;border-radius:10px;max-height:180px;object-fit:cover;border:1px solid #2d3a4c"><div style="position:absolute;top:8px;right:8px;background:#000a;color:#39d98a;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700">✅ Активен</div></div>`
+      : '<div class="info" style="text-align:center;padding:12px;background:#0d1520;border-radius:10px;border:1px dashed #2d3a4c">Фон не установлен</div>';
+  }
+  if($('bgSettingsStatus')) $('bgSettingsStatus').textContent='';
+}
+async function uploadBgImage(){
+  const fileInput = $('ui-bg-image-file');
+  if(!fileInput || !fileInput.files || !fileInput.files[0]){
+    msg('Выберите файл','error'); return;
+  }
+  const file = fileInput.files[0];
+  if(!file.type.startsWith('image/')){
+    msg('Только изображения','error'); return;
+  }
+  if(file.size > 10*1024*1024){
+    msg('Файл больше 10 МБ','error'); return;
+  }
+  const st = $('bgSettingsStatus');
+  if(st) st.textContent = 'Загрузка файла...';
+  
+  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+  const fileName = 'backgrounds/'+Date.now()+'_'+safeName;
+  
+  const{error:upErr}=await sb.storage.from('ads').upload(fileName, file, {contentType:file.type, upsert:false});
+  if(upErr){ if(st) st.textContent='Ошибка загрузки: '+upErr.message; return; }
+  
+  const{data:urlData}=sb.storage.from('ads').getPublicUrl(fileName);
+  const url = urlData.publicUrl;
+  
+  if($('ui-bg-image')) $('ui-bg-image').value = url;
+  if($('uiBgPreview')){
+    $('uiBgPreview').innerHTML = `<div style="position:relative"><img src="${esc(url)}" style="width:100%;border-radius:10px;max-height:180px;object-fit:cover;border:1px solid #2d3a4c"><div style="position:absolute;top:8px;right:8px;background:#000a;color:#f4cf70;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700">👀 Превью (не сохранён)</div></div>`;
+  }
+  if(st) st.textContent = '✅ Загружено. Нажмите «Сохранить»';
+  msg('✅ Файл загружен','success');
+}
+async function saveBgSettings(){
+  const url = ($('ui-bg-image')?.value || '').trim();
+  const st = $('bgSettingsStatus');
+  if(st) st.textContent = 'Сохранение...';
+  
+  const ok = await saveAppBgImage(url);
+  if(!ok){ if(st) st.textContent='Ошибка сохранения'; return; }
+  
+  CURRENT_BG_URL = url;
+  const{data:ui}=await sb.rpc('get_ui_settings');
+  applyUiColors(Object.assign({},UI_DEFAULTS,ui||{}));
+  
+  if(st) st.innerHTML = '<span style="color:#39d98a">✅ Фон сохранён</span>';
+  msg('✅ Фон сохранён','success');
+  loadBgSettingsToAdmin();
+}
+async function removeBgImage(){
+  if(!confirm('Удалить фон? Приложение вернётся к стандартному виду.')) return;
+  const st = $('bgSettingsStatus');
+  if(st) st.textContent = 'Удаление...';
+  const ok = await saveAppBgImage('');
+  if(!ok){ if(st) st.textContent='Ошибка'; return; }
+  CURRENT_BG_URL = '';
+  if($('ui-bg-image')) $('ui-bg-image').value = '';
+  const{data:ui}=await sb.rpc('get_ui_settings');
+  applyUiColors(Object.assign({},UI_DEFAULTS,ui||{}));
+  if(st) st.innerHTML = '<span style="color:#39d98a">✅ Фон удалён</span>';
+  msg('✅ Фон удалён','success');
+  loadBgSettingsToAdmin();
+}
 
 /* ═══════ WELCOME BONUS ═══════ */
 async function loadWelcomeBonusStatus(){
@@ -3100,12 +3208,9 @@ async function claimWelcomeBonus(){
 /* ═══════ РЕКЛАМА — ПРОСМОТР ═══════ */
 async function fetchNextAd(){
   try{
-    // Просто просим базу дать нам новое видео, которое мы еще не видели
     const{data,error}=await sb.rpc('get_active_ad',{p_telegram_id:UID});
-    
     if(!error && data){
       if(data.ok===false){
-        // Если база говорит, что лимит или видео кончились
         if(data.reason==='daily_limit'){return {__blocked:true, reason:'daily_limit', views_today:data.views_today, daily_limit:data.daily_limit};}
         if(data.reason==='no_ads'){return null;}
       }
@@ -3138,24 +3243,18 @@ async function watchAd(){
   timerEl.textContent=fmtAdTime(__AD_TIME_LEFT);
   video.pause();video.removeAttribute('src');video.load();
   if(ad.video_url){video.src=ad.video_url;video.muted=false;video.playsInline=true;video.onerror=()=>{statusEl.textContent='❌ Ошибка видео';statusEl.style.color='#f6465d';};try{await video.play();}catch(e){}}
-    // Показываем кнопку перехода по ссылке
   const linkBtn = $('adLinkBtn');
   if (linkBtn) {
-      if (ad.url) {  // <--- Обрати внимание, здесь ad.url, а не t.url!
+      if (ad.url) {
           linkBtn.style.display = 'block';
                            linkBtn.onclick = () => {
                 let finalUrl = (ad.url || '').trim();
-                
-                // Убираем протокол для проверки
                 let checkUrl = finalUrl.replace(/^https?:\/\//, '');
-                
-                // Если это имя бота (без точек и слэшей), исправляем на правильную ссылку
                 if (!checkUrl.includes('.') && !checkUrl.startsWith('t.me/')) {
                     finalUrl = 'https://t.me/' + checkUrl.replace(/\/$/, '');
                 } else if (!finalUrl.startsWith('http')) {
                     finalUrl = 'https://' + finalUrl;
                 }
-
                 if (window.Telegram?.WebApp?.openLink) window.Telegram.WebApp.openLink(finalUrl);
                 else window.open(finalUrl, '_blank');
             };
@@ -3186,13 +3285,11 @@ async function claimAdReward(){
   
   try{
     const{data,error}=await sb.rpc('credit_ad_reward',{p_telegram_id:UID,p_source:'video',p_zone_id:String(campId)});
-    
     if(error){
         msg('❌ '+(error.message||'Ошибка'),'error');
         if(btn){btn.disabled=false;btn.textContent='🎁 ПОЛУЧИТЬ';}
         return;
     }
-    
     if(!data||data.ok===false){
       const err=data?.error||'unknown';
       if(err.includes('лимит')) msg(`📊 ${err}`,'info');
@@ -3200,28 +3297,19 @@ async function claimAdReward(){
       if(btn){btn.disabled=false;btn.textContent='🎁 ПОЛУЧИТЬ';}
       return;
     }
-    
     const reward=Number(data.reward||0);
     const token=data.reward_token||'TUSD';
     const addedToStake=Number(data.accumulated_added||data.payout_tusd||0);
-    
     closeAdModal();
     showAdRewardPopup(reward, token, `📺 В СТЕЙКИНГ +${f(addedToStake,5)} TUSD`);
     msg(`✅ +${f(addedToStake,5)} TUSD в стейкинг`,'success');
-    
-    // 1. Обновляем балансы
     await refreshAll(); 
-    
-    // 2. Обновляем историю, если она открыта
     if ($('historyModal') && $('historyModal').classList.contains('show')) {
         HISTORY_OFFSET = 0;
         HISTORY_ITEMS = [];
         loadHistory();
     }
-    
-    // 3. Обновляем вкладку рекламы
     if(currentIncomeTab==='ads') showIncomeTab('ads'); 
-    
   }catch(e){
     msg('❌ '+e.message,'error');
     if(btn){btn.disabled=false;btn.textContent='🎁 ПОЛУЧИТЬ';}
@@ -3552,7 +3640,6 @@ async function loadHistory(){
 }
 
 /* ═══════ ВСПЛЫВАШКИ (MARKET EVENTS) ═══════ */
-// Внедряем стили для всплывашки
 document.head.insertAdjacentHTML('beforeend', `
 <style>
 .market-toast {
@@ -3580,22 +3667,18 @@ document.head.insertAdjacentHTML('beforeend', `
 </style>
 `);
 
-// Функция показа
 function showMarketToast(text) {
   const toast = document.createElement('div');
   toast.className = 'market-toast';
   toast.innerHTML = text;
   document.body.appendChild(toast);
-  
   setTimeout(() => toast.classList.add('show'), 100);
-  
   setTimeout(() => {
     toast.classList.remove('show');
     setTimeout(() => toast.remove(), 400);
   }, 5000);
 }
 
-// Слушаем базу
 function initMarketEvents() {
   sb.channel('market-popups')
     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'market_events' }, payload => {
@@ -3614,9 +3697,8 @@ async function refreshAll(){
   if(!$('view-rating').classList.contains('hidden')) renderRating();
   if(!$('view-chatbonus').classList.contains('hidden')) renderChatBonus();
 }
-    function initRealtimeUpdates() {
+function initRealtimeUpdates() {
   if(!UID) return;
-  
   sb.channel('user-live-updates')
     .on('postgres_changes', { 
         event: 'UPDATE', 
@@ -3624,13 +3706,8 @@ async function refreshAll(){
         table: 'users',
         filter: `telegram_id=eq.${UID}`
     }, payload => {
-        // Как только база обновляет твои данные (баланс, рейтинг, уровень)
         console.log('⚡ Прилетело обновление из базы:', payload.new);
-        
-        // Обновляем объект пользователя в памяти
         CU = { ...CU, ...payload.new };
-        
-        // Перерисовываем главный экран
         renderHome();
     })
     .subscribe();
@@ -3638,6 +3715,7 @@ async function refreshAll(){
 document.addEventListener('DOMContentLoaded',async()=>{
   await refreshJwt();
   await loadUiSettingsPublic();
+  await loadAppBgImage();     // ✅ Загружаем фон ДО отрисовки
   await loadBannerSettings();
   await loadUser();
   await loadWelcomeBonusStatus();
@@ -3652,13 +3730,14 @@ document.addEventListener('DOMContentLoaded',async()=>{
     setTimeout(() => {
         openDirectOrder(__START_ORDER_ID);
     }, 500);
-}
+  }
   setInterval(refreshJwt,30*60*1000);
   setInterval(loadRewardFunds,60*1000);
-      initMarketEvents();
-    initRealtimeUpdates();
+  initMarketEvents();
+  initRealtimeUpdates();
 });
-    function openTransferWalletModal() {
+
+function openTransferWalletModal() {
   openModal('🔄 Перевод средств', `
     <div class="item-card" style="background:#0d1520; margin-bottom:12px">
       <div class="info" style="font-size:11px">Переводите деньги между Торговым (основным) и Рекламным балансом без комиссии.</div>
@@ -3719,7 +3798,7 @@ async function doTransferWallet() {
     openWallet(); 
   }, 1000);
 }
-    /* --- ФУНКЦИИ ДЛЯ РЕДАКТИРОВАНИЯ РЕКЛАМЫ --- */
+
 async function editAdminAd(id) {
   const {data, error} = await sb.from('telepat_ad_campaigns').select('*').eq('id', id).single();
   if (error || !data) { msg('Ошибка загрузки', 'error'); return; }
@@ -3755,7 +3834,6 @@ async function saveAdminAdEdit(id) {
   const desc = $('edit_ad_desc').value.trim();
   let url = $('edit_ad_url').value.trim();
   
-  // Умная проверка ссылки (если забыли https://)
   if (url && !url.startsWith('http')) {
       if (url.startsWith('t.me/')) url = 'https://' + url;
       else url = 'https://t.me/' + url;
@@ -3764,7 +3842,6 @@ async function saveAdminAdEdit(id) {
   const reward = Number($('edit_ad_reward').value);
   const target = Number($('edit_ad_actions').value);
 
-  // Используем RPC функцию, чтобы обойти защиту базы
   const {data, error} = await sb.rpc('admin_update_campaign', {
     p_id: id, p_title: title, p_description: desc, p_url: url, p_reward: reward, p_target: target
   });
@@ -3779,21 +3856,20 @@ async function saveAdminAdEdit(id) {
   
   setTimeout(() => { closeModal(); adminAdLoad(); }, 1000);
 }
-    function goToBotChat() {
+
+function goToBotChat() {
   if (!__BUY_ORDER) return;
   const url = `https://t.me/TELEPATp2p_bot?start=order_${__BUY_ORDER.id}`;
-  
   if (window.Telegram?.WebApp?.openTelegramLink) {
     window.Telegram.WebApp.openTelegramLink(url);
   } else {
     window.open(url, '_blank');
   }
 }
-    async function openDirectOrder(orderId) {
+async function openDirectOrder(orderId) {
     goView('income');
-    await showIncomeTab('p2p'); // Запускаем загрузку списка в фоне
+    await showIncomeTab('p2p');
 
-    // 🔥 СРАЗУ ЗАПРАШИВАЕМ КОНКРЕТНЫЙ ОРДЕР ИЗ БАЗЫ
     const {data, error} = await sb.from('p2p_orders').select('*').eq('id', orderId).maybeSingle();
     
     if (error || !data) {
@@ -3805,11 +3881,9 @@ async function saveAdminAdEdit(id) {
         return;
     }
 
-    // Подтягиваем данные продавца
     const {data: u} = await sb.from('users').select('username,first_name,rank_name,rank_level').eq('telegram_id', data.creator_id).maybeSingle();
     const uu = u || {};
     
-    // Формируем объект для окна выкупа
     const o = Object.assign({}, data, {
         creator_username: uu.username,
         creator_first_name: uu.first_name,
@@ -3820,9 +3894,9 @@ async function saveAdminAdEdit(id) {
     });
     
     ORDER_CACHE[String(o.id)] = o;
-    openBuyModal(o.id); // Открываем окно выкупа
+    openBuyModal(o.id);
 }
-    async function withdrawShopRevenue(target) {
+async function withdrawShopRevenue(target) {
     const st = $('shop_withdraw_status');
     if (st) st.textContent = 'Перевод...';
     
@@ -3836,16 +3910,14 @@ async function saveAdminAdEdit(id) {
     if (st) st.innerHTML = `<span class="ok">✅ Переведено $${f(data.amount, 2)}</span>`;
     msg('✅ Деньги переведены', 'success');
     
-    // Обновляем экран
     await refreshAll();
     loadAdminRevenue();
     setTimeout(() => { if(st) st.textContent = ''; }, 3000);
 }
-    let currentStakeAction = { type: 'stake', max: 0 };
+let currentStakeAction = { type: 'stake', max: 0 };
 
 async function openTokenStakingDetails(symbol) {
     try {
-        // Запрашиваем данные из базы
         const {data, error} = await sb.rpc('get_staking_info', { p_telegram_id: UID, p_token_symbol: symbol });
         
         if (error) {
@@ -3869,7 +3941,6 @@ async function openTokenStakingDetails(symbol) {
 
         openModal(`💎 Стейкинг ${symbol}`, `
             <div style="display:flex; flex-direction:column; gap:12px;">
-                <!-- 1. В сокровищнице -->
                 <div class="item-card" style="background:#1e293b; border-color:#334155;">
                     <div style="display:flex; justify-content:space-between; align-items:center;">
                         <div>
@@ -3880,7 +3951,6 @@ async function openTokenStakingDetails(symbol) {
                     </div>
                 </div>
 
-                <!-- 2. В стейкинге -->
                 <div class="item-card" style="background:#1e293b; border-color:#334155;">
                     <div style="display:flex; justify-content:space-between; align-items:center;">
                         <div>
@@ -3891,14 +3961,12 @@ async function openTokenStakingDetails(symbol) {
                     </div>
                 </div>
 
-                <!-- 3. Аналитика -->
                 <div class="item-card" style="background:#0d1520; border-color:#2d3a4c; padding:14px;">
                     <div class="history-row"><span>Всего в стейкинге (Пул):</span><b>${totalStaked} ${symbol}</b></div>
                     <div class="history-row"><span>Ваша доля в пуле:</span><b>${share}%</b></div>
                     <div class="history-row"><span>Ставка доходности:</span><b>${rate}% в час</b></div>
                 </div>
 
-                <!-- Скрытый инпут для ввода суммы -->
                 <div id="stake_action_box" class="hidden">
                     <div class="item-card" style="border-color:var(--gold)">
                         <div id="stake_action_title" style="font-weight:bold; margin-bottom:8px;"></div>
@@ -3961,7 +4029,7 @@ async function submitStakeAction(symbol) {
     await refreshAll(); 
     setTimeout(() => openTokenStakingDetails(symbol), 1000); 
 }
-    let __SELL_ITEM_ID = null;
+let __SELL_ITEM_ID = null;
 
 function redirectToSell(itemId) {
     __SELL_ITEM_ID = itemId; 
