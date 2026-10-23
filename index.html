@@ -282,12 +282,15 @@ body[data-card-bg="1"] .prev{
   background-position:center !important;
 }
 
-/* ═══════ КОНСТРУКТОР: КНОПКА-КАРТИНКА ═══════ */
-.ui-image-btn{padding:4px!important;background:transparent!important;border:none!important;overflow:hidden;min-height:auto}
-.ui-image-btn img{width:100%;height:100%;object-fit:contain;display:block;pointer-events:none}
-.quick-btn.ui-image-btn{min-height:76px;display:flex;align-items:center;justify-content:center}
-.nav-btn.ui-image-btn{min-height:56px;display:flex;align-items:center;justify-content:center}
-.tab.ui-image-btn{min-height:56px;display:flex;align-items:center;justify-content:center}
+/* ═══════ КНОПКА-КАРТИНКА + ПОДПИСЬ ═══════ */
+.ui-image-btn{padding:4px!important;background:transparent!important;border:none!important;overflow:hidden;min-height:auto!important;display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.ui-image-btn img{max-width:100%;max-height:calc(100% - 14px);object-fit:contain;display:block;pointer-events:none;flex-shrink:1}
+.ui-image-btn .ui-image-label{font-size:9px;color:#fff;text-align:center;pointer-events:none;text-shadow:0 1px 2px #000,0 0 3px #000;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;font-weight:700}
+.quick-btn.ui-image-btn{min-height:76px;padding:6px!important}
+.nav-btn.ui-image-btn{min-height:56px;padding:4px!important}
+.nav-btn.ui-image-btn .ui-image-label{font-size:8px}
+.tab.ui-image-btn{min-height:56px;padding:4px!important}
+.tab.ui-image-btn .ui-image-label{font-size:8px}
 </style>
 </head>
 <body>
@@ -313,11 +316,11 @@ body[data-card-bg="1"] .prev{
 </div>
 </div>
 <div class="profile-icons-row">
-<button class="profile-icon-btn" data-ui-btn="profile.icon.profile" onclick="openTelegramProfile()"><span>👤</span><span class="pi-label">Профиль</span></button>
-<button class="profile-icon-btn" data-ui-btn="profile.icon.wallet" onclick="openWallet()"><span>💼</span><span class="pi-label">Кошелёк</span></button>
-<button class="profile-icon-btn" data-ui-btn="profile.icon.history" onclick="openHistory()"><span>📜</span><span class="pi-label">История</span></button>
-<button class="profile-icon-btn" data-ui-btn="profile.icon.help" onclick="showFAQ()"><span>❓</span><span class="pi-label">Помощь</span></button>
-<button class="profile-icon-btn" data-ui-btn="profile.icon.settings" onclick="openSettings()"><span>⚙️</span><span class="pi-label">Настройки</span></button>
+<button class="profile-icon-btn" data-ui-btn="profile.icon.profile" data-ui-default-emoji="👤" data-ui-default-label="Профиль" onclick="openTelegramProfile()"><span>👤</span><span class="pi-label">Профиль</span></button>
+<button class="profile-icon-btn" data-ui-btn="profile.icon.wallet" data-ui-default-emoji="💼" data-ui-default-label="Кошелёк" onclick="openWallet()"><span>💼</span><span class="pi-label">Кошелёк</span></button>
+<button class="profile-icon-btn" data-ui-btn="profile.icon.history" data-ui-default-emoji="📜" data-ui-default-label="История" onclick="openHistory()"><span>📜</span><span class="pi-label">История</span></button>
+<button class="profile-icon-btn" data-ui-btn="profile.icon.help" data-ui-default-emoji="❓" data-ui-default-label="Помощь" onclick="showFAQ()"><span>❓</span><span class="pi-label">Помощь</span></button>
+<button class="profile-icon-btn" data-ui-btn="profile.icon.settings" data-ui-default-emoji="⚙️" data-ui-default-label="Настройки" onclick="openSettings()"><span>⚙️</span><span class="pi-label">Настройки</span></button>
 </div>
 </div>
 <div class="stats-grid" data-ui-block="home.stats">
@@ -796,11 +799,10 @@ body[data-card-bg="1"] .prev{
 </div>
 </div>
 
-<!-- ✅ ДВА ФОНА -->
+<!-- ДВА ФОНА -->
 <div class="acc-item" id="acc-bg">
 <div class="acc-header" onclick="toggleAcc('acc-bg')"><span>🖼️ Фоны приложения</span><span class="acc-arrow">▶</span></div>
 <div class="acc-body">
-
 <div style="background:#0d1520;border:1px solid #2d3a4c;border-radius:14px;padding:14px;margin-bottom:14px">
 <div class="title" style="font-size:14px;margin-bottom:6px">🖼️ Первый фон — основной</div>
 <div class="info" style="font-size:11px;line-height:1.6;margin-bottom:10px">Ложится на весь экран — виден в зазорах между карточками.</div>
@@ -816,7 +818,6 @@ body[data-card-bg="1"] .prev{
 </div>
 <div id="bgSettingsStatus" class="info" style="margin-top:8px;text-align:center"></div>
 </div>
-
 <div style="background:#0d1520;border:1px solid #2d3a4c;border-radius:14px;padding:14px">
 <div class="title" style="font-size:14px;margin-bottom:6px">🎴 Второй фон — карточки и панели</div>
 <div class="info" style="font-size:11px;line-height:1.6;margin-bottom:10px">Ложится за все карточки: рыцарь, друзья, магазин, доход, статы, задания, топ, модалки. Сверху затемнение — кнопки и цифры читаются.</div>
@@ -832,11 +833,10 @@ body[data-card-bg="1"] .prev{
 </div>
 <div id="knightBgStatus" class="info" style="margin-top:8px;text-align:center"></div>
 </div>
-
 </div>
 </div>
 
-<!-- ✅ КОНСТРУКТОР UI -->
+<!-- КОНСТРУКТОР UI -->
 <div class="acc-item" id="acc-constructor">
 <div class="acc-header" onclick="toggleAcc('acc-constructor')"><span>🎨 Конструктор UI</span><span class="acc-arrow">▶</span></div>
 <div class="acc-body">
@@ -964,7 +964,7 @@ let CURRENT_BG_URL='';
 let CURRENT_KNIGHT_BG_URL='';
 const UI_DEFAULTS={ui_bg:'#0b1018',ui_bg_radial:'#26334a',ui_accent:'#f4cf70',ui_card:'#141c28'};
 
-/* ═══════ КОНСТРУКТОР UI — переменные ═══════ */
+/* КОНСТРУКТОР — переменные */
 let __UICONFIG = null;
 let __UIDraft = null;
 let __UICurrentScreen = 'home';
@@ -1107,39 +1107,78 @@ async function saveUiConfig(){
   }
   __UICONFIG = JSON.parse(JSON.stringify(__UIDraft));
   applyUiConfig(__UICONFIG);
+  // Перерисовываем все видимые экраны чтобы применить подписи/картинки
+  try{ renderHome(); renderBottomNav(); renderShopTabs(); renderIncomeTabs(); }catch(e){}
   msg('✅ Конфиг сохранён','success');
   return true;
 }
 
+/* ✅ ГЛАВНАЯ ФУНКЦИЯ — обновляет и картинки, и текст/эмодзи */
 function applyUiConfig(cfg){
   if(!cfg || !cfg.screens) return;
   Object.keys(cfg.screens).forEach(screenKey => {
     const s = cfg.screens[screenKey];
-    if(!s.blocks) return;
-    Object.keys(s.blocks).forEach(blockId => {
-      const b = s.blocks[blockId];
-      if(!b) return;
-      const el = document.querySelector(`[data-ui-block="${screenKey}.${blockId}"]`);
-      if(!el) return;
-      el.style.display = b.visible === false ? 'none' : '';
-      if(b.bg) el.style.background = b.bg;
-      if(b.bgImage) el.style.backgroundImage = `url('${b.bgImage}')`;
-      if(b.radius) el.style.borderRadius = b.radius;
-    });
+    if(!s) return;
+    
+    // Блоки
+    if(s.blocks){
+      Object.keys(s.blocks).forEach(blockId => {
+        const b = s.blocks[blockId];
+        if(!b) return;
+        const el = document.querySelector(`[data-ui-block="${screenKey}.${blockId}"]`);
+        if(!el) return;
+        el.style.display = b.visible === false ? 'none' : '';
+        if(b.bg) el.style.background = b.bg;
+        if(b.bgImage) el.style.backgroundImage = `url('${b.bgImage}')`;
+        if(b.radius) el.style.borderRadius = b.radius;
+      });
+    }
+    
+    // Кнопки — обновляем картинки / эмодзи / надписи
     if(s.buttons){
       Object.keys(s.buttons).forEach(btnId => {
         const b = s.buttons[btnId];
         if(!b) return;
         const el = document.querySelector(`[data-ui-btn="${btnId}"]`);
         if(!el) return;
+        
+        // Запоминаем дефолты из data-атрибутов
+        const defEmoji = el.getAttribute('data-ui-default-emoji') || '';
+        const defLabel = el.getAttribute('data-ui-default-label') || '';
+        
+        // Ищем иконку внутри кнопки чтобы понять какой класс используется
+        const iconEl = el.querySelector('.icon, .nav-icon, .tab-icon, .pi-label');
+        let iconClass = '';
+        if(iconEl){
+          if(iconEl.classList.contains('icon')) iconClass = 'icon';
+          else if(iconEl.classList.contains('nav-icon')) iconClass = 'nav-icon';
+          else if(iconEl.classList.contains('tab-icon')) iconClass = 'tab-icon';
+        }
+        
         if(b.image){
+          // КАРТИНКА + подпись под ней
           el.classList.add('ui-image-btn');
-          const label = b.label || '';
-          el.innerHTML = `<img src="${b.image}" alt="${esc(label)}">`;
+          const labelText = (b.label !== undefined && b.label !== '') ? b.label : '';
+          el.innerHTML = `<img src="${esc(b.image)}" alt="${esc(labelText)}">${labelText ? `<span class="ui-image-label">${esc(labelText)}</span>` : ''}`;
           el.style.background = 'transparent';
           el.style.border = 'none';
           el.style.padding = '4px';
+        } else {
+          // БЕЗ КАРТИНКИ — эмодзи + текст
+          el.classList.remove('ui-image-btn');
+          const finalEmoji = (b.emoji !== undefined && b.emoji !== '') ? b.emoji : defEmoji;
+          const finalLabel = (b.label !== undefined && b.label !== '') ? b.label : defLabel;
+          
+          // Специальный случай — profile-icon-btn (эмодзи в span + pi-label)
+          if(el.classList.contains('profile-icon-btn')){
+            el.innerHTML = `<span>${esc(finalEmoji)}</span><span class="pi-label">${esc(finalLabel)}</span>`;
+          } else if(iconClass){
+            el.innerHTML = `<span class="${iconClass}">${esc(finalEmoji)}</span> ${esc(finalLabel)}`;
+          } else {
+            el.textContent = `${finalEmoji} ${finalLabel}`;
+          }
         }
+        
         if(b.bg) el.style.background = b.bg;
         if(b.text) el.style.color = b.text;
         if(b.borderRadius) el.style.borderRadius = b.borderRadius;
@@ -1208,6 +1247,7 @@ function renderBlockCard(screenKey, blockId, idx, total){
   </div>`;
 }
 
+/* ✅ Обновлено: поля Эмодзи + Надпись рядом, поле картинки отдельно */
 function renderButtonCard(screenKey, btnId, btnInfo){
   const b = uiGetButtonConfig(__UIDraft, screenKey, btnId);
   const uid = `${screenKey}_${btnId.replace(/\./g,'_')}`;
@@ -1215,6 +1255,22 @@ function renderButtonCard(screenKey, btnId, btnInfo){
   <div class="pc">
     <div class="pt" style="font-size:13px">${btnInfo.emoji} ${esc(btnInfo.label)}</div>
     <div class="info" style="font-size:10px">${esc(btnId)}</div>
+    
+    <div style="display:grid;grid-template-columns:1fr 2fr;gap:6px;margin-top:8px">
+      <div>
+        <div class="info" style="font-size:10px">Эмодзи</div>
+        <input type="text" value="${esc(b.emoji||btnInfo.emoji)}" maxlength="4"
+               oninput="setButtonProp('${screenKey}','${btnId}','emoji',this.value)"
+               style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:6px;border-radius:6px;font-size:16px;text-align:center">
+      </div>
+      <div>
+        <div class="info" style="font-size:10px">Надпись</div>
+        <input type="text" value="${esc(b.label||btnInfo.label)}"
+               oninput="setButtonProp('${screenKey}','${btnId}','label',this.value)"
+               style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:6px;border-radius:6px;font-size:12px">
+      </div>
+    </div>
+    
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px">
       <div>
         <div class="info" style="font-size:10px">Фон</div>
@@ -1224,28 +1280,26 @@ function renderButtonCard(screenKey, btnId, btnInfo){
         </div>
       </div>
       <div>
-        <div class="info" style="font-size:10px">Текст</div>
+        <div class="info" style="font-size:10px">Цвет текста</div>
         <input type="color" value="${b.text||'#ffffff'}" oninput="setButtonProp('${screenKey}','${btnId}','text',this.value)" style="width:100%;height:32px;padding:2px">
       </div>
     </div>
+    
     <div style="margin-top:6px">
       <div class="info" style="font-size:10px">Размер</div>
       <div style="display:flex;gap:4px">
         ${UI_SIZES.map(s => `<button class="admin-btn sm ${b.size===s.key?'gold':'sec'}" style="flex:1" onclick="setButtonProp('${screenKey}','${btnId}','size','${s.key}')">${s.label}</button>`).join('')}
       </div>
     </div>
-    <div style="margin-top:6px">
-      <div class="info" style="font-size:10px">Картинка (заменит кнопку)</div>
+    
+    <div style="margin-top:8px;padding-top:8px;border-top:1px solid #2d3a4c">
+      <div class="info" style="font-size:10px;margin-bottom:4px">📷 Картинка (заменит кнопку, текст останется под ней)</div>
       <div style="display:flex;gap:4px">
         <input type="file" id="btn_img_${uid}" accept="image/*" style="flex:1;font-size:11px;padding:4px;color:#fff">
         <button class="admin-btn sm gold" onclick="uploadButtonImage('${screenKey}','${btnId}')">📤</button>
       </div>
       ${b.image ? `<div style="margin-top:4px;display:flex;align-items:center;gap:6px"><img src="${esc(b.image)}" style="width:40px;height:40px;object-fit:contain;border:1px solid #2d3a4c;border-radius:6px"><button class="admin-btn sm danger" onclick="setButtonProp('${screenKey}','${btnId}','image','')">🗑</button></div>` : ''}
       <input type="text" value="${esc(b.image||'')}" placeholder="или URL картинки" oninput="setButtonProp('${screenKey}','${btnId}','image',this.value)" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:6px;border-radius:6px;font-size:11px;margin-top:4px">
-    </div>
-    <div style="margin-top:6px">
-      <div class="info" style="font-size:10px">Своя надпись</div>
-      <input type="text" value="${esc(b.label||btnInfo.label)}" oninput="setButtonProp('${screenKey}','${btnId}','label',this.value)" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:6px;border-radius:6px;font-size:12px">
     </div>
   </div>`;
 }
@@ -1277,7 +1331,8 @@ function setButtonProp(screenKey, btnId, prop, value){
   const b = uiGetButtonConfig(__UIDraft, screenKey, btnId);
   b[prop] = value;
   applyUiConfig(__UIDraft);
-  if(prop === 'bg' || prop === 'image') renderConstructor();
+  // Перерисовываем только для картинки/фона чтобы превью обновилось
+  if(prop === 'image' || prop === 'bg') renderConstructor();
 }
 async function uploadButtonImage(screenKey, btnId){
   const uid = `${screenKey}_${btnId.replace(/\./g,'_')}`;
@@ -1444,12 +1499,12 @@ function renderShopTabs(){
     const active = currentShopTab === key;
     const isGold = (key==='referrals'||key==='auction');
     const cls = `tab ${active?'active':''} ${isGold?'tab-gold':''} ${c.image?'ui-image-btn':''}`;
+    const label = c.label || btns[btnId].label;
+    const emoji = c.emoji || btns[btnId].emoji;
     if(c.image){
-      return `<button class="${cls}" data-ui-btn="${btnId}" onclick="showShopTab('${key}')"><img src="${esc(c.image)}" alt="${esc(c.label||btns[btnId].label)}"></button>`;
+      return `<button class="${cls}" data-ui-btn="${btnId}" data-ui-default-emoji="${esc(btns[btnId].emoji)}" data-ui-default-label="${esc(btns[btnId].label)}" onclick="showShopTab('${key}')"><img src="${esc(c.image)}" alt="${esc(label)}">${label?`<span class="ui-image-label">${esc(label)}</span>`:''}</button>`;
     }
-    return `<button class="${cls}" data-ui-btn="${btnId}" onclick="showShopTab('${key}')">
-      <span class="tab-icon">${c.emoji||btns[btnId].emoji}</span>${esc(c.label||btns[btnId].label)}
-    </button>`;
+    return `<button class="${cls}" data-ui-btn="${btnId}" data-ui-default-emoji="${esc(btns[btnId].emoji)}" data-ui-default-label="${esc(btns[btnId].label)}" onclick="showShopTab('${key}')"><span class="tab-icon">${emoji}</span>${esc(label)}</button>`;
   }).join('');
   applyUiConfig(__UICONFIG);
 }
@@ -1574,12 +1629,12 @@ function renderQuickButtons(){
   const cfg = __UICONFIG?.screens?.home?.buttons || {};
   container.innerHTML = btnMap.map(b => {
     const c = cfg[b.id] || {};
-    if(c.image){
-      return `<button class="quick-btn ui-image-btn" data-ui-btn="${b.id}" onclick="${b.onclick}"><img src="${esc(c.image)}" alt="${esc(c.label||b.label)}"></button>`;
-    }
     const label = c.label || b.label;
     const emoji = c.emoji || b.emoji;
-    return `<button class="quick-btn" data-ui-btn="${b.id}" onclick="${b.onclick}"><span class="icon">${emoji}</span> ${esc(label)}</button>`;
+    if(c.image){
+      return `<button class="quick-btn ui-image-btn" data-ui-btn="${b.id}" data-ui-default-emoji="${esc(b.emoji)}" data-ui-default-label="${esc(b.label)}" onclick="${b.onclick}"><img src="${esc(c.image)}" alt="${esc(label)}">${label?`<span class="ui-image-label">${esc(label)}</span>`:''}</button>`;
+    }
+    return `<button class="quick-btn" data-ui-btn="${b.id}" data-ui-default-emoji="${esc(b.emoji)}" data-ui-default-label="${esc(b.label)}" onclick="${b.onclick}"><span class="icon">${emoji}</span> ${esc(label)}</button>`;
   }).join('');
   applyUiConfig(__UICONFIG);
 }
@@ -1598,10 +1653,13 @@ function renderBottomNav(){
   const cfg = __UICONFIG?.screens?.nav?.buttons || {};
   container.innerHTML = btnMap.map(b => {
     const c = cfg[b.id] || {};
+    const label = c.label || b.label;
+    const emoji = c.emoji || b.emoji;
+    const wideCls = b.wide ? 'nav-wide' : '';
     if(c.image){
-      return `<button class="nav-btn ${b.wide?'nav-wide':''} ui-image-btn" data-ui-btn="${b.id}" onclick="goView('${b.view}')"><img src="${esc(c.image)}" alt="${esc(c.label||b.label)}"></button>`;
+      return `<button class="nav-btn ${wideCls} ui-image-btn" data-ui-btn="${b.id}" data-ui-default-emoji="${esc(b.emoji)}" data-ui-default-label="${esc(b.label)}" onclick="goView('${b.view}')"><img src="${esc(c.image)}" alt="${esc(label)}">${label?`<span class="ui-image-label">${esc(label)}</span>`:''}</button>`;
     }
-    return `<button class="nav-btn ${b.wide?'nav-wide':''}" data-ui-btn="${b.id}" onclick="goView('${b.view}')"><span class="nav-icon">${c.emoji||b.emoji}</span> ${esc(c.label||b.label)}</button>`;
+    return `<button class="nav-btn ${wideCls}" data-ui-btn="${b.id}" data-ui-default-emoji="${esc(b.emoji)}" data-ui-default-label="${esc(b.label)}" onclick="goView('${b.view}')"><span class="nav-icon">${emoji}</span> ${esc(label)}</button>`;
   }).join('');
   applyUiConfig(__UICONFIG);
 }
@@ -1850,12 +1908,12 @@ function renderIncomeTabs(){
     const c = cfg[btnId] || {};
     const active = currentIncomeTab === key;
     const cls = `tab ${active?'active':''} ${c.image?'ui-image-btn':''}`;
+    const label = c.label || btns[btnId].label;
+    const emoji = c.emoji || btns[btnId].emoji;
     if(c.image){
-      return `<button class="${cls}" data-ui-btn="${btnId}" onclick="showIncomeTab('${key}')"><img src="${esc(c.image)}" alt="${esc(c.label||btns[btnId].label)}"></button>`;
+      return `<button class="${cls}" data-ui-btn="${btnId}" data-ui-default-emoji="${esc(btns[btnId].emoji)}" data-ui-default-label="${esc(btns[btnId].label)}" onclick="showIncomeTab('${key}')"><img src="${esc(c.image)}" alt="${esc(label)}">${label?`<span class="ui-image-label">${esc(label)}</span>`:''}</button>`;
     }
-    return `<button class="${cls}" data-ui-btn="${btnId}" onclick="showIncomeTab('${key}')">
-      <span class="tab-icon">${c.emoji||btns[btnId].emoji}</span>${esc(c.label||btns[btnId].label)}
-    </button>`;
+    return `<button class="${cls}" data-ui-btn="${btnId}" data-ui-default-emoji="${esc(btns[btnId].emoji)}" data-ui-default-label="${esc(btns[btnId].label)}" onclick="showIncomeTab('${key}')"><span class="tab-icon">${emoji}</span>${esc(label)}</button>`;
   }).join('');
   applyUiConfig(__UICONFIG);
 }
@@ -1971,9 +2029,7 @@ function renderP2PList(){
   const box=$('p2pList');if(!box) return;
   box.innerHTML='<div class="item-card"><div class="item-desc">Загрузка...</div></div>';
   const timeout = setTimeout(() => {
-    if(box.innerHTML.includes('Загрузка')) {
-      box.innerHTML = '<div class="item-card"><div class="item-desc" style="color:red;text-align:center">Сеть не отвечает.</div></div>';
-    }
+    if(box.innerHTML.includes('Загрузка')) { box.innerHTML = '<div class="item-card"><div class="item-desc" style="color:red;text-align:center">Сеть не отвечает.</div></div>'; }
   }, 5000);
   sb.from('p2p_orders').select('*').then(r => {
     clearTimeout(timeout); 
