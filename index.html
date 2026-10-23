@@ -2010,20 +2010,200 @@ async function switchP2PTab(t){
   if(t==='create'){openCreateOrder();return;}
   currentP2PTab=t;
   const tabsEls=document.querySelectorAll('#incomeContent .tabs .tab');
-  if(tabsEls.length>=2){tabsEls[0].classList.toggle('active',t==='all');tabsEls[1].classList.toggle('active',t==='mine');}
-  await renderP2PList();
+  if(tabsEls.length>=3){
+    tabsEls[0].classList.toggle('active',t==='all');
+    tabsEls[1].classList.toggle('active',t==='mine');
+    tabsEls[2].classList.toggle('active',t==='auto');
+  }
+  if(t==='auto'){
+    await renderAutoTab();
+  } else {
+    await renderP2PList();
+  }
 }
+
 async function renderP2PContent(container){
   const tabsHtml=`
     <div class="tabs" style="margin-bottom:15px;">
       <div class="tab ${currentP2PTab==='all'?'active':''}" onclick="switchP2PTab('all')">🌐 Все</div>
       <div class="tab ${currentP2PTab==='mine'?'active':''}" onclick="switchP2PTab('mine')">📋 Мои</div>
+      <div class="tab ${currentP2PTab==='auto'?'active':''}" onclick="switchP2PTab('auto')">🤖 Авто</div>
       <div class="tab" onclick="openCreateOrder()">➕ Создать</div>
     </div>
     <div id="p2pList">Загрузка...</div>
   `;
   container.innerHTML = tabsHtml;
-  await renderP2PList();
+  if(currentP2PTab==='auto'){
+    await renderAutoTab();
+  } else {
+    await renderP2PList();
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   ИНТЕРФЕЙС ВКЛАДКИ «АВТО»
+   ═══════════════════════════════════════════════════════════════════ */
+async function renderAutoTab() {
+  const box = $('p2pList');
+  if (!box) return;
+  
+  box.innerHTML = '<div class="item-card"><div class="item-desc">Загрузка...</div></div>';
+  
+  if (!AUTO_TRADE_STATE) {
+    await loadAutoTradeStatus();
+  }
+  
+  const st = AUTO_TRADE_STATE;
+  if (!st) {
+    box.innerHTML = '<div class="item-card"><div class="item-desc" style="color:red;text-align:center">Ошибка загрузки статуса</div></div>';
+    return;
+  }
+  
+  if (!st.has_certificate) {
+    box.innerHTML = `
+      <div class="item-card" style="border-color:var(--gold)">
+        <div class="item-header"><b>🔒 Автоторговля закрыта</b></div>
+        <div class="item-desc" style="margin-top:6px">Купите «Сертификат продавца» в магазине, чтобы открыть автоматическую торговлю, повышенные лимиты и арбитраж.</div>
+        <button class="admin-btn gold" style="margin-top:12px" onclick="goView('shop')">🏪 Открыть магазин</button>
+      </div>
+    `;
+    return;
+  }
+  
+  const limits = st.rank_limits || {};
+  const isEnabled = st.enabled;
+  
+  const tokensHtml = ALL_TOKENS.map(t => `<option value="${t.symbol}">${t.symbol}</option>`).join('');
+  
+  if (!isEnabled) {
+    // Экран настройки
+    box.innerHTML = `
+      <div class="item-card" style="border-color:var(--gold)">
+        <div class="item-header"><b>📜 Сертификат продавца</b></div>
+        <div class="info">👑 Ранг: <b>${limits.rank_name || '—'}</b></div>
+        <div class="info">📊 Сегодня: <b>${st.used_today_buy} / ${st.daily_limit_buy}</b> покупок</div>
+        <div class="info">📊 Сегодня: <b>${st.used_today_sell} / ${st.daily_limit_sell}</b> продаж</div>
+        <div class="info">💵 Макс/сделка: <b>$${limits.max_per_trade}</b></div>
+        <div class="info" style="color:var(--gold)">📈 Комиссия платформы: ${limits.commission_pct}% (только с прибыли)</div>
+      </div>
+
+      <div class="item-card">
+        <div class="item-header"><b>⚙️ Настройки</b></div>
+        
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <select id="at_from_token" style="flex:1;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">${tokensHtml.replace(`value="${st.from_token}"`, `value="${st.from_token}" selected`)}</select>
+          <span style="align-self:center;color:var(--muted)">за</span>
+          <select id="at_to_token" style="flex:1;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">${tokensHtml.replace(`value="${st.to_token}"`, `value="${st.to_token}" selected`)}</select>
+        </div>
+
+        <label style="display:block;font-size:11px;color:var(--muted);margin-top:12px">Сумма за 1 сделку (макс $${limits.max_per_trade})</label>
+        <input id="at_amount" type="number" value="${st.amount_per_trade || 1}" max="${limits.max_per_trade}" step="0.01" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+
+        <label style="display:block;font-size:11px;color:var(--muted);margin-top:12px">Режимы работы</label>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px">
+          <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:#fff">
+            <input type="checkbox" id="at_mode_create" ${st.mode_create?'checked':''}> 🏭 Выставляю (создаю свои ордера)
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:#fff">
+            <input type="checkbox" id="at_mode_hunter" ${st.mode_hunter?'checked':''}> 🎯 Охотник (выкупаю чужие)
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:#fff">
+            <input type="checkbox" id="at_mode_arbitrage" ${st.mode_arbitrage?'checked':''}> ⚡ Арбитраж (ловлю пары)
+          </label>
+        </div>
+
+        <label style="display:block;font-size:11px;color:var(--muted);margin-top:12px">Курс покупки (от рынка)</label>
+        <div style="display:flex;gap:8px;margin-top:4px">
+          <input id="at_buy_min" type="number" value="${st.buy_min_pct || -3}" style="flex:1;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+          <span style="align-self:center">до</span>
+          <input id="at_buy_max" type="number" value="${st.buy_max_pct || -1}" style="flex:1;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+          <span style="align-self:center">%</span>
+        </div>
+
+        <label style="display:block;font-size:11px;color:var(--muted);margin-top:12px">Курс продажи (от цены покупки)</label>
+        <div style="display:flex;gap:8px;margin-top:4px">
+          <input id="at_sell_min" type="number" value="${st.sell_min_pct || 2}" style="flex:1;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+          <span style="align-self:center">до</span>
+          <input id="at_sell_max" type="number" value="${st.sell_max_pct || 3}" style="flex:1;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+          <span style="align-self:center">%</span>
+        </div>
+
+        <label style="display:block;font-size:11px;color:var(--muted);margin-top:12px">Мин. маржа для арбитража</label>
+        <div style="display:flex;gap:8px;margin-top:4px">
+          <input id="at_min_margin" type="number" value="${st.min_margin_pct || 2}" style="flex:1;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+          <span style="align-self:center">%</span>
+        </div>
+
+        <label style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--red);margin-top:12px">
+          <input type="checkbox" id="at_allow_self" ${st.allow_self_trade?'checked':''}> ⚠️ Разрешить выкупать свои ордера
+        </label>
+
+        <div style="display:flex;gap:8px;margin-top:16px">
+          <button id="at_btn_save" class="admin-btn sec" style="flex:1" onclick="saveAutoTradeSettings()">💾 Сохранить</button>
+          <button id="at_btn_activate" class="admin-btn gold" style="flex:1" onclick="activateAutoTrade()">▶️ Запустить</button>
+        </div>
+      </div>
+    `;
+  } else {
+    // Экран активной торговли
+    box.innerHTML = `
+      <div class="item-card" style="border-color:var(--green)">
+        <div class="item-header"><b>🟢 Автоторговля активна</b></div>
+        <div class="info" style="margin-top:6px">Сделок сегодня: <b>${st.used_today_buy} / ${st.daily_limit_buy}</b> (покупки)</div>
+        <div class="info">Сделок сегодня: <b>${st.used_today_sell} / ${st.daily_limit_sell}</b> (продажи)</div>
+        <div class="info" style="margin-top:4px">Всего создано: <b>${st.total_created}</b> | Арбитражей: <b>${st.total_arbitrages}</b></div>
+        <div class="info" style="color:#39d98a;font-size:14px;margin-top:4px">Заработано: <b>$${f(st.total_profit, 2)}</b></div>
+        <button class="admin-btn danger" style="margin-top:12px;width:100%" onclick="deactivateAutoTrade()">⏸ Остановить</button>
+      </div>
+
+      <div class="item-card">
+        <div class="item-header"><b>⚡ Арбитраж — сканер</b></div>
+        <div class="info" style="margin-top:4px">Бот ищет пары с маржой ≥ ${st.min_margin_pct}%. Триггер в базе также проверяет новые ордера автоматически.</div>
+        <button class="admin-btn primary" style="margin-top:8px;width:100%" onclick="runArbitrageScan()">🔍 Сканировать рынок сейчас</button>
+        <div id="arbitrageResults" style="margin-top:10px"></div>
+      </div>
+
+      <div class="item-card">
+        <div class="item-header"><b>📋 Последние события</b></div>
+        <div style="display:flex;flex-direction:column;gap:6px;margin-top:8px">
+          ${(st.recent_log || []).map(l => `
+            <div style="font-size:11px;padding:6px;background:#0d1520;border-radius:6px;border-left:3px solid ${l.action==='error' ? '#f6465d' : '#39d98a'}">
+              <b>${l.action}</b> ${l.mode ? '('+l.mode+')' : ''} 
+              ${l.profit > 0 ? '<span style="color:#39d98a">+ $'+f(l.profit,3)+'</span>' : ''}
+              ${l.error_msg ? '<span style="color:#f6465d">'+l.error_msg+'</span>' : ''}
+              <br><span style="color:#8a94a6;font-size:10px">${new Date(l.created_at).toLocaleString('ru-RU')}</span>
+            </div>
+          `).join('') || '<div class="info">Пока нет событий</div>'}
+        </div>
+      </div>
+    `;
+  }
+}
+
+// Сканирование и вывод найденных пар
+async function runArbitrageScan() {
+  const box = $('arbitrageResults');
+  if (!box) return;
+  box.innerHTML = '<div class="info" style="text-align:center">⏳ Сканирую...</div>';
+  
+  const pairs = await scanArbitrageNow();
+  
+  if (!pairs || !pairs.length) {
+    box.innerHTML = `<div class="info" style="color:var(--muted);text-align:center;padding:10px">Пока нет пар с маржой ≥ ${AUTO_TRADE_STATE.min_margin_pct}%</div>`;
+    return;
+  }
+  
+  box.innerHTML = pairs.map(p => `
+    <div style="background:#0d1520;border:1px solid var(--line);border-radius:8px;padding:8px;margin-bottom:6px">
+      <div style="color:#fff;font-size:12px;font-weight:bold">Маржа: +${f(p.margin_pct, 2)}%</div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:4px">
+        <span>Купить: ${f(p.sell_price, 4)}</span>
+        <span>Продать: ${f(p.buy_price, 4)}</span>
+      </div>
+      <div style="font-size:11px;color:#f4cf70;margin-top:4px">Макс. кол-во: ${f(p.max_qty, 4)}</div>
+      <button class="admin-btn gold" style="width:100%;margin-top:6px;font-size:11px;padding:6px" onclick="executeArbitrage('${p.sell_id}', '${p.buy_id}', ${p.max_qty})">⚡ Выкупить пару</button>
+    </div>
+  `).join('');
 }
 function renderP2PList(){
   const box=$('p2pList');if(!box) return;
