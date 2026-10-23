@@ -3393,6 +3393,186 @@ function initRealtimeUpdates() {
   if(!UID) return;
   sb.channel('user-live-updates').on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'users', filter: `telegram_id=eq.${UID}` }, payload => {CU = { ...CU, ...payload.new };renderHome();}).subscribe();
 }
+  /* ═══════════════════════════════════════════════════════════════════
+   АВТОТОРГОВЛЯ И АРБИТРАЖ — ЛОГИКА
+   ═══════════════════════════════════════════════════════════════════ */
+
+let AUTO_TRADE_STATE = null;
+let ARBITRAGE_PAIRS = [];
+
+// Загрузка статуса с сервера
+async function loadAutoTradeStatus() {
+  try {
+    const { data, error } = await sb.rpc('auto_trade_get_status', { p_telegram_id: UID });
+    if (error || !data || data.ok === false) {
+      if (error) console.error('loadAutoTradeStatus:', error);
+      return null;
+    }
+    AUTO_TRADE_STATE = data;
+    return data;
+  } catch (e) {
+    console.error('auto trade status error:', e);
+    return null;
+  }
+}
+
+// Включение автоторговли
+async function activateAutoTrade() {
+  const fromToken = $('at_from_token')?.value || 'TG';
+  const toToken = $('at_to_token')?.value || 'TUSD';
+  const amount = n($('at_amount')?.value);
+
+  if (amount <= 0) { msg('⚠️ Введите корректную сумму', 'error'); return; }
+
+  const btn = $('at_btn_activate');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳...'; }
+
+  try {
+    const { data, error } = await sb.rpc('auto_trade_activate', {
+      p_telegram_id: UID,
+      p_from_token: fromToken,
+      p_to_token: toToken,
+      p_amount_per_trade: amount
+    });
+
+    if (error) {
+      msg(p2pErrFromResponse(null, error), 'error');
+      return;
+    }
+    if (data && data.ok === false) {
+      msg(p2pErrFromResponse(data, null), 'error');
+      return;
+    }
+
+    msg('🚀 Автоторговля запущена', 'success');
+    await loadAutoTradeStatus();
+    if (typeof renderAutoTab === 'function') renderAutoTab(); // вызовем рендер из Части 3
+  } catch (e) {
+    msg('⚠️ Ошибка соединения', 'error');
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '▶️ ЗАПУСТИТЬ'; }
+  }
+}
+
+// Выключение автоторговли
+async function deactivateAutoTrade() {
+  if (!confirm('Остановить автоторговлю?')) return;
+  try {
+    const { data } = await sb.rpc('auto_trade_deactivate', { p_telegram_id: UID });
+    msg('⏸ Автоторговля остановлена', 'info');
+    await loadAutoTradeStatus();
+    if (typeof renderAutoTab === 'function') renderAutoTab();
+  } catch (e) {
+    msg('⚠️ Ошибка', 'error');
+  }
+}
+
+// Сохранение настроек (диапазоны, маржа, галочки)
+async function saveAutoTradeSettings() {
+  const modeCreate = $('at_mode_create')?.checked;
+  const modeHunter = $('at_mode_hunter')?.checked;
+  const modeArb    = $('at_mode_arbitrage')?.checked;
+  const allowSelf  = $('at_allow_self')?.checked;
+  
+  const amount    = n($('at_amount')?.value);
+  const buyMin    = n($('at_buy_min')?.value);
+  const buyMax    = n($('at_buy_max')?.value);
+  const sellMin   = n($('at_sell_min')?.value);
+  const sellMax   = n($('at_sell_max')?.value);
+  const minMargin = n($('at_min_margin')?.value);
+
+  const btn = $('at_btn_save');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳...'; }
+
+  try {
+    const { data, error } = await sb.rpc('auto_trade_save_settings', {
+      p_telegram_id: UID,
+      p_mode_create: modeCreate,
+      p_mode_hunter: modeHunter,
+      p_mode_arbitrage: modeArb,
+      p_allow_self_trade: allowSelf,
+      p_amount_per_trade: amount,
+      p_buy_min_pct: buyMin,
+      p_buy_max_pct: buyMax,
+      p_sell_min_pct: sellMin,
+      p_sell_max_pct: sellMax,
+      p_min_margin_pct: minMargin
+    });
+
+    if (error || (data && data.ok === false)) {
+      msg('⚠️ ' + (data?.error || 'Ошибка сохранения'), 'error');
+      return;
+    }
+
+    msg('✅ Настройки сохранены', 'success');
+    await loadAutoTradeStatus();
+    if (typeof renderAutoTab === 'function') renderAutoTab();
+  } catch (e) {
+    msg('⚠️ Ошибка', 'error');
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '💾 СОХРАНИТЬ'; }
+  }
+}
+
+// Сканирование рынка на арбитраж
+async function scanArbitrageNow() {
+  if (!AUTO_TRADE_STATE) return [];
+  const from = AUTO_TRADE_STATE.from_token || 'TG';
+  const to = AUTO_TRADE_STATE.to_token || 'TUSD';
+  const minMargin = AUTO_TRADE_STATE.min_margin_pct || 2;
+
+  try {
+    const { data, error } = await sb.rpc('arbitrage_find_pairs', {
+      p_from_token: from,
+      p_to_token: to,
+      p_min_margin_pct: minMargin
+    });
+
+    if (error || !data || data.ok === false) {
+      ARBITRAGE_PAIRS = [];
+      return [];
+    }
+
+    ARBITRAGE_PAIRS = data.pairs || [];
+    return ARBITRAGE_PAIRS;
+  } catch (e) {
+    ARBITRAGE_PAIRS = [];
+    return [];
+  }
+}
+
+// Выполнить найденный арбитраж
+async function executeArbitrage(sellId, buyId, maxQty) {
+  if (!confirm('Выкупить эту арбитражную пару?')) return;
+  try {
+    const { data, error } = await sb.rpc('arbitrage_execute', {
+      p_telegram_id: UID,
+      p_sell_order_id: String(sellId),
+      p_buy_order_id: String(buyId),
+      p_max_qty: Number(maxQty)
+    });
+
+    if (error) { msg('⚠️ ' + error.message, 'error'); return; }
+    if (data && data.ok === false) {
+      msg('⚠️ ' + (data.error || 'Не удалось выполнить'), 'error');
+      return;
+    }
+
+    const profit = data.profit_net || 0;
+    const comm = data.commission || 0;
+    
+    // Красивое всплывающее окно
+    if (typeof showAdRewardPopup === 'function') {
+      showAdRewardPopup(profit, AUTO_TRADE_STATE?.to_token || 'TUSD', 
+        `⚡ АРБИТРАЖ ЗАКРЫТ\nМаржа: ${f(data.margin_pct,2)}%\nКомиссия 10%: ${f(comm,4)}`);
+    }
+    
+    await loadAutoTradeStatus();
+    if (typeof renderAutoTab === 'function') renderAutoTab();
+  } catch (e) {
+    msg('⚠️ Ошибка соединения', 'error');
+  }
+}
 document.addEventListener('DOMContentLoaded',async()=>{
   await refreshJwt();
   await loadUiSettingsPublic();
