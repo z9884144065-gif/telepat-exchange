@@ -1700,10 +1700,32 @@ async function activateAutoTrade() {
 }
 async function deactivateAutoTrade() { if (!confirm('Остановить автоторговлю?')) return; try { await sb.rpc('auto_trade_deactivate', { p_telegram_id: UID }); msg('⏸ Автоторговля остановлена', 'info'); await loadAutoTradeStatus(); if (typeof renderAutoTab === 'function') renderAutoTab(); } catch (e) { msg('⚠️ Ошибка', 'error'); } }
 async function saveAutoTradeSettings() {
-  const modeCreate = $('at_mode_create')?.checked; const modeHunter = $('at_mode_hunter')?.checked; const modeArb = $('at_mode_arbitrage')?.checked; const allowSelf = $('at_allow_self')?.checked;
-  const searchAll = $('at_search_all')?.checked; // ✅ Читаем новую галочку
-  const amount = n($('at_amount')?.value); const buyMin = n($('at_buy_min')?.value); const buyMax = n($('at_buy_max')?.value); const sellMin = n($('at_sell_min')?.value); const sellMax = n($('at_sell_max')?.value); const minMargin = n($('at_min_margin')?.value);
-  const btn = $('at_btn_save'); if (btn) { btn.disabled = true; btn.textContent = '⏳...'; }
+  const modeCreate = $('at_mode_create')?.checked; 
+  const modeHunter = $('at_mode_hunter')?.checked; 
+  const modeArb = $('at_mode_arbitrage')?.checked; 
+  const allowSelf = $('at_allow_self')?.checked;
+  const searchAll = $('at_search_all')?.checked;
+  
+  // 🛑 ЗАЩИТА: Получаем выбранные токены
+  const fromToken = $('at_from_token')?.value;
+  const toToken = $('at_to_token')?.value;
+  
+  // 🛑 Проверяем, чтобы они не были одинаковыми
+  if (fromToken === toToken) {
+    msg('❌ Ошибка: Токены "Отдаю" и "Получаю" не могут быть одинаковыми!', 'error');
+    return; // Останавливаем сохранение
+  }
+
+  const amount = n($('at_amount')?.value); 
+  const buyMin = n($('at_buy_min')?.value); 
+  const buyMax = n($('at_buy_max')?.value); 
+  const sellMin = n($('at_sell_min')?.value); 
+  const sellMax = n($('at_sell_max')?.value); 
+  const minMargin = n($('at_min_margin')?.value);
+  
+  const btn = $('at_btn_save'); 
+  if (btn) { btn.disabled = true; btn.textContent = '⏳...'; }
+  
   try {
     const { data, error } = await sb.rpc('auto_trade_save_settings', { 
       p_telegram_id: UID, 
@@ -1719,9 +1741,21 @@ async function saveAutoTradeSettings() {
       p_sell_max_pct: sellMax, 
       p_min_margin_pct: minMargin 
     });
-    if (error || (data && data.ok === false)) { msg('⚠️ ' + (data?.error || 'Ошибка сохранения'), 'error'); return; }
-    msg('✅ Настройки сохранены', 'success'); await loadAutoTradeStatus(); if (typeof renderAutoTab === 'function') renderAutoTab();
-  } catch (e) { msg('⚠️ Ошибка', 'error'); } finally { if (btn) { btn.disabled = false; btn.textContent = '💾 СОХРАНИТЬ'; } }
+    
+    if (error || (data && data.ok === false)) { 
+      msg('⚠️ ' + (data?.error || 'Ошибка сохранения'), 'error'); 
+      return; 
+    }
+    
+    msg('✅ Настройки сохранены', 'success'); 
+    await loadAutoTradeStatus(); 
+    if (typeof renderAutoTab === 'function') renderAutoTab();
+    
+  } catch (e) { 
+    msg('⚠️ Ошибка', 'error'); 
+  } finally { 
+    if (btn) { btn.disabled = false; btn.textContent = '💾 СОХРАНИТЬ'; } 
+  }
 }
 async function scanArbitrageNow() {
   if (!AUTO_TRADE_STATE) return []; const from = AUTO_TRADE_STATE.from_token || 'TG'; const to = AUTO_TRADE_STATE.to_token || 'TUSD'; const minMargin = AUTO_TRADE_STATE.min_margin_pct || 2;
