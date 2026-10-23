@@ -851,7 +851,37 @@ body[data-card-bg="1"] .prev{
 <div id="uiConfigStatus" class="info" style="margin-top:6px;text-align:center"></div>
 </div>
 </div>
+<!-- ✅ АВТОТОРГОВЛЯ -->
+<div class="acc-item" id="acc-autotrade">
+<div class="acc-header" onclick="toggleAcc('acc-autotrade')"><span>🤖 Автоторговля и Арбитраж</span><span class="acc-arrow">▶</span></div>
+<div class="acc-body">
+  
+  <!-- Статистика -->
+  <div class="sgrid" id="at_admin_stats" style="margin-bottom:12px">
+    <div class="st"><b id="at_stat_active">0</b><span>Активных</span></div>
+    <div class="st"><b id="at_stat_arbitrages">0</b><span>Арбитражей сегодня</span></div>
+    <div class="st"><b id="at_stat_commission" style="color:#39d98a">$0</b><span>Комиссия</span></div>
+    <div class="st"><b id="at_stat_profit" style="color:#f4cf70">$0</b><span>Прибыль юзеров</span></div>
+  </div>
 
+  <!-- Стоп-кран -->
+  <button class="admin-btn danger" style="width:100%; margin-bottom:16px;" onclick="adminStopAllAutoTrade()">🚨 ОСТАНОВИТЬ ВСЕХ (Стоп-кран)</button>
+
+  <!-- Таблица лимитов -->
+  <div class="title" style="font-size:12px;margin-bottom:8px">📊 Лимиты по рангам</div>
+  <div id="at_admin_ranks_list" style="max-height:300px; overflow-y:auto; margin-bottom:16px;">
+    <div class="info">Загрузка...</div>
+  </div>
+
+  <!-- Активные юзеры -->
+  <div class="title" style="font-size:12px;margin-bottom:8px">👥 Активные юзеры</div>
+  <div id="at_admin_active_users">
+    <div class="info">Загрузка...</div>
+  </div>
+
+  <button class="admin-btn sec" style="width:100%;margin-top:12px" onclick="loadAdminAutoTrade()">🔄 Обновить всё</button>
+</div>
+</div>
 </div>
 
 <div id="modal" class="modal-overlay" onclick="closeModal(event)"><div class="modal-box" id="modalBox" onclick="event.stopPropagation()"></div></div>
