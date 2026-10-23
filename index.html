@@ -132,7 +132,7 @@ h2{color:var(--gold);margin:6px 0 12px;font-size:20px}
 .modal-box{background:linear-gradient(145deg,#1d2939,#101721);border:1px solid #68562a;border-radius:20px;padding:18px;max-width:440px;width:100%;max-height:85vh;overflow-y:auto}
 .modal-box .modal-title{color:var(--gold);font-size:16px;font-weight:800;margin-bottom:12px}
 .hidden{display:none!important}
-.msg-toast{position:fixed;top:60px;left:12px;right:12px;padding:12px;border-radius:12px;background:#1e252f;border:1px solid var(--line);text-align:center;font-size:13px;z-index:2000;display:none}
+.msg-toast{position:fixed;top:60px;left:12px;right:12px;padding:12px;border-radius:12px;background:#1e252f;border:1px solid var(--line);text-align:center;font-size:13px;z-index:2000;display:none;white-space:pre-line;line-height:1.5}
 .msg-toast.show{display:block}
 .msg-toast.success{border-color:var(--green)}
 .msg-toast.error{border-color:var(--red)}
@@ -267,20 +267,9 @@ body[data-card-bg="1"] .bottom-nav{
   background-position:center center !important;
   background-repeat:no-repeat !important;
 }
-body[data-card-bg="1"] .tab.active{
-  background-image:linear-gradient(135deg,rgba(47,128,237,0.88),rgba(79,140,255,0.92)),var(--card-bg-image) !important;
-}
-body[data-card-bg="1"] .tab.tab-gold,
-body[data-card-bg="1"] .qb.gold{
-  background-image:linear-gradient(135deg,rgba(245,212,119,0.92),rgba(201,150,41,0.95)),var(--card-bg-image) !important;
-}
-body[data-card-bg="1"] .rank-badge,
-body[data-card-bg="1"] .slot,
-body[data-card-bg="1"] .prev{
-  background-image:linear-gradient(135deg,rgba(5,10,18,0.65),rgba(5,10,18,0.8)),var(--card-bg-image) !important;
-  background-size:cover !important;
-  background-position:center !important;
-}
+body[data-card-bg="1"] .tab.active{background-image:linear-gradient(135deg,rgba(47,128,237,0.88),rgba(79,140,255,0.92)),var(--card-bg-image) !important}
+body[data-card-bg="1"] .tab.tab-gold,body[data-card-bg="1"] .qb.gold{background-image:linear-gradient(135deg,rgba(245,212,119,0.92),rgba(201,150,41,0.95)),var(--card-bg-image) !important}
+body[data-card-bg="1"] .rank-badge,body[data-card-bg="1"] .slot,body[data-card-bg="1"] .prev{background-image:linear-gradient(135deg,rgba(5,10,18,0.65),rgba(5,10,18,0.8)),var(--card-bg-image) !important;background-size:cover !important;background-position:center !important}
 
 /* ═══════ КНОПКА-КАРТИНКА + ПОДПИСЬ ═══════ */
 .ui-image-btn{padding:4px!important;background:transparent!important;border:none!important;overflow:hidden;min-height:auto!important;display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:2px}
@@ -851,6 +840,7 @@ body[data-card-bg="1"] .prev{
 <div id="uiConfigStatus" class="info" style="margin-top:6px;text-align:center"></div>
 </div>
 </div>
+
 <!-- ✅ АВТОТОРГОВЛЯ -->
 <div class="acc-item" id="acc-autotrade">
 <div class="acc-header" onclick="toggleAcc('acc-autotrade')"><span>🤖 Автоторговля и Арбитраж</span><span class="acc-arrow">▶</span></div>
@@ -992,6 +982,8 @@ let __TASK_TIMERS={};
 let __SELL_ITEM_ID = null;
 let CURRENT_BG_URL='';
 let CURRENT_KNIGHT_BG_URL='';
+let AUTO_TRADE_STATE = null;
+let ARBITRAGE_PAIRS = [];
 const UI_DEFAULTS={ui_bg:'#0b1018',ui_bg_radial:'#26334a',ui_accent:'#f4cf70',ui_card:'#141c28'};
 
 /* КОНСТРУКТОР — переменные */
@@ -1097,6 +1089,41 @@ function priceOf(sym){
 function fmtAdTime(s){s=Math.max(0,Math.floor(s));const m=Math.floor(s/60),sec=s%60;return m+':'+String(sec).padStart(2,'0');}
 function fmtAucTime(s){s=Math.max(0,Math.floor(s));if(s<60) return s+' сек';if(s<3600) return Math.floor(s/60)+' мин';if(s<86400) return Math.floor(s/3600)+' ч '+Math.floor((s%3600)/60)+' м';return Math.floor(s/86400)+' д '+Math.floor((s%86400)/3600)+' ч';}
 
+/* ═══════ ПЕРЕВОДЧИК ОШИБОК P2P ═══════ */
+function p2pErrText(code, opts){
+  opts = opts || {};
+  const token = opts.token || '';
+  const need = Number(opts.need) || 0;
+  const have = Number(opts.have) || 0;
+  const tkn = token ? ' ' + token : '';
+  const c = String(code || '').toLowerCase();
+  const amounts = (need > 0) ? `\nНужно: ${f(need, 4)}${tkn}${have >= 0 ? `\nУ вас: ${f(have, 4)}${tkn}` : ''}` : '';
+  
+  if(/insufficient[_ ]?(balance|funds)|not[_ ]enough|low[_ ]balance|no[_ ]balance/.test(c)) return `💰 Недостаточно средств${amounts}`;
+  if(/min[_ ]?amount|below[_ ]?min|amount[_ ]?too[_ ]?small|min_limit/.test(c)) return `📉 Слишком маленькая сумма${need > 0 ? `. Минимум: ${f(need,4)}${tkn}` : ''}`;
+  if(/max[_ ]?amount|amount[_ ]?too[_ ]?big|max_limit/.test(c)) return `📈 Слишком большая сумма${need > 0 ? `. Максимум: ${f(need,4)}${tkn}` : ''}`;
+  if(/daily[_ ]?limit|trades[_ ]?today|too[_ ]?many[_ ]?trades|limit[_ ]?reached/.test(c)) return `📊 Достигнут лимит сделок на сегодня`;
+  if(/self[_ ]?trade|same[_ ]?user|cannot[_ ]?trade[_ ]?self/.test(c)) return `🚫 Нельзя торговать с самим собой`;
+  if(/order[_ ]?not[_ ]?found|not[_ ]?found/.test(c)) return `❓ Ордер не найден (уже выкуплен или отменён)`;
+  if(/order[_ ]?closed|order[_ ]?cancelled|already[_ ]?closed/.test(c)) return `❌ Ордер уже закрыт`;
+  if(/banned|frozen|blocked/.test(c)) return `🔒 Аккаунт заблокирован`;
+  if(/token[_ ]?inactive|token[_ ]?disabled/.test(c)) return `⚠️ Этот токен временно недоступен`;
+  if(/price[_ ]?too[_ ]?far|deviation[_ ]?too[_ ]?high|rate[_ ]?too[_ ]?far/.test(c)) return `📊 Курс слишком сильно отклоняется от рынка`;
+  if(/invalid[_ ]?amount|amount[_ ]?invalid|bad[_ ]?amount/.test(c)) return `⚠️ Некорректная сумма`;
+  if(!c) return `⚠️ Не удалось выполнить операцию`;
+  if(/^[a-zа-яё][a-zа-яё0-9 ._\-!?]{10,}/i.test(code) && !/_/.test(code)) return `⚠️ ${code}`;
+  return `⚠️ Ошибка (код: ${code})`;
+}
+function p2pErrFromResponse(data, error, fallbackNeed, fallbackHave, fallbackToken){
+  const errMsg = error?.message || '';
+  const d = data || {};
+  const code = d.error || d.code || d.message || errMsg || '';
+  const need = Number(d.need ?? d.required ?? d.min_amount ?? fallbackNeed) || 0;
+  const have = Number(d.have ?? d.balance ?? d.available ?? fallbackHave) || 0;
+  const token = d.token || d.token_symbol || fallbackToken || '';
+  return p2pErrText(code, { token, need, have });
+}
+
 /* ═══════ КОНСТРУКТОР UI — функции ═══════ */
 function uiGetDefaults(){ return { version:1, screens:{} }; }
 function uiGetScreenConfig(cfg, screenKey){
@@ -1117,66 +1144,41 @@ function uiGetButtonConfig(cfg, screenKey, btnId){
   if(!s.buttons[btnId]) s.buttons[btnId] = {};
   return s.buttons[btnId];
 }
-
 async function loadUiConfig(){
-  try{
-    const {data, error} = await sb.rpc('get_ui_config');
-    if(!error && data) __UICONFIG = data;
-    else __UICONFIG = uiGetDefaults();
-  }catch(e){ __UICONFIG = uiGetDefaults(); }
+  try{const {data, error} = await sb.rpc('get_ui_config'); if(!error && data) __UICONFIG = data; else __UICONFIG = uiGetDefaults();}catch(e){ __UICONFIG = uiGetDefaults(); }
   applyUiConfig(__UICONFIG);
   return __UICONFIG;
 }
-
 async function saveUiConfig(){
   if(!__UIDraft){ msg('Нет изменений','info'); return; }
   const {data, error} = await sb.rpc('admin_set_ui_config', { p_config: __UIDraft });
-  if(error || !data || data.ok === false){
-    msg('Ошибка сохранения: ' + (error?.message || data?.error || 'unknown'), 'error');
-    return false;
-  }
+  if(error || !data || data.ok === false){ msg('Ошибка сохранения: ' + (error?.message || data?.error || 'unknown'), 'error'); return false; }
   __UICONFIG = JSON.parse(JSON.stringify(__UIDraft));
   applyUiConfig(__UICONFIG);
-  // Перерисовываем все видимые экраны чтобы применить подписи/картинки
   try{ renderHome(); renderBottomNav(); renderShopTabs(); renderIncomeTabs(); }catch(e){}
   msg('✅ Конфиг сохранён','success');
   return true;
 }
-
-/* ✅ ГЛАВНАЯ ФУНКЦИЯ — обновляет и картинки, и текст/эмодзи */
 function applyUiConfig(cfg){
   if(!cfg || !cfg.screens) return;
   Object.keys(cfg.screens).forEach(screenKey => {
     const s = cfg.screens[screenKey];
     if(!s) return;
-    
-    // Блоки
-    if(s.blocks){
-      Object.keys(s.blocks).forEach(blockId => {
-        const b = s.blocks[blockId];
-        if(!b) return;
+    if(s.blocks){ Object.keys(s.blocks).forEach(blockId => {
+        const b = s.blocks[blockId]; if(!b) return;
         const el = document.querySelector(`[data-ui-block="${screenKey}.${blockId}"]`);
         if(!el) return;
         el.style.display = b.visible === false ? 'none' : '';
         if(b.bg) el.style.background = b.bg;
         if(b.bgImage) el.style.backgroundImage = `url('${b.bgImage}')`;
         if(b.radius) el.style.borderRadius = b.radius;
-      });
-    }
-    
-    // Кнопки — обновляем картинки / эмодзи / надписи
-    if(s.buttons){
-      Object.keys(s.buttons).forEach(btnId => {
-        const b = s.buttons[btnId];
-        if(!b) return;
+    });}
+    if(s.buttons){ Object.keys(s.buttons).forEach(btnId => {
+        const b = s.buttons[btnId]; if(!b) return;
         const el = document.querySelector(`[data-ui-btn="${btnId}"]`);
         if(!el) return;
-        
-        // Запоминаем дефолты из data-атрибутов
         const defEmoji = el.getAttribute('data-ui-default-emoji') || '';
         const defLabel = el.getAttribute('data-ui-default-label') || '';
-        
-        // Ищем иконку внутри кнопки чтобы понять какой класс используется
         const iconEl = el.querySelector('.icon, .nav-icon, .tab-icon, .pi-label');
         let iconClass = '';
         if(iconEl){
@@ -1184,54 +1186,31 @@ function applyUiConfig(cfg){
           else if(iconEl.classList.contains('nav-icon')) iconClass = 'nav-icon';
           else if(iconEl.classList.contains('tab-icon')) iconClass = 'tab-icon';
         }
-        
         if(b.image){
-          // КАРТИНКА + подпись под ней
           el.classList.add('ui-image-btn');
           const labelText = (b.label !== undefined && b.label !== '') ? b.label : '';
           el.innerHTML = `<img src="${esc(b.image)}" alt="${esc(labelText)}">${labelText ? `<span class="ui-image-label">${esc(labelText)}</span>` : ''}`;
-          el.style.background = 'transparent';
-          el.style.border = 'none';
-          el.style.padding = '4px';
+          el.style.background = 'transparent'; el.style.border = 'none'; el.style.padding = '4px';
         } else {
-          // БЕЗ КАРТИНКИ — эмодзи + текст
           el.classList.remove('ui-image-btn');
           const finalEmoji = (b.emoji !== undefined && b.emoji !== '') ? b.emoji : defEmoji;
           const finalLabel = (b.label !== undefined && b.label !== '') ? b.label : defLabel;
-          
-          // Специальный случай — profile-icon-btn (эмодзи в span + pi-label)
-          if(el.classList.contains('profile-icon-btn')){
-            el.innerHTML = `<span>${esc(finalEmoji)}</span><span class="pi-label">${esc(finalLabel)}</span>`;
-          } else if(iconClass){
-            el.innerHTML = `<span class="${iconClass}">${esc(finalEmoji)}</span> ${esc(finalLabel)}`;
-          } else {
-            el.textContent = `${finalEmoji} ${finalLabel}`;
-          }
+          if(el.classList.contains('profile-icon-btn')) el.innerHTML = `<span>${esc(finalEmoji)}</span><span class="pi-label">${esc(finalLabel)}</span>`;
+          else if(iconClass) el.innerHTML = `<span class="${iconClass}">${esc(finalEmoji)}</span> ${esc(finalLabel)}`;
+          else el.textContent = `${finalEmoji} ${finalLabel}`;
         }
-        
         if(b.bg) el.style.background = b.bg;
         if(b.text) el.style.color = b.text;
         if(b.borderRadius) el.style.borderRadius = b.borderRadius;
-        if(b.size){
-          const siz = UI_SIZES.find(x => x.key === b.size);
-          if(siz) el.style.fontSize = siz.px + 'px';
-        }
-      });
-    }
+        if(b.size){ const siz = UI_SIZES.find(x => x.key === b.size); if(siz) el.style.fontSize = siz.px + 'px'; }
+    });}
   });
 }
-
 function renderConstructor(){
   if(!__UICONFIG) __UICONFIG = uiGetDefaults();
   if(!__UIDraft) __UIDraft = JSON.parse(JSON.stringify(__UICONFIG));
   const tabs = $('uiScreenTabs');
-  if(tabs){
-    tabs.innerHTML = UI_SCREENS.map(s => 
-      `<button class="tab ${s.key===__UICurrentScreen?'active':''}" 
-              style="flex:0 0 auto;min-height:44px;padding:8px 12px" 
-              onclick="switchUiScreen('${s.key}')">${s.label}</button>`
-    ).join('');
-  }
+  if(tabs){ tabs.innerHTML = UI_SCREENS.map(s => `<button class="tab ${s.key===__UICurrentScreen?'active':''}" style="flex:0 0 auto;min-height:44px;padding:8px 12px" onclick="switchUiScreen('${s.key}')">${s.label}</button>`).join(''); }
   const panel = $('constructorPanel');
   if(!panel) return;
   const screen = UI_SCREENS.find(s => s.key === __UICurrentScreen);
@@ -1247,159 +1226,36 @@ function renderConstructor(){
   }
   panel.innerHTML = html;
 }
-
 function renderBlockCard(screenKey, blockId, idx, total){
   const b = uiGetBlockConfig(__UIDraft, screenKey, blockId);
-  return `
-  <div class="pc" style="border-color:${b.visible===false?'#666':'var(--gold)'}">
-    <div style="display:flex;justify-content:space-between;align-items:center">
-      <div class="pt" style="font-size:13px">${esc(blockId)}</div>
-      <div style="display:flex;gap:4px">
-        <button class="admin-btn sm sec" ${idx===0?'disabled':''} onclick="moveBlock('${screenKey}','${blockId}',-1)">⬆️</button>
-        <button class="admin-btn sm sec" ${idx===total-1?'disabled':''} onclick="moveBlock('${screenKey}','${blockId}',1)">⬇️</button>
-        <button class="admin-btn sm ${b.visible===false?'sec':'gold'}" onclick="toggleBlockVisible('${screenKey}','${blockId}')">${b.visible===false?'👁‍🗨':'👁'}</button>
-      </div>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px">
-      <div>
-        <div class="info" style="font-size:10px">Цвет фона</div>
-        <input type="color" value="${b.bg||'#1a212c'}" oninput="setBlockProp('${screenKey}','${blockId}','bg',this.value)" style="width:100%;height:34px;padding:2px">
-      </div>
-      <div>
-        <div class="info" style="font-size:10px">Радиус</div>
-        <input type="number" value="${parseInt(b.radius)||16}" min="0" max="60" oninput="setBlockProp('${screenKey}','${blockId}','radius',this.value+'px')" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:6px;border-radius:6px;font-size:12px">
-      </div>
-    </div>
-    <div style="margin-top:6px">
-      <div class="info" style="font-size:10px">Картинка фона (URL)</div>
-      <input type="text" value="${esc(b.bgImage||'')}" placeholder="https://..." oninput="setBlockProp('${screenKey}','${blockId}','bgImage',this.value)" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:6px;border-radius:6px;font-size:11px">
-    </div>
-  </div>`;
+  return `<div class="pc" style="border-color:${b.visible===false?'#666':'var(--gold)'}"><div style="display:flex;justify-content:space-between;align-items:center"><div class="pt" style="font-size:13px">${esc(blockId)}</div><div style="display:flex;gap:4px"><button class="admin-btn sm sec" ${idx===0?'disabled':''} onclick="moveBlock('${screenKey}','${blockId}',-1)">⬆️</button><button class="admin-btn sm sec" ${idx===total-1?'disabled':''} onclick="moveBlock('${screenKey}','${blockId}',1)">⬇️</button><button class="admin-btn sm ${b.visible===false?'sec':'gold'}" onclick="toggleBlockVisible('${screenKey}','${blockId}')">${b.visible===false?'👁‍🗨':'👁'}</button></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px"><div><div class="info" style="font-size:10px">Цвет фона</div><input type="color" value="${b.bg||'#1a212c'}" oninput="setBlockProp('${screenKey}','${blockId}','bg',this.value)" style="width:100%;height:34px;padding:2px"></div><div><div class="info" style="font-size:10px">Радиус</div><input type="number" value="${parseInt(b.radius)||16}" min="0" max="60" oninput="setBlockProp('${screenKey}','${blockId}','radius',this.value+'px')" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:6px;border-radius:6px;font-size:12px"></div></div><div style="margin-top:6px"><div class="info" style="font-size:10px">Картинка фона (URL)</div><input type="text" value="${esc(b.bgImage||'')}" placeholder="https://..." oninput="setBlockProp('${screenKey}','${blockId}','bgImage',this.value)" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:6px;border-radius:6px;font-size:11px"></div></div>`;
 }
-
-/* ✅ Обновлено: поля Эмодзи + Надпись рядом, поле картинки отдельно */
 function renderButtonCard(screenKey, btnId, btnInfo){
   const b = uiGetButtonConfig(__UIDraft, screenKey, btnId);
   const uid = `${screenKey}_${btnId.replace(/\./g,'_')}`;
-  return `
-  <div class="pc">
-    <div class="pt" style="font-size:13px">${btnInfo.emoji} ${esc(btnInfo.label)}</div>
-    <div class="info" style="font-size:10px">${esc(btnId)}</div>
-    
-    <div style="display:grid;grid-template-columns:1fr 2fr;gap:6px;margin-top:8px">
-      <div>
-        <div class="info" style="font-size:10px">Эмодзи</div>
-        <input type="text" value="${esc(b.emoji||btnInfo.emoji)}" maxlength="4"
-               oninput="setButtonProp('${screenKey}','${btnId}','emoji',this.value)"
-               style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:6px;border-radius:6px;font-size:16px;text-align:center">
-      </div>
-      <div>
-        <div class="info" style="font-size:10px">Надпись</div>
-        <input type="text" value="${esc(b.label||btnInfo.label)}"
-               oninput="setButtonProp('${screenKey}','${btnId}','label',this.value)"
-               style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:6px;border-radius:6px;font-size:12px">
-      </div>
-    </div>
-    
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px">
-      <div>
-        <div class="info" style="font-size:10px">Фон</div>
-        <div style="display:flex;gap:4px">
-          <input type="color" value="${b.bg||'#1e2530'}" oninput="setButtonProp('${screenKey}','${btnId}','bg',this.value)" style="flex:1;height:32px;padding:2px">
-          <button class="admin-btn sm sec" onclick="setButtonProp('${screenKey}','${btnId}','bg','transparent')">∅</button>
-        </div>
-      </div>
-      <div>
-        <div class="info" style="font-size:10px">Цвет текста</div>
-        <input type="color" value="${b.text||'#ffffff'}" oninput="setButtonProp('${screenKey}','${btnId}','text',this.value)" style="width:100%;height:32px;padding:2px">
-      </div>
-    </div>
-    
-    <div style="margin-top:6px">
-      <div class="info" style="font-size:10px">Размер</div>
-      <div style="display:flex;gap:4px">
-        ${UI_SIZES.map(s => `<button class="admin-btn sm ${b.size===s.key?'gold':'sec'}" style="flex:1" onclick="setButtonProp('${screenKey}','${btnId}','size','${s.key}')">${s.label}</button>`).join('')}
-      </div>
-    </div>
-    
-    <div style="margin-top:8px;padding-top:8px;border-top:1px solid #2d3a4c">
-      <div class="info" style="font-size:10px;margin-bottom:4px">📷 Картинка (заменит кнопку, текст останется под ней)</div>
-      <div style="display:flex;gap:4px">
-        <input type="file" id="btn_img_${uid}" accept="image/*" style="flex:1;font-size:11px;padding:4px;color:#fff">
-        <button class="admin-btn sm gold" onclick="uploadButtonImage('${screenKey}','${btnId}')">📤</button>
-      </div>
-      ${b.image ? `<div style="margin-top:4px;display:flex;align-items:center;gap:6px"><img src="${esc(b.image)}" style="width:40px;height:40px;object-fit:contain;border:1px solid #2d3a4c;border-radius:6px"><button class="admin-btn sm danger" onclick="setButtonProp('${screenKey}','${btnId}','image','')">🗑</button></div>` : ''}
-      <input type="text" value="${esc(b.image||'')}" placeholder="или URL картинки" oninput="setButtonProp('${screenKey}','${btnId}','image',this.value)" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:6px;border-radius:6px;font-size:11px;margin-top:4px">
-    </div>
-  </div>`;
+  return `<div class="pc"><div class="pt" style="font-size:13px">${btnInfo.emoji} ${esc(btnInfo.label)}</div><div class="info" style="font-size:10px">${esc(btnId)}</div><div style="display:grid;grid-template-columns:1fr 2fr;gap:6px;margin-top:8px"><div><div class="info" style="font-size:10px">Эмодзи</div><input type="text" value="${esc(b.emoji||btnInfo.emoji)}" maxlength="4" oninput="setButtonProp('${screenKey}','${btnId}','emoji',this.value)" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:6px;border-radius:6px;font-size:16px;text-align:center"></div><div><div class="info" style="font-size:10px">Надпись</div><input type="text" value="${esc(b.label||btnInfo.label)}" oninput="setButtonProp('${screenKey}','${btnId}','label',this.value)" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:6px;border-radius:6px;font-size:12px"></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px"><div><div class="info" style="font-size:10px">Фон</div><div style="display:flex;gap:4px"><input type="color" value="${b.bg||'#1e2530'}" oninput="setButtonProp('${screenKey}','${btnId}','bg',this.value)" style="flex:1;height:32px;padding:2px"><button class="admin-btn sm sec" onclick="setButtonProp('${screenKey}','${btnId}','bg','transparent')">∅</button></div></div><div><div class="info" style="font-size:10px">Цвет текста</div><input type="color" value="${b.text||'#ffffff'}" oninput="setButtonProp('${screenKey}','${btnId}','text',this.value)" style="width:100%;height:32px;padding:2px"></div></div><div style="margin-top:6px"><div class="info" style="font-size:10px">Размер</div><div style="display:flex;gap:4px">${UI_SIZES.map(s => `<button class="admin-btn sm ${b.size===s.key?'gold':'sec'}" style="flex:1" onclick="setButtonProp('${screenKey}','${btnId}','size','${s.key}')">${s.label}</button>`).join('')}</div></div><div style="margin-top:8px;padding-top:8px;border-top:1px solid #2d3a4c"><div class="info" style="font-size:10px;margin-bottom:4px">📷 Картинка (заменит кнопку, текст останется под ней)</div><div style="display:flex;gap:4px"><input type="file" id="btn_img_${uid}" accept="image/*" style="flex:1;font-size:11px;padding:4px;color:#fff"><button class="admin-btn sm gold" onclick="uploadButtonImage('${screenKey}','${btnId}')">📤</button></div>${b.image ? `<div style="margin-top:4px;display:flex;align-items:center;gap:6px"><img src="${esc(b.image)}" style="width:40px;height:40px;object-fit:contain;border:1px solid #2d3a4c;border-radius:6px"><button class="admin-btn sm danger" onclick="setButtonProp('${screenKey}','${btnId}','image','')">🗑</button></div>` : ''}<input type="text" value="${esc(b.image||'')}" placeholder="или URL картинки" oninput="setButtonProp('${screenKey}','${btnId}','image',this.value)" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:6px;border-radius:6px;font-size:11px;margin-top:4px"></div></div>`;
 }
-
 function switchUiScreen(key){ __UICurrentScreen = key; renderConstructor(); }
-function toggleBlockVisible(screenKey, blockId){
-  const b = uiGetBlockConfig(__UIDraft, screenKey, blockId);
-  b.visible = b.visible === false ? true : false;
-  renderConstructor();
-}
-function moveBlock(screenKey, blockId, dir){
-  const screen = UI_SCREENS.find(s => s.key === screenKey);
-  if(!screen) return;
-  const arr = [...screen.blocks];
-  const idx = arr.indexOf(blockId);
-  const newIdx = idx + dir;
-  if(newIdx < 0 || newIdx >= arr.length) return;
-  [arr[idx], arr[newIdx]] = [arr[newIdx], arr[idx]];
-  screen.blocks = arr;
-  arr.forEach((bid, i) => { uiGetBlockConfig(__UIDraft, screenKey, bid).order = i; });
-  renderConstructor();
-}
-function setBlockProp(screenKey, blockId, prop, value){
-  const b = uiGetBlockConfig(__UIDraft, screenKey, blockId);
-  b[prop] = value;
-  applyUiConfig(__UIDraft);
-}
-function setButtonProp(screenKey, btnId, prop, value){
-  const b = uiGetButtonConfig(__UIDraft, screenKey, btnId);
-  b[prop] = value;
-  applyUiConfig(__UIDraft);
-  // Перерисовываем только для картинки/фона чтобы превью обновилось
-  if(prop === 'image' || prop === 'bg') renderConstructor();
-}
+function toggleBlockVisible(screenKey, blockId){ const b = uiGetBlockConfig(__UIDraft, screenKey, blockId); b.visible = b.visible === false ? true : false; renderConstructor(); }
+function moveBlock(screenKey, blockId, dir){ const screen = UI_SCREENS.find(s => s.key === screenKey); if(!screen) return; const arr = [...screen.blocks]; const idx = arr.indexOf(blockId); const newIdx = idx + dir; if(newIdx < 0 || newIdx >= arr.length) return; [arr[idx], arr[newIdx]] = [arr[newIdx], arr[idx]]; screen.blocks = arr; arr.forEach((bid, i) => { uiGetBlockConfig(__UIDraft, screenKey, bid).order = i; }); renderConstructor(); }
+function setBlockProp(screenKey, blockId, prop, value){ const b = uiGetBlockConfig(__UIDraft, screenKey, blockId); b[prop] = value; applyUiConfig(__UIDraft); }
+function setButtonProp(screenKey, btnId, prop, value){ const b = uiGetButtonConfig(__UIDraft, screenKey, btnId); b[prop] = value; applyUiConfig(__UIDraft); if(prop === 'image' || prop === 'bg') renderConstructor(); }
 async function uploadButtonImage(screenKey, btnId){
-  const uid = `${screenKey}_${btnId.replace(/\./g,'_')}`;
-  const fileInput = $('btn_img_' + uid);
+  const uid = `${screenKey}_${btnId.replace(/\./g,'_')}`; const fileInput = $('btn_img_' + uid);
   if(!fileInput || !fileInput.files || !fileInput.files[0]){ msg('Выбери файл','error'); return; }
-  const file = fileInput.files[0];
-  if(!file.type.startsWith('image/')){ msg('Только изображения','error'); return; }
-  if(file.size > 5*1024*1024){ msg('Файл больше 5 МБ','error'); return; }
+  const file = fileInput.files[0]; if(!file.type.startsWith('image/')){ msg('Только изображения','error'); return; } if(file.size > 5*1024*1024){ msg('Файл больше 5 МБ','error'); return; }
   msg('⏳ Загрузка...','info');
-  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
-  const fileName = 'ui-buttons/' + btnId.replace(/\./g,'_') + '_' + Date.now() + '_' + safeName;
+  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g,'_'); const fileName = 'ui-buttons/' + btnId.replace(/\./g,'_') + '_' + Date.now() + '_' + safeName;
   const {error:upErr} = await sb.storage.from('ads').upload(fileName, file, {contentType:file.type, upsert:true});
   if(upErr){ msg('Ошибка: ' + upErr.message,'error'); return; }
-  const {data:urlData} = sb.storage.from('ads').getPublicUrl(fileName);
-  setButtonProp(screenKey, btnId, 'image', urlData.publicUrl);
-  msg('✅ Картинка загружена','success');
+  const {data:urlData} = sb.storage.from('ads').getPublicUrl(fileName); setButtonProp(screenKey, btnId, 'image', urlData.publicUrl); msg('✅ Картинка загружена','success');
 }
-function resetUiDraft(){
-  if(!confirm('Сбросить все изменения в конструкторе?')) return;
-  __UIDraft = JSON.parse(JSON.stringify(__UICONFIG || uiGetDefaults()));
-  renderConstructor();
-  applyUiConfig(__UIDraft);
-  msg('↺ Черновик сброшен','info');
-}
+function resetUiDraft(){ if(!confirm('Сбросить все изменения в конструкторе?')) return; __UIDraft = JSON.parse(JSON.stringify(__UICONFIG || uiGetDefaults())); renderConstructor(); applyUiConfig(__UIDraft); msg('↺ Черновик сброшен','info'); }
 
 /* ═══════ SUPABASE ═══════ */
 async function refreshJwt(){
-  const id=window.Telegram?.WebApp?.initData;
-  if(!id) return null;
-  try{
-    const r=await fetch(EF,{method:'POST',headers:{'Content-Type':'application/json','apikey':SK,'Authorization':'Bearer '+SK},body:JSON.stringify({initData:id})});
-    if(!r.ok) return null;
-    const d=await r.json();
-    if(!d?.access_token) return null;
-    __jwt=d.access_token;sessionStorage.setItem('__jwt',__jwt);
-    return __jwt;
-  }catch{ return null; }
+  const id=window.Telegram?.WebApp?.initData; if(!id) return null;
+  try{ const r=await fetch(EF,{method:'POST',headers:{'Content-Type':'application/json','apikey':SK,'Authorization':'Bearer '+SK},body:JSON.stringify({initData:id})}); if(!r.ok) return null; const d=await r.json(); if(!d?.access_token) return null; __jwt=d.access_token;sessionStorage.setItem('__jwt',__jwt); return __jwt; }catch{ return null; }
 }
 const sb=window.supabase.createClient(SU,SK,{auth:{persistSession:false,autoRefreshToken:false},global:{fetch:async(u,o={})=>{const h=new Headers(o.headers||{});if(__jwt)h.set('Authorization','Bearer '+__jwt);return fetch(u,{...o,headers:h});}}});
 const tg=window.Telegram?.WebApp;if(tg){tg.ready();tg.expand();}
@@ -1408,96 +1264,40 @@ const UID=Number(tgu?.id||0);
 
 /* ═══════ LOADING ═══════ */
 async function loadAllTokens(){
-  try{
-    const{data,error}=await sb.rpc('list_tokens_public');
-    if(!error&&data&&data.length){
-      ALL_TOKENS=data.map(t=>({id:t.id,symbol:t.symbol,name:t.name,price_tusd:Number(t.price_tusd)||0,min_withdrawal:Number(t.min_withdrawal)||0,logo_url:t.logo_url||t.logo||t.icon_url||null,is_system_token:!!t.is_system_token}));
-    }else{
-      ALL_TOKENS=[{symbol:'TG',name:'Telepat Gold',price_tusd:100},{symbol:'AI',name:'AI Token',price_tusd:0.0001},{symbol:'TUSD',name:'Telepat Dollar',price_tusd:1}];
-    }
-  }catch{
-    ALL_TOKENS=[{symbol:'TG',name:'Telepat Gold',price_tusd:100},{symbol:'AI',name:'AI Token',price_tusd:0.0001},{symbol:'TUSD',name:'Telepat Dollar',price_tusd:1}];
-  }
+  try{ const{data,error}=await sb.rpc('list_tokens_public'); if(!error&&data&&data.length){ ALL_TOKENS=data.map(t=>({id:t.id,symbol:t.symbol,name:t.name,price_tusd:Number(t.price_tusd)||0,min_withdrawal:Number(t.min_withdrawal)||0,logo_url:t.logo_url||t.logo||t.icon_url||null,is_system_token:!!t.is_system_token})); }else{ ALL_TOKENS=[{symbol:'TG',name:'Telepat Gold',price_tusd:100},{symbol:'AI',name:'AI Token',price_tusd:0.0001},{symbol:'TUSD',name:'Telepat Dollar',price_tusd:1}]; } }catch{ ALL_TOKENS=[{symbol:'TG',name:'Telepat Gold',price_tusd:100},{symbol:'AI',name:'AI Token',price_tusd:0.0001},{symbol:'TUSD',name:'Telepat Dollar',price_tusd:1}]; }
   fillAll();
 }
-function fillAll(){
-  ['fromToken','toToken','adminToken','at_reward_token'].forEach(id=>{
-    const el=$(id);if(!el) return;
-    const prev=el.value;el.innerHTML='';
-    ALL_TOKENS.forEach(t=>{const o=document.createElement('option');o.value=t.symbol;o.textContent=t.symbol+(t.name?' — '+t.name:'');el.appendChild(o);});
-    if(prev&&ALL_TOKENS.find(t=>t.symbol===prev)) el.value=prev;
-  });
-}
+function fillAll(){ ['fromToken','toToken','adminToken','at_reward_token'].forEach(id=>{ const el=$(id);if(!el) return; const prev=el.value;el.innerHTML=''; ALL_TOKENS.forEach(t=>{const o=document.createElement('option');o.value=t.symbol;o.textContent=t.symbol+(t.name?' — '+t.name:'');el.appendChild(o);}); if(prev&&ALL_TOKENS.find(t=>t.symbol===prev)) el.value=prev; }); }
 async function loadCustomBalances(){
   if(!UID){CB={};return;}
-  try{
-    const{data:bal}=await sb.from('telepat_token_balances').select('balance,token_id').eq('telegram_id',UID);
-    if(!bal||!bal.length){CB={};return;}
-    const ids=[...new Set(bal.map(b=>b.token_id).filter(Boolean))];
-    const{data:toks}=await sb.from('telepat_tokens').select('id,symbol').in('id',ids);
-    const map={};(toks||[]).forEach(t=>{map[t.id]=t.symbol;});
-    CB={};bal.forEach(b=>{const s=map[b.token_id];if(s)CB[s]=n(b.balance);});
-  }catch(e){CB={};}
+  try{ const{data:bal}=await sb.from('telepat_token_balances').select('balance,token_id').eq('telegram_id',UID); if(!bal||!bal.length){CB={};return;} const ids=[...new Set(bal.map(b=>b.token_id).filter(Boolean))]; const{data:toks}=await sb.from('telepat_tokens').select('id,symbol').in('id',ids); const map={};(toks||[]).forEach(t=>{map[t.id]=t.symbol;}); CB={};bal.forEach(b=>{const s=map[b.token_id];if(s)CB[s]=n(b.balance);}); }catch(e){CB={};}
 }
 async function loadUser(){
   if(!UID){msg('Открой через Telegram','error');return;}
   let{data}=await sb.from('users').select('*').eq('telegram_id',UID).maybeSingle();
-  if(!data){
-    try{await sb.rpc('ensure_user_exists',{p_telegram_id:UID,p_first_name:tgu?.first_name||null,p_username:tgu?.username||null});}catch(e){}
-    const r2=await sb.from('users').select('*').eq('telegram_id',UID).maybeSingle();
-    data=r2.data;
-  }
+  if(!data){ try{await sb.rpc('ensure_user_exists',{p_telegram_id:UID,p_first_name:tgu?.first_name||null,p_username:tgu?.username||null});}catch(e){} const r2=await sb.from('users').select('*').eq('telegram_id',UID).maybeSingle(); data=r2.data; }
   if(!data){msg('Профиль не найден','error');return;}
   CU=data;
   const sp=tg?.initDataUnsafe?.start_param;
-  if(sp){
-    if(String(sp).startsWith('order_')){__START_ORDER_ID=String(sp).replace('order_','');}
-    else if(!CU.referrer_id){
-      const refId=Number(sp);
-      if(Number.isFinite(refId)&&refId>0&&refId!==UID){
-        try{const r=await sb.rpc('set_referrer',{p_user_id:UID,p_referrer_id:refId});if(r.data?.ok){const r3=await sb.from('users').select('*').eq('telegram_id',UID).maybeSingle();if(r3.data)CU=r3.data;}}catch(e){}
-      }
-    }
-  }
+  if(sp){ if(String(sp).startsWith('order_')){__START_ORDER_ID=String(sp).replace('order_','');} else if(!CU.referrer_id){ const refId=Number(sp); if(Number.isFinite(refId)&&refId>0&&refId!==UID){ try{const r=await sb.rpc('set_referrer',{p_user_id:UID,p_referrer_id:refId});if(r.data?.ok){const r3=await sb.from('users').select('*').eq('telegram_id',UID).maybeSingle();if(r3.data)CU=r3.data;}}catch(e){} } } }
   if(tgu?.username){try{await sb.rpc('activate_pending_referral',{p_user_id:UID,p_username:tgu.username});}catch(e){}}
 }
 async function loadMyItems(){try{const{data}=await sb.rpc('get_my_items',{p_test_user_id:UID});MY_ITEMS=(data&&data.items)||[];}catch(e){MY_ITEMS=[];}}
 async function loadShopItems(){try{const{data}=await sb.rpc('get_shop_items',{p_min_rank:0});SHOP_ITEMS=(data&&data.items)||[];}catch(e){SHOP_ITEMS=[];}}
 async function loadStakeState(){if(!UID) return;try{const{data}=await sb.rpc('get_staking_state',{p_user_id:String(UID)});if(data&&data.ok!==false){STAKE_STATE=data;STAKE_DISPLAY=Number(data.accumulated)||0;}}catch(e){}}
-async function loadRewardFunds(){
-  if(!ALL_TOKENS.length) return;
-  try{
-    const results=await Promise.all(ALL_TOKENS.filter(t=>!t.is_system_token).map(async t=>{
-      try{const{data}=await sb.rpc('get_reward_fund_info',{p_token_symbol:t.symbol,p_user_id:UID});return (data&&data.ok!==false)?data:null;}catch{return null;}
-    }));
-    REWARD_FUNDS=results.filter(Boolean);
-  }catch(e){}
-}
+async function loadRewardFunds(){ if(!ALL_TOKENS.length) return; try{ const results=await Promise.all(ALL_TOKENS.filter(t=>!t.is_system_token).map(async t=>{ try{const{data}=await sb.rpc('get_reward_fund_info',{p_token_symbol:t.symbol,p_user_id:UID});return (data&&data.ok!==false)?data:null;}catch{return null;} })); REWARD_FUNDS=results.filter(Boolean); }catch(e){} }
 
 /* ═══════ SLOT / ITEM ═══════ */
 function checkMyAdsAlerts(){}
-function clickSlot(slot) {
-  const eq = MY_ITEMS.find(i => i.is_equipped && (i.slot === slot || (slot === 'armor' && i.slot === 'helmet')));
-  if (eq) { openItemModal(eq.id); }
-  else { msg('В этом слоте пусто. Откройте инвентарь ниже, чтобы надеть предмет.', 'info'); }
-}
+function clickSlot(slot) { const eq = MY_ITEMS.find(i => i.is_equipped && (i.slot === slot || (slot === 'armor' && i.slot === 'helmet'))); if (eq) { openItemModal(eq.id); } else { msg('В этом слоте пусто. Откройте инвентарь ниже, чтобы надеть предмет.', 'info'); } }
 function openItemModal(id){
   const item = MY_ITEMS.find(i => String(i.id) === String(id));
   if (!item) return msg('Предмет не найден', 'error');
   const slotLabel = SLOT_LABEL[item.slot] || item.slot || 'Предмет';
   openModal(`${item.emoji || '🎁'} ${esc(item.name)}`, `
-    <div style="text-align: center; margin-bottom: 15px;">
-      <div style="font-size: 48px; margin-bottom: 5px;">${item.emoji || '🎁'}</div>
-      <div style="color: var(--gold); font-weight: bold; font-size: 18px;">${esc(item.name)}</div>
-      <div class="info">Слот: ${slotLabel}</div>
-    </div>
-    <div style="background: #0d1520; padding: 10px; border-radius: 8px; margin-bottom: 15px;">
-      <div class="history-row"><span>Куплен за:</span> <b>$${f(item.purchase_price_usd, 2)}</b></div>
-      <div class="history-row"><span>Статус:</span> <b style="color:${item.is_equipped ? '#39d98a' : '#8a94a6'}">${item.is_equipped ? 'Надет' : 'В сумке'}</b></div>
-    </div>
-    ${item.is_equipped 
-      ? `<button class="admin-btn danger" style="width:100%;" onclick="toggleItemEquip('${item.id}', false)">Снять</button>`
-      : `<button class="admin-btn green" style="width:100%;" onclick="toggleItemEquip('${item.id}', true)">Надеть</button>`}
+    <div style="text-align: center; margin-bottom: 15px;"><div style="font-size: 48px; margin-bottom: 5px;">${item.emoji || '🎁'}</div><div style="color: var(--gold); font-weight: bold; font-size: 18px;">${esc(item.name)}</div><div class="info">Слот: ${slotLabel}</div></div>
+    <div style="background: #0d1520; padding: 10px; border-radius: 8px; margin-bottom: 15px;"><div class="history-row"><span>Куплен за:</span> <b>$${f(item.purchase_price_usd, 2)}</b></div><div class="history-row"><span>Статус:</span> <b style="color:${item.is_equipped ? '#39d98a' : '#8a94a6'}">${item.is_equipped ? 'Надет' : 'В сумке'}</b></div></div>
+    ${item.is_equipped ? `<button class="admin-btn danger" style="width:100%;" onclick="toggleItemEquip('${item.id}', false)">Снять</button>` : `<button class="admin-btn green" style="width:100%;" onclick="toggleItemEquip('${item.id}', true)">Надеть</button>`}
     ${!item.is_equipped ? `<button class="admin-btn gold" style="width:100%; margin-top:8px;" onclick="redirectToSell('${item.id}')">💰 Выставить на продажу</button>` : ''}
     <button class="admin-btn sec" style="width:100%; margin-top:8px;" onclick="closeModal()">Закрыть</button>
   `);
@@ -1507,67 +1307,26 @@ async function toggleItemEquip(itemId, equip) {
   const {data, error} = await sb.rpc(rpcName, { p_item_id: itemId, p_telegram_id: UID });
   if (error || (data && data.ok === false)) { msg('Ошибка: ' + (error?.message || data?.error || 'Не удалось'), 'error'); return; }
   msg(equip ? '✅ Надето' : '✅ Снято', 'success');
-  closeModal();
-  await refreshAll();
+  closeModal(); await refreshAll();
 }
-function redirectToSell(itemId) {
-    __SELL_ITEM_ID = itemId; 
-    closeModal();            
-    goView('income');        
-    showIncomeTab('gear-p2p'); 
-}
+function redirectToSell(itemId) { __SELL_ITEM_ID = itemId; closeModal(); goView('income'); showIncomeTab('gear-p2p'); }
 
 /* ═══════ SHOP ═══════ */
 function renderShopTabs(){
-  const tabsEl = $('shopTabs');
-  if(!tabsEl) return;
-  const cfg = __UICONFIG?.screens?.shop?.buttons || {};
-  const btns = UI_BUTTONS.shop;
+  const tabsEl = $('shopTabs'); if(!tabsEl) return;
+  const cfg = __UICONFIG?.screens?.shop?.buttons || {}; const btns = UI_BUTTONS.shop;
   tabsEl.innerHTML = Object.keys(btns).map(btnId => {
-    const key = btnId.replace('tab.','');
-    const c = cfg[btnId] || {};
-    const active = currentShopTab === key;
-    const isGold = (key==='referrals'||key==='auction');
-    const cls = `tab ${active?'active':''} ${isGold?'tab-gold':''} ${c.image?'ui-image-btn':''}`;
-    const label = c.label || btns[btnId].label;
-    const emoji = c.emoji || btns[btnId].emoji;
-    if(c.image){
-      return `<button class="${cls}" data-ui-btn="${btnId}" data-ui-default-emoji="${esc(btns[btnId].emoji)}" data-ui-default-label="${esc(btns[btnId].label)}" onclick="showShopTab('${key}')"><img src="${esc(c.image)}" alt="${esc(label)}">${label?`<span class="ui-image-label">${esc(label)}</span>`:''}</button>`;
-    }
+    const key = btnId.replace('tab.',''); const c = cfg[btnId] || {}; const active = currentShopTab === key;
+    const isGold = (key==='referrals'||key==='auction'); const cls = `tab ${active?'active':''} ${isGold?'tab-gold':''} ${c.image?'ui-image-btn':''}`;
+    const label = c.label || btns[btnId].label; const emoji = c.emoji || btns[btnId].emoji;
+    if(c.image){ return `<button class="${cls}" data-ui-btn="${btnId}" data-ui-default-emoji="${esc(btns[btnId].emoji)}" data-ui-default-label="${esc(btns[btnId].label)}" onclick="showShopTab('${key}')"><img src="${esc(c.image)}" alt="${esc(label)}">${label?`<span class="ui-image-label">${esc(label)}</span>`:''}</button>`; }
     return `<button class="${cls}" data-ui-btn="${btnId}" data-ui-default-emoji="${esc(btns[btnId].emoji)}" data-ui-default-label="${esc(btns[btnId].label)}" onclick="showShopTab('${key}')"><span class="tab-icon">${emoji}</span>${esc(label)}</button>`;
-  }).join('');
-  applyUiConfig(__UICONFIG);
+  }).join(''); applyUiConfig(__UICONFIG);
 }
-
 function renderShop(){ 
-  renderShopTabs();
-  const c=$('shopContent'); 
-  if(!c) return;
-  const tab = currentShopTab || 'gear';
-  if (tab === 'referrals') {
-    c.innerHTML = '<div class="item-card"><div class="item-desc">Загрузка рынка рефералов...</div></div>';
-    sb.rpc('referral_market_list').then(({data, error}) => {
-      if (error || !data || !data.items || !data.items.length) { c.innerHTML = '<div class="item-card"><div class="item-desc" style="text-align:center">На рынке пока нет рефералов</div></div>'; return; }
-      c.innerHTML = data.items.map(l => `
-        <div class="item-card">
-          <div class="item-header"><span class="item-name">👤 ${l.username || l.first_name || 'ID '+l.ref_id}</span><span class="rarity rare">${esc(l.rank_name)}</span></div>
-          <div class="item-footer"><span class="item-price">$${f(l.price_tusd, 2)}</span><button class="gold" onclick="buyReferral('${l.id}')">Купить</button></div>
-        </div>`).join('');
-    });
-    return;
-  }
-  if (tab === 'auction') {
-    c.innerHTML = '<div class="item-card"><div class="item-desc">Загрузка аукциона...</div></div>';
-    sb.rpc('auction_list').then(({data, error}) => {
-      if (error || !data || !data.items || !data.items.length) { c.innerHTML = '<div class="item-card"><div class="item-desc" style="text-align:center">Активных лотов нет</div></div>'; return; }
-      c.innerHTML = data.items.map(l => `
-        <div class="item-card">
-          <div class="item-header"><span class="item-name">${l.emoji||'🎁'} ${esc(l.item_name)}</span><span class="rarity">⏱ ${fmtAucTime(l.seconds_left)}</span></div>
-          <div class="item-footer"><span class="item-price">$${f(l.current_bid || l.start_price, 2)}</span><button class="gold" onclick="bidAuction('${l.id}')">Ставка</button></div>
-        </div>`).join('');
-    });
-    return;
-  }
+  renderShopTabs(); const c=$('shopContent'); if(!c) return; const tab = currentShopTab || 'gear';
+  if (tab === 'referrals') { c.innerHTML = '<div class="item-card"><div class="item-desc">Загрузка рынка рефералов...</div></div>'; sb.rpc('referral_market_list').then(({data, error}) => { if (error || !data || !data.items || !data.items.length) { c.innerHTML = '<div class="item-card"><div class="item-desc" style="text-align:center">На рынке пока нет рефералов</div></div>'; return; } c.innerHTML = data.items.map(l => `<div class="item-card"><div class="item-header"><span class="item-name">👤 ${l.username || l.first_name || 'ID '+l.ref_id}</span><span class="rarity rare">${esc(l.rank_name)}</span></div><div class="item-footer"><span class="item-price">$${f(l.price_tusd, 2)}</span><button class="gold" onclick="buyReferral('${l.id}')">Купить</button></div></div>`).join(''); }); return; }
+  if (tab === 'auction') { c.innerHTML = '<div class="item-card"><div class="item-desc">Загрузка аукциона...</div></div>'; sb.rpc('auction_list').then(({data, error}) => { if (error || !data || !data.items || !data.items.length) { c.innerHTML = '<div class="item-card"><div class="item-desc" style="text-align:center">Активных лотов нет</div></div>'; return; } c.innerHTML = data.items.map(l => `<div class="item-card"><div class="item-header"><span class="item-name">${l.emoji||'🎁'} ${esc(l.item_name)}</span><span class="rarity">⏱ ${fmtAucTime(l.seconds_left)}</span></div><div class="item-footer"><span class="item-price">$${f(l.current_bid || l.start_price, 2)}</span><button class="gold" onclick="bidAuction('${l.id}')">Ставка</button></div></div>`).join(''); }); return; }
   c.innerHTML = '<div class="item-card"><div class="item-desc">Загрузка товаров...</div></div>';
   sb.from('telepat_items').select('*').then(({data, error}) => {
     if (error) { c.innerHTML = `<div class="item-card"><div class="item-desc" style="color:red;text-align:center">Ошибка БД: ${error.message}</div></div>`; return; }
@@ -1579,56 +1338,30 @@ function renderShop(){
     else if (tab === 'certs') filtered = filtered.filter(i => i.category === 'license');
     else if (tab === 'extras') filtered = filtered.filter(i => ['ring','bag','pet','aura'].includes(i.slot));
     if (!filtered.length) { c.innerHTML = `<div class="item-card"><div class="item-desc" style="text-align:center">В категории нет активных товаров</div></div>`; return; }
-    c.innerHTML = filtered.map(it => `
-      <div class="item-card">
-        <div class="item-header"><span class="item-name">${it.emoji||'🎁'} ${esc(it.name)}</span><span class="rarity ${it.min_rank>5?'rare':'common'}">Ур. ${it.min_rank||0}</span></div>
-        <div class="item-footer"><span class="item-price">$${f(it.price_usd, 2)}</span><button class="gold" onclick="buyItem('${it.id}', '${esc(it.name)}', ${it.price_usd})">Купить</button></div>
-      </div>`).join('');
+    c.innerHTML = filtered.map(it => `<div class="item-card"><div class="item-header"><span class="item-name">${it.emoji||'🎁'} ${esc(it.name)}</span><span class="rarity ${it.min_rank>5?'rare':'common'}">Ур. ${it.min_rank||0}</span></div><div class="item-footer"><span class="item-price">$${f(it.price_usd, 2)}</span><button class="gold" onclick="buyItem('${it.id}', '${esc(it.name)}', ${it.price_usd})">Купить</button></div></div>`).join('');
   });
 }
-async function buyReferral(id) {
-  if(!confirm('Купить этого реферала?')) return;
-  const {data, error} = await sb.rpc('referral_buy', { p_lot_id: id });
-  if(error || (data && data.ok === false)) { msg('Ошибка: ' + (error?.message || data?.error || 'Не удалось купить'), 'error'); return; }
-  msg('✅ Реферал куплен!', 'success');
-  renderShop();
-}
-async function bidAuction(id) {
-  const bid = prompt('Введите вашу ставку в $:');
-  if(!bid || isNaN(bid)) return;
-  const {data, error} = await sb.rpc('auction_bid', { p_lot_id: id, p_bid_amount: Number(bid) });
-  if(error || (data && data.ok === false)) { msg('Ошибка: ' + (error?.message || data?.error || 'Ставка не принята'), 'error'); return; }
-  msg('✅ Ставка сделана!', 'success');
-  renderShop();
-}
-function showShopTab(tab){ 
-  currentShopTab = tab;
-  renderShop();
-}
+async function buyReferral(id) { if(!confirm('Купить этого реферала?')) return; const {data, error} = await sb.rpc('referral_buy', { p_lot_id: id }); if(error || (data && data.ok === false)) { msg('Ошибка: ' + (error?.message || data?.error || 'Не удалось купить'), 'error'); return; } msg('✅ Реферал куплен!', 'success'); renderShop(); }
+async function bidAuction(id) { const bid = prompt('Введите вашу ставку в $:'); if(!bid || isNaN(bid)) return; const {data, error} = await sb.rpc('auction_bid', { p_lot_id: id, p_bid_amount: Number(bid) }); if(error || (data && data.ok === false)) { msg('Ошибка: ' + (error?.message || data?.error || 'Ставка не принята'), 'error'); return; } msg('✅ Ставка сделана!', 'success'); renderShop(); }
+function showShopTab(tab){ currentShopTab = tab; renderShop(); }
 async function buyItem(id, name, price) {
   if(!confirm(`Купить "${name}" за $${price}?`)) return;
   const {data, error} = await sb.rpc('buy_item', { p_item_id: id, p_telegram_id: UID });
   if(error || (data && data.ok === false)) { msg('Ошибка покупки: ' + (error?.message || data?.error || 'Недостаточно средств'), 'error'); return; }
   msg('✅ Успешно куплено!', 'success');
   const item = (SHOP_ITEMS || []).find(i => String(i.id) === String(id));
-  if(item && (item.category === 'title' || item.slot === 'titleSlot') && data.user_item_id) { await sb.rpc('equip_item', { p_item_id: data.user_item_id, p_telegram_id: UID }); }
+  // ✅ ИСПРАВЛЕНО: Автоматически надеваем титулы И сертификаты (грамоты)
+  if(item && (item.category === 'title' || item.slot === 'titleSlot' || item.category === 'license' || item.slot === 'license') && data.user_item_id) {
+    await sb.rpc('equip_item', { p_item_id: data.user_item_id, p_telegram_id: UID });
+  }
   await refreshAll();
 }
 function renderChatBonus(){}
 
 /* ═══════ NAVIGATION ═══════ */
 function goView(v){
-  ['home','shop','income','friends','rating','chatbonus','admin'].forEach(x=>{
-    const el=$('view-'+x);if(el) el.classList.toggle('hidden',x!==v);
-    const nb=$('nav-'+x);if(nb) nb.classList.toggle('active',x===v);
-  });
-  if(v==='home') renderHome();
-  if(v==='shop') renderShop();
-  if(v==='income') renderIncome();
-  if(v==='friends') renderFriends();
-  if(v==='rating') renderRating();
-  if(v==='chatbonus') renderChatBonus();
-  if(v==='admin') renderAdmin();
+  ['home','shop','income','friends','rating','chatbonus','admin'].forEach(x=>{ const el=$('view-'+x);if(el) el.classList.toggle('hidden',x!==v); const nb=$('nav-'+x);if(nb) nb.classList.toggle('active',x===v); });
+  if(v==='home') renderHome(); if(v==='shop') renderShop(); if(v==='income') renderIncome(); if(v==='friends') renderFriends(); if(v==='rating') renderRating(); if(v==='chatbonus') renderChatBonus(); if(v==='admin') renderAdmin();
   window.scrollTo({top:0,behavior:'smooth'});
 }
 function toggleAcc(id){const el=$(id);if(!el) return;el.classList.toggle('open');}
@@ -1646,52 +1379,16 @@ function openLevelModal(){msg('🎯 Уровень = минимум из 3 шк�
 
 /* ═══════ РЕНДЕР БЫСТРЫХ КНОПОК И НАВИГАЦИИ ═══════ */
 function renderQuickButtons(){
-  const container = $('quickActionsContainer');
-  if(!container) return;
-  const btnMap = [
-    { id:'quick.shop',      emoji:'🏪', label:'Магазин',   onclick:"goView('shop')" },
-    { id:'quick.income',    emoji:'🎯', label:'Доход',     onclick:"goView('income')" },
-    { id:'quick.friends',   emoji:'👥', label:'Друзья',    onclick:"goView('friends')" },
-    { id:'quick.rating',    emoji:'🏆', label:'Топ-100',   onclick:"goView('rating')" },
-    { id:'quick.wallet',    emoji:'💼', label:'Кошелёк',   onclick:"openWallet()" },
-    { id:'quick.chatbonus', emoji:'🎁', label:'Раздача',   onclick:"goView('chatbonus')" }
-  ];
+  const container = $('quickActionsContainer'); if(!container) return;
+  const btnMap = [ { id:'quick.shop', emoji:'🏪', label:'Магазин', onclick:"goView('shop')" }, { id:'quick.income', emoji:'🎯', label:'Доход', onclick:"goView('income')" }, { id:'quick.friends', emoji:'👥', label:'Друзья', onclick:"goView('friends')" }, { id:'quick.rating', emoji:'🏆', label:'Топ-100', onclick:"goView('rating')" }, { id:'quick.wallet', emoji:'💼', label:'Кошелёк', onclick:"openWallet()" }, { id:'quick.chatbonus', emoji:'🎁', label:'Раздача', onclick:"goView('chatbonus')" } ];
   const cfg = __UICONFIG?.screens?.home?.buttons || {};
-  container.innerHTML = btnMap.map(b => {
-    const c = cfg[b.id] || {};
-    const label = c.label || b.label;
-    const emoji = c.emoji || b.emoji;
-    if(c.image){
-      return `<button class="quick-btn ui-image-btn" data-ui-btn="${b.id}" data-ui-default-emoji="${esc(b.emoji)}" data-ui-default-label="${esc(b.label)}" onclick="${b.onclick}"><img src="${esc(c.image)}" alt="${esc(label)}">${label?`<span class="ui-image-label">${esc(label)}</span>`:''}</button>`;
-    }
-    return `<button class="quick-btn" data-ui-btn="${b.id}" data-ui-default-emoji="${esc(b.emoji)}" data-ui-default-label="${esc(b.label)}" onclick="${b.onclick}"><span class="icon">${emoji}</span> ${esc(label)}</button>`;
-  }).join('');
-  applyUiConfig(__UICONFIG);
+  container.innerHTML = btnMap.map(b => { const c = cfg[b.id] || {}; const label = c.label || b.label; const emoji = c.emoji || b.emoji; if(c.image){ return `<button class="quick-btn ui-image-btn" data-ui-btn="${b.id}" data-ui-default-emoji="${esc(b.emoji)}" data-ui-default-label="${esc(b.label)}" onclick="${b.onclick}"><img src="${esc(c.image)}" alt="${esc(label)}">${label?`<span class="ui-image-label">${esc(label)}</span>`:''}</button>`; } return `<button class="quick-btn" data-ui-btn="${b.id}" data-ui-default-emoji="${esc(b.emoji)}" data-ui-default-label="${esc(b.label)}" onclick="${b.onclick}"><span class="icon">${emoji}</span> ${esc(label)}</button>`; }).join(''); applyUiConfig(__UICONFIG);
 }
-
 function renderBottomNav(){
-  const container = $('bottomNavContainer');
-  if(!container) return;
-  const btnMap = [
-    { id:'nav.home',      emoji:'🏠', label:'Дом',      view:'home' },
-    { id:'nav.shop',      emoji:'🏪', label:'Магазин',  view:'shop' },
-    { id:'nav.income',    emoji:'🎯', label:'Доход',    view:'income' },
-    { id:'nav.friends',   emoji:'👥', label:'Друзья',   view:'friends' },
-    { id:'nav.rating',    emoji:'🏆', label:'Топ',      view:'rating' },
-    { id:'nav.chatbonus', emoji:'🎁', label:'Заказать', view:'chatbonus', wide:true }
-  ];
+  const container = $('bottomNavContainer'); if(!container) return;
+  const btnMap = [ { id:'nav.home', emoji:'🏠', label:'Дом', view:'home' }, { id:'nav.shop', emoji:'🏪', label:'Магазин', view:'shop' }, { id:'nav.income', emoji:'🎯', label:'Доход', view:'income' }, { id:'nav.friends', emoji:'👥', label:'Друзья', view:'friends' }, { id:'nav.rating', emoji:'🏆', label:'Топ', view:'rating' }, { id:'nav.chatbonus', emoji:'🎁', label:'Заказать', view:'chatbonus', wide:true } ];
   const cfg = __UICONFIG?.screens?.nav?.buttons || {};
-  container.innerHTML = btnMap.map(b => {
-    const c = cfg[b.id] || {};
-    const label = c.label || b.label;
-    const emoji = c.emoji || b.emoji;
-    const wideCls = b.wide ? 'nav-wide' : '';
-    if(c.image){
-      return `<button class="nav-btn ${wideCls} ui-image-btn" data-ui-btn="${b.id}" data-ui-default-emoji="${esc(b.emoji)}" data-ui-default-label="${esc(b.label)}" onclick="goView('${b.view}')"><img src="${esc(c.image)}" alt="${esc(label)}">${label?`<span class="ui-image-label">${esc(label)}</span>`:''}</button>`;
-    }
-    return `<button class="nav-btn ${wideCls}" data-ui-btn="${b.id}" data-ui-default-emoji="${esc(b.emoji)}" data-ui-default-label="${esc(b.label)}" onclick="goView('${b.view}')"><span class="nav-icon">${emoji}</span> ${esc(label)}</button>`;
-  }).join('');
-  applyUiConfig(__UICONFIG);
+  container.innerHTML = btnMap.map(b => { const c = cfg[b.id] || {}; const label = c.label || b.label; const emoji = c.emoji || b.emoji; const wideCls = b.wide ? 'nav-wide' : ''; if(c.image){ return `<button class="nav-btn ${wideCls} ui-image-btn" data-ui-btn="${b.id}" data-ui-default-emoji="${esc(b.emoji)}" data-ui-default-label="${esc(b.label)}" onclick="goView('${b.view}')"><img src="${esc(c.image)}" alt="${esc(label)}">${label?`<span class="ui-image-label">${esc(label)}</span>`:''}</button>`; } return `<button class="nav-btn ${wideCls}" data-ui-btn="${b.id}" data-ui-default-emoji="${esc(b.emoji)}" data-ui-default-label="${esc(b.label)}" onclick="goView('${b.view}')"><span class="nav-icon">${emoji}</span> ${esc(label)}</button>`; }).join(''); applyUiConfig(__UICONFIG);
 }
 
 /* ═══════ PORTFOLIO ═══════ */
@@ -1735,24 +1432,13 @@ function renderHome(){
       if(!el) return;
       el.classList.remove('empty','locked','filled','unlocked-empty');
       const equippedItem = MY_ITEMS.find(i => i.is_equipped && (i.slot === slotKey || (slotKey === 'armor' && i.slot === 'helmet')));
-      if(equippedItem) {
-          el.classList.add('filled');
-          el.innerHTML = `<span class="slot-label">${SLOT_LABEL[slotKey] || slotKey}</span>${equippedItem.emoji || '🎁'}`;
-      } else {
-          el.classList.add('unlocked-empty');
-          el.innerHTML = `<span class="slot-label">${SLOT_LABEL[slotKey] || slotKey}</span>${emptyIcons[slotKey] || '❓'}`;
-      }
+      if(equippedItem) { el.classList.add('filled'); el.innerHTML = `<span class="slot-label">${SLOT_LABEL[slotKey] || slotKey}</span>${equippedItem.emoji || '🎁'}`; } else { el.classList.add('unlocked-empty'); el.innerHTML = `<span class="slot-label">${SLOT_LABEL[slotKey] || slotKey}</span>${emptyIcons[slotKey] || '❓'}`; }
   });
 
   const inv=MY_ITEMS.filter(i=>!i.is_equipped&&!i.is_listed);
   $('invCount').textContent=inv.length+' / 10';
   const grid=$('invGrid');grid.innerHTML='';
-  for(let i=0;i<10;i++){
-    const item=inv[i];const slot=document.createElement('div');slot.className='slot';
-    if(item){slot.classList.add('filled');slot.innerHTML=item.emoji||'🎁';slot.onclick=()=>openItemModal(item.id);}
-    else{slot.classList.add('unlocked-empty');slot.innerHTML='🎒';slot.style.opacity='0.4';}
-    grid.appendChild(slot);
-  }
+  for(let i=0;i<10;i++){ const item=inv[i];const slot=document.createElement('div');slot.className='slot'; if(item){slot.classList.add('filled');slot.innerHTML=item.emoji||'🎁';slot.onclick=()=>openItemModal(item.id);} else{slot.classList.add('unlocked-empty');slot.innerHTML='🎒';slot.style.opacity='0.4';} grid.appendChild(slot); }
   
   const stakeUSD=Number(CU.stake_usd_locked||0),deals=Number(CU.completed_trades||0),refs=Number(CU.refs_new||0);
   const nextLv=Math.min(21,rl+1);
@@ -1795,24 +1481,14 @@ async function openWallet(){
   const recvHtml=wallets.length?wallets.map(w=>`<div class="pc"><div class="pt">${esc(w.token_symbol)}</div><div class="info" style="font-size:11px;word-break:break-all">📍 ${esc(w.wallet_address)}</div>${w.memo?`<div class="info" style="font-size:11px">📝 ${esc(w.memo)}</div>`:''}<div class="info" style="font-size:10px;color:#f4cf70">⚠️ Комментарий: <b>${myId}</b></div><button class="admin-btn sm sec" style="width:100%;margin-top:6px" onclick="copyText('${esc(w.wallet_address)}')">📋 Скопировать</button></div>`).join(''):'<div class="info">Реквизиты не настроены</div>';
   openModal('💼 Кошелёк',`
     <div style="display:flex; gap:8px; margin-bottom:12px;">
-      <div style="flex:1; background:#151a21; border:1px solid #2d3a4c; border-radius:12px; padding:10px; text-align:center;">
-        <div style="font-size:10px; color:#8a94a6;">ТОРГОВЫЙ</div>
-        <div style="font-size:16px; color:#f4cf70; font-weight:bold;">$${f(CU?.tusd_balance||0, 2)}</div>
-      </div>
-      <div style="flex:1; background:#12201a; border:1px solid #2d5a3d; border-radius:12px; padding:10px; text-align:center;">
-        <div style="font-size:10px; color:#39d98a;">РЕКЛАМНЫЙ</div>
-        <div style="font-size:16px; color:#39d98a; font-weight:bold;">$${f(CU?.ad_balance||0, 2)}</div>
-      </div>
+      <div style="flex:1; background:#151a21; border:1px solid #2d3a4c; border-radius:12px; padding:10px; text-align:center;"><div style="font-size:10px; color:#8a94a6;">ТОРГОВЫЙ</div><div style="font-size:16px; color:#f4cf70; font-weight:bold;">$${f(CU?.tusd_balance||0, 2)}</div></div>
+      <div style="flex:1; background:#12201a; border:1px solid #2d5a3d; border-radius:12px; padding:10px; text-align:center;"><div style="font-size:10px; color:#39d98a;">РЕКЛАМНЫЙ</div><div style="font-size:16px; color:#39d98a; font-weight:bold;">$${f(CU?.ad_balance||0, 2)}</div></div>
     </div>
     <button class="admin-btn gold" style="width:100%; margin-bottom:12px; padding:12px; font-size:14px;" onclick="openTransferWalletModal()">🔄 Перевести между кошельками</button>
-    <div class="tabs tabs-2" style="margin-bottom:12px">
-      <button class="tab active" id="wt-dep" onclick="walletTab('dep')"><span class="tab-icon">📥</span>Пополнить</button>
-      <button class="tab" id="wt-wd" onclick="walletTab('wd')"><span class="tab-icon">📤</span>Вывести</button>
-    </div>
+    <div class="tabs tabs-2" style="margin-bottom:12px"><button class="tab active" id="wt-dep" onclick="walletTab('dep')"><span class="tab-icon">📥</span>Пополнить</button><button class="tab" id="wt-wd" onclick="walletTab('wd')"><span class="tab-icon">📤</span>Вывести</button></div>
     <div id="wallet-dep">
       <div class="item-card" style="background:#0d1520"><div class="item-desc" style="font-size:11px">1. Переведи крипту на кошелёк<br>2. Укажи ID <b style="color:#f4cf70">${myId}</b> в комментарии<br>3. Создай заявку</div></div>
-      <div class="item-header" style="margin-top:8px"><b>📍 Куда переводить</b></div>
-      ${recvHtml}
+      <div class="item-header" style="margin-top:8px"><b>📍 Куда переводить</b></div>${recvHtml}
       <div class="item-header" style="margin-top:14px"><b>📝 Заявка на пополнение</b></div>
       <select id="d_tok" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px;margin-top:6px">${wallets.map(w=>`<option value="${w.token_symbol}">${w.token_symbol}</option>`).join('')||ALL_TOKENS.map(t=>`<option value="${t.symbol}">${t.symbol}</option>`).join('')}</select>
       <input id="d_amt" type="number" step="any" placeholder="Сумма" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px;margin-top:8px">
@@ -1820,8 +1496,7 @@ async function openWallet(){
       <input id="d_cmt" placeholder="Комментарий" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px;margin-top:8px;font-size:12px">
       <button class="admin-btn gold" style="width:100%;margin-top:8px" onclick="submitDeposit()">📥 Отправить</button>
       <div id="d_status" class="info" style="margin-top:6px;text-align:center"></div>
-      <div class="item-header" style="margin-top:14px"><b>📋 Мои вводы</b></div>
-      <div id="my_deps" class="info">Загрузка...</div>
+      <div class="item-header" style="margin-top:14px"><b>📋 Мои вводы</b></div><div id="my_deps" class="info">Загрузка...</div>
     </div>
     <div id="wallet-wd" class="hidden">
       <div class="item-card" style="background:#0d1520"><div class="item-desc" style="font-size:11px">1. Сохрани адрес<br>2. Создай заявку<br>3. Админ отправит вручную</div></div>
@@ -1833,491 +1508,121 @@ async function openWallet(){
   `);
   loadMyDeposits();loadMyWithdrawals();
 }
-function walletTab(t){
-  const dep=$('wallet-dep'),wd=$('wallet-wd'),bd=$('wt-dep'),bw=$('wt-wd');
-  if(t==='dep'){dep.classList.remove('hidden');wd.classList.add('hidden');bd.classList.add('active');bw.classList.remove('active');}
-  else{wd.classList.remove('hidden');dep.classList.add('hidden');bw.classList.add('active');bd.classList.remove('active');}
-}
-async function saveWalletAddress(){
-  const addr=($('w_addr')?.value||'').trim();const st=$('w_addr_status');
-  if(!addr){st.textContent='Введите адрес';return;}
-  st.textContent='Сохранение...';
-  const{data,error}=await sb.rpc('user_set_wallet_address',{p_address:addr});
-  if(error||!data||data.ok===false){const err=data?.error||'Ошибка';if(err==='wallet_disabled') st.textContent='Кошелёк отключён';else if(err==='invalid_address') st.textContent='Слишком короткий';else st.textContent=err;return;}
-  st.innerHTML='<span class="ok">✅</span>';msg('✅','success');
-}
+function walletTab(t){ const dep=$('wallet-dep'),wd=$('wallet-wd'),bd=$('wt-dep'),bw=$('wt-wd'); if(t==='dep'){dep.classList.remove('hidden');wd.classList.add('hidden');bd.classList.add('active');bw.classList.remove('active');} else{wd.classList.remove('hidden');dep.classList.add('hidden');bw.classList.add('active');bd.classList.remove('active');} }
+async function saveWalletAddress(){ const addr=($('w_addr')?.value||'').trim();const st=$('w_addr_status'); if(!addr){st.textContent='Введите адрес';return;} st.textContent='Сохранение...'; const{data,error}=await sb.rpc('user_set_wallet_address',{p_address:addr}); if(error||!data||data.ok===false){const err=data?.error||'Ошибка';if(err==='wallet_disabled') st.textContent='Кошелёк отключён';else if(err==='invalid_address') st.textContent='Слишком короткий';else st.textContent=err;return;} st.innerHTML='<span class="ok">✅</span>';msg('✅','success'); }
 async function submitWithdrawal(){
-  const tok=$('w_tok')?.value,amt=n($('w_amt')?.value),addr=($('w_addr')?.value||'').trim();
-  const st=$('w_wd_status');
-  if(!addr){st.textContent='Сохраните адрес';return;}
-  if(amt<=0){st.textContent='Введите сумму';return;}
-  st.textContent='Отправка...';
+  const tok=$('w_tok')?.value,amt=n($('w_amt')?.value),addr=($('w_addr')?.value||'').trim(); const st=$('w_wd_status');
+  if(!addr){st.textContent='Сохраните адрес';return;} if(amt<=0){st.textContent='Введите сумму';return;} st.textContent='Отправка...';
   const{data,error}=await sb.rpc('user_request_withdrawal',{p_token:tok,p_amount:amt,p_wallet_address:addr});
   if(error||!data||data.ok===false){const err=data?.error||'Ошибка';
-    if(err==='wallet_disabled') st.textContent='Кошелёк отключён';
-    else if(err==='withdraw_disabled') st.textContent='Вывод отключён';
-    else if(err==='insufficient_balance') st.textContent=`Недостаточно (есть ${f(data.have,6)})`;
-    else if(err==='below_min') st.textContent=`Минимум: ${f(data.min,6)}`;
-    else if(err==='token_inactive') st.textContent='Токен недоступен';
-    else st.textContent=err;return;}
-  st.innerHTML='<span class="ok">✅ Отправлено</span>';msg('✅','success');
-  $('w_amt').value='';loadMyWithdrawals();await refreshAll();
+    if(err==='wallet_disabled') st.textContent='Кошелёк отключён'; else if(err==='withdraw_disabled') st.textContent='Вывод отключён'; else if(err==='insufficient_balance') st.textContent=`Недостаточно (есть ${f(data.have,6)})`; else if(err==='below_min') st.textContent=`Минимум: ${f(data.min,6)}`; else if(err==='token_inactive') st.textContent='Токен недоступен'; else st.textContent=err;return;}
+  st.innerHTML='<span class="ok">✅ Отправлено</span>';msg('✅','success'); $('w_amt').value='';loadMyWithdrawals();await refreshAll();
 }
-async function loadMyWithdrawals(){
-  const box=$('w_my_wd');if(!box) return;box.innerHTML='Загрузка...';
-  try{const{data}=await sb.rpc('user_my_withdrawals');if(!data||data.ok===false){box.innerHTML='Ошибка';return;}
-    const items=data.items||[];if(!items.length){box.innerHTML='<div class="info">Нет заявок</div>';return;}
-    const ST={pending:'⏳',approved:'✅',rejected:'❌'};
-    box.innerHTML=items.map(w=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #1a2534;font-size:12px"><span>${ST[w.status]||''} ${esc(w.token_symbol)}</span><span style="color:var(--gold)">${f(w.amount,6)}</span></div>`).join('');
-  }catch(e){box.innerHTML='Ошибка';}
-}
-async function submitDeposit(){
-  const tok=$('d_tok')?.value,amt=n($('d_amt')?.value);
-  const tx=($('d_tx')?.value||'').trim()||null,cmt=($('d_cmt')?.value||'').trim()||null;
-  const st=$('d_status');if(amt<=0){st.textContent='Введите сумму';return;}
-  st.textContent='Отправка...';
-  const{data,error}=await sb.rpc('user_create_deposit',{p_token:tok,p_amount:amt,p_tx_hash:tx,p_comment:cmt,p_telegram_id:UID});
-  if(error||!data||data.ok===false){st.textContent='Ошибка: '+(data?.error||error?.message||'unknown');return;}
-  st.innerHTML='<span class="ok">✅ Отправлено</span>';msg('✅','success');
-  $('d_amt').value='';$('d_tx').value='';$('d_cmt').value='';loadMyDeposits();
-}
-async function loadMyDeposits(){
-  const box=$('my_deps');if(!box) return;box.innerHTML='Загрузка...';
-  try{const{data}=await sb.rpc('user_my_deposits');if(!data||data.ok===false){box.innerHTML='Ошибка';return;}
-    const items=data.items||[];if(!items.length){box.innerHTML='<div class="info">Нет заявок</div>';return;}
-    const ST={pending:'⏳',approved:'✅',rejected:'❌'};
-    box.innerHTML=items.map(w=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #1a2534;font-size:12px"><span>${ST[w.status]||''} ${esc(w.token_symbol||'?')}</span><span style="color:#39d98a">+${f(w.amount,6)}</span></div>`).join('');
-  }catch(e){box.innerHTML='Ошибка';}
-}
-function openTransferWalletModal() {
-  openModal('🔄 Перевод средств', `
-    <div class="item-card" style="background:#0d1520; margin-bottom:12px">
-      <div class="info" style="font-size:11px">Переводите деньги между Торговым (основным) и Рекламным балансом без комиссии.</div>
-    </div>
-    <label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px">Откуда перевести</label>
-    <select id="tw_from" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
-      <option value="main">Торговый ($${f(CU?.tusd_balance||0, 2)})</option>
-      <option value="ad">Рекламный ($${f(CU?.ad_balance||0, 2)})</option>
-    </select>
-    <label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">Куда перевести</label>
-    <select id="tw_to" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
-      <option value="ad">Рекламный</option>
-      <option value="main">Торговый (основной)</option>
-    </select>
-    <label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">Сумма (TUSD)</label>
-    <input id="tw_amount" type="number" step="any" placeholder="0.00" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
-    <button class="admin-btn gold" style="width:100%;margin-top:12px" onclick="doTransferWallet()">✅ ПЕРЕВЕСТИ</button>
-    <button class="admin-btn sec" style="width:100%;margin-top:8px" onclick="closeModal()">Отмена</button>
-    <div id="tw_status" class="info" style="text-align:center;margin-top:8px"></div>
-  `);
-  $('tw_from').onchange = (e) => { $('tw_to').value = e.target.value === 'main' ? 'ad' : 'main'; };
-}
-async function doTransferWallet() {
-  const from = $('tw_from').value;
-  const to = $('tw_to').value;
-  const amount = Number($('tw_amount').value);
-  const st = $('tw_status');
-  if (amount <= 0) { st.textContent = 'Введите сумму'; return; }
-  st.textContent = 'Перевод...';
-  const { data, error } = await sb.rpc('user_transfer_funds', { p_user_id: UID, p_from: from, p_to: to, p_amount: amount });
-  if (error || !data || data.ok === false) { st.textContent = 'Ошибка: ' + (data?.error || error?.message); return; }
-  st.innerHTML = '<span class="ok">✅ Успешно переведено!</span>';
-  msg('✅ Перевод выполнен', 'success');
-  await refreshAll();
-  setTimeout(() => { closeModal(); openWallet(); }, 1000);
-}
+async function loadMyWithdrawals(){ const box=$('w_my_wd');if(!box) return;box.innerHTML='Загрузка...'; try{const{data}=await sb.rpc('user_my_withdrawals');if(!data||data.ok===false){box.innerHTML='Ошибка';return;} const items=data.items||[];if(!items.length){box.innerHTML='<div class="info">Нет заявок</div>';return;} const ST={pending:'⏳',approved:'✅',rejected:'❌'}; box.innerHTML=items.map(w=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #1a2534;font-size:12px"><span>${ST[w.status]||''} ${esc(w.token_symbol)}</span><span style="color:var(--gold)">${f(w.amount,6)}</span></div>`).join(''); }catch(e){box.innerHTML='Ошибка';} }
+async function submitDeposit(){ const tok=$('d_tok')?.value,amt=n($('d_amt')?.value); const tx=($('d_tx')?.value||'').trim()||null,cmt=($('d_cmt')?.value||'').trim()||null; const st=$('d_status');if(amt<=0){st.textContent='Введите сумму';return;} st.textContent='Отправка...'; const{data,error}=await sb.rpc('user_create_deposit',{p_token:tok,p_amount:amt,p_tx_hash:tx,p_comment:cmt,p_telegram_id:UID}); if(error||!data||data.ok===false){st.textContent='Ошибка: '+(data?.error||error?.message||'unknown');return;} st.innerHTML='<span class="ok">✅ Отправлено</span>';msg('✅','success'); $('d_amt').value='';$('d_tx').value='';$('d_cmt').value='';loadMyDeposits(); }
+async function loadMyDeposits(){ const box=$('my_deps');if(!box) return;box.innerHTML='Загрузка...'; try{const{data}=await sb.rpc('user_my_deposits');if(!data||data.ok===false){box.innerHTML='Ошибка';return;} const items=data.items||[];if(!items.length){box.innerHTML='<div class="info">Нет заявок</div>';return;} const ST={pending:'⏳',approved:'✅',rejected:'❌'}; box.innerHTML=items.map(w=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #1a2534;font-size:12px"><span>${ST[w.status]||''} ${esc(w.token_symbol||'?')}</span><span style="color:#39d98a">+${f(w.amount,6)}</span></div>`).join(''); }catch(e){box.innerHTML='Ошибка';} }
+function openTransferWalletModal() { openModal('🔄 Перевод средств', ` <div class="item-card" style="background:#0d1520; margin-bottom:12px"><div class="info" style="font-size:11px">Переводите деньги между Торговым (основным) и Рекламным балансом без комиссии.</div></div> <label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px">Откуда перевести</label> <select id="tw_from" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px"> <option value="main">Торговый ($${f(CU?.tusd_balance||0, 2)})</option> <option value="ad">Рекламный ($${f(CU?.ad_balance||0, 2)})</option> </select> <label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">Куда перевести</label> <select id="tw_to" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px"> <option value="ad">Рекламный</option> <option value="main">Торговый (основной)</option> </select> <label style="display:block;font-size:11px;color:var(--muted);margin:9px 0 4px">Сумма (TUSD)</label> <input id="tw_amount" type="number" step="any" placeholder="0.00" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px"> <button class="admin-btn gold" style="width:100%;margin-top:12px" onclick="doTransferWallet()">✅ ПЕРЕВЕСТИ</button> <button class="admin-btn sec" style="width:100%;margin-top:8px" onclick="closeModal()">Отмена</button> <div id="tw_status" class="info" style="text-align:center;margin-top:8px"></div> `); $('tw_from').onchange = (e) => { $('tw_to').value = e.target.value === 'main' ? 'ad' : 'main'; }; }
+async function doTransferWallet() { const from = $('tw_from').value; const to = $('tw_to').value; const amount = Number($('tw_amount').value); const st = $('tw_status'); if (amount <= 0) { st.textContent = 'Введите сумму'; return; } st.textContent = 'Перевод...'; const { data, error } = await sb.rpc('user_transfer_funds', { p_user_id: UID, p_from: from, p_to: to, p_amount: amount }); if (error || !data || data.ok === false) { st.textContent = 'Ошибка: ' + (data?.error || error?.message); return; } st.innerHTML = '<span class="ok">✅ Успешно переведено!</span>'; msg('✅ Перевод выполнен', 'success'); await refreshAll(); setTimeout(() => { closeModal(); openWallet(); }, 1000); }
 
 /* ═══════ INCOME ═══════ */
 function renderIncomeTabs(){
-  const tabsEl = $('incomeTabs');
-  if(!tabsEl) return;
-  const cfg = __UICONFIG?.screens?.income?.buttons || {};
-  const btns = UI_BUTTONS.income;
+  const tabsEl = $('incomeTabs'); if(!tabsEl) return;
+  const cfg = __UICONFIG?.screens?.income?.buttons || {}; const btns = UI_BUTTONS.income;
   tabsEl.innerHTML = Object.keys(btns).map(btnId => {
-    const key = btnId.replace('tab.','');
-    const c = cfg[btnId] || {};
-    const active = currentIncomeTab === key;
+    const key = btnId.replace('tab.',''); const c = cfg[btnId] || {}; const active = currentIncomeTab === key;
     const cls = `tab ${active?'active':''} ${c.image?'ui-image-btn':''}`;
-    const label = c.label || btns[btnId].label;
-    const emoji = c.emoji || btns[btnId].emoji;
-    if(c.image){
-      return `<button class="${cls}" data-ui-btn="${btnId}" data-ui-default-emoji="${esc(btns[btnId].emoji)}" data-ui-default-label="${esc(btns[btnId].label)}" onclick="showIncomeTab('${key}')"><img src="${esc(c.image)}" alt="${esc(label)}">${label?`<span class="ui-image-label">${esc(label)}</span>`:''}</button>`;
-    }
+    const label = c.label || btns[btnId].label; const emoji = c.emoji || btns[btnId].emoji;
+    if(c.image){ return `<button class="${cls}" data-ui-btn="${btnId}" data-ui-default-emoji="${esc(btns[btnId].emoji)}" data-ui-default-label="${esc(btns[btnId].label)}" onclick="showIncomeTab('${key}')"><img src="${esc(c.image)}" alt="${esc(label)}">${label?`<span class="ui-image-label">${esc(label)}</span>`:''}</button>`; }
     return `<button class="${cls}" data-ui-btn="${btnId}" data-ui-default-emoji="${esc(btns[btnId].emoji)}" data-ui-default-label="${esc(btns[btnId].label)}" onclick="showIncomeTab('${key}')"><span class="tab-icon">${emoji}</span>${esc(label)}</button>`;
-  }).join('');
-  applyUiConfig(__UICONFIG);
+  }).join(''); applyUiConfig(__UICONFIG);
 }
-
 function renderIncome(){showIncomeTab(currentIncomeTab);}
 async function showIncomeTab(tab){
-  currentIncomeTab=tab;
-  renderIncomeTabs();
-  const c=$('incomeContent');c.innerHTML='<div class="item-card"><div class="item-desc">Загрузка...</div></div>';
-
+  currentIncomeTab=tab; renderIncomeTabs(); const c=$('incomeContent');c.innerHTML='<div class="item-card"><div class="item-desc">Загрузка...</div></div>';
   if(tab==='p2p'){renderP2PContent(c);}
   else if(tab==='gear-p2p'){
-    const{data:listData}=await sb.rpc('gear_get_listings');
-    const{data:myData}=await sb.rpc('gear_my_listings');
-    const listings=(listData&&listData.ok)?(listData.items||[]):[];
-    const myListings=(myData&&myData.ok)?(myData.items||[]):[];
+    const{data:listData}=await sb.rpc('gear_get_listings'); const{data:myData}=await sb.rpc('gear_my_listings');
+    const listings=(listData&&listData.ok)?(listData.items||[]):[]; const myListings=(myData&&myData.ok)?(myData.items||[]):[];
     const inv=MY_ITEMS.filter(i=>!i.is_equipped&&!i.is_listed&&i.category!=='license');
-    c.innerHTML=`
-<div class="item-card"><div class="item-header"><b>🛡️ P2P Амуниция</b></div></div>
-<div class="item-card"><div class="item-header"><b>💼 Выставить</b></div>
-${inv.length?`<select id="gear_sell_item" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px;margin-top:8px">${inv.map(i=>`<option value="${i.id}">${i.emoji||'🎁'} ${esc(i.name)}</option>`).join('')}</select>
-<div style="display:flex;gap:8px;margin-top:8px"><input type="number" id="gear_sell_price" step="0.01" placeholder="Цена" style="flex:1;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px"><button class="admin-btn sm gold" onclick="gearListItem()">💰</button></div>`:'<div class="info">Нет предметов</div>'}
-</div>
-${myListings.length?`<div class="item-card"><div class="item-header"><b>📋 Мои лоты</b></div>${myListings.map(l=>`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #252b36"><div><div style="font-size:13px;color:#fff">${esc(l.item_name)}</div><div class="info" style="font-size:11px">$${f(l.price_tusd,2)} • ${l.status}</div></div>${l.status==='active'?`<button class="admin-btn sm danger" onclick="gearCancelListing('${l.id}')">❌</button>`:''}</div>`).join('')}</div>`:''}
-<div class="item-card"><div class="item-header"><b>🛒 На продаже (${listings.length})</b></div>${listings.length?listings.map(l=>`<div class="item-card" style="background:#0d1520"><div class="item-header"><span class="item-name">${esc(l.emoji||'🎁')} ${esc(l.item_name)}</span></div><div class="item-footer"><span class="item-price">$${f(l.price_tusd,2)}</span><button onclick="gearBuyListing('${l.id}')">🛒</button></div></div>`).join(''):'<div class="info">Пусто</div>'}</div>`;
-    setTimeout(() => {
-        if (__SELL_ITEM_ID && $('gear_sell_item')) {
-            $('gear_sell_item').value = __SELL_ITEM_ID;
-            __SELL_ITEM_ID = null; 
-        }
-    }, 100);
- }
+    c.innerHTML=`<div class="item-card"><div class="item-header"><b>🛡️ P2P Амуниция</b></div></div><div class="item-card"><div class="item-header"><b>💼 Выставить</b></div>${inv.length?`<select id="gear_sell_item" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px;margin-top:8px">${inv.map(i=>`<option value="${i.id}">${i.emoji||'🎁'} ${esc(i.name)}</option>`).join('')}</select><div style="display:flex;gap:8px;margin-top:8px"><input type="number" id="gear_sell_price" step="0.01" placeholder="Цена" style="flex:1;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px"><button class="admin-btn sm gold" onclick="gearListItem()">💰</button></div>`:'<div class="info">Нет предметов</div>'}</div>${myListings.length?`<div class="item-card"><div class="item-header"><b>📋 Мои лоты</b></div>${myListings.map(l=>`<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #252b36"><div><div style="font-size:13px;color:#fff">${esc(l.item_name)}</div><div class="info" style="font-size:11px">$${f(l.price_tusd,2)} • ${l.status}</div></div>${l.status==='active'?`<button class="admin-btn sm danger" onclick="gearCancelListing('${l.id}')">❌</button>`:''}</div>`).join('')}</div>`:''}<div class="item-card"><div class="item-header"><b>🛒 На продаже (${listings.length})</b></div>${listings.length?listings.map(l=>`<div class="item-card" style="background:#0d1520"><div class="item-header"><span class="item-name">${esc(l.emoji||'🎁')} ${esc(l.item_name)}</span></div><div class="item-footer"><span class="item-price">$${f(l.price_tusd,2)}</span><button onclick="gearBuyListing('${l.id}')">🛒</button></div></div>`).join(''):'<div class="info">Пусто</div>'}</div>`;
+    setTimeout(() => { if (__SELL_ITEM_ID && $('gear_sell_item')) { $('gear_sell_item').value = __SELL_ITEM_ID; __SELL_ITEM_ID = null; } }, 100);
+  }
   else if(tab==='swap'){
     const fromBal=tb(state_swapFrom);
-    c.innerHTML=`
-<div class="item-card"><div class="item-header"><b>🔄 Swap</b></div></div>
-<div class="swap-box"><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:6px"><span>Отдаёте</span><span>Баланс: ${f(fromBal,4)}</span></div>
-<div class="row"><input type="number" id="swFromAmt" placeholder="0.0" oninput="calcSwap()"><button class="max-btn" onclick="setSwapMax()">MAX</button><button class="token-badge" onclick="openTokenPicker('from')">${tokenIcon(state_swapFrom)} ${state_swapFrom} ▼</button></div></div>
-<div class="swap-arrow-wrap"><button class="swap-arrow-btn" onclick="swapSwapTokens()">⇅</button></div>
-<div class="swap-box"><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:6px"><span>Получаете</span><span id="swToUsd">≈ $0.00</span></div>
-<div class="row"><input type="number" id="swToAmt" placeholder="0.0" readonly><button class="token-badge" onclick="openTokenPicker('to')">${tokenIcon(state_swapTo)} ${state_swapTo} ▼</button></div></div>
-<div class="prev" style="margin-top:10px"><div class="history-row"><span>Курс</span><b id="swRate">—</b></div><div class="history-row"><span>Комиссия</span><b id="swFee">—</b></div></div>
-<div id="swErr" class="info er" style="text-align:center;margin-top:6px"></div>
-<button class="swap-btn" id="swapBtn" onclick="doSwap()" disabled>Обменять</button>`;
+    c.innerHTML=`<div class="item-card"><div class="item-header"><b>🔄 Swap</b></div></div><div class="swap-box"><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:6px"><span>Отдаёте</span><span>Баланс: ${f(fromBal,4)}</span></div><div class="row"><input type="number" id="swFromAmt" placeholder="0.0" oninput="calcSwap()"><button class="max-btn" onclick="setSwapMax()">MAX</button><button class="token-badge" onclick="openTokenPicker('from')">${tokenIcon(state_swapFrom)} ${state_swapFrom} ▼</button></div></div><div class="swap-arrow-wrap"><button class="swap-arrow-btn" onclick="swapSwapTokens()">⇅</button></div><div class="swap-box"><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:6px"><span>Получаете</span><span id="swToUsd">≈ $0.00</span></div><div class="row"><input type="number" id="swToAmt" placeholder="0.0" readonly><button class="token-badge" onclick="openTokenPicker('to')">${tokenIcon(state_swapTo)} ${state_swapTo} ▼</button></div></div><div class="prev" style="margin-top:10px"><div class="history-row"><span>Курс</span><b id="swRate">—</b></div><div class="history-row"><span>Комиссия</span><b id="swFee">—</b></div></div><div id="swErr" class="info er" style="text-align:center;margin-top:6px"></div><button class="swap-btn" id="swapBtn" onclick="doSwap()" disabled>Обменять</button>`;
     SWAP_QUOTE=null;
   }
-    else if(tab==='staking'){
-    await loadStakeState();await loadRewardFunds();
-    const acc=STAKE_DISPLAY;let dailyUSD=0;(REWARD_FUNDS||[]).forEach(fd=>{dailyUSD+=Number(fd.my_per_day_tusd)||0;});
-    c.innerHTML=`
-<div class="item-card"><div class="item-header"><b>💎 Стейкинг</b></div>
-<div style="text-align:center;margin:12px 0"><div style="font-size:11px;color:#8a94a6">НАКОПЛЕНО</div><div style="font-size:28px;font-weight:800;color:#39d98a">$<span>${f(acc,6)}</span></div><div style="font-size:12px;color:#39d98a;margin-top:6px">+$${dailyUSD.toFixed(4)}/день</div></div>
-<button class="stake-collect" onclick="claimStaking()">💵 СОБРАТЬ В TUSD</button></div>
-<div class="item-card"><div class="item-header"><b>🎁 Фонды наград (Пуллы)</b></div>
-${REWARD_FUNDS.length?REWARD_FUNDS.map(fd=>`
-<div style="padding:12px 0;border-bottom:1px solid #252b36; display:flex; justify-content:space-between; align-items:center;">
-    <div><div style="display:flex;align-items:center;gap:8px; margin-bottom:4px;">${tokenIconHTML(fd.token_symbol,'sm')} <b>${esc(fd.token_symbol)}</b></div><div class="item-desc" style="font-size:11px">Фонд: ${f(fd.fund_amount,2)} • ${fd.hourly_rate_pct}%/час</div></div>
-    <button class="admin-btn gold" style="width:auto; padding:8px 12px; font-size:12px;" onclick="openTokenStakingDetails('${fd.token_symbol}')">Управлять</button>
-</div>`).join(''):'<div class="item-desc">Нет фондов</div>'}</div>`;
+  else if(tab==='staking'){
+    await loadStakeState();await loadRewardFunds(); const acc=STAKE_DISPLAY;let dailyUSD=0;(REWARD_FUNDS||[]).forEach(fd=>{dailyUSD+=Number(fd.my_per_day_tusd)||0;});
+    c.innerHTML=`<div class="item-card"><div class="item-header"><b>💎 Стейкинг</b></div><div style="text-align:center;margin:12px 0"><div style="font-size:11px;color:#8a94a6">НАКОПЛЕНО</div><div style="font-size:28px;font-weight:800;color:#39d98a">$<span>${f(acc,6)}</span></div><div style="font-size:12px;color:#39d98a;margin-top:6px">+$${dailyUSD.toFixed(4)}/день</div></div><button class="stake-collect" onclick="claimStaking()">💵 СОБРАТЬ В TUSD</button></div><div class="item-card"><div class="item-header"><b>🎁 Фонды наград (Пуллы)</b></div>${REWARD_FUNDS.length?REWARD_FUNDS.map(fd=>`<div style="padding:12px 0;border-bottom:1px solid #252b36; display:flex; justify-content:space-between; align-items:center;"><div><div style="display:flex;align-items:center;gap:8px; margin-bottom:4px;">${tokenIconHTML(fd.token_symbol,'sm')} <b>${esc(fd.token_symbol)}</b></div><div class="item-desc" style="font-size:11px">Фонд: ${f(fd.fund_amount,2)} • ${fd.hourly_rate_pct}%/час</div></div><button class="admin-btn gold" style="width:auto; padding:8px 12px; font-size:12px;" onclick="openTokenStakingDetails('${fd.token_symbol}')">Управлять</button></div>`).join(''):'<div class="item-desc">Нет фондов</div>'}</div>`;
   }
   else if(tab==='checkin'){
-    const{data}=await sb.rpc('get_checkin_status');
-    const canClaim=data?.can_claim,currentDay=data?.current_day||0;
-    let rewardsHtml='';const r=data?.next_rewards||{};
-    Object.keys(r).forEach(k=>{if(n(r[k])>0) rewardsHtml+=`<div class="item-desc">${tokenIconHTML(k,'xs')} ${esc(k)}: +${f(r[k],8)}</div>`;});
-    let calHtml='';
-    for(let d=1;d<=30;d++){const isBonus=d%7===0;const isDone=d<=currentDay&&d!==(currentDay+1);const isNext=d===(currentDay+1)&&canClaim;
-      let cls='ci-day';if(isDone)cls+=' done';if(isNext)cls+=' next';if(isBonus)cls+=' bonus';
-      calHtml+=`<div class="${cls}"><div style="font-weight:bold;font-size:12px">${d}</div>${isDone?'✅':(isNext?'🔥':'•')}</div>`;
-    }
-    c.innerHTML=`
-<div class="item-card"><div class="item-header"><b>🔥 Чекин — 30 дней</b></div>
-<div style="text-align:center;padding:8px 0"><div style="font-size:44px;font-weight:bold;color:#f4cf70">${currentDay}</div><div class="info">дней подряд</div></div>
-<div style="background:#0d1520;border:1px solid #303d50;border-radius:12px;padding:12px;margin-bottom:10px">${rewardsHtml||'Нет активных токенов'}</div>
-<button class="admin-btn gold" style="width:100%" ${canClaim?'':'disabled'} onclick="claimCheckin()">${canClaim?`🔥 Получить день ${currentDay+1}`:'✅ Уже получено'}</button>
-<div class="title" style="margin-top:16px;font-size:12px">КАЛЕНДАРЬ</div>
-<div class="ci-grid">${calHtml}</div></div>`;
+    const{data}=await sb.rpc('get_checkin_status'); const canClaim=data?.can_claim,currentDay=data?.current_day||0;
+    let rewardsHtml='';const r=data?.next_rewards||{}; Object.keys(r).forEach(k=>{if(n(r[k])>0) rewardsHtml+=`<div class="item-desc">${tokenIconHTML(k,'xs')} ${esc(k)}: +${f(r[k],8)}</div>`;});
+    let calHtml=''; for(let d=1;d<=30;d++){const isBonus=d%7===0;const isDone=d<=currentDay&&d!==(currentDay+1);const isNext=d===(currentDay+1)&&canClaim; let cls='ci-day';if(isDone)cls+=' done';if(isNext)cls+=' next';if(isBonus)cls+=' bonus'; calHtml+=`<div class="${cls}"><div style="font-weight:bold;font-size:12px">${d}</div>${isDone?'✅':(isNext?'🔥':'•')}</div>`; }
+    c.innerHTML=`<div class="item-card"><div class="item-header"><b>🔥 Чекин — 30 дней</b></div><div style="text-align:center;padding:8px 0"><div style="font-size:44px;font-weight:bold;color:#f4cf70">${currentDay}</div><div class="info">дней подряд</div></div><div style="background:#0d1520;border:1px solid #303d50;border-radius:12px;padding:12px;margin-bottom:10px">${rewardsHtml||'Нет активных токенов'}</div><button class="admin-btn gold" style="width:100%" ${canClaim?'':'disabled'} onclick="claimCheckin()">${canClaim?`🔥 Получить день ${currentDay+1}`:'✅ Уже получено'}</button><div class="title" style="margin-top:16px;font-size:12px">КАЛЕНДАРЬ</div><div class="ci-grid">${calHtml}</div></div>`;
   }
-  else if(tab==='tasks'){
-    c.innerHTML=`<div class="item-card">
-      <div class="item-header"><b>📋 Все задания</b><span id="tasksCount" class="ad-badge" style="background:var(--purple);color:#fff">—</span></div>
-      <div class="info" style="font-size:11px">Каналы, боты, ссылки и видео в одном месте</div>
-      <div id="tasksList" class="info" style="margin-top:8px">Загрузка...</div>
-    </div>`;
-    await loadAvailableTasks();
-  }
-  else if(tab==='ads'){
-    await renderAdsTab(c);
-  }
+  else if(tab==='tasks'){ c.innerHTML=`<div class="item-card"><div class="item-header"><b>📋 Все задания</b><span id="tasksCount" class="ad-badge" style="background:var(--purple);color:#fff">—</span></div><div class="info" style="font-size:11px">Каналы, боты, ссылки и видео в одном месте</div><div id="tasksList" class="info" style="margin-top:8px">Загрузка...</div></div>`; await loadAvailableTasks(); }
+  else if(tab==='ads'){ await renderAdsTab(c); }
 }
 
 /* ═══════ P2P ═══════ */
 async function switchP2PTab(t){
   if(t==='create'){openCreateOrder();return;}
-  currentP2PTab=t;
-  const tabsEls=document.querySelectorAll('#incomeContent .tabs .tab');
-  if(tabsEls.length>=3){
-    tabsEls[0].classList.toggle('active',t==='all');
-    tabsEls[1].classList.toggle('active',t==='mine');
-    tabsEls[2].classList.toggle('active',t==='auto');
-  }
-  if(t==='auto'){
-    await renderAutoTab();
-  } else {
-    await renderP2PList();
-  }
+  currentP2PTab=t; const tabsEls=document.querySelectorAll('#incomeContent .tabs .tab');
+  if(tabsEls.length>=3){ tabsEls[0].classList.toggle('active',t==='all'); tabsEls[1].classList.toggle('active',t==='mine'); tabsEls[2].classList.toggle('active',t==='auto'); }
+  if(t==='auto'){ await renderAutoTab(); } else { await renderP2PList(); }
 }
-
 async function renderP2PContent(container){
-  const tabsHtml=`
-    <div class="tabs" style="margin-bottom:15px;">
-      <div class="tab ${currentP2PTab==='all'?'active':''}" onclick="switchP2PTab('all')">🌐 Все</div>
-      <div class="tab ${currentP2PTab==='mine'?'active':''}" onclick="switchP2PTab('mine')">📋 Мои</div>
-      <div class="tab ${currentP2PTab==='auto'?'active':''}" onclick="switchP2PTab('auto')">🤖 Авто</div>
-      <div class="tab" onclick="openCreateOrder()">➕ Создать</div>
-    </div>
-    <div id="p2pList">Загрузка...</div>
-  `;
+  const tabsHtml=`<div class="tabs" style="margin-bottom:15px;"><div class="tab ${currentP2PTab==='all'?'active':''}" onclick="switchP2PTab('all')">🌐 Все</div><div class="tab ${currentP2PTab==='mine'?'active':''}" onclick="switchP2PTab('mine')">📋 Мои</div><div class="tab ${currentP2PTab==='auto'?'active':''}" onclick="switchP2PTab('auto')">🤖 Авто</div><div class="tab" onclick="openCreateOrder()">➕ Создать</div></div><div id="p2pList">Загрузка...</div>`;
   container.innerHTML = tabsHtml;
-  if(currentP2PTab==='auto'){
-    await renderAutoTab();
-  } else {
-    await renderP2PList();
-  }
-}
-
-/* ═══════════════════════════════════════════════════════════════════
-   ИНТЕРФЕЙС ВКЛАДКИ «АВТО»
-   ═══════════════════════════════════════════════════════════════════ */
-async function renderAutoTab() {
-  const box = $('p2pList');
-  if (!box) return;
-  
-  box.innerHTML = '<div class="item-card"><div class="item-desc">Загрузка...</div></div>';
-  
-  if (!AUTO_TRADE_STATE) {
-    await loadAutoTradeStatus();
-  }
-  
-  const st = AUTO_TRADE_STATE;
-  if (!st) {
-    box.innerHTML = '<div class="item-card"><div class="item-desc" style="color:red;text-align:center">Ошибка загрузки статуса</div></div>';
-    return;
-  }
-  
-  if (!st.has_certificate) {
-    box.innerHTML = `
-      <div class="item-card" style="border-color:var(--gold)">
-        <div class="item-header"><b>🔒 Автоторговля закрыта</b></div>
-        <div class="item-desc" style="margin-top:6px">Купите «Сертификат продавца» в магазине, чтобы открыть автоматическую торговлю, повышенные лимиты и арбитраж.</div>
-        <button class="admin-btn gold" style="margin-top:12px" onclick="goView('shop')">🏪 Открыть магазин</button>
-      </div>
-    `;
-    return;
-  }
-  
-  const limits = st.rank_limits || {};
-  const isEnabled = st.enabled;
-  
-  const tokensHtml = ALL_TOKENS.map(t => `<option value="${t.symbol}">${t.symbol}</option>`).join('');
-  
-  if (!isEnabled) {
-    // Экран настройки
-    box.innerHTML = `
-      <div class="item-card" style="border-color:var(--gold)">
-        <div class="item-header"><b>📜 Сертификат продавца</b></div>
-        <div class="info">👑 Ранг: <b>${limits.rank_name || '—'}</b></div>
-        <div class="info">📊 Сегодня: <b>${st.used_today_buy} / ${st.daily_limit_buy}</b> покупок</div>
-        <div class="info">📊 Сегодня: <b>${st.used_today_sell} / ${st.daily_limit_sell}</b> продаж</div>
-        <div class="info">💵 Макс/сделка: <b>$${limits.max_per_trade}</b></div>
-        <div class="info" style="color:var(--gold)">📈 Комиссия платформы: ${limits.commission_pct}% (только с прибыли)</div>
-      </div>
-
-      <div class="item-card">
-        <div class="item-header"><b>⚙️ Настройки</b></div>
-        
-        <div style="display:flex;gap:8px;margin-top:8px">
-          <select id="at_from_token" style="flex:1;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">${tokensHtml.replace(`value="${st.from_token}"`, `value="${st.from_token}" selected`)}</select>
-          <span style="align-self:center;color:var(--muted)">за</span>
-          <select id="at_to_token" style="flex:1;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">${tokensHtml.replace(`value="${st.to_token}"`, `value="${st.to_token}" selected`)}</select>
-        </div>
-
-        <label style="display:block;font-size:11px;color:var(--muted);margin-top:12px">Сумма за 1 сделку (макс $${limits.max_per_trade})</label>
-        <input id="at_amount" type="number" value="${st.amount_per_trade || 1}" max="${limits.max_per_trade}" step="0.01" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
-
-        <label style="display:block;font-size:11px;color:var(--muted);margin-top:12px">Режимы работы</label>
-        <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px">
-          <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:#fff">
-            <input type="checkbox" id="at_mode_create" ${st.mode_create?'checked':''}> 🏭 Выставляю (создаю свои ордера)
-          </label>
-          <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:#fff">
-            <input type="checkbox" id="at_mode_hunter" ${st.mode_hunter?'checked':''}> 🎯 Охотник (выкупаю чужие)
-          </label>
-          <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:#fff">
-            <input type="checkbox" id="at_mode_arbitrage" ${st.mode_arbitrage?'checked':''}> ⚡ Арбитраж (ловлю пары)
-          </label>
-        </div>
-
-        <label style="display:block;font-size:11px;color:var(--muted);margin-top:12px">Курс покупки (от рынка)</label>
-        <div style="display:flex;gap:8px;margin-top:4px">
-          <input id="at_buy_min" type="number" value="${st.buy_min_pct || -3}" style="flex:1;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
-          <span style="align-self:center">до</span>
-          <input id="at_buy_max" type="number" value="${st.buy_max_pct || -1}" style="flex:1;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
-          <span style="align-self:center">%</span>
-        </div>
-
-        <label style="display:block;font-size:11px;color:var(--muted);margin-top:12px">Курс продажи (от цены покупки)</label>
-        <div style="display:flex;gap:8px;margin-top:4px">
-          <input id="at_sell_min" type="number" value="${st.sell_min_pct || 2}" style="flex:1;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
-          <span style="align-self:center">до</span>
-          <input id="at_sell_max" type="number" value="${st.sell_max_pct || 3}" style="flex:1;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
-          <span style="align-self:center">%</span>
-        </div>
-
-        <label style="display:block;font-size:11px;color:var(--muted);margin-top:12px">Мин. маржа для арбитража</label>
-        <div style="display:flex;gap:8px;margin-top:4px">
-          <input id="at_min_margin" type="number" value="${st.min_margin_pct || 2}" style="flex:1;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
-          <span style="align-self:center">%</span>
-        </div>
-
-        <label style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--red);margin-top:12px">
-          <input type="checkbox" id="at_allow_self" ${st.allow_self_trade?'checked':''}> ⚠️ Разрешить выкупать свои ордера
-        </label>
-
-        <div style="display:flex;gap:8px;margin-top:16px">
-          <button id="at_btn_save" class="admin-btn sec" style="flex:1" onclick="saveAutoTradeSettings()">💾 Сохранить</button>
-          <button id="at_btn_activate" class="admin-btn gold" style="flex:1" onclick="activateAutoTrade()">▶️ Запустить</button>
-        </div>
-      </div>
-    `;
-  } else {
-    // Экран активной торговли
-    box.innerHTML = `
-      <div class="item-card" style="border-color:var(--green)">
-        <div class="item-header"><b>🟢 Автоторговля активна</b></div>
-        <div class="info" style="margin-top:6px">Сделок сегодня: <b>${st.used_today_buy} / ${st.daily_limit_buy}</b> (покупки)</div>
-        <div class="info">Сделок сегодня: <b>${st.used_today_sell} / ${st.daily_limit_sell}</b> (продажи)</div>
-        <div class="info" style="margin-top:4px">Всего создано: <b>${st.total_created}</b> | Арбитражей: <b>${st.total_arbitrages}</b></div>
-        <div class="info" style="color:#39d98a;font-size:14px;margin-top:4px">Заработано: <b>$${f(st.total_profit, 2)}</b></div>
-        <button class="admin-btn danger" style="margin-top:12px;width:100%" onclick="deactivateAutoTrade()">⏸ Остановить</button>
-      </div>
-
-      <div class="item-card">
-        <div class="item-header"><b>⚡ Арбитраж — сканер</b></div>
-        <div class="info" style="margin-top:4px">Бот ищет пары с маржой ≥ ${st.min_margin_pct}%. Триггер в базе также проверяет новые ордера автоматически.</div>
-        <button class="admin-btn primary" style="margin-top:8px;width:100%" onclick="runArbitrageScan()">🔍 Сканировать рынок сейчас</button>
-        <div id="arbitrageResults" style="margin-top:10px"></div>
-      </div>
-
-      <div class="item-card">
-        <div class="item-header"><b>📋 Последние события</b></div>
-        <div style="display:flex;flex-direction:column;gap:6px;margin-top:8px">
-          ${(st.recent_log || []).map(l => `
-            <div style="font-size:11px;padding:6px;background:#0d1520;border-radius:6px;border-left:3px solid ${l.action==='error' ? '#f6465d' : '#39d98a'}">
-              <b>${l.action}</b> ${l.mode ? '('+l.mode+')' : ''} 
-              ${l.profit > 0 ? '<span style="color:#39d98a">+ $'+f(l.profit,3)+'</span>' : ''}
-              ${l.error_msg ? '<span style="color:#f6465d">'+l.error_msg+'</span>' : ''}
-              <br><span style="color:#8a94a6;font-size:10px">${new Date(l.created_at).toLocaleString('ru-RU')}</span>
-            </div>
-          `).join('') || '<div class="info">Пока нет событий</div>'}
-        </div>
-      </div>
-    `;
-  }
-}
-
-// Сканирование и вывод найденных пар
-async function runArbitrageScan() {
-  const box = $('arbitrageResults');
-  if (!box) return;
-  box.innerHTML = '<div class="info" style="text-align:center">⏳ Сканирую...</div>';
-  
-  const pairs = await scanArbitrageNow();
-  
-  if (!pairs || !pairs.length) {
-    box.innerHTML = `<div class="info" style="color:var(--muted);text-align:center;padding:10px">Пока нет пар с маржой ≥ ${AUTO_TRADE_STATE.min_margin_pct}%</div>`;
-    return;
-  }
-  
-  box.innerHTML = pairs.map(p => `
-    <div style="background:#0d1520;border:1px solid var(--line);border-radius:8px;padding:8px;margin-bottom:6px">
-      <div style="color:#fff;font-size:12px;font-weight:bold">Маржа: +${f(p.margin_pct, 2)}%</div>
-      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:4px">
-        <span>Купить: ${f(p.sell_price, 4)}</span>
-        <span>Продать: ${f(p.buy_price, 4)}</span>
-      </div>
-      <div style="font-size:11px;color:#f4cf70;margin-top:4px">Макс. кол-во: ${f(p.max_qty, 4)}</div>
-      <button class="admin-btn gold" style="width:100%;margin-top:6px;font-size:11px;padding:6px" onclick="executeArbitrage('${p.sell_id}', '${p.buy_id}', ${p.max_qty})">⚡ Выкупить пару</button>
-    </div>
-  `).join('');
+  if(currentP2PTab==='auto'){ await renderAutoTab(); } else { await renderP2PList(); }
 }
 function renderP2PList(){
-  const box=$('p2pList');if(!box) return;
-  box.innerHTML='<div class="item-card"><div class="item-desc">Загрузка...</div></div>';
-  const timeout = setTimeout(() => {
-    if(box.innerHTML.includes('Загрузка')) { box.innerHTML = '<div class="item-card"><div class="item-desc" style="color:red;text-align:center">Сеть не отвечает.</div></div>'; }
-  }, 5000);
+  const box=$('p2pList');if(!box) return; box.innerHTML='<div class="item-card"><div class="item-desc">Загрузка...</div></div>';
+  const timeout = setTimeout(() => { if(box.innerHTML.includes('Загрузка')) { box.innerHTML = '<div class="item-card"><div class="item-desc" style="color:red;text-align:center">Сеть не отвечает.</div></div>'; } }, 5000);
   sb.from('p2p_orders').select('*').then(r => {
-    clearTimeout(timeout); 
-    if (r.error) { box.innerHTML='<div class="item-card"><div class="item-desc" style="color:red;text-align:center">Ошибка БД: '+r.error.message+'</div></div>'; return; }
+    clearTimeout(timeout); if (r.error) { box.innerHTML='<div class="item-card"><div class="item-desc" style="color:red;text-align:center">Ошибка БД: '+r.error.message+'</div></div>'; return; }
     let orders = (r.data || []).filter(o => String(o.status||'').toLowerCase() === 'open');
     if (orders.length === 0) { box.innerHTML = '<div class="item-card"><div class="item-desc" style="text-align:center">Ордеров нет.<br>Жми ➕ Создать</div></div>'; return; }
     const ids = [...new Set(orders.map(o => Number(o.creator_id)).filter(Boolean))];
     sb.from('users').select('telegram_id,username,first_name,rank_name,rank_level').in('telegram_id', ids).then(u => {
-        const map = {};
-        (u.data || []).forEach(x => { map[String(x.telegram_id)] = x; });
-        orders = orders.map(o => {
-            const uu = map[String(o.creator_id)] || {};
-            return Object.assign({}, o, {creator_username: uu.username || null,creator_first_name: uu.first_name || null,creator_rank_name: uu.rank_name || 'Новичок',creator_rank_level: Number(uu.rank_level || 0),likes: 0,dislikes: 0,completed_trades: 0,rate: (Number(o.from_amount) > 0) ? (Number(o.to_amount) / Number(o.from_amount)) : 1});
-        });
-        if(currentP2PTab==='mine'){orders=orders.filter(o=>String(o.creator_id)===String(UID));}
-        else {const my=orders.filter(o=>String(o.creator_id)===String(UID));const other=orders.filter(o=>String(o.creator_id)!==String(UID));orders=[...my,...other];}
+        const map = {}; (u.data || []).forEach(x => { map[String(x.telegram_id)] = x; });
+        orders = orders.map(o => { const uu = map[String(o.creator_id)] || {}; return Object.assign({}, o, {creator_username: uu.username || null,creator_first_name: uu.first_name || null,creator_rank_name: uu.rank_name || 'Новичок',creator_rank_level: Number(uu.rank_level || 0),likes: 0,dislikes: 0,completed_trades: 0,rate: (Number(o.from_amount) > 0) ? (Number(o.to_amount) / Number(o.from_amount)) : 1}); });
+        if(currentP2PTab==='mine'){orders=orders.filter(o=>String(o.creator_id)===String(UID));} else {const my=orders.filter(o=>String(o.creator_id)===String(UID));const other=orders.filter(o=>String(o.creator_id)!==String(UID));orders=[...my,...other];}
         if (orders.length === 0) { box.innerHTML = '<div class="item-card"><div class="item-desc" style="text-align:center">У вас нет открытых ордеров</div></div>'; return; }
         box.innerHTML=orders.map(o=>orderCard(o)).join('');
     }).catch(e => {clearTimeout(timeout);box.innerHTML='<div class="item-card"><div class="item-desc" style="color:red;text-align:center">Ошибка профилей: '+e.message+'</div></div>';});
   }).catch(err => {clearTimeout(timeout);box.innerHTML='<div class="item-card"><div class="item-desc" style="color:red;text-align:center">Сетевая ошибка: '+err.message+'</div></div>';});
 }
-
 function orderCard(o){
-  ORDER_CACHE[String(o.id)]=o;
-  const isMine=String(o.creator_id)===String(UID);
-  const c=rk(o.creator_rank_level);const rt=n(o.rate);
-  const ownerLabel=o.creator_username?'@'+esc(o.creator_username):'ID '+Number(o.creator_id);
-  const totalAmt = n(o.from_amount) || 0;
-  const remainingAmt = n(o.from_amount_remaining != null ? o.from_amount_remaining : o.from_amount);
-  const filledAmt = Math.max(0, totalAmt - remainingAmt);
-  const pct = totalAmt > 0 ? Math.min(100, Math.round((filledAmt / totalAmt) * 100)) : 0;
+  ORDER_CACHE[String(o.id)]=o; const isMine=String(o.creator_id)===String(UID); const c=rk(o.creator_rank_level);const rt=n(o.rate); const ownerLabel=o.creator_username?'@'+esc(o.creator_username):'ID '+Number(o.creator_id);
+  const totalAmt = n(o.from_amount) || 0; const remainingAmt = n(o.from_amount_remaining != null ? o.from_amount_remaining : o.from_amount); const filledAmt = Math.max(0, totalAmt - remainingAmt); const pct = totalAmt > 0 ? Math.min(100, Math.round((filledAmt / totalAmt) * 100)) : 0;
   let progressHtml = '';
-  if (filledAmt > 0 && remainingAmt > 0) {
-    progressHtml = `<div style="height:4px;background:#080b10;border-radius:99px;margin-top:8px;overflow:hidden"><div style="height:100%;width:${pct}%;background:linear-gradient(90deg,#f4cf70,#c99629)"></div></div><div style="font-size:10px;color:#f4cf70;margin-top:5px;display:flex;justify-content:space-between;align-items:center"><span>Выкуплено ${pct}%</span><span style="font-weight:700">🟢 Осталось: ${f(remainingAmt)} ${esc(o.from_token)}</span></div>`;
-  } else if (filledAmt === 0 && remainingAmt > 0) {
-    progressHtml = `<div style="font-size:10px;color:#8a94a6;margin-top:5px">🟢 В продаже полностью: ${f(remainingAmt)} ${esc(o.from_token)}</div>`;
-  } else if (remainingAmt <= 0.00000001) {
-    progressHtml = `<div style="font-size:10px;color:#39d98a;margin-top:5px;font-weight:700">✅ Полностью выкуплено</div>`;
-  }
-  const actionsHtml=isMine
-    ?`<div class="order-actions"><button onclick="openProfile(${Number(o.creator_id)})">👤</button><button onclick="cancelP2POrder('${esc(o.id)}')" style="background:#f6465d">❌</button></div>`
-    :`<div class="order-actions"><button onclick="openProfile(${Number(o.creator_id)})" style="flex:0 0 46px">👤</button><button onclick="quickBuyOrder('${esc(o.id)}')" style="background:linear-gradient(135deg,#39d98a,#2ba86a)">⚡</button><button onclick="openBuyModal('${esc(o.id)}')">🛒</button></div>`;
-  return `<div class="order" id="order-${esc(o.id)}" style="--rc:${c}">
-    <div class="oh" onclick="toggleOrder('${esc(o.id)}')">
-      <div class="om">${tokenIconHTML(o.from_token,'xs')} ${f(o.from_amount)} ${esc(o.from_token)} → ${f(o.to_amount)} ${esc(o.to_token)}</div>
-      <div class="rb">👑 ${esc(o.creator_rank_name)}</div>
-      <div class="op">1 ${esc(o.from_token)} = ${f(rt,8)} ${esc(o.to_token)}</div>
-      <div class="os"><span>👍 ${n(o.likes)}</span><span>👎 ${n(o.dislikes)}</span><span>🤝 ${n(o.completed_trades)}</span></div>
-      ${progressHtml}
-    </div>
-    <div class="oe"><div class="dt"><span>Владелец</span><span>${ownerLabel}</span></div>${actionsHtml}</div>
-  </div>`;
+  if (filledAmt > 0 && remainingAmt > 0) { progressHtml = `<div style="height:4px;background:#080b10;border-radius:99px;margin-top:8px;overflow:hidden"><div style="height:100%;width:${pct}%;background:linear-gradient(90deg,#f4cf70,#c99629)"></div></div><div style="font-size:10px;color:#f4cf70;margin-top:5px;display:flex;justify-content:space-between;align-items:center"><span>Выкуплено ${pct}%</span><span style="font-weight:700">🟢 Осталось: ${f(remainingAmt)} ${esc(o.from_token)}</span></div>`; } else if (filledAmt === 0 && remainingAmt > 0) { progressHtml = `<div style="font-size:10px;color:#8a94a6;margin-top:5px">🟢 В продаже полностью: ${f(remainingAmt)} ${esc(o.from_token)}</div>`; } else if (remainingAmt <= 0.00000001) { progressHtml = `<div style="font-size:10px;color:#39d98a;margin-top:5px;font-weight:700">✅ Полностью выкуплено</div>`; }
+  const actionsHtml=isMine ?`<div class="order-actions"><button onclick="openProfile(${Number(o.creator_id)})">👤</button><button onclick="cancelP2POrder('${esc(o.id)}')" style="background:#f6465d">❌</button></div>` :`<div class="order-actions"><button onclick="openProfile(${Number(o.creator_id)})" style="flex:0 0 46px">👤</button><button onclick="quickBuyOrder('${esc(o.id)}')" style="background:linear-gradient(135deg,#39d98a,#2ba86a)">⚡</button><button onclick="openBuyModal('${esc(o.id)}')">🛒</button></div>`;
+  return `<div class="order" id="order-${esc(o.id)}" style="--rc:${c}"><div class="oh" onclick="toggleOrder('${esc(o.id)}')"><div class="om">${tokenIconHTML(o.from_token,'xs')} ${f(o.from_amount)} ${esc(o.from_token)} → ${f(o.to_amount)} ${esc(o.to_token)}</div><div class="rb">👑 ${esc(o.creator_rank_name)}</div><div class="op">1 ${esc(o.from_token)} = ${f(rt,8)} ${esc(o.to_token)}</div><div class="os"><span>👍 ${n(o.likes)}</span><span>👎 ${n(o.dislikes)}</span><span>🤝 ${n(o.completed_trades)}</span></div>${progressHtml}</div><div class="oe"><div class="dt"><span>Владелец</span><span>${ownerLabel}</span></div>${actionsHtml}</div></div>`;
 }
 function toggleOrder(id){$('order-'+id)?.classList.toggle('opened');}
 function openCreateOrder(){
-  const tokens=ALL_TOKENS.map(t=>t.symbol);
-  const myRankLevel = CU.rank_level || 0;
-  const maxDev = RANK_DEVIATIONS[myRankLevel] || 0.25;
-  openModal('➕ Создать P2P-ордер',`
-<div class="item-card" style="background:#0d1520; border-color:var(--gold); margin-bottom:12px;">
-  <div class="info" style="font-size:11px; color:#f4cf70">👑 Ваш ранг: <b>${esc(CU.rank_name || 'Новичок')}</b><br>📊 Лимит отклонения: <b>±${maxDev}%</b><br>🔄 Сделок сегодня: <b>${CU.trades_today || 0} / ${CU.max_trades_today || 1}</b></div>
-</div>
-<div class="admin-field"><label>Отдаю</label><select id="newFrom" onchange="recalcPriceHints()" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">${tokens.map(t=>`<option>${t}</option>`).join('')}</select></div>
-<div class="admin-field" style="margin-top:9px"><label>Количество</label><input type="number" id="newFromAmt" step="any" oninput="recalcPriceHints()" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px"></div>
-<div class="admin-field" style="margin-top:9px"><label>Получаю</label><select id="newTo" onchange="recalcPriceHints()" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">${tokens.map(t=>`<option>${t}</option>`).join('')}</select></div>
-<div class="admin-field" style="margin-top:9px"><label>Количество</label><input type="number" id="newToAmt" step="any" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px"></div>
-<div id="priceHintBox" class="price-hint" style="display:none"><div style="color:#cfd8e4;font-size:11px">💡 Рынок ±10%</div><div style="margin-top:6px;font-size:12px">Рынок: <b id="hintMarket">—</b></div><div class="price-range"><button class="red" onclick="setPriceByPct(-10)">−10%</button><button onclick="setPriceByPct(0)">Рынок</button><button class="green" onclick="setPriceByPct(10)">+10%</button></div></div>
-<div class="admin-btn-row"><button class="admin-btn gold" onclick="confirmCreateOrder()">🚀 Создать</button><button class="admin-btn sec" onclick="closeModal()">Отмена</button></div>`);
+  const tokens=ALL_TOKENS.map(t=>t.symbol); const myRankLevel = CU.rank_level || 0; const maxDev = RANK_DEVIATIONS[myRankLevel] || 0.25;
+  openModal('➕ Создать P2P-ордер',`<div class="item-card" style="background:#0d1520; border-color:var(--gold); margin-bottom:12px;"><div class="info" style="font-size:11px; color:#f4cf70">👑 Ваш ранг: <b>${esc(CU.rank_name || 'Новичок')}</b><br>📊 Лимит отклонения: <b>±${maxDev}%</b><br>🔄 Сделок сегодня: <b>${CU.trades_today || 0} / ${CU.max_trades_today || 1}</b></div></div><div class="admin-field"><label>Отдаю</label><select id="newFrom" onchange="recalcPriceHints()" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">${tokens.map(t=>`<option>${t}</option>`).join('')}</select></div><div class="admin-field" style="margin-top:9px"><label>Количество</label><input type="number" id="newFromAmt" step="any" oninput="recalcPriceHints();checkCreateOrderBalance()" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px"><div id="balanceHint" class="info" style="font-size:11px;margin-top:4px;display:none"></div></div><div class="admin-field" style="margin-top:9px"><label>Получаю</label><select id="newTo" onchange="recalcPriceHints()" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">${tokens.map(t=>`<option>${t}</option>`).join('')}</select></div><div class="admin-field" style="margin-top:9px"><label>Количество</label><input type="number" id="newToAmt" step="any" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px"></div><div id="priceHintBox" class="price-hint" style="display:none"><div style="color:#cfd8e4;font-size:11px">💡 Рынок ±10%</div><div style="margin-top:6px;font-size:12px">Рынок: <b id="hintMarket">—</b></div><div class="price-range"><button class="red" onclick="setPriceByPct(-10)">−10%</button><button onclick="setPriceByPct(0)">Рынок</button><button class="green" onclick="setPriceByPct(10)">+10%</button></div></div><div class="admin-btn-row"><button class="admin-btn gold" onclick="confirmCreateOrder()">🚀 Создать</button><button class="admin-btn sec" onclick="closeModal()">Отмена</button></div>`);
   setTimeout(()=>recalcPriceHints(),50);
 }
 function recalcPriceHints(){
-  const from=$('newFrom')?.value,to=$('newTo')?.value;const fromAmt=n($('newFromAmt')?.value);
-  const hintBox=$('priceHintBox');if(!hintBox) return;
+  const from=$('newFrom')?.value,to=$('newTo')?.value;const fromAmt=n($('newFromAmt')?.value); const hintBox=$('priceHintBox');if(!hintBox) return;
   if(!from||!to||from===to){hintBox.style.display='none';return;}
   const pFrom=priceOf(from),pTo=priceOf(to);if(pFrom<=0||pTo<=0){hintBox.style.display='none';return;}
-  const marketRate=pFrom/pTo;hintBox.style.display='block';
-  $('hintMarket').textContent=`1 ${from} = ${f(marketRate,6)} ${to}`;
+  const marketRate=pFrom/pTo;hintBox.style.display='block'; $('hintMarket').textContent=`1 ${from} = ${f(marketRate,6)} ${to}`;
   const toAmtEl=$('newToAmt');if(toAmtEl&&!toAmtEl.value&&fromAmt>0){toAmtEl.value=(fromAmt*marketRate).toFixed(8);}
+  checkCreateOrderBalance();
+}
+function checkCreateOrderBalance(){
+  const hint = $('balanceHint'); if(!hint) return; const from = $('newFrom')?.value; const amt = n($('newFromAmt')?.value);
+  if(!from || amt <= 0){ hint.style.display = 'none'; return; }
+  const bal = tb(from); const need = amt * 1.001; hint.style.display = 'block';
+  if(need > bal){ hint.innerHTML = `❌ <span style="color:#f6465d">Нужно ${f(need,4)} ${from}, у вас ${f(bal,4)} ${from}</span>`; }
+  else { hint.innerHTML = `✅ <span style="color:#39d98a">Достаточно (баланс: ${f(bal,4)} ${from})</span>`; }
 }
 function setPriceByPct(pct){
   const from=$('newFrom')?.value,to=$('newTo')?.value;const fromAmt=n($('newFromAmt')?.value);
@@ -2326,260 +1631,195 @@ function setPriceByPct(pct){
   $('newToAmt').value=(fromAmt*(pFrom/pTo)*(1+pct/100)).toFixed(8);
 }
 async function confirmCreateOrder(){
-  const from=$('newFrom').value,to=$('newTo').value;
-  const fromAmt=n($('newFromAmt').value),toAmt=n($('newToAmt').value);
-  if(from===to||fromAmt<=0||toAmt<=0){msg('Заполните поля','error');return;}
-  if(fromAmt*1.001>tb(from)){msg('Мало '+from,'error');return;}
-  const{data,error}=await sb.rpc('create_p2p_order_v2',{p_creator_id:UID,p_from_token:from,p_to_token:to,p_from_amount:fromAmt,p_to_amount:toAmt});
-  if(error){msg(error.message,'error');return;}
-  if(data&&data.ok===false){msg(data.message||'Ошибка','error');return;}
-  msg('🚀 Ордер создан','success');closeModal();await refreshAll();
-  if(currentIncomeTab==='p2p'){currentP2PTab='mine';await renderP2PContent($('incomeContent'));}
+  const from=$('newFrom').value,to=$('newTo').value; const fromAmt=n($('newFromAmt').value),toAmt=n($('newToAmt').value);
+  if(from===to){ msg('❌ Выберите разные токены', 'error'); return; } if(fromAmt<=0 || toAmt<=0){ msg('⚠️ Заполните количество и цену', 'error'); return; }
+  const bal = tb(from); const need = fromAmt * 1.001;
+  if(need > bal){ msg(`💰 Недостаточно ${from}\nНужно: ${f(need,4)} ${from}\nУ вас: ${f(bal,4)} ${from}`, 'error'); return; }
+  try{
+    const{data,error}=await sb.rpc('create_p2p_order_v2',{p_creator_id:UID,p_from_token:from,p_to_token:to,p_from_amount:fromAmt,p_to_amount:toAmt});
+    if(error){ msg(p2pErrFromResponse(null, error, need, bal, from), 'error'); return; }
+    if(data && data.ok === false){ msg(p2pErrFromResponse(data, null, need, bal, from), 'error'); return; }
+    msg('🚀 Ордер создан', 'success'); closeModal(); await refreshAll();
+    if(currentIncomeTab==='p2p'){ currentP2PTab='mine'; await renderP2PContent($('incomeContent')); }
+  } catch(e){ msg('⚠️ Ошибка соединения. Попробуйте ещё раз', 'error'); }
 }
-async function cancelP2POrder(id){
-  if(!confirm('Отменить?')) return;
-  const{error}=await sb.rpc('cancel_p2p_order_v2',{p_order_id:id});
-  if(error){msg(error.message,'error');return;}
-  msg('Отменён','success');await refreshAll();
-  if(currentIncomeTab==='p2p') await renderP2PContent($('incomeContent'));
-}
+async function cancelP2POrder(id){ if(!confirm('Отменить?')) return; const{error}=await sb.rpc('cancel_p2p_order_v2',{p_order_id:id}); if(error){msg(error.message,'error');return;} msg('Отменён','success');await refreshAll(); if(currentIncomeTab==='p2p') await renderP2PContent($('incomeContent')); }
 async function quickBuyOrder(id){
-  if(!confirm('Выкупить остаток?')) return;
-  const o = ORDER_CACHE[String(id)];
-  if(!o) return;
-  const max = n(o.from_amount_remaining != null ? o.from_amount_remaining : o.from_amount);
-  const{data,error}=await sb.rpc('accept_p2p_order_chat_partial',{p_order_id:String(o.id),p_taker_id:String(UID),p_get_amount:max});
-  if(error){msg(error.message,'error');return;}
-  if(data && data.ok === false) { msg(data.message, 'error'); return; }
-  msg('✅ Куплено','success');
-  await refreshAll();
-  if(currentIncomeTab==='p2p') await renderP2PContent($('incomeContent'));
+  const o = ORDER_CACHE[String(id)]; if(!o){ msg('❓ Ордер не найден', 'error'); return; }
+  const max = n(o.from_amount_remaining != null ? o.from_amount_remaining : o.from_amount); const totalTo = n(o.to_amount_remaining != null ? o.to_amount_remaining : o.to_amount); const totalFrom = n(o.from_amount_remaining != null ? o.from_amount_remaining : o.from_amount); const rate = totalFrom > 0 ? totalTo / totalFrom : 0; const payNeeded = max * rate; const avail = tb(o.to_token);
+  if(payNeeded > avail + 1e-9){ msg(`💰 Недостаточно ${o.to_token} для выкупа\nНужно: ${f(payNeeded,4)} ${o.to_token}\nУ вас: ${f(avail,4)} ${o.to_token}`, 'error'); return; }
+  if(!confirm(`Выкупить остаток за ${f(payNeeded,4)} ${o.to_token}?`)) return;
+  try{
+    const{data,error}=await sb.rpc('accept_p2p_order_chat_partial',{p_order_id:String(o.id),p_taker_id:String(UID),p_get_amount:max});
+    if(error){ msg(p2pErrFromResponse(null, error, payNeeded, avail, o.to_token), 'error'); return; }
+    if(data && data.ok === false){ msg(p2pErrFromResponse(data, null, payNeeded, avail, o.to_token), 'error'); return; }
+    msg(`✅ Куплено ${f(max,4)} ${o.from_token}`, 'success'); await refreshAll(); if(currentIncomeTab==='p2p') await renderP2PContent($('incomeContent'));
+  }catch(e){ msg('⚠️ Ошибка соединения. Попробуйте ещё раз', 'error'); }
 }
 function openBuyModal(orderId){
-  const o=ORDER_CACHE[String(orderId)];if(!o){msg('Не найден','error');return;}
-  __BUY_ORDER=o;
-  const totalFrom = n(o.from_amount) || 0;
-  const totalTo = n(o.to_amount) || 0;
-  const remainingFrom = n(o.from_amount_remaining != null ? o.from_amount_remaining : o.from_amount);
-  const remainingTo = n(o.to_amount_remaining != null ? o.to_amount_remaining : o.to_amount);
-  const alreadyFilled = Math.max(0, totalFrom - remainingFrom);
-  $('buyOrderInfo').innerHTML = `
-    <div style="background:#0d1520;padding:12px;border-radius:10px;margin-bottom:10px;border:1px solid #2d3a4c">
-      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:8px"><span>Весь ордер:</span><b style="color:#fff">${f(totalFrom)} ${esc(o.from_token)} → ${f(totalTo)} ${esc(o.to_token)}</b></div>
-      ${alreadyFilled > 0 ? `<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:8px"><span>Уже выкуплено:</span><b style="color:#8a94a6">${f(alreadyFilled)} ${esc(o.from_token)}</b></div>` : ''}
-      <div style="display:flex;justify-content:space-between;font-size:14px;padding:10px;background:#f4cf7015;border-radius:8px;border:1px solid #f4cf7050">
-        <span style="color:#f4cf70;font-weight:700">🟢 Осталось купить:</span>
-        <b style="color:#f4cf70;font-size:15px">${f(remainingFrom,8)} ${esc(o.from_token)}</b>
-      </div>
-      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:8px"><span>Нужно заплатить за остаток:</span><b style="color:#fff">${f(remainingTo,8)} ${esc(o.to_token)}</b></div>
-    </div>`;
-  $('buyFromSym').textContent=o.from_token;
-  $('buyAmount').value='';$('buyStatus').textContent='';updateBuyPreview();$('buyModal').classList.add('show');
+  const o=ORDER_CACHE[String(orderId)];if(!o){msg('Не найден','error');return;} __BUY_ORDER=o;
+  const totalFrom = n(o.from_amount) || 0; const totalTo = n(o.to_amount) || 0; const remainingFrom = n(o.from_amount_remaining != null ? o.from_amount_remaining : o.from_amount); const remainingTo = n(o.to_amount_remaining != null ? o.to_amount_remaining : o.to_amount); const alreadyFilled = Math.max(0, totalFrom - remainingFrom);
+  $('buyOrderInfo').innerHTML = `<div style="background:#0d1520;padding:12px;border-radius:10px;margin-bottom:10px;border:1px solid #2d3a4c"><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:8px"><span>Весь ордер:</span><b style="color:#fff">${f(totalFrom)} ${esc(o.from_token)} → ${f(totalTo)} ${esc(o.to_token)}</b></div>${alreadyFilled > 0 ? `<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:8px"><span>Уже выкуплено:</span><b style="color:#8a94a6">${f(alreadyFilled)} ${esc(o.from_token)}</b></div>` : ''}<div style="display:flex;justify-content:space-between;font-size:14px;padding:10px;background:#f4cf7015;border-radius:8px;border:1px solid #f4cf7050"><span style="color:#f4cf70;font-weight:700">🟢 Осталось купить:</span><b style="color:#f4cf70;font-size:15px">${f(remainingFrom,8)} ${esc(o.from_token)}</b></div><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:8px"><span>Нужно заплатить за остаток:</span><b style="color:#fff">${f(remainingTo,8)} ${esc(o.to_token)}</b></div></div>`;
+  $('buyFromSym').textContent=o.from_token; $('buyAmount').value='';$('buyStatus').textContent='';updateBuyPreview();$('buyModal').classList.add('show');
 }
 function closeBuyModal(e){if(e&&e.target!==$('buyModal')) return;$('buyModal').classList.remove('show');__BUY_ORDER=null;}
-function setBuyPct(pct){
-  if(!__BUY_ORDER) return;
-  const max = n(__BUY_ORDER.from_amount_remaining != null ? __BUY_ORDER.from_amount_remaining : __BUY_ORDER.from_amount);
-  const val = pct >= 100 ? max : max * pct / 100;
-  $('buyAmount').value = String(val);
-  updateBuyPreview();
-}
+function setBuyPct(pct){ if(!__BUY_ORDER) return; const max = n(__BUY_ORDER.from_amount_remaining != null ? __BUY_ORDER.from_amount_remaining : __BUY_ORDER.from_amount); const val = pct >= 100 ? max : max * pct / 100; $('buyAmount').value = String(val); updateBuyPreview(); }
 function updateBuyPreview(){
-  if(!__BUY_ORDER) return;
-  const o=__BUY_ORDER;
-  const fromTotal = n(o.from_amount_remaining != null ? o.from_amount_remaining : o.from_amount);
-  const toTotal = n(o.to_amount_remaining != null ? o.to_amount_remaining : o.to_amount);
-  const rate = fromTotal > 0 ? toTotal / fromTotal : 0;
-  const getAmt = Math.max(0, Math.min(fromTotal, n($('buyAmount').value)));
-  const payAmt = getAmt * rate;
-  const afterBuy = Math.max(0, fromTotal - getAmt);
-  const isFullBuy = getAmt >= fromTotal - 1e-12 && getAmt > 0;
-  $('buyPay').textContent = `${f(payAmt,8)} ${o.to_token}`;
-  $('buyRemaining').innerHTML = `<span style="color:${afterBuy <= 1e-9 ? '#39d98a' : '#fff'};font-weight:700">${f(afterBuy,8)} ${o.from_token}${afterBuy <= 1e-9 && getAmt > 0 ? ' ✅' : ''}</span>`;
-  $('buyAvail').textContent = `${f(tb(o.to_token),8)} ${o.to_token}`;
+  if(!__BUY_ORDER) return; const o=__BUY_ORDER; const fromTotal = n(o.from_amount_remaining != null ? o.from_amount_remaining : o.from_amount); const toTotal = n(o.to_amount_remaining != null ? o.to_amount_remaining : o.to_amount); const rate = fromTotal > 0 ? toTotal / fromTotal : 0; const getAmt = Math.max(0, Math.min(fromTotal, n($('buyAmount').value))); const payAmt = getAmt * rate; const afterBuy = Math.max(0, fromTotal - getAmt); const isFullBuy = getAmt >= fromTotal - 1e-12 && getAmt > 0;
+  $('buyPay').textContent = `${f(payAmt,8)} ${o.to_token}`; $('buyRemaining').innerHTML = `<span style="color:${afterBuy <= 1e-9 ? '#39d98a' : '#fff'};font-weight:700">${f(afterBuy,8)} ${o.from_token}${afterBuy <= 1e-9 && getAmt > 0 ? ' ✅' : ''}</span>`; $('buyAvail').textContent = `${f(tb(o.to_token),8)} ${o.to_token}`;
   const btn = $('buyConfirmBtn');
-  if(getAmt <= 0){btn.disabled = true;btn.textContent = '✅ Выкупить';btn.style.background = '';}
-  else if(isFullBuy){btn.disabled = false;btn.textContent = `✅ ВЫКУПИТЬ ОСТАТОК (${f(fromTotal,4)} ${o.from_token})`;btn.style.background = 'linear-gradient(135deg,#39d98a,#2ba86a)';}
-  else {btn.disabled = false;btn.textContent = '✅ Выкупить часть';btn.style.background = '';}
+  if(getAmt <= 0){btn.disabled = true;btn.textContent = '✅ Выкупить';btn.style.background = '';} else if(isFullBuy){btn.disabled = false;btn.textContent = `✅ ВЫКУПИТЬ ОСТАТОК (${f(fromTotal,4)} ${o.from_token})`;btn.style.background = 'linear-gradient(135deg,#39d98a,#2ba86a)';} else {btn.disabled = false;btn.textContent = '✅ Выкупить часть';btn.style.background = '';}
 }
 async function confirmBuyOrder(){
-  if(!__BUY_ORDER||!UID) return;
-  const o=__BUY_ORDER;
-  const getAmt = n($('buyAmount').value);
-  const btn=$('buyConfirmBtn');
-  if(getAmt<=0){msg('Введите кол-во','error');return;}
-  btn.disabled=true;$('buyStatus').textContent='⏳...';
+  if(!__BUY_ORDER || !UID){ msg('⚠️ Ордер не найден', 'error'); return; } const o = __BUY_ORDER; const getAmt = n($('buyAmount').value);
+  if(getAmt <= 0){ msg('⚠️ Введите количество', 'error'); return; }
+  const fromTotal = n(o.from_amount_remaining != null ? o.from_amount_remaining : o.from_amount); const toTotal = n(o.to_amount_remaining != null ? o.to_amount_remaining : o.to_amount); const rate = fromTotal > 0 ? toTotal / fromTotal : 0; const payNeeded = getAmt * rate; const avail = tb(o.to_token);
+  if(payNeeded > avail + 1e-9){ $('buyStatus').innerHTML = `<span style="color:#f6465d;font-size:12px;white-space:pre-line">💰 Недостаточно ${o.to_token}\nНужно: ${f(payNeeded,4)} ${o.to_token}\nУ вас: ${f(avail,4)} ${o.to_token}</span>`; return; }
+  const btn = $('buyConfirmBtn'); btn.disabled = true; $('buyStatus').textContent = '⏳ Обработка...';
   try{
     const{data,error}=await sb.rpc('accept_p2p_order_chat_partial',{p_order_id:String(o.id),p_taker_id:String(UID),p_get_amount:getAmt});
-    if(error){$('buyStatus').textContent=error.message;btn.disabled=false;return;}
-    $('buyStatus').innerHTML='<span class="ok">✅ Куплено '+f(getAmt,8)+'</span>';
-    msg('✅ Куплено','success');
-    await refreshAll();setTimeout(closeBuyModal,900);
-    if(currentIncomeTab==='p2p') await renderP2PContent($('incomeContent'));
-  }catch(e){$('buyStatus').textContent=e.message;btn.disabled=false;}
+    if(error){ $('buyStatus').innerHTML = `<span style="color:#f6465d;font-size:12px;white-space:pre-line">${esc(p2pErrFromResponse(null, error, payNeeded, avail, o.to_token))}</span>`; btn.disabled = false; return; }
+    if(data && data.ok === false){ $('buyStatus').innerHTML = `<span style="color:#f6465d;font-size:12px;white-space:pre-line">${esc(p2pErrFromResponse(data, null, payNeeded, avail, o.to_token))}</span>`; btn.disabled = false; return; }
+    $('buyStatus').innerHTML = `<span style="color:#39d98a">✅ Куплено ${f(getAmt,4)} ${o.from_token}</span>`; msg('✅ Куплено', 'success'); await refreshAll(); setTimeout(closeBuyModal, 900); if(currentIncomeTab === 'p2p') await renderP2PContent($('incomeContent'));
+  }catch(e){ $('buyStatus').textContent = '⚠️ Ошибка соединения'; btn.disabled = false; }
 }
 async function openDirectOrder(orderId) {
-    goView('income');
-    await showIncomeTab('p2p');
+    goView('income'); await showIncomeTab('p2p');
     const {data, error} = await sb.from('p2p_orders').select('*').eq('id', orderId).maybeSingle();
-    if (error || !data) { msg('Ордер не найден', 'error'); return; }
-    if (data.status !== 'open') { msg('Ордер уже закрыт', 'error'); return; }
+    if (error || !data) { msg('Ордер не найден', 'error'); return; } if (data.status !== 'open') { msg('Ордер уже закрыт', 'error'); return; }
     const {data: u} = await sb.from('users').select('username,first_name,rank_name,rank_level').eq('telegram_id', data.creator_id).maybeSingle();
-    const uu = u || {};
-    const o = Object.assign({}, data, {creator_username: uu.username, creator_first_name: uu.first_name,creator_rank_name: uu.rank_name || 'Новичок', creator_rank_level: uu.rank_level || 0,likes: 0, dislikes: 0, completed_trades: 0,rate: (Number(data.from_amount) > 0) ? (Number(data.to_amount) / Number(data.from_amount)) : 1});
-    ORDER_CACHE[String(o.id)] = o;
-    openBuyModal(o.id);
+    const uu = u || {}; const o = Object.assign({}, data, {creator_username: uu.username, creator_first_name: uu.first_name,creator_rank_name: uu.rank_name || 'Новичок', creator_rank_level: uu.rank_level || 0,likes: 0, dislikes: 0, completed_trades: 0,rate: (Number(data.from_amount) > 0) ? (Number(data.to_amount) / Number(data.from_amount)) : 1});
+    ORDER_CACHE[String(o.id)] = o; openBuyModal(o.id);
 }
-function goToBotChat() {
-  if (!__BUY_ORDER) return;
-  const url = `https://t.me/TELEPATp2p_bot?start=order_${__BUY_ORDER.id}`;
-  if (window.Telegram?.WebApp?.openTelegramLink) { window.Telegram.WebApp.openTelegramLink(url); }
-  else { window.open(url, '_blank'); }
+function goToBotChat() { if (!__BUY_ORDER) return; const url = `https://t.me/TELEPATp2p_bot?start=order_${__BUY_ORDER.id}`; if (window.Telegram?.WebApp?.openTelegramLink) { window.Telegram.WebApp.openTelegramLink(url); } else { window.open(url, '_blank'); } }
+
+/* ═══════ АВТОТОРГОВЛЯ И АРБИТРАЖ ═══════ */
+async function loadAutoTradeStatus() { try { const { data, error } = await sb.rpc('auto_trade_get_status', { p_telegram_id: UID }); if (error || !data || data.ok === false) { return null; } AUTO_TRADE_STATE = data; return data; } catch (e) { return null; } }
+async function activateAutoTrade() {
+  const fromToken = $('at_from_token')?.value || 'TG'; const toToken = $('at_to_token')?.value || 'TUSD'; const amount = n($('at_amount')?.value);
+  if (amount <= 0) { msg('⚠️ Введите корректную сумму', 'error'); return; }
+  const btn = $('at_btn_activate'); if (btn) { btn.disabled = true; btn.textContent = '⏳...'; }
+  try {
+    const { data, error } = await sb.rpc('auto_trade_activate', { p_telegram_id: UID, p_from_token: fromToken, p_to_token: toToken, p_amount_per_trade: amount });
+    if (error) { msg(p2pErrFromResponse(null, error), 'error'); return; } if (data && data.ok === false) { msg(p2pErrFromResponse(data, null), 'error'); return; }
+    msg('🚀 Автоторговля запущена', 'success'); await loadAutoTradeStatus(); if (typeof renderAutoTab === 'function') renderAutoTab();
+  } catch (e) { msg('⚠️ Ошибка соединения', 'error'); } finally { if (btn) { btn.disabled = false; btn.textContent = '▶️ ЗАПУСТИТЬ'; } }
+}
+async function deactivateAutoTrade() { if (!confirm('Остановить автоторговлю?')) return; try { await sb.rpc('auto_trade_deactivate', { p_telegram_id: UID }); msg('⏸ Автоторговля остановлена', 'info'); await loadAutoTradeStatus(); if (typeof renderAutoTab === 'function') renderAutoTab(); } catch (e) { msg('⚠️ Ошибка', 'error'); } }
+async function saveAutoTradeSettings() {
+  const modeCreate = $('at_mode_create')?.checked; const modeHunter = $('at_mode_hunter')?.checked; const modeArb = $('at_mode_arbitrage')?.checked; const allowSelf = $('at_allow_self')?.checked;
+  const amount = n($('at_amount')?.value); const buyMin = n($('at_buy_min')?.value); const buyMax = n($('at_buy_max')?.value); const sellMin = n($('at_sell_min')?.value); const sellMax = n($('at_sell_max')?.value); const minMargin = n($('at_min_margin')?.value);
+  const btn = $('at_btn_save'); if (btn) { btn.disabled = true; btn.textContent = '⏳...'; }
+  try {
+    const { data, error } = await sb.rpc('auto_trade_save_settings', { p_telegram_id: UID, p_mode_create: modeCreate, p_mode_hunter: modeHunter, p_mode_arbitrage: modeArb, p_allow_self_trade: allowSelf, p_amount_per_trade: amount, p_buy_min_pct: buyMin, p_buy_max_pct: buyMax, p_sell_min_pct: sellMin, p_sell_max_pct: sellMax, p_min_margin_pct: minMargin });
+    if (error || (data && data.ok === false)) { msg('⚠️ ' + (data?.error || 'Ошибка сохранения'), 'error'); return; }
+    msg('✅ Настройки сохранены', 'success'); await loadAutoTradeStatus(); if (typeof renderAutoTab === 'function') renderAutoTab();
+  } catch (e) { msg('⚠️ Ошибка', 'error'); } finally { if (btn) { btn.disabled = false; btn.textContent = '💾 СОХРАНИТЬ'; } }
+}
+async function scanArbitrageNow() {
+  if (!AUTO_TRADE_STATE) return []; const from = AUTO_TRADE_STATE.from_token || 'TG'; const to = AUTO_TRADE_STATE.to_token || 'TUSD'; const minMargin = AUTO_TRADE_STATE.min_margin_pct || 2;
+  try { const { data, error } = await sb.rpc('arbitrage_find_pairs', { p_from_token: from, p_to_token: to, p_min_margin_pct: minMargin }); if (error || !data || data.ok === false) { ARBITRAGE_PAIRS = []; return []; } ARBITRAGE_PAIRS = data.pairs || []; return ARBITRAGE_PAIRS; } catch (e) { ARBITRAGE_PAIRS = []; return []; }
+}
+async function executeArbitrage(sellId, buyId, maxQty) {
+  if (!confirm('Выкупить эту арбитражную пару?')) return;
+  try {
+    const { data, error } = await sb.rpc('arbitrage_execute', { p_telegram_id: UID, p_sell_order_id: String(sellId), p_buy_order_id: String(buyId), p_max_qty: Number(maxQty) });
+    if (error) { msg('⚠️ ' + error.message, 'error'); return; } if (data && data.ok === false) { msg('⚠️ ' + (data.error || 'Не удалось выполнить'), 'error'); return; }
+    const profit = data.profit_net || 0; const comm = data.commission || 0;
+    if (typeof showAdRewardPopup === 'function') { showAdRewardPopup(profit, AUTO_TRADE_STATE?.to_token || 'TUSD', `⚡ АРБИТРАЖ ЗАКРЫТ\nМаржа: ${f(data.margin_pct,2)}%\nКомиссия 10%: ${f(comm,4)}`); }
+    await loadAutoTradeStatus(); if (typeof renderAutoTab === 'function') renderAutoTab();
+  } catch (e) { msg('⚠️ Ошибка соединения', 'error'); }
+}
+async function equipLicense(id) {
+  await toggleItemEquip(id, true); await loadAutoTradeStatus(); renderAutoTab(); msg('✅ Сертификат активирован!', 'success');
+}
+async function renderAutoTab() {
+  const box = $('p2pList'); if (!box) return; box.innerHTML = '<div class="item-card"><div class="item-desc">Загрузка...</div></div>';
+  if (!AUTO_TRADE_STATE) { await loadAutoTradeStatus(); } const st = AUTO_TRADE_STATE;
+  if (!st) { box.innerHTML = '<div class="item-card"><div class="item-desc" style="color:red;text-align:center">Ошибка загрузки статуса</div></div>'; return; }
+  if (!st.has_certificate) {
+    // ✅ ИСПРАВЛЕНО: Проверяем, есть ли сертификат в инвентаре (не надет)
+    const licenseItem = MY_ITEMS.find(i => (i.category === 'license' || i.slot === 'license') && !i.is_equipped);
+    if (licenseItem) {
+      box.innerHTML = `<div class="item-card" style="border-color:var(--gold)"><div class="item-header"><b>📜 Сертификат найден!</b></div><div class="item-desc" style="margin-top:6px">Вы купили сертификат, но он лежит в сумке. Наденьте его, чтобы активировать автоторговлю.</div><button class="admin-btn green" style="margin-top:12px" onclick="equipLicense('${licenseItem.id}')">✅ Надеть сертификат</button></div>`;
+    } else {
+      box.innerHTML = `<div class="item-card" style="border-color:var(--gold)"><div class="item-header"><b>🔒 Автоторговля закрыта</b></div><div class="item-desc" style="margin-top:6px">Купите «Сертификат продавца» в магазине, чтобы открыть автоматическую торговлю, повышенные лимиты и арбитраж.</div><button class="admin-btn gold" style="margin-top:12px" onclick="goView('shop')">🏪 Открыть магазин</button></div>`;
+    }
+    return;
+  }
+  const limits = st.rank_limits || {}; const isEnabled = st.enabled; const tokensHtml = ALL_TOKENS.map(t => `<option value="${t.symbol}">${t.symbol}</option>`).join('');
+  if (!isEnabled) {
+    box.innerHTML = `<div class="item-card" style="border-color:var(--gold)"><div class="item-header"><b>📜 Сертификат продавца</b></div><div class="info">👑 Ранг: <b>${limits.rank_name || '—'}</b></div><div class="info">📊 Сегодня: <b>${st.used_today_buy} / ${st.daily_limit_buy}</b> покупок</div><div class="info">📊 Сегодня: <b>${st.used_today_sell} / ${st.daily_limit_sell}</b> продаж</div><div class="info">💵 Макс/сделка: <b>$${limits.max_per_trade}</b></div><div class="info" style="color:var(--gold)">📈 Комиссия платформы: ${limits.commission_pct}% (только с прибыли)</div></div><div class="item-card"><div class="item-header"><b>⚙️ Настройки</b></div><div style="display:flex;gap:8px;margin-top:8px"><select id="at_from_token" style="flex:1;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">${tokensHtml.replace(`value="${st.from_token}"`, `value="${st.from_token}" selected`)}</select><span style="align-self:center;color:var(--muted)">за</span><select id="at_to_token" style="flex:1;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">${tokensHtml.replace(`value="${st.to_token}"`, `value="${st.to_token}" selected`)}</select></div><label style="display:block;font-size:11px;color:var(--muted);margin-top:12px">Сумма за 1 сделку (макс $${limits.max_per_trade})</label><input id="at_amount" type="number" value="${st.amount_per_trade || 1}" max="${limits.max_per_trade}" step="0.01" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px"><label style="display:block;font-size:11px;color:var(--muted);margin-top:12px">Режимы работы</label><div style="display:flex;flex-direction:column;gap:8px;margin-top:4px"><label style="display:flex;align-items:center;gap:8px;font-size:12px;color:#fff"><input type="checkbox" id="at_mode_create" ${st.mode_create?'checked':''}> 🏭 Выставляю (создаю свои ордера)</label><label style="display:flex;align-items:center;gap:8px;font-size:12px;color:#fff"><input type="checkbox" id="at_mode_hunter" ${st.mode_hunter?'checked':''}> 🎯 Охотник (выкупаю чужие)</label><label style="display:flex;align-items:center;gap:8px;font-size:12px;color:#fff"><input type="checkbox" id="at_mode_arbitrage" ${st.mode_arbitrage?'checked':''}> ⚡ Арбитраж (ловлю пары)</label></div><label style="display:block;font-size:11px;color:var(--muted);margin-top:12px">Курс покупки (от рынка)</label><div style="display:flex;gap:8px;margin-top:4px"><input id="at_buy_min" type="number" value="${st.buy_min_pct || -3}" style="flex:1;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px"><span style="align-self:center">до</span><input id="at_buy_max" type="number" value="${st.buy_max_pct || -1}" style="flex:1;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px"><span style="align-self:center">%</span></div><label style="display:block;font-size:11px;color:var(--muted);margin-top:12px">Курс продажи (от цены покупки)</label><div style="display:flex;gap:8px;margin-top:4px"><input id="at_sell_min" type="number" value="${st.sell_min_pct || 2}" style="flex:1;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px"><span style="align-self:center">до</span><input id="at_sell_max" type="number" value="${st.sell_max_pct || 3}" style="flex:1;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px"><span style="align-self:center">%</span></div><label style="display:block;font-size:11px;color:var(--muted);margin-top:12px">Мин. маржа для арбитража</label><div style="display:flex;gap:8px;margin-top:4px"><input id="at_min_margin" type="number" value="${st.min_margin_pct || 2}" style="flex:1;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px"><span style="align-self:center">%</span></div><label style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--red);margin-top:12px"><input type="checkbox" id="at_allow_self" ${st.allow_self_trade?'checked':''}> ⚠️ Разрешить выкупать свои ордера</label><div style="display:flex;gap:8px;margin-top:16px"><button id="at_btn_save" class="admin-btn sec" style="flex:1" onclick="saveAutoTradeSettings()">💾 Сохранить</button><button id="at_btn_activate" class="admin-btn gold" style="flex:1" onclick="activateAutoTrade()">▶️ Запустить</button></div></div>`;
+  } else {
+    box.innerHTML = `<div class="item-card" style="border-color:var(--green)"><div class="item-header"><b>🟢 Автоторговля активна</b></div><div class="info" style="margin-top:6px">Сделок сегодня: <b>${st.used_today_buy} / ${st.daily_limit_buy}</b> (покупки)</div><div class="info">Сделок сегодня: <b>${st.used_today_sell} / ${st.daily_limit_sell}</b> (продажи)</div><div class="info" style="margin-top:4px">Всего создано: <b>${st.total_created}</b> | Арбитражей: <b>${st.total_arbitrages}</b></div><div class="info" style="color:#39d98a;font-size:14px;margin-top:4px">Заработано: <b>$${f(st.total_profit, 2)}</b></div><button class="admin-btn danger" style="margin-top:12px;width:100%" onclick="deactivateAutoTrade()">⏸ Остановить</button></div><div class="item-card"><div class="item-header"><b>⚡ Арбитраж — сканер</b></div><div class="info" style="margin-top:4px">Бот ищет пары с маржой ≥ ${st.min_margin_pct}%. Триггер в базе также проверяет новые ордера автоматически.</div><button class="admin-btn primary" style="margin-top:8px;width:100%" onclick="runArbitrageScan()">🔍 Сканировать рынок сейчас</button><div id="arbitrageResults" style="margin-top:10px"></div></div><div class="item-card"><div class="item-header"><b>📋 Последние события</b></div><div style="display:flex;flex-direction:column;gap:6px;margin-top:8px">${(st.recent_log || []).map(l => `<div style="font-size:11px;padding:6px;background:#0d1520;border-radius:6px;border-left:3px solid ${l.action==='error' ? '#f6465d' : '#39d98a'}"><b>${l.action}</b> ${l.mode ? '('+l.mode+')' : ''} ${l.profit > 0 ? '<span style="color:#39d98a">+ $'+f(l.profit,3)+'</span>' : ''} ${l.error_msg ? '<span style="color:#f6465d">'+l.error_msg+'</span>' : ''}<br><span style="color:#8a94a6;font-size:10px">${new Date(l.created_at).toLocaleString('ru-RU')}</span></div>`).join('') || '<div class="info">Пока нет событий</div>'}</div></div>`;
+  }
+}
+async function runArbitrageScan() {
+  const box = $('arbitrageResults'); if (!box) return; box.innerHTML = '<div class="info" style="text-align:center">⏳ Сканирую...</div>';
+  const pairs = await scanArbitrageNow();
+  if (!pairs || !pairs.length) { box.innerHTML = `<div class="info" style="color:var(--muted);text-align:center;padding:10px">Пока нет пар с маржой ≥ ${AUTO_TRADE_STATE.min_margin_pct}%</div>`; return; }
+  box.innerHTML = pairs.map(p => `<div style="background:#0d1520;border:1px solid var(--line);border-radius:8px;padding:8px;margin-bottom:6px"><div style="color:#fff;font-size:12px;font-weight:bold">Маржа: +${f(p.margin_pct, 2)}%</div><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:4px"><span>Купить: ${f(p.sell_price, 4)}</span><span>Продать: ${f(p.buy_price, 4)}</span></div><div style="font-size:11px;color:#f4cf70;margin-top:4px">Макс. кол-во: ${f(p.max_qty, 4)}</div><button class="admin-btn gold" style="width:100%;margin-top:6px;font-size:11px;padding:6px" onclick="executeArbitrage('${p.sell_id}', '${p.buy_id}', ${p.max_qty})">⚡ Выкупить пару</button></div>`).join('');
 }
 
 /* ═══════ SWAP ═══════ */
 function calcSwap(){if(SWAP_QUOTE_TIMER) clearTimeout(SWAP_QUOTE_TIMER);SWAP_QUOTE_TIMER=setTimeout(fetchSwapQuote,300);}
 async function fetchSwapQuote(){
-  const inp=$('swFromAmt');if(!inp) return;
-  const out=$('swToAmt'),rateEl=$('swRate'),feeEl=$('swFee'),errEl=$('swErr'),btn=$('swapBtn');
-  const amt=n(inp.value);if(errEl) errEl.textContent='';
+  const inp=$('swFromAmt');if(!inp) return; const out=$('swToAmt'),rateEl=$('swRate'),feeEl=$('swFee'),errEl=$('swErr'),btn=$('swapBtn'); const amt=n(inp.value);if(errEl) errEl.textContent='';
   if(amt<=0){if(out) out.value='';if(rateEl) rateEl.textContent='—';if(feeEl) feeEl.textContent='—';if($('swToUsd')) $('swToUsd').textContent='≈ $0.00';SWAP_QUOTE=null;if(btn){btn.disabled=true;btn.textContent='Обменять';}return;}
   if(state_swapFrom===state_swapTo){if(errEl) errEl.textContent='Разные токены';SWAP_QUOTE=null;if(btn){btn.disabled=true;btn.textContent='Обменять';}return;}
   const bal=tb(state_swapFrom);if(btn){btn.disabled=true;btn.textContent='⏳...';}
   try{
     const{data,error}=await sb.rpc('get_swap_quote',{p_from_token:state_swapFrom,p_to_token:state_swapTo,p_amount:amt});
     if(error||!data||data.ok===false){if(errEl) errEl.textContent=data?.error||error?.message||'Ошибка';SWAP_QUOTE=null;if(btn){btn.disabled=true;btn.textContent='Обменять';}return;}
-    SWAP_QUOTE=data;
-    const outAmt=Number(data.amount_out)||0,feeAmt=Number(data.fee)||0,rate=Number(data.rate)||0;
-    if(out) out.value=outAmt>0?outAmt.toFixed(8):'';
-    if(rateEl) rateEl.textContent=`1 ${state_swapFrom} = ${rate.toFixed(8)} ${state_swapTo}`;
-    if(feeEl) feeEl.textContent=`${feeAmt.toFixed(8)} ${state_swapFrom} (${data.fee_pct}%)`;
-    if($('swToUsd')) $('swToUsd').textContent='≈ $'+f(outAmt*priceOf(state_swapTo),4);
-    const enough=bal>=amt;
-    if(btn){btn.disabled=!enough;btn.classList.toggle('active',enough);btn.textContent=enough?'Обменять':`Мало ${state_swapFrom}`;}
+    SWAP_QUOTE=data; const outAmt=Number(data.amount_out)||0,feeAmt=Number(data.fee)||0,rate=Number(data.rate)||0;
+    if(out) out.value=outAmt>0?outAmt.toFixed(8):''; if(rateEl) rateEl.textContent=`1 ${state_swapFrom} = ${rate.toFixed(8)} ${state_swapTo}`; if(feeEl) feeEl.textContent=`${feeAmt.toFixed(8)} ${state_swapFrom} (${data.fee_pct}%)`; if($('swToUsd')) $('swToUsd').textContent='≈ $'+f(outAmt*priceOf(state_swapTo),4);
+    const enough=bal>=amt; if(btn){btn.disabled=!enough;btn.classList.toggle('active',enough);btn.textContent=enough?'Обменять':`Мало ${state_swapFrom}`;}
   }catch(e){if(errEl) errEl.textContent=e.message;SWAP_QUOTE=null;if(btn){btn.disabled=true;btn.textContent='Обменять';}}
 }
 function setSwapMax(){const inp=$('swFromAmt');if(!inp) return;inp.value=String(tb(state_swapFrom));calcSwap();}
-function swapSwapTokens(){
-  const amt=$('swFromAmt')?.value||'';const t=state_swapFrom;state_swapFrom=state_swapTo;state_swapTo=t;SWAP_QUOTE=null;
-  showIncomeTab('swap').then(()=>{const inp=$('swFromAmt');if(inp&&amt){inp.value=amt;calcSwap();}});
-}
-function openTokenPicker(target){
-  openModal('Выбрать токен',ALL_TOKENS.map(t=>`<button class="admin-btn sec" style="width:100%;margin-bottom:6px" onclick="pickToken('${target}','${t.symbol}')">${tokenIcon(t.symbol)} ${t.symbol}</button>`).join(''));
-}
-function pickToken(target,t){
-  if(target==='from'){state_swapFrom=t;if(state_swapTo===t) state_swapTo=t==='TUSD'?'TG':'TUSD';}
-  else{state_swapTo=t;if(state_swapFrom===t) state_swapFrom=t==='TUSD'?'TG':'TUSD';}
-  closeModal();showIncomeTab('swap');
-}
+function swapSwapTokens(){ const amt=$('swFromAmt')?.value||'';const t=state_swapFrom;state_swapFrom=state_swapTo;state_swapTo=t;SWAP_QUOTE=null; showIncomeTab('swap').then(()=>{const inp=$('swFromAmt');if(inp&&amt){inp.value=amt;calcSwap();}}); }
+function openTokenPicker(target){ openModal('Выбрать токен',ALL_TOKENS.map(t=>`<button class="admin-btn sec" style="width:100%;margin-bottom:6px" onclick="pickToken('${target}','${t.symbol}')">${tokenIcon(t.symbol)} ${t.symbol}</button>`).join('')); }
+function pickToken(target,t){ if(target==='from'){state_swapFrom=t;if(state_swapTo===t) state_swapTo=t==='TUSD'?'TG':'TUSD';} else{state_swapTo=t;if(state_swapFrom===t) state_swapFrom=t==='TUSD'?'TG':'TUSD';} closeModal();showIncomeTab('swap'); }
 async function doSwap(){
-  if(SWAP_BUSY) return;if(!SWAP_QUOTE){msg('Ждите расчёта','error');return;}
-  const amt=n($('swFromAmt').value);if(amt<=0){msg('Введите сумму','error');return;}
-  if(tb(state_swapFrom)<amt){msg('Недостаточно','error');return;}
+  if(SWAP_BUSY) return;if(!SWAP_QUOTE){msg('Ждите расчёта','error');return;} const amt=n($('swFromAmt').value);if(amt<=0){msg('Введите сумму','error');return;} if(tb(state_swapFrom)<amt){msg('Недостаточно','error');return;}
   const btn=$('swapBtn');SWAP_BUSY=true;if(btn){btn.disabled=true;btn.textContent='⏳...';}
   try{
     const{data,error}=await sb.rpc('swap_execute',{p_from_token:state_swapFrom,p_to_token:state_swapTo,p_amount:amt});
     if(error||!data||data.ok===false){msg(data?.error||error?.message||'Ошибка','error');SWAP_BUSY=false;if(btn)btn.textContent='Обменять';calcSwap();return;}
-    msg(`✅ ${f(data.amount_in,6)} → ${f(data.amount_out,6)}`,'success');
-    SWAP_QUOTE=null;SWAP_BUSY=false;await refreshAll();await loadAllTokens();
-    if(currentIncomeTab==='swap') await showIncomeTab('swap');
+    msg(`✅ ${f(data.amount_in,6)} → ${f(data.amount_out,6)}`,'success'); SWAP_QUOTE=null;SWAP_BUSY=false;await refreshAll();await loadAllTokens(); if(currentIncomeTab==='swap') await showIncomeTab('swap');
   }catch(e){msg(e.message,'error');SWAP_BUSY=false;if(btn)btn.textContent='Обменять';}
 }
 
 /* ═══════ FRIENDS ═══════ */
 async function renderFriends(){
-  if(UID) $('refLink').value=`https://t.me/TELEPATp2p_bot?start=${UID}`;
-  const summary=$('refSummary'),list=$('refList');
-  if(list) list.innerHTML='<div class="info">Загрузка...</div>';
-  const{data,error}=await sb.rpc('get_my_referrals');
-  if(error||!data||!data.length){if(list)list.innerHTML='<div class="info">Пока нет рефералов</div>';if(summary)summary.innerHTML='';loadReferralEarningsSummary();return;}
-  const t1=data.filter(r=>r.level===1).length,t2=data.filter(r=>r.level===2).length,t3=data.filter(r=>r.level===3).length;
-  if(summary) summary.innerHTML=`📊 1 ур.: <b>${t1}</b> • 2: <b>${t2}</b> • 3: <b>${t3}</b>`;
-  let html='';
-  [1,2,3].forEach(lvl=>{
-    const refs=data.filter(r=>r.level===lvl);if(!refs.length) return;
-    const medals=['🥇','🥈','🥉'];
-    html+=`<div class="title" style="margin-top:12px;font-size:12px">${medals[lvl-1]} УРОВЕНЬ (${refs.length})</div>`;
-    html+=refs.map(r=>{
-      const name=r.first_name||r.username||r.referral_id;
-      const date=new Date(r.joined_at).toLocaleDateString('ru-RU');
-      const earned=[];
-      if(n(r.earned_tg)>0) earned.push('+'+f(r.earned_tg,6)+' TG');
-      if(n(r.earned_tusd)>0) earned.push('+'+f(r.earned_tusd,6)+' TUSD');
-      return `<div style="display:flex;justify-content:space-between;padding:10px;background:#0d1520;border:1px solid #2e3a4c;border-radius:12px;margin-top:8px"><div><div style="color:#fff;font-weight:bold;font-size:13px">👤 ${esc(name)}</div><div class="info" style="font-size:11px">${date}</div></div><div style="text-align:right;font-size:12px;color:#39d98a">${earned.length?earned.join('<br>'):'0'}</div></div>`;
-    }).join('');
-  });
-  if(list) list.innerHTML=html;
-  loadReferralEarningsSummary();
+  if(UID) $('refLink').value=`https://t.me/TELEPATp2p_bot?start=${UID}`; const summary=$('refSummary'),list=$('refList'); if(list) list.innerHTML='<div class="info">Загрузка...</div>';
+  const{data,error}=await sb.rpc('get_my_referrals'); if(error||!data||!data.length){if(list)list.innerHTML='<div class="info">Пока нет рефералов</div>';if(summary)summary.innerHTML='';loadReferralEarningsSummary();return;}
+  const t1=data.filter(r=>r.level===1).length,t2=data.filter(r=>r.level===2).length,t3=data.filter(r=>r.level===3).length; if(summary) summary.innerHTML=`📊 1 ур.: <b>${t1}</b> • 2: <b>${t2}</b> • 3: <b>${t3}</b>`;
+  let html=''; [1,2,3].forEach(lvl=>{ const refs=data.filter(r=>r.level===lvl);if(!refs.length) return; const medals=['🥇','🥈','🥉']; html+=`<div class="title" style="margin-top:12px;font-size:12px">${medals[lvl-1]} УРОВЕНЬ (${refs.length})</div>`; html+=refs.map(r=>{ const name=r.first_name||r.username||r.referral_id; const date=new Date(r.joined_at).toLocaleDateString('ru-RU'); const earned=[]; if(n(r.earned_tg)>0) earned.push('+'+f(r.earned_tg,6)+' TG'); if(n(r.earned_tusd)>0) earned.push('+'+f(r.earned_tusd,6)+' TUSD'); return `<div style="display:flex;justify-content:space-between;padding:10px;background:#0d1520;border:1px solid #2e3a4c;border-radius:12px;margin-top:8px"><div><div style="color:#fff;font-weight:bold;font-size:13px">👤 ${esc(name)}</div><div class="info" style="font-size:11px">${date}</div></div><div style="text-align:right;font-size:12px;color:#39d98a">${earned.length?earned.join('<br>'):'0'}</div></div>`; }).join(''); });
+  if(list) list.innerHTML=html; loadReferralEarningsSummary();
 }
 async function loadReferralEarningsSummary(){
-  const elTG=$('refTG'),elTU=$('refTUSD'),list=$('refEarningsList');
-  if(elTG) elTG.textContent='0';if(elTU) elTU.textContent='0';
-  if(list) list.innerHTML='<div class="info">Загрузка...</div>';
-  try{
-    const{data,error}=await sb.rpc('get_referral_earnings_summary');
-    if(error||!data||data.ok===false){if(list)list.innerHTML='Нет данных';return;}
-    const earnings=data.earnings||[];
-    if(!earnings.length){if(list)list.innerHTML='Пусто';return;}
-    earnings.forEach(e=>{if(e.token_symbol==='TG'&&elTG) elTG.textContent=f(e.total_amount);if(e.token_symbol==='TUSD'&&elTU) elTU.textContent=f(e.total_amount);});
-    if(list) list.innerHTML=earnings.map(e=>`<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:#0d1520;border:1px solid #2d3a4c;border-radius:10px">${tokenIconHTML(e.token_symbol,'sm')}<div style="flex:1"><div style="color:#fff;font-weight:bold;font-size:13px">${esc(e.token_symbol)}</div><div class="info" style="font-size:10px">${e.ops} опер.</div></div><div style="color:#39d98a;font-weight:bold">+${f(e.total_amount,6)}</div></div>`).join('');
-  }catch(e){if(list)list.innerHTML='Ошибка';}
+  const elTG=$('refTG'),elTU=$('refTUSD'),list=$('refEarningsList'); if(elTG) elTG.textContent='0';if(elTU) elTU.textContent='0'; if(list) list.innerHTML='<div class="info">Загрузка...</div>';
+  try{ const{data,error}=await sb.rpc('get_referral_earnings_summary'); if(error||!data||data.ok===false){if(list)list.innerHTML='Нет данных';return;} const earnings=data.earnings||[]; if(!earnings.length){if(list)list.innerHTML='Пусто';return;} earnings.forEach(e=>{if(e.token_symbol==='TG'&&elTG) elTG.textContent=f(e.total_amount);if(e.token_symbol==='TUSD'&&elTU) elTU.textContent=f(e.total_amount);}); if(list) list.innerHTML=earnings.map(e=>`<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:#0d1520;border:1px solid #2d3a4c;border-radius:10px">${tokenIconHTML(e.token_symbol,'sm')}<div style="flex:1"><div style="color:#fff;font-weight:bold;font-size:13px">${esc(e.token_symbol)}</div><div class="info" style="font-size:10px">${e.ops} опер.</div></div><div style="color:#39d98a;font-weight:bold">+${f(e.total_amount,6)}</div></div>`).join(''); }catch(e){if(list)list.innerHTML='Ошибка';}
 }
 async function loadMyReferrals(){renderFriends();}
 
 /* ═══════ RATING ═══════ */
 function renderRating(){ showRatingTab(currentRatingTab); }
 async function showRatingTab(tab){
-  currentRatingTab = tab;
-  document.querySelectorAll('#ratingTabs .tab').forEach(b=>b.classList.toggle('active', b.dataset.tab === tab));
-  const c = $('ratingContent');
-  if(!c) return;
-  c.innerHTML = '<div class="item-card"><div class="item-desc">Загрузка...</div></div>';
-  let html = `
-    <div class="item-card" style="background:linear-gradient(135deg,#2a1e0c,#1a1206); border-color:var(--gold);">
-      <div class="item-header"><b>⭐ Твой рейтинг</b></div>
-      <div style="font-size:32px; font-weight:800; color:var(--gold); text-align:center; margin-top:8px;">${CU?.rating_points || 0}</div>
-      <div class="info" style="text-align:center">баллов</div>
-    </div>
-    <div class="title" style="margin-top:20px;font-size:14px;text-align:center">🏆 ТОП-100</div>
-  `;
+  currentRatingTab = tab; document.querySelectorAll('#ratingTabs .tab').forEach(b=>b.classList.toggle('active', b.dataset.tab === tab)); const c = $('ratingContent'); if(!c) return; c.innerHTML = '<div class="item-card"><div class="item-desc">Загрузка...</div></div>';
+  let html = `<div class="item-card" style="background:linear-gradient(135deg,#2a1e0c,#1a1206); border-color:var(--gold);"><div class="item-header"><b>⭐ Твой рейтинг</b></div><div style="font-size:32px; font-weight:800; color:var(--gold); text-align:center; margin-top:8px;">${CU?.rating_points || 0}</div><div class="info" style="text-align:center">баллов</div></div><div class="title" style="margin-top:20px;font-size:14px;text-align:center">🏆 ТОП-100</div>`;
   let list = [];
-  try {
-    const rpcName = tab === 'refs' ? 'get_leaderboard_referrals' : 'get_leaderboard_earnings';
-    const r = await sb.rpc(rpcName, { p_limit: 100 });
-    if(!r.error && r.data) { list = Array.isArray(r.data) ? r.data : (r.data.items || []); }
-  } catch(e) {}
-  if(!list.length) {
-    try {
-      if(tab === 'refs') {
-        const r = await sb.from('users').select('telegram_id,username,first_name,refs_new,rank_name,rank_level').order('refs_new', {ascending:false}).limit(100);
-        list = r.data || [];
-      } else {
-        const r = await sb.from('users').select('telegram_id,username,first_name,rank_name,rank_level,tg_balance,tusd_balance,ai_balance').limit(1000);
-        list = (r.data||[]).map(u=>({...u, portfolio: Number(u.tg_balance||0)*100 + Number(u.tusd_balance||0)})).sort((a,b)=>b.portfolio-a.portfolio).slice(0,100);
-      }
-    } catch(e) {}
-  }
-  if(!list.length) {
-    c.innerHTML = html + '<div class="item-card"><div class="item-desc" style="text-align:center">Топ пока пуст</div></div>';
-    return;
-  }
-  const medals = ['🥇','🥈','🥉'];
-  const title = tab === 'refs' ? '👥 По приглашённым' : '💰 По заработку';
+  try { const rpcName = tab === 'refs' ? 'get_leaderboard_referrals' : 'get_leaderboard_earnings'; const r = await sb.rpc(rpcName, { p_limit: 100 }); if(!r.error && r.data) { list = Array.isArray(r.data) ? r.data : (r.data.items || []); } } catch(e) {}
+  if(!list.length) { try { if(tab === 'refs') { const r = await sb.from('users').select('telegram_id,username,first_name,refs_new,rank_name,rank_level').order('refs_new', {ascending:false}).limit(100); list = r.data || []; } else { const r = await sb.from('users').select('telegram_id,username,first_name,rank_name,rank_level,tg_balance,tusd_balance,ai_balance').limit(1000); list = (r.data||[]).map(u=>({...u, portfolio: Number(u.tg_balance||0)*100 + Number(u.tusd_balance||0)})).sort((a,b)=>b.portfolio-a.portfolio).slice(0,100); } } catch(e) {} }
+  if(!list.length) { c.innerHTML = html + '<div class="item-card"><div class="item-desc" style="text-align:center">Топ пока пуст</div></div>'; return; }
+  const medals = ['🥇','🥈','🥉']; const title = tab === 'refs' ? '👥 По приглашённым' : '💰 По заработку';
   c.innerHTML = html + `<div class="item-card" style="margin-top:-10px;margin-bottom:10px;border:0;background:transparent;padding:0"><div class="item-desc" style="text-align:center">${title}</div></div>` + 
   list.map((u, i) => {
-    const place = medals[i] || ('#' + (i+1));
-    const nm = u.username ? '@'+u.username : (u.first_name || ('ID '+u.telegram_id));
-    let val;
-    if(tab === 'refs') { val = Number(u.refs_new||0) + ' 👥'; }
-    else {const p = u.portfolio != null ? Number(u.portfolio) : (Number(u.tg_balance||0)*100 + Number(u.tusd_balance||0));val = '$' + f(p, 2);}
-    const isMe = String(u.telegram_id) === String(UID);
-    const cls = i===0?'gold':i===1?'silver':i===2?'bronze':'';
-    return `<div class="lead-row" style="${isMe?'border-color:var(--gold)':''}">
-      <div class="lead-place ${cls}">${place}</div>
-      <div class="lead-info"><div class="lead-name">${esc(nm)}${isMe?' (вы)':''}</div><div class="lead-rank">👑 ${esc(u.rank_name || RANKS[u.rank_level||0] || 'Новичок')}</div></div>
-      <div class="lead-value"><b>${val}</b></div>
-    </div>`;
+    const place = medals[i] || ('#' + (i+1)); const nm = u.username ? '@'+u.username : (u.first_name || ('ID '+u.telegram_id)); let val;
+    if(tab === 'refs') { val = Number(u.refs_new||0) + ' 👥'; } else {const p = u.portfolio != null ? Number(u.portfolio) : (Number(u.tg_balance||0)*100 + Number(u.tusd_balance||0));val = '$' + f(p, 2);}
+    const isMe = String(u.telegram_id) === String(UID); const cls = i===0?'gold':i===1?'silver':i===2?'bronze':'';
+    return `<div class="lead-row" style="${isMe?'border-color:var(--gold)':''}"><div class="lead-place ${cls}">${place}</div><div class="lead-info"><div class="lead-name">${esc(nm)}${isMe?' (вы)':''}</div><div class="lead-rank">👑 ${esc(u.rank_name || RANKS[u.rank_level||0] || 'Новичок')}</div></div><div class="lead-value"><b>${val}</b></div></div>`;
   }).join('');
 }
   
@@ -2935,6 +2175,7 @@ function renderAdmin(){
   loadAdminRevenue();loadAdminAccounts();loadAdminWalletFlags();loadAdminWithdrawals();loadAdminTokensForWallet();loadAdminReceiveWallets();loadAdminDeposits();
   loadAdminRefStats();loadAdminOrphans();loadAdminRefLots();loadAdminAuctions();
   loadBgSettingsToAdmin();loadKnightBgSettingsToAdmin();
+  loadAdminAutoTrade(); // ✅ Загрузка автоторговли в админке
 }
 async function loadAdminAccounts(){
   const adsBox=$('adsBalanceList'),mainBox=$('mainBalanceList');if(!adsBox||!mainBox) return;
@@ -3589,6 +2830,89 @@ document.head.insertAdjacentHTML('beforeend',`<style>.market-toast{position:fixe
 function showMarketToast(text){const toast = document.createElement('div');toast.className = 'market-toast';toast.innerHTML = text;document.body.appendChild(toast);setTimeout(() => toast.classList.add('show'), 100);setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 400); }, 5000);}
 function initMarketEvents(){sb.channel('market-popups').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'market_events' }, payload => { showMarketToast(payload.new.message); }).subscribe();}
 
+/* ═══════ АДМИНКА: АВТОТОРГОВЛЯ ═══════ */
+async function loadAdminAutoTrade() {
+  try {
+    const { data } = await sb.rpc('admin_auto_trade_stats');
+    if (data && data.ok) {
+      if ($('at_stat_active')) $('at_stat_active').textContent = data.active_users || 0;
+      if ($('at_stat_arbitrages')) $('at_stat_arbitrages').textContent = data.arbitrages_today || 0;
+      if ($('at_stat_commission')) $('at_stat_commission').textContent = '$' + f(data.commission_today || 0, 2);
+      if ($('at_stat_profit')) $('at_stat_profit').textContent = '$' + f(data.profit_users_today || 0, 2);
+    }
+  } catch(e) { console.error('stats error', e); }
+
+  try {
+    const { data } = await sb.rpc('admin_auto_trade_list_ranks');
+    const box = $('at_admin_ranks_list');
+    if (box && data && data.ok) {
+      box.innerHTML = data.items.map(r => `
+        <div class="pc" style="margin-bottom:6px; padding:8px">
+          <div style="display:flex; justify-content:space-between; align-items:center">
+            <b style="font-size:12px">${r.rank_name}</b>
+            <span style="font-size:10px; color:var(--muted)">Ур. ${r.rank_level}</span>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:4px; margin-top:6px">
+            <div><div class="info" style="font-size:9px">Покуп</div><input type="number" id="rk_buy_${r.rank_level}" value="${r.daily_buy}" style="width:100%;background:#000;color:#fff;border:1px solid #333;padding:2px 4px;font-size:11px;border-radius:4px"></div>
+            <div><div class="info" style="font-size:9px">Продаж</div><input type="number" id="rk_sell_${r.rank_level}" value="${r.daily_sell}" style="width:100%;background:#000;color:#fff;border:1px solid #333;padding:2px 4px;font-size:11px;border-radius:4px"></div>
+            <div><div class="info" style="font-size:9px">Макс $</div><input type="number" id="rk_max_${r.rank_level}" value="${r.max_per_trade}" style="width:100%;background:#000;color:#fff;border:1px solid #333;padding:2px 4px;font-size:11px;border-radius:4px"></div>
+            <div><div class="info" style="font-size:9px">Комис %</div><input type="number" id="rk_comm_${r.rank_level}" value="${r.commission_pct}" style="width:100%;background:#000;color:#fff;border:1px solid #333;padding:2px 4px;font-size:11px;border-radius:4px"></div>
+          </div>
+          <button class="admin-btn sm gold" style="width:100%; margin-top:6px; font-size:10px; padding:4px" onclick="saveAdminRankLimit(${r.rank_level})">💾 Сохранить</button>
+        </div>
+      `).join('');
+    }
+  } catch(e) { console.error('ranks error', e); }
+
+  try {
+    const { data } = await sb.rpc('admin_auto_trade_list_active');
+    const box = $('at_admin_active_users');
+    if (box && data && data.ok) {
+      if (!data.items || !data.items.length) {
+        box.innerHTML = '<div class="info" style="text-align:center">Нет активных юзеров</div>';
+      } else {
+        box.innerHTML = data.items.map(u => `
+          <div style="background:#0d1520; border:1px solid #2d3a4c; border-radius:8px; padding:8px; margin-bottom:6px">
+            <div style="display:flex; justify-content:space-between; align-items:center">
+              <b style="font-size:13px; color:#fff">@${u.username || u.first_name || u.telegram_id}</b>
+              <span style="font-size:10px; color:var(--gold)">${u.rank_name || '—'}</span>
+            </div>
+            <div style="font-size:10px; color:var(--muted); margin-top:4px">
+              ${u.mode_create ? '🏭 Выставляю ' : ''}${u.mode_hunter ? '🎯 Охотник ' : ''}${u.mode_arbitrage ? '⚡ Арбитраж' : ''}
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:11px; margin-top:6px">
+              <span>Покуп: <b>${u.used_today_buy}/${u.daily_limit_buy}</b></span>
+              <span>Продаж: <b>${u.used_today_sell}/${u.daily_limit_sell}</b></span>
+              <span style="color:#39d98a">+ $${f(u.total_profit, 2)}</span>
+            </div>
+          </div>
+        `).join('');
+      }
+    }
+  } catch(e) { console.error('users error', e); }
+}
+async function saveAdminRankLimit(rankLevel) {
+  const buy = $('rk_buy_'+rankLevel).value;
+  const sell = $('rk_sell_'+rankLevel).value;
+  const max = $('rk_max_'+rankLevel).value;
+  const comm = $('rk_comm_'+rankLevel).value;
+  try {
+    await sb.rpc('admin_auto_trade_update_rank', {
+      p_rank_level: rankLevel, p_daily_buy: Number(buy),
+      p_daily_sell: Number(sell), p_max_per_trade: Number(max), p_commission_pct: Number(comm)
+    });
+    msg('✅ Лимит обновлён', 'success');
+  } catch(e) { msg('Ошибка сохранения', 'error'); }
+}
+async function adminStopAllAutoTrade() {
+  if (!confirm('⚠️ ВНИМАНИЕ! Выключить автоторговлю у ВСЕХ пользователей?')) return;
+  try {
+    const { data } = await sb.rpc('admin_auto_trade_stop_all');
+    msg(`🚨 Остановлено: ${data.stopped} юзеров`, 'success');
+    loadAdminAutoTrade();
+  } catch(e) { msg('Ошибка', 'error'); }
+}
+
 /* ═══════ REFRESH + INIT ═══════ */
 async function refreshAll(){
   await loadUser();await loadMyItems();await loadAllTokens();await loadCustomBalances();await loadRewardFunds();await loadStakeState();
@@ -3602,186 +2926,6 @@ async function refreshAll(){
 function initRealtimeUpdates() {
   if(!UID) return;
   sb.channel('user-live-updates').on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'users', filter: `telegram_id=eq.${UID}` }, payload => {CU = { ...CU, ...payload.new };renderHome();}).subscribe();
-}
-  /* ═══════════════════════════════════════════════════════════════════
-   АВТОТОРГОВЛЯ И АРБИТРАЖ — ЛОГИКА
-   ═══════════════════════════════════════════════════════════════════ */
-
-let AUTO_TRADE_STATE = null;
-let ARBITRAGE_PAIRS = [];
-
-// Загрузка статуса с сервера
-async function loadAutoTradeStatus() {
-  try {
-    const { data, error } = await sb.rpc('auto_trade_get_status', { p_telegram_id: UID });
-    if (error || !data || data.ok === false) {
-      if (error) console.error('loadAutoTradeStatus:', error);
-      return null;
-    }
-    AUTO_TRADE_STATE = data;
-    return data;
-  } catch (e) {
-    console.error('auto trade status error:', e);
-    return null;
-  }
-}
-
-// Включение автоторговли
-async function activateAutoTrade() {
-  const fromToken = $('at_from_token')?.value || 'TG';
-  const toToken = $('at_to_token')?.value || 'TUSD';
-  const amount = n($('at_amount')?.value);
-
-  if (amount <= 0) { msg('⚠️ Введите корректную сумму', 'error'); return; }
-
-  const btn = $('at_btn_activate');
-  if (btn) { btn.disabled = true; btn.textContent = '⏳...'; }
-
-  try {
-    const { data, error } = await sb.rpc('auto_trade_activate', {
-      p_telegram_id: UID,
-      p_from_token: fromToken,
-      p_to_token: toToken,
-      p_amount_per_trade: amount
-    });
-
-    if (error) {
-      msg(p2pErrFromResponse(null, error), 'error');
-      return;
-    }
-    if (data && data.ok === false) {
-      msg(p2pErrFromResponse(data, null), 'error');
-      return;
-    }
-
-    msg('🚀 Автоторговля запущена', 'success');
-    await loadAutoTradeStatus();
-    if (typeof renderAutoTab === 'function') renderAutoTab(); // вызовем рендер из Части 3
-  } catch (e) {
-    msg('⚠️ Ошибка соединения', 'error');
-  } finally {
-    if (btn) { btn.disabled = false; btn.textContent = '▶️ ЗАПУСТИТЬ'; }
-  }
-}
-
-// Выключение автоторговли
-async function deactivateAutoTrade() {
-  if (!confirm('Остановить автоторговлю?')) return;
-  try {
-    const { data } = await sb.rpc('auto_trade_deactivate', { p_telegram_id: UID });
-    msg('⏸ Автоторговля остановлена', 'info');
-    await loadAutoTradeStatus();
-    if (typeof renderAutoTab === 'function') renderAutoTab();
-  } catch (e) {
-    msg('⚠️ Ошибка', 'error');
-  }
-}
-
-// Сохранение настроек (диапазоны, маржа, галочки)
-async function saveAutoTradeSettings() {
-  const modeCreate = $('at_mode_create')?.checked;
-  const modeHunter = $('at_mode_hunter')?.checked;
-  const modeArb    = $('at_mode_arbitrage')?.checked;
-  const allowSelf  = $('at_allow_self')?.checked;
-  
-  const amount    = n($('at_amount')?.value);
-  const buyMin    = n($('at_buy_min')?.value);
-  const buyMax    = n($('at_buy_max')?.value);
-  const sellMin   = n($('at_sell_min')?.value);
-  const sellMax   = n($('at_sell_max')?.value);
-  const minMargin = n($('at_min_margin')?.value);
-
-  const btn = $('at_btn_save');
-  if (btn) { btn.disabled = true; btn.textContent = '⏳...'; }
-
-  try {
-    const { data, error } = await sb.rpc('auto_trade_save_settings', {
-      p_telegram_id: UID,
-      p_mode_create: modeCreate,
-      p_mode_hunter: modeHunter,
-      p_mode_arbitrage: modeArb,
-      p_allow_self_trade: allowSelf,
-      p_amount_per_trade: amount,
-      p_buy_min_pct: buyMin,
-      p_buy_max_pct: buyMax,
-      p_sell_min_pct: sellMin,
-      p_sell_max_pct: sellMax,
-      p_min_margin_pct: minMargin
-    });
-
-    if (error || (data && data.ok === false)) {
-      msg('⚠️ ' + (data?.error || 'Ошибка сохранения'), 'error');
-      return;
-    }
-
-    msg('✅ Настройки сохранены', 'success');
-    await loadAutoTradeStatus();
-    if (typeof renderAutoTab === 'function') renderAutoTab();
-  } catch (e) {
-    msg('⚠️ Ошибка', 'error');
-  } finally {
-    if (btn) { btn.disabled = false; btn.textContent = '💾 СОХРАНИТЬ'; }
-  }
-}
-
-// Сканирование рынка на арбитраж
-async function scanArbitrageNow() {
-  if (!AUTO_TRADE_STATE) return [];
-  const from = AUTO_TRADE_STATE.from_token || 'TG';
-  const to = AUTO_TRADE_STATE.to_token || 'TUSD';
-  const minMargin = AUTO_TRADE_STATE.min_margin_pct || 2;
-
-  try {
-    const { data, error } = await sb.rpc('arbitrage_find_pairs', {
-      p_from_token: from,
-      p_to_token: to,
-      p_min_margin_pct: minMargin
-    });
-
-    if (error || !data || data.ok === false) {
-      ARBITRAGE_PAIRS = [];
-      return [];
-    }
-
-    ARBITRAGE_PAIRS = data.pairs || [];
-    return ARBITRAGE_PAIRS;
-  } catch (e) {
-    ARBITRAGE_PAIRS = [];
-    return [];
-  }
-}
-
-// Выполнить найденный арбитраж
-async function executeArbitrage(sellId, buyId, maxQty) {
-  if (!confirm('Выкупить эту арбитражную пару?')) return;
-  try {
-    const { data, error } = await sb.rpc('arbitrage_execute', {
-      p_telegram_id: UID,
-      p_sell_order_id: String(sellId),
-      p_buy_order_id: String(buyId),
-      p_max_qty: Number(maxQty)
-    });
-
-    if (error) { msg('⚠️ ' + error.message, 'error'); return; }
-    if (data && data.ok === false) {
-      msg('⚠️ ' + (data.error || 'Не удалось выполнить'), 'error');
-      return;
-    }
-
-    const profit = data.profit_net || 0;
-    const comm = data.commission || 0;
-    
-    // Красивое всплывающее окно
-    if (typeof showAdRewardPopup === 'function') {
-      showAdRewardPopup(profit, AUTO_TRADE_STATE?.to_token || 'TUSD', 
-        `⚡ АРБИТРАЖ ЗАКРЫТ\nМаржа: ${f(data.margin_pct,2)}%\nКомиссия 10%: ${f(comm,4)}`);
-    }
-    
-    await loadAutoTradeStatus();
-    if (typeof renderAutoTab === 'function') renderAutoTab();
-  } catch (e) {
-    msg('⚠️ Ошибка соединения', 'error');
-  }
 }
 document.addEventListener('DOMContentLoaded',async()=>{
   await refreshJwt();
