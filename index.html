@@ -1820,7 +1820,39 @@ async function renderAutoTab() {
     box.innerHTML = `
     <div class="item-card" style="border-color:var(--green)"><div class="item-header"><b>🟢 Автоторговля активна</b></div><div class="info" style="margin-top:6px">Сделок сегодня: <b>${st.used_today_buy} / ${st.daily_limit_buy}</b> (покупки)</div><div class="info">Сделок сегодня: <b>${st.used_today_sell} / ${st.daily_limit_sell}</b> (продажи)</div><div class="info" style="margin-top:4px">Всего создано: <b>${st.total_created}</b> | Арбитражей: <b>${st.total_arbitrages}</b></div><div class="info" style="color:#39d98a;font-size:14px;margin-top:4px">Заработано: <b>$${f(st.total_profit, 2)}</b></div><button class="admin-btn danger" style="margin-top:12px;width:100%" onclick="deactivateAutoTrade()">⏸ Остановить</button></div>
     <div class="item-card"><div class="item-header"><b>⚡ Арбитраж — сканер</b></div><div class="info" style="margin-top:4px">Бот ищет пары с маржой ≥ ${st.min_margin_pct}%. Триггер в базе также проверяет новые ордера автоматически.</div><button class="admin-btn primary" style="margin-top:8px;width:100%" onclick="runArbitrageScan()">🔍 Сканировать рынок сейчас</button><div id="arbitrageResults" style="margin-top:10px"></div></div>
-    <div class="item-card"><div class="item-header"><b>📋 Последние события</b></div><div style="display:flex;flex-direction:column;gap:6px;margin-top:8px">${(st.recent_log || []).map(l => `<div style="font-size:11px;padding:6px;background:#0d1520;border-radius:6px;border-left:3px solid ${l.action==='error' ? '#f6465d' : '#39d98a'}"><b>${l.action}</b> ${l.mode ? '('+l.mode+')' : ''} ${l.profit > 0 ? '<span style="color:#39d98a">+ $'+f(l.profit,3)+'</span>' : ''} ${l.error_msg ? '<span style="color:#f6465d">'+l.error_msg+'</span>' : ''}<br><span style="color:#8a94a6;font-size:10px">${new Date(l.created_at).toLocaleString('ru-RU')}</span></div>`).join('') || '<div class="info">Пока нет событий</div>'}</div></div>`;
+   <div class="item-card">
+    <div class="item-header"><b>📋 Лог событий автоторговли</b></div>
+    <div style="display:flex;flex-direction:column;gap:6px;margin-top:8px">
+    ${(st.recent_log || []).map(l => {
+        let actionText = l.action;
+        let color = '#8a94a6';
+        let profitHtml = '';
+        
+        if (l.action === 'arbitrage' || l.action === 'created') {
+            color = '#39d98a'; // Зеленый
+            actionText = l.action === 'arbitrage' ? '⚡ АРБИТРАЖ' : '🏭 СОЗДАН ОРДЕР';
+            if (l.profit > 0) {
+                profitHtml = `<span style="color:#39d98a;font-weight:bold;margin-left:6px;">+ $${f(l.profit, 4)}</span>`;
+            }
+        } else if (l.action === 'error') {
+            color = '#f6465d'; // Красный
+            actionText = '❌ ОШИБКА';
+            profitHtml = `<div style="color:#f6465d;font-size:10px;margin-top:2px;">${l.error_msg || 'Неизвестно'}</div>`;
+        }
+
+        const time = new Date(l.created_at).toLocaleTimeString('ru-RU', {hour: '2-digit', minute:'2-digit'});
+        
+        return `<div style="font-size:11px;padding:8px;background:#0d1520;border-radius:6px;border-left:3px solid ${color}">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span><b>${actionText}</b> ${l.mode ? '('+l.mode+')' : ''}</span>
+                <span style="color:#8a94a6;font-size:10px;">${time}</span>
+            </div>
+            ${l.from_token ? `<div style="color:#fff;margin-top:4px;">${f(l.from_amount, 4)} ${l.from_token} → ${f(l.to_amount, 4)} ${l.to_token} ${profitHtml}</div>` : ''}
+            ${profitHtml.includes('error') ? profitHtml : ''}
+        </div>`;
+    }).join('') || '<div class="info">Пока нет событий</div>'}
+    </div>
+</div>`;
   }
 }
 async function runArbitrageScan() {
