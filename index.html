@@ -3095,7 +3095,40 @@ async function refreshAll(){
 }
 function initRealtimeUpdates() {
   if(!UID) return;
-  sb.channel('user-live-updates').on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'users', filter: `telegram_id=eq.${UID}` }, payload => {CU = { ...CU, ...payload.new };renderHome();}).subscribe();
+  
+  // 1. Слушаем обновления профиля (баланс, ранг и т.д.)
+  sb.channel('user-live-updates')
+    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'users', filter: `telegram_id=eq.${UID}` }, payload => {
+        CU = { ...CU, ...payload.new };
+        renderHome();
+    })
+    .subscribe();
+
+  // 2. 🔥 СЛУШАЕМ НОВЫЕ СДЕЛКИ (Мгновенное обновление прибыли)
+  sb.channel('arbitrage-live-updates')
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'telepat_arbitrage_log', filter: `telegram_id=eq.${UID}` }, payload => {
+        console.log("🔔 Бот совершил новую сделку!", payload.new);
+        
+        // Мгновенно пересчитываем сумму и обновляем историю
+        if (typeof loadProfitHistory === 'function') {
+            loadProfitHistory();
+        }
+        
+        // Обновляем карточку "Автоторговля активна"
+        if (typeof loadAutoTradeStatus === 'function') {
+            loadAutoTradeStatus().then(() => {
+                if (currentIncomeTab === 'p2p' && currentP2PTab === 'auto') {
+                    renderAutoTab();
+                }
+            });
+        }
+        
+        // Показываем красивый тост-уведомление прямо в приложении
+        if(payload.new && payload.new.profit_net > 0) {
+            msg(`💰 Арбитраж закрыт! Прибыль: +$${f(payload.new.profit_net, 2)}`, 'success');
+        }
+    })
+    .subscribe();
 }
 document.addEventListener('DOMContentLoaded',async()=>{
   await refreshJwt();
