@@ -1866,22 +1866,35 @@ async function renderAutoTab() {
     if (!box) return;
     
     try {
+        // 1. Запрашиваем последние 10 записей для истории
         const { data, error } = await sb.from('telepat_arbitrage_log')
             .select('*')
             .eq('telegram_id', UID)
+            .order('created_at', { ascending: false })
             .limit(10);
 
         if (error) {
-            console.error("Ошибка Supabase:", error);
-            box.innerHTML = '<div class="info" style="color:#f6465d;text-align:center">Ошибка доступа к БД</div>';
+            console.error("Ошибка истории:", error);
             return;
         }
-        
+
+        // 2. Запрашиваем ВСЕ записи, чтобы посчитать общую сумму прибыли
+        const { data: allLogs, error: sumError } = await sb.from('telepat_arbitrage_log')
+            .select('profit_net')
+            .eq('telegram_id', UID);
+
+        if (!sumError && allLogs) {
+            const totalProfit = allLogs.reduce((sum, row) => sum + Number(row.profit_net || 0), 0);
+            const el = $('totalProfitDisplay');
+            if (el) el.textContent = '$' + f(totalProfit, 2);
+        }
+
         if (!data || data.length === 0) {
             box.innerHTML = '<div class="info" style="text-align:center;padding:10px">Пока нет закрытых сделок</div>';
             return;
         }
 
+        // 3. Выводим красивую историю
         data.sort((a, b) => {
             const dateA = a.created_at ? new Date(a.created_at).getTime() : 0;
             const dateB = b.created_at ? new Date(b.created_at).getTime() : 0;
@@ -1909,7 +1922,6 @@ async function renderAutoTab() {
         
     } catch (e) {
         console.error("Критическая ошибка JS:", e);
-        box.innerHTML = '<div class="info" style="color:#f6465d;text-align:center">Ошибка скрипта</div>';
     }
 }
 async function runArbitrageScan() {
