@@ -1862,6 +1862,57 @@ async function renderAutoTab() {
   }
     loadProfitHistory();
 }
+  async function loadProfitHistory() {
+    const box = $('profitHistoryList'); 
+    if (!box) return;
+    
+    try {
+        const { data, error } = await sb.from('telepat_arbitrage_log')
+            .select('*')
+            .eq('telegram_id', UID)
+            .limit(10);
+
+        if (error) {
+            console.error("Ошибка Supabase:", error);
+            box.innerHTML = '<div class="info" style="color:#f6465d;text-align:center">Ошибка доступа к БД</div>';
+            return;
+        }
+        
+        if (!data || data.length === 0) {
+            box.innerHTML = '<div class="info" style="text-align:center;padding:10px">Пока нет закрытых сделок</div>';
+            return;
+        }
+
+        data.sort((a, b) => {
+            const dateA = a.created_at ? new Date(a.created_at).getTime() : 0;
+            const dateB = b.created_at ? new Date(b.created_at).getTime() : 0;
+            return dateB - dateA;
+        });
+
+        box.innerHTML = data.slice(0, 5).map(t => {
+            let timeStr = '—';
+            if (t.created_at) {
+                timeStr = new Date(t.created_at).toLocaleString('ru-RU');
+            }
+            return `
+            <div style="background:#0d1520; border-left:3px solid #39d98a; border-radius:6px; padding:10px; margin-bottom:8px">
+                <div style="display:flex; justify-content:space-between; margin-bottom:6px">
+                    <span style="color:#8a94a6; font-size:10px">${timeStr}</span>
+                    <span style="color:#39d98a; font-weight:800; font-size:13px">+ $${f(t.profit_net || 0, 4)}</span>
+                </div>
+                <div style="font-size:12px; color:#fff">
+                    🛒 Купили: <b>${f(t.qty || 0, 4)} ${esc(t.from_token || '')}</b> по <b>${f(t.buy_price || 0, 4)}</b> ${esc(t.to_token || '')}<br>
+                    💰 Продали по: <b>${f(t.sell_price || 0, 4)}</b> ${esc(t.to_token || '')}
+                </div>
+            </div>
+            `;
+        }).join('');
+        
+    } catch (e) {
+        console.error("Критическая ошибка JS:", e);
+        box.innerHTML = '<div class="info" style="color:#f6465d;text-align:center">Ошибка скрипта</div>';
+    }
+}
 async function runArbitrageScan() {
   const box = $('arbitrageResults'); if (!box) return; box.innerHTML = '<div class="info" style="text-align:center">⏳ Сканирую...</div>';
   const pairs = await scanArbitrageNow();
