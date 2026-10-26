@@ -1976,20 +1976,53 @@ async function loadMyReferrals(){renderFriends();}
 
 /* ═══════ RATING ═══════ */
 function renderRating(){ showRatingTab(currentRatingTab); }
-async function showRatingTab(tab){
-  currentRatingTab = tab; document.querySelectorAll('#ratingTabs .tab').forEach(b=>b.classList.toggle('active', b.dataset.tab === tab)); const c = $('ratingContent'); if(!c) return; c.innerHTML = '<div class="item-card"><div class="item-desc">Загрузка...</div></div>';
+async function showRatingTab(tab) {
+  currentRatingTab = tab; 
+  document.querySelectorAll('#ratingTabs .tab').forEach(b=>b.classList.toggle('active', b.dataset.tab === tab)); 
+  const c = $('ratingContent'); if(!c) return; 
+  c.innerHTML = '<div class="item-card"><div class="item-desc">Загрузка...</div></div>';
+  
   let html = `<div class="item-card" style="background:linear-gradient(135deg,#2a1e0c,#1a1206); border-color:var(--gold);"><div class="item-header"><b>⭐ Твой рейтинг</b></div><div style="font-size:32px; font-weight:800; color:var(--gold); text-align:center; margin-top:8px;">${CU?.rating_points || 0}</div><div class="info" style="text-align:center">баллов</div></div><div class="title" style="margin-top:20px;font-size:14px;text-align:center">🏆 ТОП-100</div>`;
+  
   let list = [];
-  try { const rpcName = tab === 'refs' ? 'get_leaderboard_referrals' : 'get_leaderboard_earnings'; const r = await sb.rpc(rpcName, { p_limit: 100 }); if(!r.error && r.data) { list = Array.isArray(r.data) ? r.data : (r.data.items || []); } } catch(e) {}
-const r = await sb.from('users').select('telegram_id,username,first_name,rank_name,rank_level,total_profit,referral_earnings,shop_balance').limit(1000); list = (r.data||[]).map(u=>{ let earned = (Number(u.total_profit)||0) + (Number(u.referral_earnings)||0) + (Number(u.shop_balance)||0); return {...u, total_earned: earned}; }).sort((a,b)=>b.total_earned-a.total_earned).slice(0,100);
-  if(!list.length) { c.innerHTML = html + '<div class="item-card"><div class="item-desc" style="text-align:center">Топ пока пуст</div></div>'; return; }
-  const medals = ['🥇','🥈','🥉']; const title = tab === 'refs' ? '👥 По приглашённым' : '💰 По заработку';
+  
+  try { 
+      // Вызываем нашу новую функцию. Передаем 'refs' для рефералов и 'earn' для заработка
+      const r = await sb.rpc('get_leaderboard', { p_type: tab === 'refs' ? 'refs' : 'earn', p_limit: 100 }); 
+      if(!r.error && r.data) { list = r.data; } 
+  } catch(e) { console.error(e); }
+
+  if(!list.length) { 
+      c.innerHTML = html + '<div class="item-card"><div class="item-desc" style="text-align:center">Топ пока пуст</div></div>'; 
+      return; 
+  }
+
+  const medals = ['🥇','🥈','🥉']; 
+  const title = tab === 'refs' ? '👥 По приглашённым' : '💰 По заработку';
+  
   c.innerHTML = html + `<div class="item-card" style="margin-top:-10px;margin-bottom:10px;border:0;background:transparent;padding:0"><div class="item-desc" style="text-align:center">${title}</div></div>` + 
   list.map((u, i) => {
-    const place = medals[i] || ('#' + (i+1)); const nm = u.username ? '@'+u.username : (u.first_name || ('ID '+u.telegram_id)); let val;
- if(tab === 'refs') { val = Number(u.refs_new||0) + ' 👥'; } else { const earned = u.total_earned != null ? Number(u.total_earned) : 0; val = '$' + f(earned, 2); }
-    const isMe = String(u.telegram_id) === String(UID); const cls = i===0?'gold':i===1?'silver':i===2?'bronze':'';
-    return `<div class="lead-row" style="${isMe?'border-color:var(--gold)':''}"><div class="lead-place ${cls}">${place}</div><div class="lead-info"><div class="lead-name">${esc(nm)}${isMe?' (вы)':''}</div><div class="lead-rank">👑 ${esc(u.rank_name || RANKS[u.rank_level||0] || 'Новичок')}</div></div><div class="lead-value"><b>${val}</b></div></div>`;
+    const place = medals[i] || ('#' + (i+1)); 
+    const nm = u.username ? '@'+u.username : (u.first_name || ('ID '+u.telegram_id)); 
+    
+    let val = '';
+    if(tab === 'refs') { 
+        val = Number(u.refs_count || 0) + ' 👥'; 
+    } else {
+        val = '$' + f(Number(u.total_earned || 0), 2);
+    }
+    
+    const isMe = String(u.telegram_id) === String(UID); 
+    const cls = i===0?'gold':i===1?'silver':i===2?'bronze':'';
+    
+    return `<div class="lead-row" style="${isMe?'border-color:var(--gold)':''}">
+        <div class="lead-place ${cls}">${place}</div>
+        <div class="lead-info">
+            <div class="lead-name">${esc(nm)}${isMe?' (вы)':''}</div>
+            <div class="lead-rank">👑 ${esc(u.rank_name || RANKS[u.rank_level||0] || 'Новичок')}</div>
+        </div>
+        <div class="lead-value"><b>${val}</b></div>
+    </div>`;
   }).join('');
 }
 
