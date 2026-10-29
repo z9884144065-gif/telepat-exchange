@@ -1565,9 +1565,12 @@ async function showIncomeTab(tab){
 /* ═══════ P2P ═══════ */
 async function switchP2PTab(t){
   if(t==='create'){openCreateOrder();return;}
-  currentP2PTab=t; const tabsEls=document.querySelectorAll('#incomeContent .tabs .tab');
-  if(tabsEls.length>=3){ tabsEls[0].classList.toggle('active',t==='all'); tabsEls[1].classList.toggle('active',t==='mine'); tabsEls[2].classList.toggle('active',t==='auto'); }
-  if(t==='auto'){ await renderAutoTab(); } else { await renderP2PList(); }
+  currentP2PTab=t; 
+  if(t==='auto'){ 
+      await renderAutoTab(); 
+  } else { 
+      await renderP2PContent($('incomeContent')); 
+  }
 }
 async function renderP2PContent(container){
   // 1. Сохраняем ваши старые вкладки (Все/Мои/Авто)
