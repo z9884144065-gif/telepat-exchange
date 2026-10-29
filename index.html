@@ -969,6 +969,9 @@ let state_swapFrom='TG',state_swapTo='TUSD';
 let SWAP_QUOTE=null,SWAP_QUOTE_TIMER=null,SWAP_BUSY=false;
 let currentShopTab='gear',currentIncomeTab='p2p',currentRatingTab='refs';
 let currentP2PTab='all';
+  let p2pMode = 'buy'; // 'buy' или 'sell'
+let p2pTokenGet = 'TG'; // Токен, который получаем/продаем
+let p2pTokenPay = 'TUSD'; // Токен, которым платим/получаем
 window.__cbSelectedChatId=0;window.__cbSelectedChatTitle='';
 let __CURRENT_AD=null,__AD_TIMER=null,__AD_TIME_LEFT=0;
 let __TASK_TIMERS={};
@@ -1567,34 +1570,139 @@ async function switchP2PTab(t){
   if(t==='auto'){ await renderAutoTab(); } else { await renderP2PList(); }
 }
 async function renderP2PContent(container){
-  const tabsHtml=`<div class="tabs" style="margin-bottom:15px;"><div class="tab ${currentP2PTab==='all'?'active':''}" onclick="switchP2PTab('all')">🌐 Все</div><div class="tab ${currentP2PTab==='mine'?'active':''}" onclick="switchP2PTab('mine')">📋 Мои</div><div class="tab ${currentP2PTab==='auto'?'active':''}" onclick="switchP2PTab('auto')">🤖 Авто</div><div class="tab" onclick="openCreateOrder()">➕ Создать</div></div><div id="p2pList">Загрузка...</div>`;
-  container.innerHTML = tabsHtml;
-  if(currentP2PTab==='auto'){ await renderAutoTab(); } else { await renderP2PList(); }
+  // 1. Сохраняем ваши старые вкладки (Все/Мои/Авто)
+  const oldTabs = `
+    <div class="tabs" style="margin-bottom:12px;">
+        <div class="tab ${currentP2PTab==='all'?'active':''}" onclick="switchP2PTab('all')">🌐 Все</div>
+        <div class="tab ${currentP2PTab==='mine'?'active':''}" onclick="switchP2PTab('mine')">📋 Мои</div>
+        <div class="tab ${currentP2PTab==='auto'?'active':''}" onclick="switchP2PTab('auto')">🤖 Авто</div>
+        <div class="tab" onclick="openCreateOrder()">➕ Создать</div>
+    </div>`;
+
+  // 2. Создаем НОВУЮ панель с токенами и кнопками Купить/Продать
+  const newControls = `
+    <div class="tabs tabs-2" style="margin-bottom:10px;">
+        <div class="tab ${p2pMode==='buy'?'active':''}" onclick="p2pMode='buy'; renderP2PContent($('incomeContent'))" style="${p2pMode==='buy'?'background:linear-gradient(135deg,#39d98a,#2ba86a);border-color:#39d98a;color:#fff':''}">
+            <span class="tab-icon">🟢</span>Купить
+        </div>
+        <div class="tab ${p2pMode==='sell'?'active':''}" onclick="p2pMode='sell'; renderP2PContent($('incomeContent'))" style="${p2pMode==='sell'?'background:linear-gradient(135deg,#f6465d,#d93047);border-color:#f6465d;color:#fff':''}">
+            <span class="tab-icon">🔴</span>Продать
+        </div>
+    </div>
+
+    <div style="display:flex; gap:6px; align-items:center; background:var(--bg-card); padding:10px; border-radius:12px; margin-bottom:12px; border:1px solid var(--line)">
+        <div style="flex:1">
+            <div style="font-size:10px; color:var(--muted); margin-bottom:4px;">${p2pMode === 'buy' ? 'Я покупаю' : 'Я продаю'}</div>
+            <select onchange="if(this.value===p2pTokenPay){p2pTokenPay = p2pTokenGet==='TUSD'?'TG':'TUSD'} p2pTokenGet=this.value; renderP2PContent($('incomeContent'))" style="width:100%; background:var(--bg); color:#fff; border:1px solid var(--line); border-radius:8px; padding:10px; font-weight:bold; font-size:14px;">
+                ${ALL_TOKENS.map(t => `<option value="${t.symbol}" ${t.symbol===p2pTokenGet?'selected':''}>${t.symbol}</option>`).join('')}
+            </select>
+        </div>
+        <button onclick="let t=p2pTokenGet; p2pTokenGet=p2pTokenPay; p2pTokenPay=t; renderP2PContent($('incomeContent'))" style="background:var(--bg-card); border:1px solid var(--line); color:var(--gold); border-radius:50%; width:36px; height:36px; font-size:18px; cursor:pointer; margin-top:14px; flex-shrink:0;">⇄</button>
+        <div style="flex:1">
+            <div style="font-size:10px; color:var(--muted); margin-bottom:4px;">${p2pMode === 'buy' ? 'Я плачу' : 'Я получаю'}</div>
+            <select onchange="if(this.value===p2pTokenGet){p2pTokenGet = p2pTokenPay==='TUSD'?'TG':'TUSD'} p2pTokenPay=this.value; renderP2PContent($('incomeContent'))" style="width:100%; background:var(--bg); color:#fff; border:1px solid var(--line); border-radius:8px; padding:10px; font-weight:bold; font-size:14px;">
+                ${ALL_TOKENS.map(t => `<option value="${t.symbol}" ${t.symbol===p2pTokenPay?'selected':''}>${t.symbol}</option>`).join('')}
+            </select>
+        </div>
+    </div>`;
+
+  // Собираем всё вместе
+  container.innerHTML = oldTabs + newControls + '<div id="p2pList">Загрузка...</div>';
+  
+  // Запускаем загрузку
+  if(currentP2PTab==='auto'){ 
+      await renderAutoTab(); 
+  } else { 
+      await renderP2PList(); 
+  }
 }
+
 function renderP2PList(){
   const box=$('p2pList');if(!box) return; box.innerHTML='<div class="item-card"><div class="item-desc">Загрузка...</div></div>';
-  const timeout = setTimeout(() => { if(box.innerHTML.includes('Загрузка')) { box.innerHTML = '<div class="item-card"><div class="item-desc" style="color:red;text-align:center">Сеть не отвечает.</div></div>'; } }, 5000);
+  
   sb.from('p2p_orders').select('*').then(r => {
-    clearTimeout(timeout); if (r.error) { box.innerHTML='<div class="item-card"><div class="item-desc" style="color:red;text-align:center">Ошибка БД: '+r.error.message+'</div></div>'; return; }
+    if (r.error) { box.innerHTML='<div class="item-card"><div class="item-desc" style="color:red;text-align:center">Ошибка БД: '+r.error.message+'</div></div>'; return; }
+    
     let orders = (r.data || []).filter(o => String(o.status||'').toLowerCase() === 'open');
-    if (orders.length === 0) { box.innerHTML = '<div class="item-card"><div class="item-desc" style="text-align:center">Ордеров нет.<br>Жми ➕ Создать</div></div>'; return; }
+    
+    // 🎯 ФИЛЬТРАЦИЯ ПО ТОКЕНАМ
+    if (p2pMode === 'buy') {
+        // Я покупаю: ищу ордера, где продают p2pTokenGet за p2pTokenPay
+        orders = orders.filter(o => o.from_token === p2pTokenGet && o.to_token === p2pTokenPay);
+        // Самые дешевые сверху (по возрастанию цены)
+        orders.sort((a,b) => (Number(a.rate)||0) - (Number(b.rate)||0));
+    } else {
+        // Я продаю: ищу ордера, где покупают p2pTokenGet и платят p2pTokenPay
+        orders = orders.filter(o => o.from_token === p2pTokenPay && o.to_token === p2pTokenGet);
+        // Самые дорогие сверху (по убыванию цены)
+        orders.sort((a,b) => (Number(b.rate)||0) - (Number(a.rate)||0));
+    }
+
+    // Фильтр по вкладке "Мои"
+    if (currentP2PTab === 'mine') {
+        orders = orders.filter(o => String(o.creator_id) === String(UID));
+    }
+
+    if (orders.length === 0) { 
+        box.innerHTML = `<div class="item-card"><div class="item-desc" style="text-align:center;padding:20px 0;">Нет активных ордеров по этой паре<br><span style="font-size:10px;color:var(--muted)">Нажми ➕ Создать, чтобы предложить свою цену</span></div></div>`; 
+        return; 
+    }
+    
     const ids = [...new Set(orders.map(o => Number(o.creator_id)).filter(Boolean))];
     sb.from('users').select('telegram_id,username,first_name,rank_name,rank_level').in('telegram_id', ids).then(u => {
         const map = {}; (u.data || []).forEach(x => { map[String(x.telegram_id)] = x; });
-        orders = orders.map(o => { const uu = map[String(o.creator_id)] || {}; return Object.assign({}, o, {creator_username: uu.username || null,creator_first_name: uu.first_name || null,creator_rank_name: uu.rank_name || 'Новичок',creator_rank_level: Number(uu.rank_level || 0),likes: 0,dislikes: 0,completed_trades: 0,rate: (Number(o.from_amount) > 0) ? (Number(o.to_amount) / Number(o.from_amount)) : 1}); });
-        if(currentP2PTab==='mine'){orders=orders.filter(o=>String(o.creator_id)===String(UID));} else {const my=orders.filter(o=>String(o.creator_id)===String(UID));const other=orders.filter(o=>String(o.creator_id)!==String(UID));orders=[...my,...other];}
-        if (orders.length === 0) { box.innerHTML = '<div class="item-card"><div class="item-desc" style="text-align:center">У вас нет открытых ордеров</div></div>'; return; }
-        box.innerHTML=orders.map(o=>orderCard(o)).join('');
-    }).catch(e => {clearTimeout(timeout);box.innerHTML='<div class="item-card"><div class="item-desc" style="color:red;text-align:center">Ошибка профилей: '+e.message+'</div></div>';});
-  }).catch(err => {clearTimeout(timeout);box.innerHTML='<div class="item-card"><div class="item-desc" style="color:red;text-align:center">Сетевая ошибка: '+err.message+'</div></div>';});
+        
+        orders = orders.map(o => { 
+            const uu = map[String(o.creator_id)] || {}; 
+            return Object.assign({}, o, {
+                creator_username: uu.username || null,
+                creator_first_name: uu.first_name || null,
+                creator_rank_name: uu.rank_name || 'Новичок',
+                creator_rank_level: Number(uu.rank_level || 0),
+                rate: (Number(o.from_amount) > 0) ? (Number(o.to_amount) / Number(o.from_amount)) : 1
+            }); 
+        });
+        
+        box.innerHTML = orders.map(o => orderCard(o)).join('');
+    }).catch(e => {box.innerHTML='<div class="item-card"><div class="item-desc" style="color:red;text-align:center">Ошибка профилей: '+e.message+'</div></div>';});
+  }).catch(err => {box.innerHTML='<div class="item-card"><div class="item-desc" style="color:red;text-align:center">Сетевая ошибка: '+err.message+'</div></div>';});
 }
+
 function orderCard(o){
-  ORDER_CACHE[String(o.id)]=o; const isMine=String(o.creator_id)===String(UID); const c=rk(o.creator_rank_level);const rt=n(o.rate); const ownerLabel=o.creator_username?'@'+esc(o.creator_username):'ID '+Number(o.creator_id);
+  ORDER_CACHE[String(o.id)]=o; 
+  const isMine=String(o.creator_id)===String(UID); 
+  const c=rk(o.creator_rank_level);
+  const rt=n(o.rate); 
+  const ownerLabel=o.creator_username?'@'+esc(o.creator_username):'ID '+Number(o.creator_id);
+  
+  // 🎨 НОВАЯ ПОДСВЕТКА ДЛЯ ВАШИХ СДЕЛОК
+  const borderStyle = isMine ? 'border: 2px solid var(--gold); box-shadow: 0 0 10px rgba(244,207,112,0.15);' : 'border: 1px solid var(--line);';
+  const badge = isMine ? `<div style="background:var(--gold);color:#000;font-size:10px;font-weight:bold;padding:3px 8px;border-radius:4px;display:inline-block;margin-bottom:8px;text-transform:uppercase;">Ваша сделка</div>` : '';
+
   const totalAmt = n(o.from_amount) || 0; const remainingAmt = n(o.from_amount_remaining != null ? o.from_amount_remaining : o.from_amount); const filledAmt = Math.max(0, totalAmt - remainingAmt); const pct = totalAmt > 0 ? Math.min(100, Math.round((filledAmt / totalAmt) * 100)) : 0;
+  
   let progressHtml = '';
   if (filledAmt > 0 && remainingAmt > 0) { progressHtml = `<div style="height:4px;background:#080b10;border-radius:99px;margin-top:8px;overflow:hidden"><div style="height:100%;width:${pct}%;background:linear-gradient(90deg,#f4cf70,#c99629)"></div></div><div style="font-size:10px;color:#f4cf70;margin-top:5px;display:flex;justify-content:space-between;align-items:center"><span>Выкуплено ${pct}%</span><span style="font-weight:700">🟢 Осталось: ${f(remainingAmt)} ${esc(o.from_token)}</span></div>`; } else if (filledAmt === 0 && remainingAmt > 0) { progressHtml = `<div style="font-size:10px;color:#8a94a6;margin-top:5px">🟢 В продаже полностью: ${f(remainingAmt)} ${esc(o.from_token)}</div>`; } else if (remainingAmt <= 0.00000001) { progressHtml = `<div style="font-size:10px;color:#39d98a;margin-top:5px;font-weight:700">✅ Полностью выкуплено</div>`; }
-  const actionsHtml=isMine ?`<div class="order-actions"><button onclick="openProfile(${Number(o.creator_id)})">👤</button><button onclick="cancelP2POrder('${esc(o.id)}')" style="background:#f6465d">❌</button></div>` :`<div class="order-actions"><button onclick="openProfile(${Number(o.creator_id)})" style="flex:0 0 46px">👤</button><button onclick="quickBuyOrder('${esc(o.id)}')" style="background:linear-gradient(135deg,#39d98a,#2ba86a)">⚡</button><button onclick="openBuyModal('${esc(o.id)}')">🛒</button></div>`;
-  return `<div class="order" id="order-${esc(o.id)}" style="--rc:${c}"><div class="oh" onclick="toggleOrder('${esc(o.id)}')"><div class="om">${tokenIconHTML(o.from_token,'xs')} ${f(o.from_amount)} ${esc(o.from_token)} → ${f(o.to_amount)} ${esc(o.to_token)}</div><div class="rb">👑 ${esc(o.creator_rank_name)}</div><div class="op">1 ${esc(o.from_token)} = ${f(rt,8)} ${esc(o.to_token)}</div><div class="os"><span>👍 ${n(o.likes)}</span><span>👎 ${n(o.dislikes)}</span><span>🤝 ${n(o.completed_trades)}</span></div>${progressHtml}</div><div class="oe"><div class="dt"><span>Владелец</span><span>${ownerLabel}</span></div>${actionsHtml}</div></div>`;
+  
+  // Кнопки
+  const actionsHtml=isMine 
+    ? `<div class="order-actions"><button onclick="openProfile(${Number(o.creator_id)})" style="flex:1">👤 Профиль</button><button onclick="cancelP2POrder('${esc(o.id)}')" style="background:#f6465d; flex:1">❌ Отменить</button></div>` 
+    : `<div class="order-actions"><button onclick="openProfile(${Number(o.creator_id)})" style="flex:0 0 46px">👤</button><button onclick="quickBuyOrder('${esc(o.id)}')" style="background:linear-gradient(135deg,#39d98a,#2ba86a)">⚡ Выкупить всё</button><button onclick="openBuyModal('${esc(o.id)}')">🛒</button></div>`;
+
+  return `<div class="order" id="order-${esc(o.id)}" style="${borderStyle} --rc:${c}; border-radius:16px; padding:14px; margin-bottom:12px; background:linear-gradient(145deg,#1b2636,#111925);">
+    ${badge}
+    <div class="oh" onclick="toggleOrder('${esc(o.id)}')">
+        <div class="om">${tokenIconHTML(o.from_token,'xs')} ${f(o.from_amount)} ${esc(o.from_token)} → ${f(o.to_amount)} ${esc(o.to_token)}</div>
+        <div class="rb">👑 ${esc(o.creator_rank_name)}</div>
+        <div class="op">1 ${esc(o.from_token)} = ${f(rt,8)} ${esc(o.to_token)}</div>
+        <div class="os"><span>👍 ${n(o.likes)}</span><span>👎 ${n(o.dislikes)}</span><span>🤝 ${n(o.completed_trades)}</span></div>
+        ${progressHtml}
+    </div>
+    <div class="oe">
+        <div class="dt"><span>Владелец</span><span>${ownerLabel}</span></div>
+        ${actionsHtml}
+    </div>
+  </div>`;
 }
 function toggleOrder(id){$('order-'+id)?.classList.toggle('opened');}
 function openCreateOrder(){
