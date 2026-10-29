@@ -1437,27 +1437,41 @@ function renderHome(){
   const grid=$('invGrid');grid.innerHTML='';
   for(let i=0;i<10;i++){ const item=inv[i];const slot=document.createElement('div');slot.className='slot'; if(item){slot.classList.add('filled');slot.innerHTML=item.emoji||'🎁';slot.onclick=()=>openItemModal(item.id);} else{slot.classList.add('unlocked-empty');slot.innerHTML='🎒';slot.style.opacity='0.4';} grid.appendChild(slot); }
   
-  const stakeUSD=Number(CU.stake_usd_locked||0),deals=Number(CU.completed_trades||0),refs=Number(CU.refs_new||0);
+    const stakeUSD=Number(CU.stake_usd_locked||0),deals=Number(CU.completed_trades||0),refs=Number(CU.refs_new||0);
+  const earnUSD = Number(CU.referral_earnings || 0); // 👈 ДОБАВЛЕНО: Прибыль структуры
+
   const nextLv=Math.min(21,rl+1);
   const needStake=RANK_STAKE[nextLv]||stakeUSD;
   const needDeals=RANK_TRADES[nextLv]!==undefined?RANK_TRADES[nextLv]:RANK_TRADES[21];
   const needRefs=RANK_REFS[nextLv]!==undefined?RANK_REFS[nextLv]:RANK_REFS[21];
+  const needEarn=RANK_EARNINGS[nextLv]!==undefined?RANK_EARNINGS[nextLv]:RANK_EARNINGS[21]; // 👈 ДОБАВЛЕНО: Норма прибыли
+
   $('scStakeTxt').textContent=`$${f(stakeUSD,2)} / $${f(needStake,2)}`;
   $('scDealsTxt').textContent=`${deals} / ${needDeals}`;
   $('scRefsTxt').textContent=`${refs} / ${needRefs}`;
+  $('scEarnTxt').textContent=`$${f(earnUSD,2)} / $${f(needEarn,2)}`; // 👈 ДОБАВЛЕНО: Текст 4-й шкалы
+
   $('scStake').style.width=(needStake>0?Math.min(100,stakeUSD/needStake*100):100)+'%';
   $('scDeals').style.width=(needDeals>0?Math.min(100,deals/needDeals*100):100)+'%';
   $('scRefs').style.width=(needRefs>0?Math.min(100,refs/needRefs*100):100)+'%';
-  
+  $('scEarn').style.width=(needEarn>0?Math.min(100,earnUSD/needEarn*100):100)+'%'; // 👈 ДОБАВЛЕНО: Полоска 4-й шкалы
+
   const nlBox=$('nextLevelBox');
   if(nlBox){
-    if(rl>=21){nlBox.innerHTML=`<div class="nl-title">🏆 МАКСИМУМ</div><div class="nl-row done"><span class="nl-icon">👑</span><span class="nl-text"><b>Император!</b></span></div>`;}
-    else{
+    if(rl>=21){
+      nlBox.innerHTML=`<div class="nl-title">🏆 МАКСИМУМ</div><div class="nl-row done"><span class="nl-icon">👑</span><span class="nl-text"><b>Император!</b></span></div>`;
+    } else {
       const rows=[];
       rows.push(`<div class="nl-row ${stakeUSD>=needStake?'done':''}"><span class="nl-icon">💎</span><span class="nl-text">Стейк: <b>$${f(stakeUSD,2)}</b> / $${f(needStake,2)}</span></div>`);
       rows.push(`<div class="nl-row ${deals>=needDeals?'done':''}"><span class="nl-icon">🔄</span><span class="nl-text">Сделок: <b>${deals}</b> / ${needDeals}</span></div>`);
       rows.push(`<div class="nl-row ${refs>=needRefs?'done':''}"><span class="nl-icon">👥</span><span class="nl-text">Рефералов: <b>${refs}</b> / ${needRefs}</span></div>`);
+      
+      // 👇 ДОБАВЛЕНО: 4-я строка в блоке прогресса
+      rows.push(`<div class="nl-row ${earnUSD>=needEarn?'done':''}"><span class="nl-icon">💰</span><span class="nl-text">Прибыль структуры: <b>$${f(earnUSD,2)}</b> / $${f(needEarn,2)}</span></div>`);
+      
       nlBox.innerHTML=`<div class="nl-title">🎯 До ${RANKS[nextLv]} (уровень ${nextLv})</div>${rows.join('')}`;
+    }
+  }
     }
   }
   setKnightSpeech(rl>=21?'Я — Император!':(rl===0?'Славный путь начинается!':`Я — ${rn}!`));
