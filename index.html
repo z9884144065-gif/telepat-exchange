@@ -1888,7 +1888,7 @@ async function saveAutoTradeSettings() {
     return; // Останавливаем сохранение
   }
 
-  const amount = n($('at_amount')?.value); 
+const amount = n($('at_amount')?.value) * priceOf(fromToken); 
   const buyMin = n($('at_buy_min')?.value); 
   const buyMax = n($('at_buy_max')?.value); 
   const sellMin = n($('at_sell_min')?.value); 
