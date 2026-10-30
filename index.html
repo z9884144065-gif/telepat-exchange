@@ -1598,7 +1598,28 @@ async function switchP2PTab(t){
       await renderP2PContent($('incomeContent')); 
   }
 }
-async function renderP2PContent(container){
+window.changeP2PToken = function(side, val) {
+    if (side === 'left') {
+        if (p2pMode === 'buy') { 
+            if (val === p2pTokenGet) p2pTokenGet = (p2pTokenPay==='TUSD'?'TG':'TUSD');
+            p2pTokenPay = val;
+        } else { 
+            if (val === p2pTokenPay) p2pTokenPay = (p2pTokenGet==='TUSD'?'TG':'TUSD');
+            p2pTokenGet = val;
+        }
+    } else {
+        if (p2pMode === 'buy') { 
+            if (val === p2pTokenPay) p2pTokenPay = (p2pTokenGet==='TUSD'?'TG':'TUSD');
+            p2pTokenGet = val;
+        } else { 
+            if (val === p2pTokenGet) p2pTokenGet = (p2pTokenPay==='TUSD'?'TG':'TUSD');
+            p2pTokenPay = val;
+        }
+    }
+    renderP2PContent($('incomeContent'));
+};
+
+    async function renderP2PContent(container){
   // 1. Сохраняем ваши старые вкладки (Все/Мои/Авто)
   const oldTabs = `
     <div class="tabs" style="margin-bottom:12px;">
