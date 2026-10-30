@@ -1833,10 +1833,39 @@ $('buyOrderInfo').innerHTML = `<div style="background:#0d1520;padding:12px;borde
 function closeBuyModal(e){if(e&&e.target!==$('buyModal')) return;$('buyModal').classList.remove('show', 'glass-modal');__BUY_ORDER=null;}
 function setBuyPct(pct){ if(!__BUY_ORDER) return; const max = n(__BUY_ORDER.from_amount_remaining != null ? __BUY_ORDER.from_amount_remaining : __BUY_ORDER.from_amount); const val = pct >= 100 ? max : max * pct / 100; $('buyAmount').value = String(val); updateBuyPreview(); }
 function updateBuyPreview(){
-  if(!__BUY_ORDER) return; const o=__BUY_ORDER; const fromTotal = n(o.from_amount_remaining != null ? o.from_amount_remaining : o.from_amount); const toTotal = n(o.to_amount_remaining != null ? o.to_amount_remaining : o.to_amount); const rate = fromTotal > 0 ? toTotal / fromTotal : 0; const getAmt = Math.max(0, Math.min(fromTotal, n($('buyAmount').value))); const payAmt = getAmt * rate; const afterBuy = Math.max(0, fromTotal - getAmt); const isFullBuy = getAmt >= fromTotal - 1e-12 && getAmt > 0;
-  $('buyPay').textContent = `${f(payAmt,8)} ${o.to_token}`; $('buyRemaining').innerHTML = `<span style="color:${afterBuy <= 1e-9 ? '#39d98a' : '#fff'};font-weight:700">${f(afterBuy,8)} ${o.from_token}${afterBuy <= 1e-9 && getAmt > 0 ? ' ✅' : ''}</span>`; $('buyAvail').textContent = `${f(tb(o.to_token),8)} ${o.to_token}`;
+  if(!__BUY_ORDER) return; 
+  const o=__BUY_ORDER; 
+  const fromTotal = n(o.from_amount_remaining != null ? o.from_amount_remaining : o.from_amount); 
+  const toTotal = n(o.to_amount_remaining != null ? o.to_amount_remaining : o.to_amount); 
+  const rate = fromTotal > 0 ? toTotal / fromTotal : 0; 
+  const getAmt = Math.max(0, Math.min(fromTotal, n($('buyAmount').value))); 
+  const payAmt = getAmt * rate; 
+  const afterBuy = Math.max(0, fromTotal - getAmt); 
+  const isFullBuy = getAmt >= fromTotal - 1e-12 && getAmt > 0;
+  
+  $('buyPay').textContent = `${f(payAmt,8)} ${o.to_token}`; 
+  $('buyRemaining').innerHTML = `<span style="color:${afterBuy <= 1e-9 ? '#39d98a' : '#fff'};font-weight:700">${f(afterBuy,8)} ${o.from_token}${afterBuy <= 1e-9 && getAmt > 0 ? ' ✅' : ''}</span>`; 
+  $('buyAvail').textContent = `${f(tb(o.to_token),8)} ${o.to_token}`;
+  
   const btn = $('buyConfirmBtn');
-  if(getAmt <= 0){btn.disabled = true;btn.textContent = '✅ Выкупить';btn.style.background = '';} else if(isFullBuy){btn.disabled = false;btn.textContent = `✅ ВЫКУПИТЬ ОСТАТОК (${f(fromTotal,4)} ${o.from_token})`;btn.style.background = 'linear-gradient(135deg,#39d98a,#2ba86a)';} else {btn.disabled = false;btn.textContent = '✅ Выкупить часть';btn.style.background = '';}
+  if(getAmt <= 0){
+      btn.disabled = true;
+      btn.textContent = 'Введите сумму';
+      btn.style.background = '';
+  } else if(isFullBuy){
+      btn.disabled = false;
+      btn.textContent = `✅ ВЫКУПИТЬ ОСТАТОК (${f(fromTotal,4)} ${o.from_token})`;
+      btn.style.background = 'linear-gradient(135deg,#39d98a,#2ba86a)';
+  } else {
+      btn.disabled = false;
+      // 👇 УМНЫЙ ТЕКСТ КНОПКИ
+      if (p2pMode === 'sell') {
+          btn.textContent = `✅ Я ПРОДАМ ${f(payAmt,4)} ${o.to_token} (получу ${f(getAmt,4)} ${o.from_token})`;
+      } else {
+          btn.textContent = `✅ Я ЗАПЛАЧУ ${f(payAmt,4)} ${o.to_token} (получу ${f(getAmt,4)} ${o.from_token})`;
+      }
+      btn.style.background = 'linear-gradient(135deg,#39d98a,#2ba86a)';
+  }
 }
 async function confirmBuyOrder(){
   if(!__BUY_ORDER || !UID){ msg('⚠️ Ордер не найден', 'error'); return; } const o = __BUY_ORDER; const getAmt = n($('buyAmount').value);
