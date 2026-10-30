@@ -1597,7 +1597,14 @@ async function renderP2PContent(container){
     </div>`;
 
   // 2. Создаем НОВУЮ панель с токенами и кнопками Купить/Продать
-  const newControls = `
+      // 1. Сначала рассчитываем курсы
+    const priceGet = priceOf(p2pTokenGet);
+    const pricePay = priceOf(p2pTokenPay);
+    const rateForward = pricePay > 0 ? (priceGet / pricePay).toFixed(4) : 1;
+    const rateReverse = priceGet > 0 ? (pricePay / priceGet).toFixed(4) : 1;
+
+    // 2. Затем рисуем панель
+    const newControls = `
     <div class="tabs tabs-2" style="margin-bottom:10px;">
         <div class="tab ${p2pMode==='buy'?'active':''}" onclick="p2pMode='buy'; renderP2PContent($('incomeContent'))" style="${p2pMode==='buy'?'background:linear-gradient(135deg,#39d98a,#2ba86a);border-color:#39d98a;color:#fff':''}">
             <span class="tab-icon">🟢</span>Купить
@@ -1607,7 +1614,7 @@ async function renderP2PContent(container){
         </div>
     </div>
 
-    <div style="display:flex; gap:6px; align-items:center; background:var(--bg-card); padding:10px; border-radius:12px; margin-bottom:12px; border:1px solid var(--line)">
+    <div style="display:flex; gap:6px; align-items:center; background:var(--bg-card); padding:10px; border-radius:12px; margin-bottom:8px; border:1px solid var(--line)">
         <div style="flex:1">
             <div style="font-size:10px; color:var(--muted); margin-bottom:4px;">${p2pMode === 'buy' ? 'Я покупаю' : 'Я продаю'}</div>
             <select onchange="if(this.value===p2pTokenPay){p2pTokenPay = p2pTokenGet==='TUSD'?'TG':'TUSD'} p2pTokenGet=this.value; renderP2PContent($('incomeContent'))" style="width:100%; background:var(--bg); color:#fff; border:1px solid var(--line); border-radius:8px; padding:10px; font-weight:bold; font-size:14px;">
@@ -1621,8 +1628,14 @@ async function renderP2PContent(container){
                 ${ALL_TOKENS.map(t => `<option value="${t.symbol}" ${t.symbol===p2pTokenPay?'selected':''}>${t.symbol}</option>`).join('')}
             </select>
         </div>
-    </div>`;
+    </div>
 
+    <!-- 👇 БЛОК С КУРСАМИ, КОТОРЫЙ МЫ ДОБАВИЛИ 👇 -->
+    <div style="display:flex; justify-content:space-around; font-size:11px; color:var(--muted); background:rgba(13,21,32,0.6); padding:8px; border-radius:10px; margin-bottom:12px; border:1px solid #2d3a4c;">
+        <span>📈 Рынок: 1 ${p2pTokenGet} = <b style="color:#fff">${rateForward} ${p2pTokenPay}</b></span>
+        <span style="color:var(--line)">|</span>
+        <span>Обратный: 1 ${p2pTokenPay} = <b style="color:#fff">${rateReverse} ${p2pTokenGet}</b></span>
+    </div>`;
   // Собираем всё вместе
   container.innerHTML = oldTabs + newControls + '<div id="p2pList">Загрузка...</div>';
   
