@@ -1637,6 +1637,12 @@ window.changeP2PToken = function(side, val) {
     const rateReverse = priceGet > 0 ? (pricePay / priceGet).toFixed(4) : 1;
 
     // 2. Затем рисуем панель
+       // Умные подписи и позиции токенов (МЕНЯЕМ МЕСТАМИ)
+    const leftLabel = p2pMode === 'buy' ? 'Я плачу' : 'Я продаю';
+    const rightLabel = p2pMode === 'buy' ? 'Я получаю' : 'Я получаю';
+    const leftToken = p2pMode === 'buy' ? p2pTokenPay : p2pTokenGet;
+    const rightToken = p2pMode === 'buy' ? p2pTokenGet : p2pTokenPay;
+
     const newControls = `
     <div class="tabs tabs-2" style="margin-bottom:10px;">
         <div class="tab ${p2pMode==='buy'?'active':''}" onclick="p2pMode='buy'; renderP2PContent($('incomeContent'))" style="${p2pMode==='buy'?'background:linear-gradient(135deg,#39d98a,#2ba86a);border-color:#39d98a;color:#fff':''}">
@@ -1649,21 +1655,21 @@ window.changeP2PToken = function(side, val) {
 
     <div style="display:flex; gap:6px; align-items:center; background:var(--bg-card); padding:10px; border-radius:12px; margin-bottom:8px; border:1px solid var(--line)">
         <div style="flex:1">
-            <div style="font-size:10px; color:var(--muted); margin-bottom:4px;">${p2pMode === 'buy' ? 'Я покупаю' : 'Я продаю'}</div>
-            <select onchange="if(this.value===p2pTokenPay){p2pTokenPay = p2pTokenGet==='TUSD'?'TG':'TUSD'} p2pTokenGet=this.value; renderP2PContent($('incomeContent'))" style="width:100%; background:var(--bg); color:#fff; border:1px solid var(--line); border-radius:8px; padding:10px; font-weight:bold; font-size:14px;">
-                ${ALL_TOKENS.map(t => `<option value="${t.symbol}" ${t.symbol===p2pTokenGet?'selected':''}>${t.symbol}</option>`).join('')}
+            <div style="font-size:10px; color:var(--muted); margin-bottom:4px;">${leftLabel}</div>
+            <select onchange="changeP2PToken('left', this.value)" style="width:100%; background:var(--bg); color:#fff; border:1px solid var(--line); border-radius:8px; padding:10px; font-weight:bold; font-size:14px;">
+                ${ALL_TOKENS.map(t => `<option value="${t.symbol}" ${t.symbol===leftToken?'selected':''}>${t.symbol}</option>`).join('')}
             </select>
         </div>
         <button onclick="let t=p2pTokenGet; p2pTokenGet=p2pTokenPay; p2pTokenPay=t; renderP2PContent($('incomeContent'))" style="background:var(--bg-card); border:1px solid var(--line); color:var(--gold); border-radius:50%; width:36px; height:36px; font-size:18px; cursor:pointer; margin-top:14px; flex-shrink:0;">⇄</button>
         <div style="flex:1">
-            <div style="font-size:10px; color:var(--muted); margin-bottom:4px;">${p2pMode === 'buy' ? 'Я плачу' : 'Я получаю'}</div>
-            <select onchange="if(this.value===p2pTokenGet){p2pTokenGet = p2pTokenPay==='TUSD'?'TG':'TUSD'} p2pTokenPay=this.value; renderP2PContent($('incomeContent'))" style="width:100%; background:var(--bg); color:#fff; border:1px solid var(--line); border-radius:8px; padding:10px; font-weight:bold; font-size:14px;">
-                ${ALL_TOKENS.map(t => `<option value="${t.symbol}" ${t.symbol===p2pTokenPay?'selected':''}>${t.symbol}</option>`).join('')}
+            <div style="font-size:10px; color:var(--muted); margin-bottom:4px;">${rightLabel}</div>
+            <select onchange="changeP2PToken('right', this.value)" style="width:100%; background:var(--bg); color:#fff; border:1px solid var(--line); border-radius:8px; padding:10px; font-weight:bold; font-size:14px;">
+                ${ALL_TOKENS.map(t => `<option value="${t.symbol}" ${t.symbol===rightToken?'selected':''}>${t.symbol}</option>`).join('')}
             </select>
         </div>
     </div>
 
-    <!-- 👇 БЛОК С КУРСАМИ, КОТОРЫЙ МЫ ДОБАВИЛИ 👇 -->
+    <!-- 👇 БЛОК С КУРСАМИ 👇 -->
     <div style="display:flex; justify-content:space-around; font-size:11px; color:var(--muted); background:rgba(13,21,32,0.6); padding:8px; border-radius:10px; margin-bottom:12px; border:1px solid #2d3a4c;">
         <span>📈 Рынок: 1 ${p2pTokenGet} = <b style="color:#fff">${rateForward} ${p2pTokenPay}</b></span>
         <span style="color:var(--line)">|</span>
