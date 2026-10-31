@@ -1817,7 +1817,30 @@ async function confirmCreateOrder(){
     if(currentIncomeTab==='p2p'){ currentP2PTab='mine'; await renderP2PContent($('incomeContent')); }
   } catch(e){ msg('⚠️ Ошибка соединения. Попробуйте ещё раз', 'error'); }
 }
-async function cancelP2POrder(id){ if(!confirm('Отменить?')) return; const{error}=await sb.rpc('cancel_p2p_order_v2',{p_order_id:id}); if(error){msg(error.message,'error');return;} msg('Отменён','success');await refreshAll(); if(currentIncomeTab==='p2p') await renderP2PContent($('incomeContent')); }
+async function cancelP2POrder(id){ 
+  if(!confirm('Вы уверены, что хотите отменить этот ордер?')) return; 
+  try {
+    const { data, error } = await sb.rpc('cancel_p2p_order_v2', { p_order_id: String(id) }); 
+    
+    if (error) { 
+      msg('Ошибка БД: ' + error.message, 'error'); 
+      return; 
+    } 
+    // 👇 Вот эта проверка очень важна! Если база вернула ok:false, показываем причину
+    if (data && data.ok === false) { 
+      msg('❌ ' + (data.error || 'Не удалось отменить ордер'), 'error'); 
+      return; 
+    } 
+    
+    msg('✅ Ордер успешно отменён', 'success'); 
+    await refreshAll(); 
+    if (currentIncomeTab === 'p2p') {
+      await renderP2PContent($('incomeContent')); 
+    }
+  } catch(e) {
+    msg('⚠️ Ошибка соединения', 'error');
+  }
+}
 async function quickBuyOrder(id){
   const o = ORDER_CACHE[String(id)]; if(!o){ msg('❓ Ордер не найден', 'error'); return; }
   const max = n(o.from_amount_remaining != null ? o.from_amount_remaining : o.from_amount); const totalTo = n(o.to_amount_remaining != null ? o.to_amount_remaining : o.to_amount); const totalFrom = n(o.from_amount_remaining != null ? o.from_amount_remaining : o.from_amount); const rate = totalFrom > 0 ? totalTo / totalFrom : 0; const payNeeded = max * rate; const avail = tb(o.to_token);
