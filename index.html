@@ -1444,7 +1444,14 @@ function renderBottomNav(){
   const container = $('bottomNavContainer'); if(!container) return;
   const btnMap = [ { id:'nav.home', emoji:'🏠', label:'Дом', view:'home' }, { id:'nav.shop', emoji:'🏪', label:'Магазин', view:'shop' }, { id:'nav.income', emoji:'🎯', label:'Доход', view:'income' }, { id:'nav.friends', emoji:'👥', label:'Друзья', view:'friends' }, { id:'nav.rating', emoji:'🏆', label:'Топ', view:'rating' }, { id:'nav.chatbonus', emoji:'🎁', label:'Заказать', view:'chatbonus', wide:true } ];
   const cfg = __UICONFIG?.screens?.nav?.buttons || {};
-  container.innerHTML = btnMap.map(b => { const c = cfg[b.id] || {}; const label = c.label || b.label; const emoji = c.emoji || b.emoji; const wideCls = b.wide ? 'nav-wide' : ''; if(c.image){ return `<button class="nav-btn ${wideCls} ui-image-btn" data-ui-btn="${b.id}" data-ui-default-emoji="${esc(b.emoji)}" data-ui-default-label="${esc(b.label)}" onclick="goView('${b.view}')"><img src="${esc(c.image)}" alt="${esc(label)}">${label?`<span class="ui-image-label">${esc(label)}</span>`:''}</button>`; } return `<button class="nav-btn ${wideCls}" data-ui-btn="${b.id}" data-ui-default-emoji="${esc(b.emoji)}" data-ui-default-label="${esc(b.label)}" onclick="goView('${b.view}')"><span class="nav-icon">${emoji}</span> ${esc(label)}</button>`; }).join(''); applyUiConfig(__UICONFIG);
+  container.innerHTML = btnMap.map(b => { 
+      const c = cfg[b.id] || {}; const label = c.label || b.label; const emoji = c.emoji || b.emoji; const wideCls = b.wide ? 'nav-wide' : ''; 
+      if(c.image){ 
+          return `<button class="nav-btn ${wideCls} ui-image-btn" id="nav-${b.view}" data-ui-btn="${b.id}" data-ui-default-emoji="${esc(b.emoji)}" data-ui-default-label="${esc(b.label)}" onclick="goView('${b.view}')"><img src="${esc(c.image)}" alt="${esc(label)}">${label?`<span class="ui-image-label">${esc(label)}</span>`:''}</button>`; 
+      } 
+      return `<button class="nav-btn ${wideCls}" id="nav-${b.view}" data-ui-btn="${b.id}" data-ui-default-emoji="${esc(b.emoji)}" data-ui-default-label="${esc(b.label)}" onclick="goView('${b.view}')"><span class="nav-icon">${emoji}</span> ${esc(label)}</button>`; 
+  }).join(''); 
+  applyUiConfig(__UICONFIG);
 }
 
 /* ═══════ PORTFOLIO ═══════ */
