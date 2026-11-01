@@ -1266,6 +1266,10 @@ async function refreshJwt(){
   const id=window.Telegram?.WebApp?.initData; if(!id) return null;
   try{ const r=await fetch(EF,{method:'POST',headers:{'Content-Type':'application/json','apikey':SK,'Authorization':'Bearer '+SK},body:JSON.stringify({initData:id})}); if(!r.ok) return null; const d=await r.json(); if(!d?.access_token) return null; __jwt=d.access_token;sessionStorage.setItem('__jwt',__jwt); return __jwt; }catch{ return null; }
 }
+    if (typeof window.supabase === 'undefined') {
+    document.body.innerHTML = '<div style="padding: 20px; text-align: center; color: red; font-size: 18px;"><b>Ошибка сети!</b><br><br>Библиотека Supabase не загрузилась. Включите VPN и обновите страницу.</div>';
+    throw new Error("Supabase library not loaded");
+}
 const sb=window.supabase.createClient(SU,SK,{auth:{persistSession:false,autoRefreshToken:false},global:{fetch:async(u,o={})=>{const h=new Headers(o.headers||{});if(__jwt)h.set('Authorization','Bearer '+__jwt);return fetch(u,{...o,headers:h});}}});
 const tg=window.Telegram?.WebApp;if(tg){tg.ready();tg.expand();}
 const tgu=tg?.initDataUnsafe?.user||null;
