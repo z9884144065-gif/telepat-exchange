@@ -1207,12 +1207,8 @@ function applyUiConfig(cfg){
             const el = document.querySelector(`[data-ui-block="${screenKey}.${blockId}"]`);
             if(!el) return;
             
-            // 🛡️ ЖЕСТКИЙ ПРЕДОХРАНИТЕЛЬ: Блоки с контентом нельзя скрывать!
-            if (blockId === 'content' || blockId === 'list') {
-                el.style.display = ''; // Принудительно показываем
-            } else {
-                el.style.display = (b.visible === false) ? 'none' : '';
-            }
+            // 🛡️ ПОЛНЫЙ ИММУНИТЕТ: Принудительно показываем ВСЕ блоки без исключения!
+            el.style.display = ''; 
             
             if(b.bg) el.style.background = b.bg;
             if(b.bgImage) el.style.backgroundImage = `url('${b.bgImage}')`;
