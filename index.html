@@ -2054,7 +2054,7 @@ async function renderAutoTab() {
     <span style="color:var(--gold); font-size:10px;">(Лимит ранга: ~$${limits.max_per_trade})</span>
 </div>
 <input id="at_amount" type="number" 
-       value="${(Number(st.amount_per_trade) * priceOf(st.from_token)).toFixed(2) || 100}" 
+              value="${(Number(st.amount_per_trade || 0) * priceOf(st.from_token)).toFixed(2)}"
        max="${(Number(limits.max_per_trade) / priceOf(st.from_token)).toFixed(2)}" 
        step="0.01" 
        style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
