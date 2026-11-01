@@ -1154,7 +1154,34 @@ function uiGetButtonConfig(cfg, screenKey, btnId){
   return s.buttons[btnId];
 }
 async function loadUiConfig(){
-  try{const {data, error} = await sb.rpc('get_ui_config'); if(!error && data) __UICONFIG = data; else __UICONFIG = uiGetDefaults();}catch(e){ __UICONFIG = uiGetDefaults(); }
+  try {
+    const {data, error} = await sb.rpc('get_ui_config'); 
+    if(!error && data) {
+      __UICONFIG = data;
+      
+      // 🛡️ ПРЕДОХРАНИТЕЛЬ
+      if (__UICONFIG && __UICONFIG.screens) {
+        Object.keys(__UICONFIG.screens).forEach(screen => {
+          const s = __UICONFIG.screens[screen];
+          if (s && s.blocks) {
+            const blockKeys = Object.keys(s.blocks);
+            if (blockKeys.length > 0) {
+              const allHidden = blockKeys.every(k => s.blocks[k] && s.blocks[k].visible === false);
+              if (allHidden) {
+                console.log('🔥 Failsafe: Сброс скрытых блоков для экрана', screen);
+                s.blocks = {}; 
+              }
+            }
+          }
+        });
+      }
+    } else {
+      __UICONFIG = uiGetDefaults();
+    }
+  } catch(e) { 
+    __UICONFIG = uiGetDefaults(); 
+  }
+  
   applyUiConfig(__UICONFIG);
   return __UICONFIG;
 }
@@ -1173,15 +1200,29 @@ function applyUiConfig(cfg){
   Object.keys(cfg.screens).forEach(screenKey => {
     const s = cfg.screens[screenKey];
     if(!s) return;
-    if(s.blocks){ Object.keys(s.blocks).forEach(blockId => {
-        const b = s.blocks[blockId]; if(!b) return;
-        const el = document.querySelector(`[data-ui-block="${screenKey}.${blockId}"]`);
-        if(!el) return;
-        el.style.display = b.visible === false ? 'none' : '';
-        if(b.bg) el.style.background = b.bg;
-        if(b.bgImage) el.style.backgroundImage = `url('${b.bgImage}')`;
-        if(b.radius) el.style.borderRadius = b.radius;
-    });}
+    
+    if(s.blocks){ 
+        const blockKeys = Object.keys(s.blocks);
+        const visibleKeys = blockKeys.filter(k => s.blocks[k].visible !== false);
+        
+        Object.keys(s.blocks).forEach(blockId => {
+            const b = s.blocks[blockId]; if(!b) return;
+            const el = document.querySelector(`[data-ui-block="${screenKey}.${blockId}"]`);
+            if(!el) return;
+            
+            // 🛡️ ЗАЩИТА: Не скрываем блок, если это единственный видимый блок на экране
+            let shouldHide = (b.visible === false);
+            if (shouldHide && visibleKeys.length === 0) {
+                shouldHide = false; 
+            }
+            
+            el.style.display = shouldHide ? 'none' : '';
+            if(b.bg) el.style.background = b.bg;
+            if(b.bgImage) el.style.backgroundImage = `url('${b.bgImage}')`;
+            if(b.radius) el.style.borderRadius = b.radius;
+        });
+    }
+    
     if(s.buttons){ Object.keys(s.buttons).forEach(btnId => {
         const b = s.buttons[btnId]; if(!b) return;
         const el = document.querySelector(`[data-ui-btn="${btnId}"]`);
