@@ -1288,19 +1288,18 @@ async function loadUser(){
   if(!data){ try{await sb.rpc('ensure_user_exists',{p_telegram_id:UID,p_first_name:tgu?.first_name||null,p_username:tgu?.username||null});}catch(e){} const r2=await sb.from('users').select('*').eq('telegram_id',UID).maybeSingle(); data=r2.data; }
   if(!data){msg('Профиль не найден','error');return;}
   CU=data;
-      // 👇 Считаем реальную прибыль структуры для 4-й шкалы
+  // 👇 Считаем ОБОРОТ структуры
   try {
-    const { data: earnData } = await sb.rpc('get_referral_earnings_summary');
-    if (earnData && earnData.ok && earnData.earnings) {
-      CU.referral_earnings = earnData.earnings.reduce((sum, e) => {
-        const tokenPrice = typeof priceOf === 'function' ? priceOf(e.token_symbol) : 1;
-        return sum + (Number(e.total_amount) || 0) * tokenPrice;
-      }, 0);
+    const { data: turnoverData } = await sb.rpc('get_structure_turnover', { p_user_id: UID });
+    if (turnoverData && turnoverData.ok) {
+      CU.referral_earnings = Number(turnoverData.turnover) || 0; // Передаем в 4-ю шкалу
+      window.__STRUCTURE_TURNOVER = Number(turnoverData.turnover) || 0; // Сохраняем для окна
     } else {
       CU.referral_earnings = 0;
+      window.__STRUCTURE_TURNOVER = 0;
     }
-  } catch(e) { 
-    console.warn('Ошибка подсчета прибыли:', e); 
+  } catch(e) {
+    console.warn('Ошибка подсчета оборота:', e);
     if (!CU.referral_earnings) CU.referral_earnings = 0;
   }
   // 👆 Конец блока
