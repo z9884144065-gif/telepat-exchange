@@ -1613,7 +1613,6 @@ function renderIncomeTabs(){
 }
 function renderIncome(){showIncomeTab(currentIncomeTab);}
 async function showIncomeTab(tab){
-      alert("3. Функция Дохода запустилась! Вкладка: " + tab);
   try {
     currentIncomeTab=tab; renderIncomeTabs(); const c=$('incomeContent');c.innerHTML='<div class="item-card"><div class="item-desc">Загрузка...</div></div>';
     if(tab==='p2p'){ await renderP2PContent(c); }
