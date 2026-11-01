@@ -1422,6 +1422,7 @@ function renderChatBonus(){}
 
 /* ═══════ NAVIGATION ═══════ */
 function goView(v){
+      alert("1. Нажата кнопка: " + v);
   // 🛡️ ЖЕСТКОЕ ПРИНУДИТЕЛЬНОЕ ОТОБРАЖЕНИЕ (удаляем класс hidden и ставим display)
   ['home','shop','income','friends','rating','chatbonus','admin'].forEach(x=>{ 
     const el=$('view-'+x);
