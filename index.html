@@ -1170,58 +1170,7 @@ async function saveUiConfig(){
   return true;
 }
 function applyUiConfig(cfg){
-  if(!cfg || !cfg.screens) return;
-  Object.keys(cfg.screens).forEach(screenKey => {
-    const s = cfg.screens[screenKey];
-    if(!s) return;
-    
-    if(s.blocks){ 
-        Object.keys(s.blocks).forEach(blockId => {
-            const b = s.blocks[blockId]; if(!b) return;
-            const el = document.querySelector(`[data-ui-block="${screenKey}.${blockId}"]`);
-            if(!el) return;
-            
-            // 🛡️ ПОЛНЫЙ ИММУНИТЕТ: Принудительно показываем ВСЕ блоки
-            el.style.display = ''; 
-            
-            if(b.bg) el.style.background = b.bg;
-            if(b.bgImage) el.style.backgroundImage = `url('${b.bgImage}')`;
-            if(b.radius) el.style.borderRadius = b.radius;
-        });
-    }
-    
-    if(s.buttons){ Object.keys(s.buttons).forEach(btnId => {
-        const b = s.buttons[btnId]; if(!b) return;
-        const el = document.querySelector(`[data-ui-btn="${btnId}"]`);
-        if(!el) return;
-        const defEmoji = el.getAttribute('data-ui-default-emoji') || '';
-        const defLabel = el.getAttribute('data-ui-default-label') || '';
-        const iconEl = el.querySelector('.icon, .nav-icon, .tab-icon, .pi-label');
-        let iconClass = '';
-        if(iconEl){
-          if(iconEl.classList.contains('icon')) iconClass = 'icon';
-          else if(iconEl.classList.contains('nav-icon')) iconClass = 'nav-icon';
-          else if(iconEl.classList.contains('tab-icon')) iconClass = 'tab-icon';
-        }
-        if(b.image){
-          el.classList.add('ui-image-btn');
-          const labelText = (b.label !== undefined && b.label !== '') ? b.label : '';
-          el.innerHTML = `<img src="${esc(b.image)}" alt="${esc(labelText)}">${labelText ? `<span class="ui-image-label">${esc(labelText)}</span>` : ''}`;
-          el.style.background = 'transparent'; el.style.border = 'none'; el.style.padding = '4px';
-        } else {
-          el.classList.remove('ui-image-btn');
-          const finalEmoji = (b.emoji !== undefined && b.emoji !== '') ? b.emoji : defEmoji;
-          const finalLabel = (b.label !== undefined && b.label !== '') ? b.label : defLabel;
-          if(el.classList.contains('profile-icon-btn')) el.innerHTML = `<span>${esc(finalEmoji)}</span><span class="pi-label">${esc(finalLabel)}</span>`;
-          else if(iconClass) el.innerHTML = `<span class="${iconClass}">${esc(finalEmoji)}</span> ${esc(finalLabel)}`;
-          else el.textContent = `${finalEmoji} ${finalLabel}`;
-        }
-        if(b.bg) el.style.background = b.bg;
-        if(b.text) el.style.color = b.text;
-        if(b.borderRadius) el.style.borderRadius = b.borderRadius;
-        if(b.size){ const siz = UI_SIZES.find(x => x.key === b.size); if(siz) el.style.fontSize = siz.px + 'px'; }
-    });}
-  });
+  // 🛡️ ОТКЛЮЧЕНО, чтобы база данных не прятала блоки
 }
 function renderConstructor(){
   if(!__UICONFIG) __UICONFIG = uiGetDefaults();
