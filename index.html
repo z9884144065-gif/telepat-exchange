@@ -1384,12 +1384,34 @@ function renderChatBonus(){}
 
 /* ═══════ NAVIGATION ═══════ */
 function goView(v){
-  ['home','shop','income','friends','rating','chatbonus','admin'].forEach(x=>{ const el=$('view-'+x);if(el) el.classList.toggle('hidden',x!==v); const nb=$('nav-'+x);if(nb) nb.classList.toggle('active',x===v); });
-  if(v==='home') renderHome(); if(v==='shop') renderShop(); if(v==='income') renderIncome(); if(v==='friends') renderFriends(); if(v==='rating') renderRating(); if(v==='chatbonus') renderChatBonus(); if(v==='admin') renderAdmin();
+  ['home','shop','income','friends','rating','chatbonus','admin'].forEach(x=>{ 
+    const el=$('view-'+x);if(el) el.classList.toggle('hidden',x!==v); 
+    const nb=$('nav-'+x);if(nb) nb.classList.toggle('active',x===v); 
+  });
+  
+  try {
+    if(v==='home') renderHome(); 
+    if(v==='shop') renderShop(); 
+    if(v==='income') renderIncome(); 
+    if(v==='friends') renderFriends(); 
+    if(v==='rating') renderRating(); 
+    if(v==='chatbonus') renderChatBonus(); 
+    if(v==='admin') renderAdmin();
+  } catch(e) {
+    console.error("КРИТИЧЕСКАЯ ОШИБКА ПРИ ПЕРЕХОДЕ:", e);
+    msg('❌ Ошибка: ' + e.message, 'error');
+    
+    // Показываем ошибку прямо на экране, если сломался "Доход"
+    if (v === 'income') {
+        const c = $('incomeContent');
+        if (c) c.innerHTML = `<div class="item-card" style="border-color:red"><div class="item-desc" style="color:#f6465d; font-size:14px; text-align:center; padding: 20px;">⚠️ Ошибка JS:<br><br>${e.message}</div></div>`;
+          if (c) c.innerHTML = `<div class="item-card" style="border-color:red"><div class="item-desc" style="color:#f6465d; font-size:14px; text-align:center; pad...">⚠️ Ошибка JS:<br><br>${e.message}</div></div>`;
+    }
+  } // <--- Закрывает catch(e)
+  
   window.scrollTo({top:0,behavior:'smooth'});
-}
+} // <--- Закрывает function goView (На этой строке всё заканчивается!)
 function toggleAcc(id){const el=$(id);if(!el) return;el.classList.toggle('open');}
-function openModal(title,html){$('modalBox').innerHTML=`<div class="modal-title">${title}</div>${html}`;$('modal').classList.add('show');}
 function closeModal(e){if(e&&e.target!==$('modal')) return;$('modal').classList.remove('show');}
 function openHistory(){$('historyModal').classList.add('show');HISTORY_OFFSET=0;HISTORY_ITEMS=[];loadHistory();}
 function closeHistory(e){if(e&&e.target!==$('historyModal')) return;$('historyModal').classList.remove('show');}
