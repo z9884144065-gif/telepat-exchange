@@ -1405,16 +1405,20 @@ function goView(v){
     console.error("КРИТИЧЕСКАЯ ОШИБКА ПРИ ПЕРЕХОДЕ:", e);
     msg('❌ Ошибка: ' + e.message, 'error');
     
-    // Показываем ошибку прямо на экране, если сломался "Доход"
-    if (v === 'income') {
-        const c = $('incomeContent');
-        if (c) c.innerHTML = `<div class="item-card" style="border-color:red"><div class="item-desc" style="color:#f6465d; font-size:14px; text-align:center; padding: 20px;">⚠️ Ошибка JS:<br><br>${e.message}</div></div>`;
-         
+    const viewEl = $('view-' + v);
+    if (viewEl) {
+        const errDiv = document.createElement('div');
+        errDiv.className = 'item-card';
+        errDiv.style.borderColor = 'red';
+        errDiv.style.margin = '20px';
+        errDiv.innerHTML = `<div class="item-desc" style="color:#f6465d; font-size:14px; text-align:center; padding: 20px; white-space: pre-wrap;">⚠️ Ошибка JS:<br><br>${e.message}</div>`;
+        viewEl.innerHTML = '';
+        viewEl.appendChild(errDiv);
     }
-  } // <--- Закрывает catch(e)
+  }
   
   window.scrollTo({top:0,behavior:'smooth'});
-} // <--- Закрывает function goView (На этой строке всё заканчивается!)
+}
 function toggleAcc(id){const el=$(id);if(!el) return;el.classList.toggle('open');}
 function closeModal(e){if(e&&e.target!==$('modal')) return;$('modal').classList.remove('show');}
 function openHistory(){$('historyModal').classList.add('show');HISTORY_OFFSET=0;HISTORY_ITEMS=[];loadHistory();}
