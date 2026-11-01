@@ -1703,7 +1703,7 @@ window.changeP2PToken = function(side, val) {
 function renderP2PList(){
   const box=$('p2pList');if(!box) return; box.innerHTML='<div class="item-card"><div class="item-desc">Загрузка...</div></div>';
   
-  sb.from('p2p_orders').select('*').then(r => {
+sb.from('p2p_orders').select('*').limit(50).then(r => {
     if (r.error) { box.innerHTML='<div class="item-card"><div class="item-desc" style="color:red;text-align:center">Ошибка БД: '+r.error.message+'</div></div>'; return; }
     
     let orders = (r.data || []).filter(o => String(o.status||'').toLowerCase() === 'open');
