@@ -1393,7 +1393,7 @@ function goView(v){
   const activeNav = $('nav-'+v);
   if(activeNav) activeNav.classList.add('active');
 
-  // 4. Запускаем отрисовку контента
+  // 4. Запускаем отрисовку контента (БЕЗ АЛЕРТОВ!)
   try {
     if(v==='home') renderHome(); 
     if(v==='shop') renderShop(); 
@@ -1404,7 +1404,7 @@ function goView(v){
     if(v==='admin') renderAdmin();
   } catch(e) {
     console.error("Ошибка отрисовки:", e);
-    // Не стираем экран, просто показываем ошибку
+    // Показываем ошибку прямо на экране, если что-то сломается
     const errDiv = document.createElement('div');
     errDiv.style.color = 'red';
     errDiv.style.padding = '20px';
@@ -1412,7 +1412,8 @@ function goView(v){
     if(targetView) targetView.prepend(errDiv);
   }
   
-  window.scrollTo({top:0,behavior:'smooth'});
+  // Принудительная перерисовка для Telegram (чтобы экран не оставался пустым)
+  setTimeout(() => { window.scrollTo(0, 0); }, 50);
 }
 function toggleAcc(id){const el=$(id);if(!el) return;el.classList.toggle('open');}
     function openModal(title, content) {
