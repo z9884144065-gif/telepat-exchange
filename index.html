@@ -1222,30 +1222,30 @@ function resetUiDraft(){ if(!confirm('Сбросить все изменения
 async function refreshJwt(){
   const id=window.Telegram?.WebApp?.initData; 
   if(!id) { 
-      alert("❌ ОШИБКА: Telegram не передал данные (initData пустой). Бот открыт не через кнопку!"); 
+      console.log("❌ ОШИБКА: Telegram не передал данные (initData пустой)."); 
       return null; 
   }
   try{ 
     const r=await fetch(EF,{method:'POST',headers:{'Content-Type':'application/json','apikey':SK,'Authorization':'Bearer '+SK},body:JSON.stringify({initData:id})}); 
     
     if(!r.ok) { 
-        alert("❌ ОШИБКА сервера (Edge Function): статус " + r.status); 
+        console.log("❌ ОШИБКА сервера (Edge Function): статус " + r.status); 
         return null; 
     } 
     
     const d=await r.json(); 
     
     if(!d?.access_token) { 
-        alert("❌ ОШИБКА: Сервер не вернул токен! Ответ: " + JSON.stringify(d)); 
+        console.log("❌ ОШИБКА: Сервер не вернул токен! Ответ: " + JSON.stringify(d)); 
         return null; 
     } 
     
     __jwt=d.access_token;
     sessionStorage.setItem('__jwt',__jwt); 
-    alert("✅ Токен успешно получен! Авторизация работает."); 
+    console.log("✅ Токен успешно получен! Авторизация работает."); 
     return __jwt; 
   }catch(e){ 
-      alert("❌ ОШИБКА сети: " + e.message);
+      console.log("❌ ОШИБКА сети: " + e.message);
       return null; 
   }
 }
