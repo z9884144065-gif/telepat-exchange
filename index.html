@@ -1440,7 +1440,7 @@ function goView(v){
     if(v==='rating') renderRating(); 
     if(v==='chatbonus') renderChatBonus(); 
     if(v==='admin') renderAdmin();
-  } catch(e) {
+    } catch(e) {
     console.error("КРИТИЧЕСКАЯ ОШИБКА ПРИ ПЕРЕХОДЕ:", e);
     msg('❌ Ошибка: ' + e.message, 'error');
     
@@ -1449,10 +1449,11 @@ function goView(v){
         const errDiv = document.createElement('div');
         errDiv.className = 'item-card';
         errDiv.style.borderColor = 'red';
-        errDiv.style.margin = '20px';
-        errDiv.innerHTML = `<div class="item-desc" style="color:#f6465d; font-size:14px; text-align:center; padding: 20px; white-space: pre-wrap;">⚠️ Ошибка JS:<br><br>${e.message}</div>`;
-        viewEl.innerHTML = '';
-        viewEl.appendChild(errDiv);
+        errDiv.style.margin = '10px';
+        errDiv.innerHTML = `<div class="item-desc" style="color:#f6465d; font-size:14px; text-align:center;">⚠️ Ошибка JS: ${e.message}</div>`;
+        
+        // Добавляем ошибку В НАЧАЛО, не стирая саму страницу
+        viewEl.prepend(errDiv); 
     }
   }
   
