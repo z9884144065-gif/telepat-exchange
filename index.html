@@ -1423,17 +1423,28 @@ function renderChatBonus(){}
 
 /* ═══════ NAVIGATION ═══════ */
 function goView(v){
-      alert("1. Нажата кнопка: " + v);
-  // 🛡️ ЖЕСТКОЕ ПРИНУДИТЕЛЬНОЕ ОТОБРАЖЕНИЕ (удаляем класс hidden и ставим display)
+  // 1. Сначала жестко прячем ВСЕ вкладки
   ['home','shop','income','friends','rating','chatbonus','admin'].forEach(x=>{ 
     const el=$('view-'+x);
     if(el) {
-        el.classList.remove('hidden'); // Убираем класс скрытия
-        el.style.display = (x===v) ? 'block' : 'none'; // Принудительно показываем
+        el.classList.add('hidden'); 
+        el.style.display = 'none'; 
     }
-    const nb=$('nav-'+x);if(nb) nb.classList.toggle('active',x===v); 
+    const nb=$('nav-'+x);if(nb) nb.classList.remove('active'); 
   });
   
+  // 2. Затем жестко показываем нужную
+  const targetView = $('view-'+v);
+  if (targetView) {
+      targetView.classList.remove('hidden');
+      targetView.style.display = 'block';
+  }
+  
+  // 3. Подсвечиваем кнопку внизу
+  const activeNav = $('nav-'+v);
+  if(activeNav) activeNav.classList.add('active');
+
+  // 4. Запускаем отрисовку контента
   try {
     if(v==='home') renderHome(); 
     if(v==='shop') renderShop(); 
@@ -1443,8 +1454,13 @@ function goView(v){
     if(v==='chatbonus') renderChatBonus(); 
     if(v==='admin') renderAdmin();
   } catch(e) {
-    console.error("КРИТИЧЕСКАЯ ОШИБКА ПРИ ПЕРЕХОДЕ:", e);
-    alert('❌ Ошибка JS при переходе: ' + e.message); 
+    console.error("Ошибка отрисовки:", e);
+    // Не стираем экран, просто показываем ошибку
+    const errDiv = document.createElement('div');
+    errDiv.style.color = 'red';
+    errDiv.style.padding = '20px';
+    errDiv.textContent = 'Ошибка: ' + e.message;
+    if(targetView) targetView.prepend(errDiv);
   }
   
   window.scrollTo({top:0,behavior:'smooth'});
