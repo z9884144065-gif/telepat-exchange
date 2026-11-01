@@ -1154,34 +1154,8 @@ function uiGetButtonConfig(cfg, screenKey, btnId){
   return s.buttons[btnId];
 }
 async function loadUiConfig(){
-  try {
-    const {data, error} = await sb.rpc('get_ui_config'); 
-    if(!error && data) {
-      __UICONFIG = data;
-      
-      // 🛡️ ПРЕДОХРАНИТЕЛЬ
-      if (__UICONFIG && __UICONFIG.screens) {
-        Object.keys(__UICONFIG.screens).forEach(screen => {
-          const s = __UICONFIG.screens[screen];
-          if (s && s.blocks) {
-            const blockKeys = Object.keys(s.blocks);
-            if (blockKeys.length > 0) {
-              const allHidden = blockKeys.every(k => s.blocks[k] && s.blocks[k].visible === false);
-              if (allHidden) {
-                console.log('🔥 Failsafe: Сброс скрытых блоков для экрана', screen);
-                s.blocks = {}; 
-              }
-            }
-          }
-        });
-      }
-    } else {
-      __UICONFIG = uiGetDefaults();
-    }
-  } catch(e) { 
-    __UICONFIG = uiGetDefaults(); 
-  }
-  
+  // 🛡️ ЯДЕРНЫЙ ФИКС: Полностью игнорируем базу данных
+  __UICONFIG = uiGetDefaults();
   applyUiConfig(__UICONFIG);
   return __UICONFIG;
 }
