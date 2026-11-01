@@ -1371,29 +1371,29 @@ function renderChatBonus(){}
 
 /* ═══════ NAVIGATION ═══════ */
 function goView(v){
-  // 1. Сначала жестко прячем ВСЕ вкладки
-  ['home','shop','income','friends','rating','chatbonus','admin'].forEach(x=>{ 
-    const el=$('view-'+x);
-    if(el) {
-        el.classList.add('hidden'); 
-        el.style.display = 'none'; 
-    }
-    const nb=$('nav-'+x);if(nb) nb.classList.remove('active'); 
-  });
-  
-  // 2. Затем жестко показываем нужную
-  const targetView = $('view-'+v);
-  if (targetView) {
-      targetView.classList.remove('hidden');
-      targetView.style.display = 'block';
-  }
-  
-  // 3. Подсвечиваем кнопку внизу
-  const activeNav = $('nav-'+v);
-  if(activeNav) activeNav.classList.add('active');
-
-  // 4. Запускаем отрисовку контента (БЕЗ АЛЕРТОВ!)
   try {
+    // 1. Жестко прячем ВСЕ вкладки
+    ['home','shop','income','friends','rating','chatbonus','admin'].forEach(x=>{ 
+      const el=$('view-'+x);
+      if(el) {
+          el.classList.add('hidden'); 
+          el.style.setProperty('display', 'none', 'important'); 
+      }
+      const nb=$('nav-'+x);if(nb) nb.classList.remove('active'); 
+    });
+    
+    // 2. Жестко показываем нужную вкладку
+    const targetView = $('view-'+v);
+    if (targetView) {
+        targetView.classList.remove('hidden');
+        targetView.style.setProperty('display', 'block', 'important');
+    }
+    
+    // 3. Подсвечиваем кнопку меню
+    const activeNav = $('nav-'+v);
+    if(activeNav) activeNav.classList.add('active');
+
+    // 4. Запускаем отрисовку (с защитой)
     if(v==='home') renderHome(); 
     if(v==='shop') renderShop(); 
     if(v==='income') renderIncome(); 
@@ -1401,18 +1401,13 @@ function goView(v){
     if(v==='rating') renderRating(); 
     if(v==='chatbonus') renderChatBonus(); 
     if(v==='admin') renderAdmin();
+    
   } catch(e) {
-    console.error("Ошибка отрисовки:", e);
-    // Показываем ошибку прямо на экране, если что-то сломается
-    const errDiv = document.createElement('div');
-    errDiv.style.color = 'red';
-    errDiv.style.padding = '20px';
-    errDiv.textContent = 'Ошибка: ' + e.message;
-    if(targetView) targetView.prepend(errDiv);
+    console.error("Ошибка в goView:", e);
+    alert("Произошла ошибка при открытии вкладки: " + e.message);
   }
   
-  // Принудительная перерисовка для Telegram (чтобы экран не оставался пустым)
-  setTimeout(() => { window.scrollTo(0, 0); }, 50);
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 function toggleAcc(id){const el=$(id);if(!el) return;el.classList.toggle('open');}
     function openModal(title, content) {
