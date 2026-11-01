@@ -1202,21 +1202,18 @@ function applyUiConfig(cfg){
     if(!s) return;
     
     if(s.blocks){ 
-        const blockKeys = Object.keys(s.blocks);
-        const visibleKeys = blockKeys.filter(k => s.blocks[k].visible !== false);
-        
         Object.keys(s.blocks).forEach(blockId => {
             const b = s.blocks[blockId]; if(!b) return;
             const el = document.querySelector(`[data-ui-block="${screenKey}.${blockId}"]`);
             if(!el) return;
             
-            // 🛡️ ЗАЩИТА: Не скрываем блок, если это единственный видимый блок на экране
-            let shouldHide = (b.visible === false);
-            if (shouldHide && visibleKeys.length === 0) {
-                shouldHide = false; 
+            // 🛡️ ЖЕСТКИЙ ПРЕДОХРАНИТЕЛЬ: Блоки с контентом нельзя скрывать!
+            if (blockId === 'content' || blockId === 'list') {
+                el.style.display = ''; // Принудительно показываем
+            } else {
+                el.style.display = (b.visible === false) ? 'none' : '';
             }
             
-            el.style.display = shouldHide ? 'none' : '';
             if(b.bg) el.style.background = b.bg;
             if(b.bgImage) el.style.backgroundImage = `url('${b.bgImage}')`;
             if(b.radius) el.style.borderRadius = b.radius;
@@ -1461,6 +1458,13 @@ function goView(v){
   window.scrollTo({top:0,behavior:'smooth'});
 }
 function toggleAcc(id){const el=$(id);if(!el) return;el.classList.toggle('open');}
+    function openModal(title, content) {
+  const box = $('modalBox');
+  if (box) {
+    box.innerHTML = `<div class="modal-title">${title}</div>${content}`;
+  }
+  $('modal').classList.add('show');
+}
 function closeModal(e){if(e&&e.target!==$('modal')) return;$('modal').classList.remove('show');}
 function openHistory(){$('historyModal').classList.add('show');HISTORY_OFFSET=0;HISTORY_ITEMS=[];loadHistory();}
 function closeHistory(e){if(e&&e.target!==$('historyModal')) return;$('historyModal').classList.remove('show');}
