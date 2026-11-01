@@ -1271,10 +1271,34 @@ function resetUiDraft(){ if(!confirm('Сбросить все изменения
 
 /* ═══════ SUPABASE ═══════ */
 async function refreshJwt(){
-   const id=window.Telegram?.WebApp?.initData; 
-  if(!id) { alert("⚠️ ОШИБКА: Telegram не передал данные для входа (initData пустой)!"); return null; }
-  // alert("✅ Telegram данные получены!");
-  try{ const r=await fetch(EF,{method:'POST',headers:{'Content-Type':'application/json','apikey':SK,'Authorization':'Bearer '+SK},body:JSON.stringify({initData:id})}); if(!r.ok) return null; const d=await r.json(); if(!d?.access_token) return null; __jwt=d.access_token;sessionStorage.setItem('__jwt',__jwt); return __jwt; }catch{ return null; }
+  const id=window.Telegram?.WebApp?.initData; 
+  if(!id) { 
+      alert("❌ ОШИБКА: Telegram не передал данные (initData пустой). Бот открыт не через кнопку!"); 
+      return null; 
+  }
+  try{ 
+    const r=await fetch(EF,{method:'POST',headers:{'Content-Type':'application/json','apikey':SK,'Authorization':'Bearer '+SK},body:JSON.stringify({initData:id})}); 
+    
+    if(!r.ok) { 
+        alert("❌ ОШИБКА сервера (Edge Function): статус " + r.status); 
+        return null; 
+    } 
+    
+    const d=await r.json(); 
+    
+    if(!d?.access_token) { 
+        alert("❌ ОШИБКА: Сервер не вернул токен! Ответ: " + JSON.stringify(d)); 
+        return null; 
+    } 
+    
+    __jwt=d.access_token;
+    sessionStorage.setItem('__jwt',__jwt); 
+    alert("✅ Токен успешно получен! Авторизация работает."); 
+    return __jwt; 
+  }catch(e){ 
+      alert("❌ ОШИБКА сети: " + e.message);
+      return null; 
+  }
 }
     if (typeof window.supabase === 'undefined') {
     document.body.innerHTML = '<div style="padding: 20px; text-align: center; color: red; font-size: 18px;"><b>Ошибка сети!</b><br><br>Библиотека Supabase не загрузилась. Включите VPN и обновите страницу.</div>';
