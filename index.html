@@ -1207,7 +1207,7 @@ function applyUiConfig(cfg){
             const el = document.querySelector(`[data-ui-block="${screenKey}.${blockId}"]`);
             if(!el) return;
             
-            // 🛡️ ПОЛНЫЙ ИММУНИТЕТ: Принудительно показываем ВСЕ блоки без исключения!
+            // 🛡️ ПОЛНЫЙ ИММУНИТЕТ: Принудительно показываем ВСЕ блоки
             el.style.display = ''; 
             
             if(b.bg) el.style.background = b.bg;
