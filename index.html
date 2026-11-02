@@ -3482,22 +3482,29 @@ function initRealtimeUpdates() {
     .subscribe();
 }
 document.addEventListener('DOMContentLoaded',async()=>{
-  await refreshJwt();
-  await loadUiSettingsPublic();
-  await loadUiConfig();
-  await loadAppBgImage();
-  await loadKnightBgImage();
-  await loadBannerSettings();
-  await loadUser();
-  await loadWelcomeBonusStatus();
-  await loadAllTokens();
-  await loadMyItems();
-  await loadCustomBalances();
-  await loadRewardFunds();
-  await loadStakeState();
-  await loadTopBanner();
+  try {
+    await refreshJwt();
+    await loadUiSettingsPublic();
+    await loadUiConfig();
+    await loadAppBgImage();
+    await loadKnightBgImage();
+    await loadBannerSettings();
+    await loadUser();
+    await loadWelcomeBonusStatus();
+    await loadAllTokens();
+    await loadMyItems();
+    await loadCustomBalances();
+    await loadRewardFunds();
+    await loadStakeState();
+    await loadTopBanner();
+  } catch(e) {
+    console.error("⚠️ Ошибка при загрузке данных:", e);
+  }
+
+  // Эти функции запустятся ВСЕГДА, даже если данные не загрузились
   renderHome();
   renderBottomNav();
+  
   if(__START_ORDER_ID){setTimeout(() => { openDirectOrder(__START_ORDER_ID); }, 500);}
   setInterval(refreshJwt,30*60*1000);
   setInterval(loadRewardFunds,60*1000);
