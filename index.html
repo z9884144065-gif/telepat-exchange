@@ -1237,6 +1237,12 @@ function resetUiDraft(){ if(!confirm('Сбросить все изменения
 
 /* ═══════ SUPABASE ═══════ */
 async function refreshJwt(){
+  // Проверка на веб-версию (если мы открыли в браузере)
+  if (window.IS_WEB_VERSION) {
+      console.log("✅ Запущена веб-версия (без Telegram). Доступ разрешен.");
+      return "mock_token"; 
+  }
+
   const id=window.Telegram?.WebApp?.initData; 
   if(!id) { 
       console.log("❌ ОШИБКА: Telegram не передал данные (initData пустой)."); 
