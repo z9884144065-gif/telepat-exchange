@@ -1237,10 +1237,10 @@ function resetUiDraft(){ if(!confirm('Сбросить все изменения
 
 /* ═══════ SUPABASE ═══════ */
 async function refreshJwt(){
-  // Проверка на веб-версию (если мы открыли в браузере)
+  // Для веб-версии просто отключаем проверку токена
   if (window.IS_WEB_VERSION) {
-      console.log("✅ Запущена веб-версия (без Telegram). Доступ разрешен.");
-      return "mock_token"; 
+      console.log("✅ Запущена веб-версия (без Telegram). Работаем без токена.");
+      return null; 
   }
 
   const id=window.Telegram?.WebApp?.initData; 
