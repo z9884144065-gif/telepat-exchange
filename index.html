@@ -1305,6 +1305,114 @@ function copyRefLink(){const inp=$('refLink');if(!inp) return;navigator.clipboar
 function copyText(t){navigator.clipboard?.writeText(t).then(()=>msg('Скопировано','success'),()=>msg('Ошибка','error'));}
 function openLevelModal(){msg('🎯 Уровень = минимум из 3 шкал');}
 
+    /* ═══════ РЕНДЕР БЫСТРЫХ КНОПОК И НАВИГАЦИИ ═══════ */
+function renderQuickButtons(){
+  const container = $('quickActionsContainer'); if(!container) return;
+  const btnMap = [ { id:'quick.shop', emoji:'🏪', label:'Магазин', onclick:"goView('shop')" }, { id:'quick.income', emoji:'🎯', label:'Доход', onclick:"goView('income')" }, { id:'quick.friends', emoji:'👥', label:'Друзья', onclick:"goView('friends')" }, { id:'quick.rating', emoji:'🏆', label:'Топ-100', onclick:"goView('rating')" }, { id:'quick.wallet', emoji:'💼', label:'Кошелёк', onclick:"openWallet()" }, { id:'quick.chatbonus', emoji:'🎁', label:'Раздача', onclick:"goView('chatbonus')" } ];
+  const cfg = __UICONFIG?.screens?.home?.buttons || {};
+  container.innerHTML = btnMap.map(b => { const c = cfg[b.id] || {}; const label = c.label || b.label; const emoji = c.emoji || b.emoji; if(c.image){ return `<button class="quick-btn ui-image-btn" data-ui-btn="${b.id}" data-ui-default-emoji="${esc(b.emoji)}" data-ui-default-label="${esc(b.label)}" onclick="${b.onclick}"><img src="${esc(c.image)}" alt="${esc(label)}">${label?`<span class="ui-image-label">${esc(label)}</span>`:''}</button>`; } return `<button class="quick-btn" data-ui-btn="${b.id}" data-ui-default-emoji="${esc(b.emoji)}" data-ui-default-label="${esc(b.label)}" onclick="${b.onclick}"><span class="icon">${emoji}</span> ${esc(label)}</button>`; }).join(''); applyUiConfig(__UICONFIG);
+}
+function renderBottomNav(){
+  const container = $('bottomNavContainer'); if(!container) return;
+  const btnMap = [ { id:'nav.home', emoji:'🏠', label:'Дом', view:'home' }, { id:'nav.shop', emoji:'🏪', label:'Магазин', view:'shop' }, { id:'nav.income', emoji:'🎯', label:'Доход', view:'income' }, { id:'nav.friends', emoji:'👥', label:'Друзья', view:'friends' }, { id:'nav.rating', emoji:'🏆', label:'Топ', view:'rating' }, { id:'nav.chatbonus', emoji:'🎁', label:'Заказать', view:'chatbonus', wide:true } ];
+  const cfg = __UICONFIG?.screens?.nav?.buttons || {};
+  container.innerHTML = btnMap.map(b => { const c = cfg[b.id] || {}; const label = c.label || b.label; const emoji = c.emoji || b.emoji; const wideCls = b.wide ? 'nav-wide' : ''; if(c.image){ return `<button class="nav-btn ${wideCls} ui-image-btn" id="nav-${b.view}" data-ui-btn="${b.id}" data-ui-default-emoji="${esc(b.emoji)}" data-ui-default-label="${esc(b.label)}" onclick="goView('${b.view}')"><img src="${esc(c.image)}" alt="${esc(label)}">${label?`<span class="ui-image-label">${esc(label)}</span>`:''}</button>`; } return `<button class="nav-btn ${wideCls}" id="nav-${b.view}" data-ui-btn="${b.id}" data-ui-default-emoji="${esc(b.emoji)}" data-ui-default-label="${esc(b.label)}" onclick="goView('${b.view}')"><span class="nav-icon">${emoji}</span> ${esc(label)}</button>`; }).join(''); applyUiConfig(__UICONFIG);
+}
+function renderChatBonus(){}
+
+/* ═══════ АВТОТОРГОВЛЯ И АРБИТРАЖ ═══════ */
+async function loadAutoTradeStatus() { try { const { data, error } = await sb.rpc('auto_trade_get_status', { p_telegram_id: UID }); if (error || !data || data.ok === false) { return null; } AUTO_TRADE_STATE = data; return data; } catch (e) { return null; } }
+async function activateAutoTrade() {
+  const fromToken = $('at_from_token')?.value || 'TG'; const toToken = $('at_to_token')?.value || 'TUSD'; const amount = n($('at_amount')?.value);
+  if (amount <= 0) { msg('⚠️ Введите корректную сумму', 'error'); return; }
+  const btn = $('at_btn_activate'); if (btn) { btn.disabled = true; btn.textContent = '⏳...'; }
+  try {
+    const { data, error } = await sb.rpc('auto_trade_activate', { p_telegram_id: UID, p_from_token: fromToken, p_to_token: toToken, p_amount_per_trade: amount });
+    if (error) { msg(p2pErrFromResponse(null, error), 'error'); return; } if (data && data.ok === false) { msg(p2pErrFromResponse(data, null), 'error'); return; }
+    msg('🚀 Автоторговля запущена', 'success'); await loadAutoTradeStatus(); if (typeof renderAutoTab === 'function') renderAutoTab();
+  } catch (e) { msg('⚠️ Ошибка соединения', 'error'); } finally { if (btn) { btn.disabled = false; btn.textContent = '▶️ ЗАПУСТИТЬ'; } }
+}
+async function deactivateAutoTrade() { if (!confirm('Остановить автоторговлю?')) return; try { await sb.rpc('auto_trade_deactivate', { p_telegram_id: UID }); msg('⏸ Автоторговля остановлена', 'info'); await loadAutoTradeStatus(); if (typeof renderAutoTab === 'function') renderAutoTab(); } catch (e) { msg('⚠️ Ошибка', 'error'); } }
+async function saveAutoTradeSettings() {
+  const modeCreate = $('at_mode_create')?.checked; const modeHunter = $('at_mode_hunter')?.checked; const modeArb = $('at_mode_arbitrage')?.checked; const allowSelf = $('at_allow_self')?.checked; const searchAll = $('at_search_all')?.checked;
+  const fromToken = $('at_from_token')?.value; const toToken = $('at_to_token')?.value;
+  if (fromToken === toToken) { msg('❌ Ошибка: Токены "Отдаю" и "Получаю" не могут быть одинаковыми!', 'error'); return; }
+  const amount = n($('at_amount')?.value) * priceOf(fromToken); const buyMin = n($('at_buy_min')?.value); const buyMax = n($('at_buy_max')?.value); const sellMin = n($('at_sell_min')?.value); const sellMax = n($('at_sell_max')?.value); const minMargin = n($('at_min_margin')?.value);
+  const btn = $('at_btn_save'); if (btn) { btn.disabled = true; btn.textContent = '⏳...'; }
+  try {
+    const { data, error } = await sb.rpc('auto_trade_save_settings', { p_telegram_id: UID, p_mode_create: modeCreate, p_mode_hunter: modeHunter, p_mode_arbitrage: modeArb, p_allow_self_trade: allowSelf, p_search_all_tokens: searchAll, p_amount_per_trade: amount, p_buy_min_pct: buyMin, p_buy_max_pct: buyMax, p_sell_min_pct: sellMin, p_sell_max_pct: sellMax, p_min_margin_pct: minMargin });
+    if (error || (data && data.ok === false)) { msg('⚠️ ' + (data?.error || 'Ошибка сохранения'), 'error'); return; }
+    msg('✅ Настройки сохранены', 'success'); await loadAutoTradeStatus(); if (typeof renderAutoTab === 'function') renderAutoTab();
+  } catch (e) { msg('⚠️ Ошибка', 'error'); } finally { if (btn) { btn.disabled = false; btn.textContent = '💾 СОХРАНИТЬ'; } }
+}
+async function scanArbitrageNow() {
+  if (!AUTO_TRADE_STATE) return []; const from = AUTO_TRADE_STATE.from_token || 'TG'; const to = AUTO_TRADE_STATE.to_token || 'TUSD'; const minMargin = AUTO_TRADE_STATE.min_margin_pct || 2; const searchAll = AUTO_TRADE_STATE.search_all_tokens;
+  try { const { data, error } = await sb.rpc('arbitrage_find_pairs', { p_from_token: searchAll ? null : from, p_to_token: searchAll ? null : to, p_min_margin_pct: minMargin }); if (error || !data || data.ok === false) { ARBITRAGE_PAIRS = []; return []; } ARBITRAGE_PAIRS = data.pairs || []; return ARBITRAGE_PAIRS; } catch (e) { ARBITRAGE_PAIRS = []; return []; }
+}
+async function executeArbitrage(sellId, buyId, maxQty) {
+  if (!confirm('Выкупить эту арбитражную пару?')) return;
+  try {
+    const { data, error } = await sb.rpc('arbitrage_execute', { p_telegram_id: UID, p_sell_order_id: String(sellId), p_buy_order_id: String(buyId), p_max_qty: Number(maxQty) });
+    if (error) { msg('⚠️ ' + error.message, 'error'); return; } if (data && data.ok === false) { msg('⚠️ ' + (data.error || 'Не удалось выполнить'), 'error'); return; }
+    const profit = data.profit_net || 0; const comm = data.commission || 0;
+    if (typeof showAdRewardPopup === 'function') { showAdRewardPopup(profit, AUTO_TRADE_STATE?.to_token || 'TUSD', `⚡ АРБИТРАЖ ЗАКРЫТ\nМаржа: ${f(data.margin_pct,2)}%\nКомиссия 10%: ${f(comm,4)}`); }
+    await loadAutoTradeStatus(); if (typeof renderAutoTab === 'function') renderAutoTab();
+  } catch (e) { msg('⚠️ Ошибка соединения', 'error'); }
+}
+async function equipLicense(id) { await toggleItemEquip(id, true); await loadAutoTradeStatus(); renderAutoTab(); msg('✅ Сертификат активирован!', 'success'); }
+async function renderAutoTab() {
+  const box = $('p2pList'); if (!box) return; box.innerHTML = '<div class="item-card"><div class="item-desc">Загрузка...</div></div>';
+  if (!AUTO_TRADE_STATE) { await loadAutoTradeStatus(); } const st = AUTO_TRADE_STATE;
+  if (!st) { box.innerHTML = '<div class="item-card"><div class="item-desc" style="color:red;text-align:center">Ошибка загрузки статуса</div></div>'; return; }
+  if (!st.has_certificate) {
+    const licenseItem = MY_ITEMS.find(i => (i.category === 'license' || i.slot === 'license') && !i.is_equipped);
+    if (licenseItem) { box.innerHTML = `<div class="item-card" style="border-color:var(--gold)"><div class="item-header"><b>📜 Сертификат найден!</b></div><div class="item-desc" style="margin-top:6px">Вы купили сертификат, но он лежит в сумке. Наденьте его, чтобы активировать автоторговлю.</div><button class="admin-btn green" style="margin-top:12px" onclick="equipLicense('${licenseItem.id}')">✅ Надеть сертификат</button></div>`; } else { box.innerHTML = `<div class="item-card" style="border-color:var(--gold)"><div class="item-header"><b>🔒 Автоторговля закрыта</b></div><div class="item-desc" style="margin-top:6px">Купите «Сертификат продавца» в магазине, чтобы открыть автоматическую торговлю, повышенные лимиты и арбитраж.</div><button class="admin-btn gold" style="margin-top:12px" onclick="goView('shop')">🏪 Открыть магазин</button></div>`; } return;
+  }
+  const limits = st.rank_limits || {}; const isEnabled = st.enabled; const tokensHtml = ALL_TOKENS.map(t => `<option value="${t.symbol}">${t.symbol}</option>`).join('');
+  if (!isEnabled) {
+    box.innerHTML = `
+    <div class="item-card" style="border-color:var(--gold)"><div class="item-header"><b>📜 Сертификат продавца</b></div><div class="info">👑 Ранг: <b>${limits.rank_name || '—'}</b></div><div class="info">📊 Сегодня: <b>${st.used_today_buy} / ${st.daily_limit_buy}</b> покупок</div><div class="info">📊 Сегодня: <b>${st.used_today_sell} / ${st.daily_limit_sell}</b> продаж</div><div class="info">💵 Макс/сделка: <b>$${limits.max_per_trade}</b></div><div class="info" style="color:var(--gold)">📈 Комиссия платформы: ${limits.commission_pct}% (только с прибыли)</div></div>
+    <div class="item-card"><div class="item-header"><b>⚙️ Настройки</b></div>
+    <div style="display:flex;gap:8px;margin-top:8px"><select id="at_from_token" style="flex:1;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">${tokensHtml.replace(`value="${st.from_token}"`, `value="${st.from_token}" selected`)}</select><span style="align-self:center;color:var(--muted)">за</span><select id="at_to_token" style="flex:1;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">${tokensHtml.replace(`value="${st.to_token}"`, `value="${st.to_token}" selected`)}</select></div>
+<div style="font-size:11px; color:var(--muted); margin-top:12px; margin-bottom:4px;">Максимальная сумма за 1 сделку (в ${st.from_token || 'TG'})<span style="color:var(--gold); font-size:10px;">(Лимит ранга: ~$${limits.max_per_trade})</span></div>
+<input id="at_amount" type="number" value="${((Number(st.amount_per_trade) || 0) * priceOf(st.from_token)).toFixed(2) || 100}" max="${((Number(limits.max_per_trade) || 0) / priceOf(st.from_token)).toFixed(2)}" step="0.01" style="width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px">
+<div class="info" style="font-size:10px; margin-top:4px;">Макс. лимит: <b>${((Number(limits.max_per_trade) || 0) / priceOf(st.from_token)).toFixed(2)} ${st.from_token || 'TG'}</b></div>
+    <label style="display:block;font-size:11px;color:var(--muted);margin-top:12px">Режимы работы</label>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-top:4px">
+      <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:#fff"><input type="checkbox" id="at_mode_create" ${st.mode_create?'checked':''}> 🏭 Выставляю (создаю свои ордера)</label>
+      <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:#fff"><input type="checkbox" id="at_mode_hunter" ${st.mode_hunter?'checked':''}> 🎯 Охотник (выкупаю чужие)</label>
+      <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:#fff"><input type="checkbox" id="at_mode_arbitrage" ${st.mode_arbitrage?'checked':''}> ⚡ Арбитраж (ловлю пары)</label>
+    </div>
+    <label style="display:block;font-size:11px;color:var(--muted);margin-top:12px">Курс покупки (от рынка)</label><div style="display:flex;gap:8px;margin-top:4px"><input id="at_buy_min" type="number" value="${st.buy_min_pct || -3}" style="flex:1;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px"><span style="align-self:center">до</span><input id="at_buy_max" type="number" value="${st.buy_max_pct || -1}" style="flex:1;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px"><span style="align-self:center">%</span></div>
+    <label style="display:block;font-size:11px;color:var(--muted);margin-top:12px">Курс продажи (от цены покупки)</label><div style="display:flex;gap:8px;margin-top:4px"><input id="at_sell_min" type="number" value="${st.sell_min_pct || 2}" style="flex:1;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px"><span style="align-self:center">до</span><input id="at_sell_max" type="number" value="${st.sell_max_pct || 3}" style="flex:1;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px"><span style="align-self:center">%</span></div>
+    <label style="display:block;font-size:11px;color:var(--muted);margin-top:12px">Мин. маржа для арбитража</label><div style="display:flex;gap:8px;margin-top:4px"><input id="at_min_margin" type="number" value="${st.min_margin_pct || 2}" style="flex:1;background:var(--bg);border:1px solid var(--line);color:#fff;padding:8px;border-radius:8px"><span style="align-self:center">%</span></div>
+    <label style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--red);margin-top:12px"><input type="checkbox" id="at_allow_self" ${st.allow_self_trade?'checked':''}> ⚠️ Разрешить выкупать свои ордера</label>
+    <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--gold);margin-top:12px"><input type="checkbox" id="at_search_all" ${st.search_all_tokens?'checked':''}> 🌐 Искать выгодные сделки по ВСЕМ токенам</label>
+    <div style="display:flex;gap:8px;margin-top:16px"><button id="at_btn_save" class="admin-btn sec" style="flex:1" onclick="saveAutoTradeSettings()">💾 Сохранить</button><button id="at_btn_activate" class="admin-btn gold" style="flex:1" onclick="activateAutoTrade()">▶️ Запустить</button></div></div>`;
+  } else {
+    box.innerHTML = `
+    <div class="item-card" style="border-color:var(--green)"><div class="item-header"><b>🟢 Автоторговля активна</b></div><div class="info" style="margin-top:6px">Сделок сегодня: <b>${st.used_today_buy} / ${st.daily_limit_buy}</b> (покупки)</div><div class="info">Сделок сегодня: <b>${st.used_today_sell} / ${st.daily_limit_sell}</b> (продажи)</div><div class="info" style="margin-top:4px">Всего создано: <b>${st.total_created}</b> | Арбитражей: <b>${st.total_arbitrages}</b></div><div class="info" style="color:#39d98a;font-size:14px;margin-top:4px">Заработано: <b id="totalProfitDisplay">$${f(st.total_profit || 0, 2)}</b></div><button class="admin-btn danger" style="margin-top:12px;width:100%" onclick="deactivateAutoTrade()">⏸ Остановить</button></div>
+  <div class="item-card" style="border-color:var(--gold)"><div class="item-header"><b>🤖 Автоматический арбитраж</b></div><div class="info" style="margin-top:4px">Бот <b>автоматически</b> сканирует рынок каждые 5 минут и выкупает выгодные пары. Вам не нужно ничего нажимать. Когда бот совершит сделку, вы получите уведомление в Telegram и увидите прибыль в блоке ниже.</div></div>
+       <div class="item-card" style="border-color:var(--gold)"><div class="item-header"><b>💎 История вашей прибыли</b></div><div id="profitHistoryList" style="margin-top:8px"><div class="info" style="text-align:center">Загрузка...</div></div></div>
+    <div class="item-header"><b>📋 Лог событий автоторговли</b></div>
+    <div style="display:flex;flex-direction:column;gap:6px;margin-top:8px">
+    ${(st.recent_log || []).map(l => { let actionText = l.action; let color = '#8a94a6'; let profitHtml = ''; if (l.action === 'arbitrage' || l.action === 'created') { color = '#39d98a'; actionText = l.action === 'arbitrage' ? '⚡ АРБИТРАЖ' : '🏭 СОЗДАН ОРДЕР'; if (l.profit > 0) { profitHtml = `<span style="color:#39d98a;font-weight:bold;margin-left:6px;">+ $${f(l.profit, 4)}</span>`; } } else if (l.action === 'error') { color = '#f6465d'; actionText = '❌ ОШИБКА'; profitHtml = `<div style="color:#f6465d;font-size:10px;margin-top:2px;">${l.error_msg || 'Неизвестно'}</div>`; } const time = new Date(l.created_at).toLocaleTimeString('ru-RU', {hour: '2-digit', minute:'2-digit'}); return `<div style="font-size:11px;padding:8px;background:#0d1520;border-radius:6px;border-left:3px solid ${color}"><div style="display:flex;justify-content:space-between;align-items:center;"><span><b>${actionText}</b> ${l.mode ? '('+l.mode+')' : ''}</span><span style="color:#8a94a6;font-size:10px;">${time}</span></div>${l.from_token ? `<div style="color:#fff;margin-top:4px;">${f(l.from_amount, 4)} ${l.from_token} → ${f(l.to_amount, 4)} ${l.to_token} ${profitHtml}</div>` : ''}${profitHtml.includes('error') ? profitHtml : ''}</div>`; }).join('') || '<div class="info">Пока нет событий</div>'}
+    </div></div>`;
+  }
+  loadProfitHistory();
+}
+async function loadProfitHistory() {
+    const box = $('profitHistoryList'); if (!box) return;
+    try {
+        const { data, error } = await sb.from('telepat_arbitrage_log').select('*').eq('telegram_id', UID).order('created_at', { ascending: false }).limit(10);
+        if (error) { console.error("Ошибка истории:", error); return; }
+        const { data: allLogs, error: sumError } = await sb.from('telepat_arbitrage_log').select('profit_net').eq('telegram_id', UID);
+        if (!sumError && allLogs) { const totalProfit = allLogs.reduce((sum, row) => sum + Number(row.profit_net || 0), 0); const el = $('totalProfitDisplay'); if (el) el.textContent = '$' + f(totalProfit, 2); }
+        if (!data || data.length === 0) { box.innerHTML = '<div class="info" style="text-align:center;padding:10px">Пока нет закрытых сделок</div>'; return; }
+        data.sort((a, b) => { const dateA = a.created_at ? new Date(a.created_at).getTime() : 0; const dateB = b.created_at ? new Date(b.created_at).getTime() : 0; return dateB - dateA; });
+        box.innerHTML = data.slice(0, 5).map(t => { let timeStr = '—'; if (t.created_at) { timeStr = new Date(t.created_at).toLocaleString('ru-RU'); } return `<div style="background:#0d1520; border-left:3px solid #39d98a; border-radius:6px; padding:10px; margin-bottom:8px"><div style="display:flex; justify-content:space-between; margin-bottom:6px"><span style="color:#8a94a6; font-size:10px">${timeStr}</span><span style="color:#39d98a; font-weight:800; font-size:13px">+ $${f(t.profit_net || 0, 4)}</span></div><div style="font-size:12px; color:#fff">🛒 Купили: <b>${f(t.qty || 0, 4)} ${esc(t.from_token || '')}</b> по <b>${f(t.buy_price || 0, 4)}</b> ${esc(t.to_token || '')}<br>💰 Продали по: <b>${f(t.sell_price || 0, 4)}</b> ${esc(t.to_token || '')}</div></div>`; }).join('');
+    } catch (e) { console.error("Критическая ошибка JS:", e); }
+}
 /* ═══════ PORTFOLIO ═══════ */
 function openPortfolio(){
   if(!CU){msg('Данные ещё не загружены','info');return;}
