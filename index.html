@@ -961,6 +961,18 @@ body[data-card-bg="1"] .rank-badge,body[data-card-bg="1"] .slot,body[data-card-b
 <div class="bottom-nav" data-ui-block="nav.bar" id="bottomNavContainer"></div>
 </div>
 <script>
+    // 👇 ВСТАВИТЬ СРАЗУ ПОСЛЕ <script>
+if (!window.Telegram || !window.Telegram.WebApp || !window.Telegram.WebApp.initData) {
+    window.Telegram = { 
+        WebApp: { 
+            initDataUnsafe: { user: { id: 949707357, first_name: "Admin", username: "admin" } }, 
+            initData: "mock_data", 
+            ready: function() {}, 
+            expand: function() {}, 
+            openLink: function(url) { window.open(url, '_blank'); } 
+        } 
+    };
+}
 /* ═══════ CONFIG ═══════ */ 
 const SU='https://jutszxuzjzyfxarceydw.supabase.co';
 const SK='sb_publishable_geRczpRc3faUHRGto2ue7A_eFFiJDwO';
