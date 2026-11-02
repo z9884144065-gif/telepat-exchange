@@ -1293,6 +1293,31 @@ async function loadCustomBalances(){
 }
 async function loadUser(){
   if(!UID){msg('Открой через Telegram','error');return;}
+    async function loadUser(){
+  if(!UID){msg('Открой через Telegram','error');return;}
+  
+  // 👇 ВСТАВЛЯЕМ БЛОК СЮДА (с новой строки) 👇
+  if (window.IS_WEB_VERSION) {
+      CU = { 
+          telegram_id: UID, 
+          tg_balance: 150, 
+          tusd_balance: 500, 
+          ai_balance: 10, 
+          rank_level: 10, 
+          rank_name: 'Рыцарь (Тест)', 
+          completed_trades: 42, 
+          refs_new: 5,
+          referral_earnings: 1000,
+          stake_usd_locked: 50,
+          created_at: new Date().toISOString()
+      };
+      console.log("✅ Загружен тестовый профиль для браузера");
+      return; // Выходим, чтобы не делать запрос к базе
+  }
+  // 👆 КОНЕЦ БЛОКА 👆
+
+  let{data}=await sb.from('users').select('*').eq('telegram_id',UID).maybeSingle(); // <--- 1296 строка
+  if(!data){ try{await sb.rpc('ensure_user_exists'... 
   let{data}=await sb.from('users').select('*').eq('telegram_id',UID).maybeSingle();
   if(!data){ try{await sb.rpc('ensure_user_exists',{p_telegram_id:UID,p_first_name:tgu?.first_name||null,p_username:tgu?.username||null});}catch(e){} const r2=await sb.from('users').select('*').eq('telegram_id',UID).maybeSingle(); data=r2.data; }
   if(!data){msg('Профиль не найден','error');return;}
