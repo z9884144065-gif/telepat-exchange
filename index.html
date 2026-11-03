@@ -1480,7 +1480,7 @@ function renderHome(){
       rows.push(`<div class="nl-row ${refs>=needRefs?'done':''}"><span class="nl-icon">👥</span><span class="nl-text">Рефералов: <b>${refs}</b> / ${needRefs}</span></div>`);
       
       // 👇 ДОБАВЛЕНО: 4-я строка в блоке прогресса
-      rows.push(`<div class="nl-row ${earnUSD>=needEarn?'done':''}"><span class="nl-icon">💰</span><span class="nl-text">Прибыль структуры: <b>$${f(earnUSD,2)}</b> / $${f(needEarn,2)}</span></div>`);
+      rows.push(`<div class="nl-row ${earnUSD>=needEarn?'done':''}"><span class="nl-icon">💰</span><span class="nl-text">Оборот структуры: <b>$${f(earnUSD,2)}</b> / $${f(needEarn,2)}</span></div>`);
       
       nlBox.innerHTML=`<div class="nl-title">🎯 До ${RANKS[nextLv]} (уровень ${nextLv})</div>${rows.join('')}`;
     }
