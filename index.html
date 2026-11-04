@@ -1287,7 +1287,28 @@ async function loadUser(){
   let{data}=await sb.from('users').select('*').eq('telegram_id',UID).maybeSingle();
   if(!data){ try{await sb.rpc('ensure_user_exists',{p_telegram_id:UID,p_first_name:tgu?.first_name||null,p_username:tgu?.username||null});}catch(e){} const r2=await sb.from('users').select('*').eq('telegram_id',UID).maybeSingle(); data=r2.data; }
   if(!data){msg('Профиль не найден','error');return;}
-  CU=data;
+  
+  CU=data; // 👈 Сначала грузим базовый профиль
+
+  // 👇 А ТЕПЕРЬ ЗАПРАШИВАЕМ ОБОРОТ СТРУКТУРЫ 👇
+  try {
+    const { data: turnoverVal, error: turnoverError } = await sb.rpc('get_structure_turnover', { p_user_id: Number(UID) });
+    
+    let val = 0;
+    if (typeof turnoverVal === 'number') {
+        val = turnoverVal; // Если база вернула просто число
+    } else if (turnoverVal && turnoverVal.turnover !== undefined) {
+        val = turnoverVal.turnover; // Если база вернула объект
+    }
+    
+    CU.referral_earnings = Number(val) || 0;
+    window.__STRUCTURE_TURNOVER = Number(val) || 0;
+  } catch(e) {
+    console.warn('Ошибка оборота:', e);
+    CU.referral_earnings = 0;
+  }
+  // 👆 КОНЕЦ БЛОКА ОБОРОТА 👆
+
   const sp=tg?.initDataUnsafe?.start_param;
   if(sp){ if(String(sp).startsWith('order_')){__START_ORDER_ID=String(sp).replace('order_','');} else if(!CU.referrer_id){ const refId=Number(sp); if(Number.isFinite(refId)&&refId>0&&refId!==UID){ try{const r=await sb.rpc('set_referrer',{p_user_id:UID,p_referrer_id:refId});if(r.data?.ok){const r3=await sb.from('users').select('*').eq('telegram_id',UID).maybeSingle();if(r3.data)CU=r3.data;}}catch(e){} } } }
   if(tgu?.username){try{await sb.rpc('activate_pending_referral',{p_user_id:UID,p_username:tgu.username});}catch(e){}}
