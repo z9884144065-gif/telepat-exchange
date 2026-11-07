@@ -1401,16 +1401,38 @@ function renderShop(){
 async function buyReferral(id) { if(!confirm('Купить этого реферала?')) return; const {data, error} = await sb.rpc('referral_buy', { p_lot_id: id }); if(error || (data && data.ok === false)) { msg('Ошибка: ' + (error?.message || data?.error || 'Не удалось купить'), 'error'); return; } msg('✅ Реферал куплен!', 'success'); renderShop(); }
 async function bidAuction(id) { const bid = prompt('Введите вашу ставку в $:'); if(!bid || isNaN(bid)) return; const {data, error} = await sb.rpc('auction_bid', { p_lot_id: id, p_bid_amount: Number(bid) }); if(error || (data && data.ok === false)) { msg('Ошибка: ' + (error?.message || data?.error || 'Ставка не принята'), 'error'); return; } msg('✅ Ставка сделана!', 'success'); renderShop(); }
 function showShopTab(tab){ currentShopTab = tab; renderShop(); }
-async function buyItem(id, name, price) {
-  if(!confirm(`Купить "${name}" за $${price}?`)) return;
-  const {data, error} = await sb.rpc('buy_item', { p_item_id: id, p_telegram_id: UID });
-  if(error || (data && data.ok === false)) { msg('Ошибка покупки: ' + (error?.message || data?.error || 'Недостаточно средств'), 'error'); return; }
+async function buyItem(id, name, price, paymentToken = 'TUSD') {
+  let confirmMsg = `Купить "${name}" за $${price} (TUSD)?`;
+  
+  // Если выбрана оплата в TG, считаем цену со скидкой 5%
+  if (paymentToken === 'TG') {
+      const tgPriceUSD = price * 0.95;
+      const tgAmount = tgPriceUSD / priceOf('TG');
+      confirmMsg = `Купить "${name}" за ${f(tgAmount, 2)} TG? (Скидка 5%, эквивалент $${f(tgPriceUSD, 2)})`;
+  }
+  
+  if(!confirm(confirmMsg)) return;
+  
+  // Передаем 4-й параметр (p_payment_token) в базу данных
+  const {data, error} = await sb.rpc('buy_item', { 
+      p_item_id: id, 
+      p_telegram_id: UID,
+      p_payment_token: paymentToken 
+  });
+  
+  if(error || (data && data.ok === false)) { 
+      msg('Ошибка покупки: ' + (error?.message || data?.error || 'Недостаточно средств'), 'error'); 
+      return; 
+  }
+  
   msg('✅ Успешно куплено!', 'success');
+  
   const item = (SHOP_ITEMS || []).find(i => String(i.id) === String(id));
-  // ✅ ИСПРАВЛЕНО: Автоматически надеваем титулы И сертификаты (грамоты)
+  // Автонадевание титулов и грамот
   if(item && (item.category === 'title' || item.slot === 'titleSlot' || item.category === 'license' || item.slot === 'license') && data.user_item_id) {
     await sb.rpc('equip_item', { p_item_id: data.user_item_id, p_telegram_id: UID });
   }
+  
   await refreshAll();
 }
 function renderChatBonus(){}
