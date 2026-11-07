@@ -1369,7 +1369,33 @@ function renderShop(){
     else if (tab === 'certs') filtered = filtered.filter(i => i.category === 'license');
     else if (tab === 'extras') filtered = filtered.filter(i => ['ring','bag','pet','aura'].includes(i.slot));
     if (!filtered.length) { c.innerHTML = `<div class="item-card"><div class="item-desc" style="text-align:center">В категории нет активных товаров</div></div>`; return; }
-    c.innerHTML = filtered.map(it => `<div class="item-card"><div class="item-header"><span class="item-name">${it.emoji||'🎁'} ${esc(it.name)}</span><span class="rarity ${it.min_rank>5?'rare':'common'}">Ур. ${it.min_rank||0}</span></div><div class="item-footer"><span class="item-price">$${f(it.price_usd, 2)}</span><button class="gold" onclick="buyItem('${it.id}', '${esc(it.name)}', ${it.price_usd})">Купить</button></div></div>`).join('');
+        c.innerHTML = filtered.map(it => {
+        const tgPriceUSD = it.price_usd * 0.95;
+        const tgAmount = tgPriceUSD / priceOf('TG');
+        
+        return `
+        <div class="item-card">
+            <div class="item-header">
+                <span class="item-name">${it.emoji||'🎁'} ${esc(it.name)}</span>
+                <span class="rarity ${it.min_rank>5?'rare':'common'}">Ур. ${it.min_rank||0}</span>
+            </div>
+            <div class="item-footer" style="flex-direction:column; align-items:flex-start; gap:8px; width:100%;">
+                <div style="font-size:14px; color:var(--gold); font-weight:bold; width:100%; display:flex; justify-content:space-between;">
+                    <span>Цена:</span> 
+                    <span>$${f(it.price_usd, 2)}</span>
+                </div>
+                <div style="font-size:12px; color:#39d98a; width:100%; display:flex; justify-content:space-between;">
+                    <span>💎 В TG (-5%):</span> 
+                    <span>${f(tgAmount, 2)} TG <span style="font-size:10px; color:var(--muted);">(≈ $${f(tgPriceUSD, 2)})</span></span>
+                </div>
+                <div style="display:flex; gap:6px; width:100%; margin-top:4px;">
+                    <button class="admin-btn sec" style="flex:1; font-size:12px; padding:8px;" onclick="buyItem('${it.id}', '${esc(it.name)}', ${it.price_usd}, 'TUSD')">Купить за TUSD</button>
+                    <button class="admin-btn gold" style="flex:1; font-size:12px; padding:8px;" onclick="buyItem('${it.id}', '${esc(it.name)}', ${it.price_usd}, 'TG')">Купить за TG (-5%)</button>
+                </div>
+            </div>
+        </div>
+        `;
+    }).join('');
   });
 }
 async function buyReferral(id) { if(!confirm('Купить этого реферала?')) return; const {data, error} = await sb.rpc('referral_buy', { p_lot_id: id }); if(error || (data && data.ok === false)) { msg('Ошибка: ' + (error?.message || data?.error || 'Не удалось купить'), 'error'); return; } msg('✅ Реферал куплен!', 'success'); renderShop(); }
