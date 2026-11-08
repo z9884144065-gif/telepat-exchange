@@ -1808,26 +1808,26 @@ function renderP2PList(){
   const box=$('p2pList');if(!box) return; box.innerHTML='<div class="item-card"><div class="item-desc">Загрузка...</div></div>';
   
   sb.from('p2p_orders').select('*').then(r => {
-    if (r.error) { box.innerHTML='<div class="item-card"><div class="item-desc" style="color:red;text-align:center">Ошибка БД: '+r.error.message+'</div></div>'; return; }
+    // Ищем и 'open', и 'active' на всякий случай
+    let orders = (r.data || []).filter(o => {
+        const st = String(o.status||'').toLowerCase();
+        return st === 'open' || st === 'active';
+    });
     
-    let orders = (r.data || []).filter(o => String(o.status||'').toLowerCase() === 'open');
-    
-    // 🎯 ФИЛЬТРАЦИЯ ПО ТОКЕНАМ
-    if (p2pMode === 'buy') {
-        // Я покупаю: ищу ордера, где продают p2pTokenGet за p2pTokenPay
-        orders = orders.filter(o => o.from_token === p2pTokenGet && o.to_token === p2pTokenPay);
-        // Самые дешевые сверху (по возрастанию цены)
-        orders.sort((a,b) => (Number(a.rate)||0) - (Number(b.rate)||0));
-    } else {
-        // Я продаю: ищу ордера, где покупают p2pTokenGet и платят p2pTokenPay
-        orders = orders.filter(o => o.from_token === p2pTokenPay && o.to_token === p2pTokenGet);
-        // Самые дорогие сверху (по убыванию цены)
-        orders.sort((a,b) => (Number(b.rate)||0) - (Number(a.rate)||0));
-    }
-
-    // Фильтр по вкладке "Мои"
+    // Если мы на вкладке "Мои" — показываем ВСЕ свои ордера (без фильтра по токенам)
     if (currentP2PTab === 'mine') {
         orders = orders.filter(o => String(o.creator_id) === String(UID));
+        // Сортируем по дате создания (сначала новые)
+        orders.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+    } else {
+        // Если мы на вкладке "Все" — фильтруем по выбранным токенам и режиму
+        if (p2pMode === 'buy') {
+            orders = orders.filter(o => o.from_token === p2pTokenGet && o.to_token === p2pTokenPay);
+            orders.sort((a,b) => (Number(a.rate)||0) - (Number(b.rate)||0));
+        } else {
+            orders = orders.filter(o => o.from_token === p2pTokenPay && o.to_token === p2pTokenGet);
+            orders.sort((a,b) => (Number(b.rate)||0) - (Number(a.rate)||0));
+        }
     }
 
     if (orders.length === 0) { 
