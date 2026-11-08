@@ -1540,8 +1540,17 @@ $('statLevel').textContent=rl;
   const photo=tgu?.photo_url||CU.photo_url;const av=$('avatarImg');if(photo){av.src=photo;}
   const reg=CU.created_at?new Date(CU.created_at):new Date();
   $('userDays').textContent='📅 '+Math.floor((Date.now()-reg.getTime())/DAY_MS)+' дней';
+    // 👇 МЕНЯЕМ КАРТИНКУ С УЧЕТОМ ТИТУЛА 👇
+  const equippedTitleImg = MY_ITEMS.find(i => i.is_equipped && (i.slot === 'titleSlot' || i.slot === 'title' || i.category === 'title'));
+  const visualLevel = equippedTitleImg && equippedTitleImg.min_rank ? equippedTitleImg.min_rank : rl;
+  
   const ki=$('knightImg');
-  if(ki){const g=getKnightGroup(rl);const ns=GROUP_IMAGE[g];const cf=ki.src.split('/').pop();if(cf!==ns){ki.src=ns;}}
+  if(ki){
+      const g=getKnightGroup(visualLevel);
+      const ns=GROUP_IMAGE[g];
+      const cf=ki.src.split('/').pop();
+      if(cf!==ns){ki.src=ns;}
+  }
 
   const slotMapping = {'weapon':'weapon','body':'body','legs':'legs','armor':'helmet','shield':'shield','cloak':'cloak','ring':'ring','bag':'bag','pet':'pet','titleSlot':'titleSlot','aura':'aura'};
  const emptyIcons = {weapon:'🗡️',body:'👕',legs:'👖',armor:'⛑️',shield:'🛡️',cloak:'🥾',ring:'💍',bag:'🎒',pet:'🐺',titleSlot:'🏷️',aura:'✨'};
