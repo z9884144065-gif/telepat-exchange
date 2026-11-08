@@ -1508,7 +1508,7 @@ function renderHome(){
   if(ki){const g=getKnightGroup(rl);const ns=GROUP_IMAGE[g];const cf=ki.src.split('/').pop();if(cf!==ns){ki.src=ns;}}
 
   const slotMapping = {'weapon':'weapon','body':'body','legs':'legs','armor':'helmet','shield':'shield','cloak':'cloak','ring':'ring','bag':'bag','pet':'pet','titleSlot':'titleSlot','aura':'aura'};
-  const emptyIcons = {weapon:'🗡️',body:'👕',legs:'👖',armor:'⛑️',shield:'🛡️',cloak:'🧥',ring:'💍',bag:'🎒',pet:'🐺',titleSlot:'🏷️',aura:'✨'};
+ const emptyIcons = {weapon:'🗡️',body:'👕',legs:'👖',armor:'⛑️',shield:'🛡️',cloak:'🥾',ring:'💍',bag:'🎒',pet:'🐺',titleSlot:'🏷️',aura:'✨'};
   Object.keys(slotMapping).forEach(slotKey => {
       const htmlId = slotMapping[slotKey];
       const el = $('slot-' + htmlId);
