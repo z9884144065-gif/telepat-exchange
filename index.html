@@ -1519,7 +1519,16 @@ function renderHome(){
   const name=[tgu?.first_name||'',tgu?.last_name||''].join(' ').trim()||CU.first_name||'User';
   $('userName').textContent=name;
   const rl=Number(CU.rank_level||0);
-  const rn=CU.rank_name||RANKS[rl]||'Новичок';
+    let rn=CU.rank_name||RANKS[rl]||'Новичок';
+  let rlSub=`Уровень ${rl} из 21`;
+
+  // 👇 ПРОВЕРЯЕМ НАДЕТЫЙ ТИТУЛ 👇
+  const equippedTitle = MY_ITEMS.find(i => i.is_equipped && (i.slot === 'titleSlot' || i.slot === 'title' || i.category === 'title'));
+  if (equippedTitle) {
+      rn = equippedTitle.name; // Берем имя титула (например, "Барон")
+      rlSub = `👑 Титул: ${rn}`; // Меняем подпись
+  }
+  // 👆 КОНЕЦ ПРОВЕРКИ 👆
   $('userRank').textContent='👑 '+rn;$('rankName').textContent=rn;$('rankSub').textContent=`Уровень ${rl} из 21`;$('statLevel').textContent=rl;
   $('statRating').textContent=CU.rating_points||0;
   let totalUSD=n(CU.tg_balance)*100+n(CU.ai_balance)*0.0001+n(CU.tusd_balance);
