@@ -347,20 +347,24 @@ body[data-card-bg="1"] .rank-badge,body[data-card-bg="1"] .slot,body[data-card-b
 </div>
 </div>
 <div class="knight-layout">
-<div class="slot-col">
-<div class="slot" id="slot-weapon" onclick="clickSlot('weapon')"><span class="slot-label">Меч</span>🗡️</div>
-<div class="slot" id="slot-body" onclick="clickSlot('body')"><span class="slot-label">Торс</span>👕</div>
-<div class="slot" id="slot-legs" onclick="clickSlot('legs')"><span class="slot-label">Ноги</span>👖</div>
-</div>
-<div class="knight-avatar">
-<div class="knight-speech" id="knightSpeech">Славный путь начинается!</div>
-<img class="knight-img" id="knightImg" src="knight-0.png" alt="Knight" onerror="this.src='knight-9.png'">
-</div>
-<div class="slot-col">
-<div class="slot" id="slot-helmet" onclick="clickSlot('armor')"><span class="slot-label">Шлем</span>⛑️</div>
-<div class="slot" id="slot-shield" onclick="clickSlot('shield')"><span class="slot-label">Щит</span>🛡️</div>
-<div class="slot" id="slot-cloak" onclick="clickSlot('cloak')"><span class="slot-label">Плащ</span>🧥</div>
-</div>
+    <div class="slot-col">
+        <!-- ЛЕВАЯ СТОРОНА: Гражданское (Одежда) -->
+        <div class="slot" id="slot-body" onclick="clickSlot('body')"><span class="slot-label">Куртка</span>👕</div>
+        <div class="slot" id="slot-legs" onclick="clickSlot('legs')"><span class="slot-label">Штаны</span>👖</div>
+        <div class="slot" id="slot-cloak" onclick="clickSlot('cloak')"><span class="slot-label">Сапоги</span>🥾</div>
+    </div>
+    
+    <div class="knight-avatar">
+        <div class="knight-speech" id="knightSpeech">Славный путь начинается!</div>
+        <img class="knight-img" id="knightImg" src="knight-0.png" alt="Knight" onerror="this.src='knight-9.png'">
+    </div>
+    
+    <div class="slot-col">
+        <!-- ПРАВАЯ СТОРОНА: Боевое (Доспехи) -->
+        <div class="slot" id="slot-weapon" onclick="clickSlot('weapon')"><span class="slot-label">Меч</span>🗡️</div>
+        <div class="slot" id="slot-helmet" onclick="clickSlot('armor')"><span class="slot-label">Шлем</span>⛑️</div>
+        <div class="slot" id="slot-shield" onclick="clickSlot('shield')"><span class="slot-label">Доспехи</span>🛡️</div>
+    </div>
 </div>
 <div class="slots-row-bottom">
 <div class="slot" id="slot-ring" onclick="clickSlot('ring')"><span class="slot-label">Перстень</span>💍</div>
