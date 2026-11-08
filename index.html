@@ -1529,7 +1529,10 @@ function renderHome(){
       rlSub = `👑 Титул: ${rn}`; // Меняем подпись
   }
   // 👆 КОНЕЦ ПРОВЕРКИ 👆
-  $('userRank').textContent='👑 '+rn;$('rankName').textContent=rn;$('rankSub').textContent=`Уровень ${rl} из 21`;$('statLevel').textContent=rl;
+  $('userRank').textContent='👑 '+rn;
+$('rankName').textContent=rn;
+$('rankSub').textContent=rlSub; // Используем нашу новую подпись
+$('statLevel').textContent=rl;
   $('statRating').textContent=CU.rating_points||0;
   let totalUSD=n(CU.tg_balance)*100+n(CU.ai_balance)*0.0001+n(CU.tusd_balance);
   Object.keys(CB).forEach(sym=>{if(['TG','AI','TUSD'].includes(sym)) return;totalUSD+=n(CB[sym])*priceOf(sym);});
