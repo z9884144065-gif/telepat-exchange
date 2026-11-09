@@ -2343,7 +2343,7 @@ async function showRatingTab(tab) {
     const isMe = String(u.telegram_id) === String(UID); 
     const cls = i===0?'gold':i===1?'silver':i===2?'bronze':'';
     
-    return `<div class="lead-row" style="${isMe?'border-color:var(--gold)':''}">
+     return `<div class="lead-row" style="cursor:pointer; ${isMe?'border-color:var(--gold)':''}" onclick="openUserFinancialProfile(${u.telegram_id})">
         <div class="lead-place ${cls}">${place}</div>
         <div class="lead-info">
             <div class="lead-name">${esc(nm)}${isMe?' (вы)':''}</div>
