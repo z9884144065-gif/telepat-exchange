@@ -1453,7 +1453,7 @@ function renderChatBonus(){}
 
 /* ═══════ NAVIGATION ═══════ */
 function goView(v){
-  ['home','shop','income','friends','rating','chatbonus','admin'].forEach(x=>{ const el=$('view-'+x);if(el) el.classList.toggle('hidden',x!==v); const nb=$('nav-'+x);if(nb) nb.classList.toggle('active',x===v); });
+   ['home','shop','income','friends','rating','chatbonus','admin','tournament'].forEach(x=>{ const el=$('view-'+x);if(el) el.classList.toggle('hidden',x!==v); const nb=$('nav-'+x);if(nb) nb.classList.toggle('active',x===v); });
   if(v==='home') renderHome(); if(v==='shop') renderShop(); if(v==='income') renderIncome(); if(v==='friends') renderFriends(); if(v==='rating') renderRating(); if(v==='chatbonus') renderChatBonus(); if(v==='admin') renderAdmin();
   window.scrollTo({top:0,behavior:'smooth'});
 }
