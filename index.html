@@ -339,12 +339,17 @@ body[data-card-bg="1"] .rank-badge,body[data-card-bg="1"] .slot,body[data-card-b
     </div>
 </div>
 <div class="knight-section" data-ui-block="home.knight">
-<div class="rank-badge">
-<div class="rank-medal" id="rankMedal">⚔️</div>
-<div class="rank-info">
-<div class="rank-name" id="rankName">Новичок</div>
-<div class="rank-sub" id="rankSub">Уровень 0 из 21</div>
-</div>
+<div class="rank-badge" style="justify-content: space-between;">
+    <div style="display: flex; align-items: center; gap: 10px;">
+        <div class="rank-medal" id="rankMedal">⚔️</div>
+        <div class="rank-info">
+            <div class="rank-name" id="rankName">Новичок</div>
+            <div class="rank-sub" id="rankSub">Уровень 0 из 21</div>
+        </div>
+    </div>
+    <button class="admin-btn gold" style="width: auto; padding: 8px 14px; font-size: 12px; border-radius: 10px; font-weight: 800; display: flex; align-items: center; gap: 5px;" onclick="goView('tournament')">
+        ⚔️ Турнир
+    </button>
 </div>
 <div class="knight-layout">
     <div class="slot-col">
