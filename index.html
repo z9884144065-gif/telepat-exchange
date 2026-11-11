@@ -1564,48 +1564,210 @@ async function renderTournament() {
     }
 }
 
+/* ═══════════════ АРЕНА: АНИМИРОВАННЫЙ БОЙ ═══════════════ */
+const BOT_IMAGES = {
+  orc:    'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/orc.png',
+  undead: 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/undead.png',
+  goblin: 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/goblin.png'
+};
+const BOT_NAMES = { orc:'Орк', undead:'Нежить', goblin:'Гоблин' };
+
+function getPlayerBattleImg() {
+  if (CU?.race) {
+    return `https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/${CU.race}.png`;
+  }
+  const lvl = Number(CU?.rank_level || 0);
+  return GROUP_IMAGE[getKnightGroup(lvl)];
+}
+
 async function fightBot(botType) {
-    const logBox = $('battle-log');
-    if (logBox) {
-        logBox.style.display = 'block';
-        logBox.innerHTML = '<div style="text-align:center; color:var(--gold);">⏳ Бой начался...</div>';
+  if ($('battleOverlay')) return; // Защита от спама
+  if (!BOT_IMAGES[botType]) { msg('❌ Неизвестный противник', 'error'); return; }
+
+  const logBox = $('battle-log');
+  if (logBox) { logBox.style.display = 'block'; logBox.innerHTML = '<div style="text-align:center;color:var(--gold)">⏳ Бой начинается...</div>'; }
+
+  try {
+    const { data, error } = await sb.rpc('battle_vs_bot', { p_user_id: UID, p_bot_type: botType });
+    if (error || !data || !data.ok) throw new Error(error?.message || data?.error || 'Ошибка боя');
+
+    if (logBox) logBox.style.display = 'none';
+    showBattle(botType, data);
+  } catch (e) {
+    msg('❌ ' + e.message, 'error');
+    if (logBox) logBox.style.display = 'none';
+  }
+}
+
+function showBattle(botType, battleData) {
+  const botName  = BOT_NAMES[botType] || 'Враг';
+  const botImg   = BOT_IMAGES[botType];
+  const playerImg = getPlayerBattleImg();
+  const log      = battleData.log || [];
+  const winner   = battleData.winner;
+
+  if (!log.length) { msg('❌ Пустой бой', 'error'); return; }
+
+  const playerMaxHp = Math.max(Number(CU?.hp_base) || 100, 1);
+  let dmgToEnemy = 0, dmgToPlayer = 0;
+
+  log.forEach(t => {
+    if (t.action === 'miss') return;
+    if (t.actor === 'user') dmgToEnemy += Number(t.damage) || 0;
+    else                    dmgToPlayer += Number(t.damage) || 0;
+  });
+
+  const enemyMaxHp = (winner === 'user') ? Math.max(dmgToEnemy, 30) : Math.max(dmgToEnemy + 10, 60);
+  let playerHp = playerMaxHp;
+  let enemyHp  = enemyMaxHp;
+
+  const old = $('battleOverlay');
+  if (old) old.remove();
+
+  const overlay = document.createElement('div');
+  overlay.id = 'battleOverlay';
+  overlay.className = 'battle-overlay show';
+  overlay.innerHTML = `
+    <div class="battle-hud">
+      <div class="hp-bar-container player">
+        <div class="hp-label"><span>👤 Вы</span><span id="battlePlayerHpText">${playerMaxHp}/${playerMaxHp}</span></div>
+        <div class="hp-bar-bg"><div class="hp-bar-fill" id="battlePlayerHpFill" style="width:100%"></div></div>
+      </div>
+      <div class="battle-vs">VS</div>
+      <div class="hp-bar-container enemy">
+        <div class="hp-label"><span>${esc(botName)}</span><span id="battleEnemyHpText">${enemyMaxHp}/${enemyMaxHp}</span></div>
+        <div class="hp-bar-bg"><div class="hp-bar-fill" id="battleEnemyHpFill" style="width:100%"></div></div>
+      </div>
+    </div>
+    <div class="battle-field">
+      <div class="fighter player-fighter" id="battlePlayerFighter">
+        <img src="${esc(playerImg)}" alt="Player" onerror="this.src='knight-9.png'">
+      </div>
+      <div class="fighter enemy-fighter" id="battleEnemyFighter">
+        <img src="${esc(botImg)}" alt="${esc(botName)}" onerror="this.style.opacity='0.35'">
+      </div>
+    </div>
+    <div class="battle-log" id="battleLogBox"></div>
+    <button id="battleCloseBtn" class="admin-btn sec"
+      style="margin-top:16px;min-width:220px;padding:14px;font-size:14px;display:none; background:var(--gold); color:#000; font-weight:bold; border:none;"
+      onclick="closeBattle()">ЗАБРАТЬ НАГРАДУ</button>
+  `;
+  document.body.appendChild(overlay);
+
+  const logBox      = $('battleLogBox');
+  const playerFight = $('battlePlayerFighter');
+  const enemyFight  = $('battleEnemyFighter');
+
+  // Тайминг боя (~15 секунд)
+  const targetMs   = 15000;
+  const turnDelay  = Math.min(2000, Math.max(650, Math.floor(targetMs / log.length)));
+
+  let i = 0;
+  const timer = setInterval(() => {
+    if (i >= log.length) {
+      clearInterval(timer);
+      setTimeout(() => finishBattle(winner), 1200);
+      return;
     }
-    try {
-        const { data, error } = await sb.rpc('battle_vs_bot', { p_user_id: UID, p_bot_type: botType });
-        if (error || !data || !data.ok) throw new Error(error?.message || data?.error || 'Ошибка');
+    playTurn(log[i], i);
+    i++;
+  }, turnDelay);
 
-        let html = '';
-        if (data.winner === 'user') {
-            html += `<div style="color:#39d98a; font-weight:bold; text-align:center; margin-bottom:10px;">🎉 Вы победили!</div>`;
-            html += `<div style="text-align:center; font-size:10px; color:var(--muted); margin-bottom:10px;">+1 к рейтингу Турнира</div>`;
-        } else {
-            html += `<div style="color:#f6465d; font-weight:bold; text-align:center; margin-bottom:10px;">💀 Вы проиграли...</div>`;
-            html += `<div style="text-align:center; font-size:10px; color:var(--muted); margin-bottom:10px;">-0 к рейтингу</div>`;
-        }
+  function playTurn(turn, idx) {
+    const isUser = turn.actor === 'user';
+    const attacker = isUser ? playerFight : enemyFight;
+    const defender = isUser ? enemyFight : playerFight;
+    const actorLabel = isUser ? '👤 Вы' : '🤖 ' + botName;
 
-        const lastLogs = data.log.slice(-10);
-        lastLogs.forEach(turn => {
-            const actor = turn.actor === 'user' ? '👤 Вы' : '🤖 Бот';
-            let action = '';
-            if (turn.action === 'hit') action = `нанес ${turn.damage} урона`;
-            else if (turn.action === 'crit') action = `КРИТ! ${turn.damage} урона`;
-            else if (turn.action === 'miss') action = `увернулся`;
-            html += `<div style="border-bottom:1px solid #1a2534; padding:3px 0;">${actor} ${action}</div>`;
-        });
-
-        logBox.innerHTML = html;
-
-        CU.pvp_wins = (CU.pvp_wins || 0) + (data.winner === 'user' ? 1 : 0);
-        CU.pvp_losses = (CU.pvp_losses || 0) + (data.winner === 'bot' ? 1 : 0);
-        CU.pvp_rating = (CU.pvp_rating || 0) + (data.winner === 'user' ? 1 : 0);
-        
-        if ($('tour-wins')) $('tour-wins').textContent = CU.pvp_wins;
-        if ($('tour-losses')) $('tour-losses').textContent = CU.pvp_losses;
-        if ($('tour-rating')) $('tour-rating').textContent = CU.pvp_rating;
-
-    } catch(e) {
-        if (logBox) logBox.innerHTML = `<div style="color:red; text-align:center;">Ошибка: ${e.message}</div>`;
+    if (turn.action === 'miss') {
+      const dodger = isUser ? enemyFight : playerFight;
+      showDamageNumber(dodger, 'MISS', 'miss');
+      addLog(`${actorLabel} промахнулся 💨`);
+      return;
     }
+
+    attacker.classList.add('player-attacking');
+    setTimeout(() => attacker.classList.remove('player-attacking'), 450);
+
+    setTimeout(() => {
+      defender.classList.add('hit-target', 'hit-flash');
+      setTimeout(() => defender.classList.remove('hit-target', 'hit-flash'), 450);
+
+      const dmg = Number(turn.damage) || 0;
+
+      if (isUser) {
+        enemyHp = Math.max(0, enemyHp - dmg);
+        updateHpBar('enemy', enemyHp, enemyMaxHp);
+      } else {
+        playerHp = Math.max(0, playerHp - dmg);
+        updateHpBar('player', playerHp, playerMaxHp);
+      }
+
+      const isCrit = turn.action === 'crit';
+      showDamageNumber(defender, `-${dmg}`, isCrit ? 'crit' : '');
+      addLog(`${actorLabel} ${isCrit ? '💥 КРИТ' : 'ударил'} на <b style="color:#f4cf70">${dmg}</b>`);
+    }, 180);
+  }
+
+  function updateHpBar(who, hp, max) {
+    const fill = $(who === 'player' ? 'battlePlayerHpFill' : 'battleEnemyHpFill');
+    const text = $(who === 'player' ? 'battlePlayerHpText' : 'battleEnemyHpText');
+    const pct  = max > 0 ? Math.max(0, (hp / max) * 100) : 0;
+    if (fill) fill.style.width = pct + '%';
+    if (text) text.textContent = `${Math.round(hp)}/${max}`;
+  }
+
+  function showDamageNumber(targetEl, text, cls) {
+    const el = document.createElement('div');
+    el.className = 'damage-number ' + (cls || '');
+    el.textContent = text;
+    targetEl.appendChild(el);
+    setTimeout(() => el.remove(), 1400);
+  }
+
+  function addLog(html) {
+    if (!logBox) return;
+    const line = document.createElement('div');
+    line.innerHTML = html;
+    logBox.appendChild(line);
+    logBox.scrollTop = logBox.scrollHeight;
+  }
+
+  function finishBattle(winnerCode) {
+    const win = winnerCode === 'user';
+
+    const res = document.createElement('div');
+    res.className = 'battle-result';
+    res.innerHTML = win
+      ? `<div class="res-emoji" style="color:#39d98a">🏆</div>
+         <div class="res-title" style="color:#39d98a">ПОБЕДА!</div>
+         <div class="res-sub" style="color:var(--gold)">+1 к рейтингу турнира</div>`
+      : `<div class="res-emoji" style="color:#f6465d">💀</div>
+         <div class="res-title" style="color:#f6465d">ПОРАЖЕНИЕ</div>
+         <div class="res-sub">Попробуй ещё раз — ты справишься!</div>`;
+
+    overlay.appendChild(res);
+
+    CU.pvp_wins   = (CU.pvp_wins || 0)   + (win ? 1 : 0);
+    CU.pvp_losses = (CU.pvp_losses || 0) + (win ? 0 : 1);
+    CU.pvp_rating = (CU.pvp_rating || 0) + (win ? 1 : 0);
+
+    if ($('tour-wins'))   $('tour-wins').textContent   = CU.pvp_wins;
+    if ($('tour-losses')) $('tour-losses').textContent = CU.pvp_losses;
+    if ($('tour-rating')) $('tour-rating').textContent = CU.pvp_rating;
+
+    const btn = $('battleCloseBtn');
+    if (btn) btn.style.display = 'block';
+  }
+}
+
+async function closeBattle() {
+  const overlay = $('battleOverlay');
+  if (overlay) overlay.remove();
+  try {
+    await loadUser();
+    if (typeof renderTournament === 'function') await renderTournament();
+  } catch(e) {}
 }
 
 /* ═══════ NAVIGATION ═══════ */
