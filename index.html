@@ -1519,8 +1519,20 @@ function renderChatBonus(){}
 
 /* ═══════ NAVIGATION ═══════ */
 function goView(v){
-   ['home','shop','income','friends','rating','chatbonus','admin','tournament'].forEach(x=>{ const el=$('view-'+x);if(el) el.classList.toggle('hidden',x!==v); const nb=$('nav-'+x);if(nb) nb.classList.toggle('active',x===v); });
-  if(v==='home') renderHome(); if(v==='shop') renderShop(); if(v==='income') renderIncome(); if(v==='friends') renderFriends(); if(v==='rating') renderRating(); if(v==='chatbonus') renderChatBonus(); if(v==='admin') renderAdmin();
+  ['home','shop','income','friends','rating','chatbonus','admin','tournament'].forEach(x=>{ 
+      const el=$('view-'+x); if(el) el.classList.toggle('hidden',x!==v); 
+      const nb=$('nav-'+x); if(nb) nb.classList.toggle('active',x===v); 
+  });
+  
+  if(v==='home') renderHome(); 
+  if(v==='shop') renderShop(); 
+  if(v==='income') renderIncome(); 
+  if(v==='friends') renderFriends(); 
+  if(v==='rating') renderRating(); 
+  if(v==='chatbonus') renderChatBonus(); 
+  if(v==='admin') renderAdmin();
+  if(v==='tournament') renderTournament(); // 👈 ДОБАВЛЕНА ЭТА СТРОКА
+  
   window.scrollTo({top:0,behavior:'smooth'});
 }
 function toggleAcc(id){const el=$(id);if(!el) return;el.classList.toggle('open');}
