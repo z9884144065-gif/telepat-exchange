@@ -438,35 +438,42 @@ body[data-card-bg="1"] .rank-badge,body[data-card-bg="1"] .slot,body[data-card-b
     <h2>⚔️ Турнир</h2>
     
     <!-- Блок выбора расы -->
-    <div id="tournament-race-select" class="hidden">
-        <div class="item-card" style="text-align:center; border-color:var(--gold);">
-            <div style="font-size:24px; color:var(--gold); font-weight:bold; margin-bottom:10px;">Выберите свою Расу</div>
-            <div class="info" style="margin-bottom:15px;">Раса определяет ваши базовые характеристики в бою. Выбрать можно только один раз!</div>
-        </div>
-        <div class="qa" style="grid-template-columns:1fr 1fr; gap:10px;">
-            <button class="qb" onclick="chooseRace('human')" style="padding:20px 10px;">
-                <span class="qi">👤</span>
-                <div style="font-size:14px; margin:5px 0;">Люди</div>
-                <div style="font-size:10px; color:var(--muted); font-weight:normal;">100 HP, 10 Урона</div>
-            </button>
-            <button class="qb" onclick="chooseRace('elf')" style="padding:20px 10px;">
-                <span class="qi">🏹</span>
-                <div style="font-size:14px; margin:5px 0;">Эльфы</div>
-                <div style="font-size:10px; color:var(--muted); font-weight:normal;">90 HP, 10 Урона (+Уворот)</div>
-            </button>
-            <button class="qb" onclick="chooseRace('dwarf')" style="padding:20px 10px;">
-                <span class="qi">🛡️</span>
-                <div style="font-size:14px; margin:5px 0;">Гномы</div>
-                <div style="font-size:10px; color:var(--muted); font-weight:normal;">150 HP, 8 Урона (Танки)</div>
-            </button>
-            <button class="qb" onclick="chooseRace('mage')" style="padding:20px 10px;">
-                <span class="qi">🔮</span>
-                <div style="font-size:14px; margin:5px 0;">Маги</div>
-                <div style="font-size:10px; color:var(--muted); font-weight:normal;">70 HP, 25 Урона (Стекло)</div>
-            </button>
-        </div>
+   <div id="tournament-race-select" class="hidden">
+    <div class="item-card" style="text-align:center; border-color:var(--gold);">
+        <div style="font-size:24px; color:var(--gold); font-weight:bold; margin-bottom:10px;">Выберите свою Расу</div>
+        <div class="info" style="margin-bottom:15px;">Раса определяет ваши базовые характеристики в бою. Выбрать можно только один раз!</div>
     </div>
+    
+    <div class="qa" style="grid-template-columns:1fr 1fr; gap:10px;">
+        <!-- ЛЮДИ -->
+        <button class="qb" onclick="chooseRace('human')" style="padding:15px 10px; height:auto; display:flex; flex-direction:column; align-items:center; gap:8px;">
+            <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Felix&backgroundColor=transparent" alt="Люди" style="width:80px; height:80px; object-fit:contain; filter:drop-shadow(0 0 10px rgba(244,207,112,0.3));">
+            <div style="font-size:14px; margin:5px 0; color:var(--gold);">Люди</div>
+            <div style="font-size:10px; color:var(--muted); font-weight:normal; text-align:center;">100 HP<br>10 Урона</div>
+        </button>
 
+        <!-- ЭЛЬФЫ -->
+        <button class="qb" onclick="chooseRace('elf')" style="padding:15px 10px; height:auto; display:flex; flex-direction:column; align-items:center; gap:8px;">
+            <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Annie&backgroundColor=transparent" alt="Эльфы" style="width:80px; height:80px; object-fit:contain; filter:drop-shadow(0 0 10px rgba(57,217,138,0.3));">
+            <div style="font-size:14px; margin:5px 0; color:var(--gold);">Эльфы</div>
+            <div style="font-size:10px; color:var(--muted); font-weight:normal; text-align:center;">90 HP<br>10 Урона (+Уворот)</div>
+        </button>
+
+        <!-- ГНОМЫ -->
+        <button class="qb" onclick="chooseRace('dwarf')" style="padding:15px 10px; height:auto; display:flex; flex-direction:column; align-items:center; gap:8px;">
+            <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Jack&backgroundColor=transparent" alt="Гномы" style="width:80px; height:80px; object-fit:contain; filter:drop-shadow(0 0 10px rgba(255,165,0,0.3));">
+            <div style="font-size:14px; margin:5px 0; color:var(--gold);">Гномы</div>
+            <div style="font-size:10px; color:var(--muted); font-weight:normal; text-align:center;">150 HP<br>8 Урона (Танки)</div>
+        </button>
+
+        <!-- МАГИ -->
+        <button class="qb" onclick="chooseRace('mage')" style="padding:15px 10px; height:auto; display:flex; flex-direction:column; align-items:center; gap:8px;">
+            <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Max&backgroundColor=transparent" alt="Маги" style="width:80px; height:80px; object-fit:contain; filter:drop-shadow(0 0 10px rgba(168,85,247,0.3));">
+            <div style="font-size:14px; margin:5px 0; color:var(--gold);">Маги</div>
+            <div style="font-size:10px; color:var(--muted); font-weight:normal; text-align:center;">70 HP<br>25 Урона (Стекло)</div>
+        </button>
+    </div>
+</div>
     <!-- Блок Арены -->
     <div id="tournament-arena" class="hidden">
         <div class="item-card" style="text-align:center; padding: 20px;">
