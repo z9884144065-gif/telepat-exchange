@@ -1516,6 +1516,82 @@ async function buyItem(id, name, price, paymentToken = 'TUSD') {
   await refreshAll();
 }
 function renderChatBonus(){}
+    async function chooseRace(raceKey) {
+    if(!confirm('Вы уверены? Расу нельзя будет изменить бесплатно!')) return;
+    try {
+        const { data, error } = await sb.rpc('set_user_race', { p_user_id: UID, p_race: raceKey });
+        if (error || !data || !data.ok) throw new Error(error?.message || data?.error || 'Ошибка');
+        msg('✅ Раса выбрана!', 'success');
+        await loadUser(); 
+        await renderTournament(); 
+    } catch(e) { msg(e.message, 'error'); }
+}
+
+async function renderTournament() {
+    const selectBlock = $('tournament-race-select');
+    const arenaBlock = $('tournament-arena');
+
+    await loadUser(); 
+    if(!CU) return;
+
+    if (!CU.race) {
+        if(selectBlock) selectBlock.classList.remove('hidden');
+        if(arenaBlock) arenaBlock.classList.add('hidden');
+    } else {
+        if(selectBlock) selectBlock.classList.add('hidden');
+        if(arenaBlock) arenaBlock.classList.remove('hidden');
+        
+        if ($('tour-hp')) $('tour-hp').textContent = CU.hp_base || 100;
+        if ($('tour-dmg')) $('tour-dmg').textContent = CU.damage_base || 10;
+        if ($('tour-wins')) $('tour-wins').textContent = CU.pvp_wins || 0;
+        if ($('tour-losses')) $('tour-losses').textContent = CU.pvp_losses || 0;
+        if ($('tour-rating')) $('tour-rating').textContent = CU.pvp_rating || 0;
+    }
+}
+
+async function fightBot(botType) {
+    const logBox = $('battle-log');
+    if (logBox) {
+        logBox.style.display = 'block';
+        logBox.innerHTML = '<div style="text-align:center; color:var(--gold);">⏳ Бой начался...</div>';
+    }
+    try {
+        const { data, error } = await sb.rpc('battle_vs_bot', { p_user_id: UID, p_bot_type: botType });
+        if (error || !data || !data.ok) throw new Error(error?.message || data?.error || 'Ошибка');
+
+        let html = '';
+        if (data.winner === 'user') {
+            html += `<div style="color:#39d98a; font-weight:bold; text-align:center; margin-bottom:10px;">🎉 Вы победили!</div>`;
+            html += `<div style="text-align:center; font-size:10px; color:var(--muted); margin-bottom:10px;">+1 к рейтингу Турнира</div>`;
+        } else {
+            html += `<div style="color:#f6465d; font-weight:bold; text-align:center; margin-bottom:10px;">💀 Вы проиграли...</div>`;
+            html += `<div style="text-align:center; font-size:10px; color:var(--muted); margin-bottom:10px;">-0 к рейтингу</div>`;
+        }
+
+        const lastLogs = data.log.slice(-10);
+        lastLogs.forEach(turn => {
+            const actor = turn.actor === 'user' ? '👤 Вы' : '🤖 Бот';
+            let action = '';
+            if (turn.action === 'hit') action = `нанес ${turn.damage} урона`;
+            else if (turn.action === 'crit') action = `КРИТ! ${turn.damage} урона`;
+            else if (turn.action === 'miss') action = `увернулся`;
+            html += `<div style="border-bottom:1px solid #1a2534; padding:3px 0;">${actor} ${action}</div>`;
+        });
+
+        logBox.innerHTML = html;
+
+        CU.pvp_wins = (CU.pvp_wins || 0) + (data.winner === 'user' ? 1 : 0);
+        CU.pvp_losses = (CU.pvp_losses || 0) + (data.winner === 'bot' ? 1 : 0);
+        CU.pvp_rating = (CU.pvp_rating || 0) + (data.winner === 'user' ? 1 : 0);
+        
+        if ($('tour-wins')) $('tour-wins').textContent = CU.pvp_wins;
+        if ($('tour-losses')) $('tour-losses').textContent = CU.pvp_losses;
+        if ($('tour-rating')) $('tour-rating').textContent = CU.pvp_rating;
+
+    } catch(e) {
+        if (logBox) logBox.innerHTML = `<div style="color:red; text-align:center;">Ошибка: ${e.message}</div>`;
+    }
+}
 
 /* ═══════ NAVIGATION ═══════ */
 function goView(v){
