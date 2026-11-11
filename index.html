@@ -436,10 +436,71 @@ body[data-card-bg="1"] .rank-badge,body[data-card-bg="1"] .slot,body[data-card-b
 </div>
 <div id="view-tournament" class="hidden">
     <h2>⚔️ Турнир</h2>
-    <div class="item-card" style="text-align:center; padding: 30px 15px;">
-        <div style="font-size: 40px; margin-bottom: 10px;">🏟️</div>
-        <div style="color: var(--gold); font-size: 18px; font-weight: bold; margin-bottom: 10px;">Арена скоро откроется!</div>
-        <div class="info">Здесь будут проходить эпические бои между рыцарями. Готовьте свои мечи и доспехи!</div>
+    
+    <!-- Блок выбора расы -->
+    <div id="tournament-race-select" class="hidden">
+        <div class="item-card" style="text-align:center; border-color:var(--gold);">
+            <div style="font-size:24px; color:var(--gold); font-weight:bold; margin-bottom:10px;">Выберите свою Расу</div>
+            <div class="info" style="margin-bottom:15px;">Раса определяет ваши базовые характеристики в бою. Выбрать можно только один раз!</div>
+        </div>
+        <div class="qa" style="grid-template-columns:1fr 1fr; gap:10px;">
+            <button class="qb" onclick="chooseRace('human')" style="padding:20px 10px;">
+                <span class="qi">👤</span>
+                <div style="font-size:14px; margin:5px 0;">Люди</div>
+                <div style="font-size:10px; color:var(--muted); font-weight:normal;">100 HP, 10 Урона</div>
+            </button>
+            <button class="qb" onclick="chooseRace('elf')" style="padding:20px 10px;">
+                <span class="qi">🏹</span>
+                <div style="font-size:14px; margin:5px 0;">Эльфы</div>
+                <div style="font-size:10px; color:var(--muted); font-weight:normal;">90 HP, 10 Урона (+Уворот)</div>
+            </button>
+            <button class="qb" onclick="chooseRace('dwarf')" style="padding:20px 10px;">
+                <span class="qi">🛡️</span>
+                <div style="font-size:14px; margin:5px 0;">Гномы</div>
+                <div style="font-size:10px; color:var(--muted); font-weight:normal;">150 HP, 8 Урона (Танки)</div>
+            </button>
+            <button class="qb" onclick="chooseRace('mage')" style="padding:20px 10px;">
+                <span class="qi">🔮</span>
+                <div style="font-size:14px; margin:5px 0;">Маги</div>
+                <div style="font-size:10px; color:var(--muted); font-weight:normal;">70 HP, 25 Урона (Стекло)</div>
+            </button>
+        </div>
+    </div>
+
+    <!-- Блок Арены -->
+    <div id="tournament-arena" class="hidden">
+        <div class="item-card" style="text-align:center; padding: 20px;">
+            <div style="font-size: 40px; margin-bottom: 10px;">🏟️</div>
+            <div style="color: var(--gold); font-size: 18px; font-weight: bold; margin-bottom: 10px;">Арена ждет!</div>
+            
+            <div class="sgrid" style="grid-template-columns: 1fr 1fr; margin-bottom: 10px;">
+                <div class="st"><b id="tour-hp" style="color:#f6465d;">100</b><span>Здоровье</span></div>
+                <div class="st"><b id="tour-dmg" style="color:#f4cf70;">10</b><span>Урон</span></div>
+            </div>
+
+            <div class="sgrid" style="grid-template-columns: 1fr 1fr 1fr; margin-bottom:15px;">
+                <div class="st"><b id="tour-wins">0</b><span>Побед</span></div>
+                <div class="st"><b id="tour-losses">0</b><span>Поражений</span></div>
+                <div class="st"><b id="tour-rating" style="color:#39d98a;">0</b><span>Рейтинг Турнира</span></div>
+            </div>
+
+            <div style="font-size:14px; margin-bottom:10px; color:#fff;">Выберите противника:</div>
+            <div class="qa" style="grid-template-columns:1fr 1fr 1fr; gap:8px;">
+                <button class="qb" onclick="fightBot('orc')" style="padding:15px 5px;">
+                    <span class="qi">👹</span>
+                    <div style="font-size:12px; margin-top:5px;">Орк</div>
+                </button>
+                <button class="qb" onclick="fightBot('undead')" style="padding:15px 5px;">
+                    <span class="qi">💀</span>
+                    <div style="font-size:12px; margin-top:5px;">Нежить</div>
+                </button>
+                <button class="qb" onclick="fightBot('goblin')" style="padding:15px 5px;">
+                    <span class="qi">👺</span>
+                    <div style="font-size:12px; margin-top:5px;">Гоблин</div>
+                </button>
+            </div>
+            <div id="battle-log" style="margin-top:15px; text-align:left; max-height:200px; overflow-y:auto; font-size:12px; color:#cfd8e4; background:#0d1520; padding:10px; border-radius:8px; display:none;"></div>
+        </div>
     </div>
 </div>
 <div id="view-chatbonus" class="hidden">
