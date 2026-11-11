@@ -292,6 +292,91 @@ body[data-card-bg="1"] .rank-badge,body[data-card-bg="1"] .slot,body[data-card-b
 .nav-btn.ui-image-btn .ui-image-label{font-size:8px}
 .tab.ui-image-btn{min-height:56px;padding:4px!important}
 .tab.ui-image-btn .ui-image-label{font-size:8px}
+    /* ═══════════════ БОЕВАЯ АРЕНА ═══════════════ */
+.battle-overlay {
+  position: fixed; inset: 0; 
+  background: rgba(10, 13, 18, 0.98); 
+  z-index: 5000; display: none; flex-direction: column;
+  align-items: center; justify-content: center; padding: 20px;
+  animation: fadeIn .3s ease-out; backdrop-filter: blur(8px);
+}
+.battle-overlay.show { display: flex; }
+
+.battle-hud {
+  display: flex; width: 100%; max-width: 520px;
+  justify-content: space-between; align-items: center;
+  margin-bottom: 10px; gap: 10px;
+}
+.battle-vs {
+  font-size: 26px; font-weight: 900; color: var(--gold);
+  text-shadow: 0 0 14px var(--gold); animation: vsPulse 1.2s infinite;
+}
+@keyframes vsPulse { 0%,100% { transform: scale(1) } 50% { transform: scale(1.15) } }
+
+.hp-bar-container { flex: 1; background: rgba(0,0,0,.6); padding: 8px 10px; border-radius: 12px; border: 2px solid var(--line); }
+.hp-bar-container.player { border-color: #39d98a; }
+.hp-bar-container.enemy { border-color: #f6465d; }
+.hp-label { font-size: 12px; font-weight: bold; color: #fff; margin-bottom: 5px; display: flex; justify-content: space-between; }
+.hp-bar-bg { height: 16px; background: #080b10; border-radius: 8px; overflow: hidden; }
+.hp-bar-fill { height: 100%; border-radius: 8px; transition: width .45s ease-out; }
+.player .hp-bar-fill { background: linear-gradient(90deg,#39d98a,#2ba86a); box-shadow: 0 0 10px rgba(57,217,138,.7); }
+.enemy .hp-bar-fill { background: linear-gradient(90deg,#f6465d,#d93047); box-shadow: 0 0 10px rgba(246,70,93,.7); }
+
+/* ─── РАМКИ ДЛЯ КАРТИНОК ─── */
+.battle-field {
+  position: relative; width: 100%; max-width: 520px; height: 320px; 
+  display: flex; justify-content: space-between; align-items: flex-end; 
+  padding: 0 10px; margin-top: 20px;
+}
+
+.fighter {
+  width: 45%; height: 100%; /* Ограничиваем высоту обеих картинок */
+  display: flex; justify-content: center; align-items: flex-end;
+  position: relative;
+}
+
+.fighter img {
+  max-height: 100%; max-width: 100%;
+  object-fit: contain; /* Картинка не будет растягиваться, а впишется в рамки */
+  filter: drop-shadow(0 10px 20px rgba(0,0,0,.8));
+  transition: filter .3s;
+}
+
+/* Отзеркаливаем врага, чтобы он смотрел влево */
+.enemy-fighter { transform: scaleX(-1); }
+
+@keyframes lungeRight { 0%,100% { transform: translateX(0) } 40% { transform: translateX(40px) } }
+@keyframes lungeLeft { 0%,100% { transform: translateX(0) } 40% { transform: translateX(-40px) } }
+.player-attacking img { animation: lungeRight .45s ease-in-out; }
+.enemy-attacking img { animation: lungeLeft .45s ease-in-out; }
+
+@keyframes shakeHit { 0%,100% { transform: translateX(0) } 20% { transform: translateX(-10px) } 40% { transform: translateX(10px) } 60% { transform: translateX(-6px) } 80% { transform: translateX(6px) } }
+.hit-target img { animation: shakeHit .45s ease-in-out; }
+
+@keyframes flashHit { 0%,100% { filter: drop-shadow(0 10px 20px rgba(0,0,0,.8)) } 50% { filter: drop-shadow(0 0 30px rgba(255,255,255,1)) brightness(3); } }
+.hit-flash img { animation: flashHit .45s ease-in-out; }
+
+/* ─── ЦИФРЫ УРОНА ─── */
+.damage-number {
+  position: absolute; left: 50%; top: 20%; transform: translateX(-50%);
+  font-size: 32px; font-weight: 900; color: #f6465d;
+  text-shadow: 0 2px 8px #000, 0 0 14px currentColor;
+  pointer-events: none; z-index: 20; animation: floatUp 1.3s ease-out forwards; white-space: nowrap;
+}
+.damage-number.crit { font-size: 44px; color: #f4cf70; }
+.damage-number.miss { font-size: 22px; color: #8a94a6; }
+@keyframes floatUp {
+  0% { transform: translate(-50%, 0) scale(.5); opacity: 0; }
+  20% { transform: translate(-50%, -20px) scale(1.3); opacity: 1; }
+  100% { transform: translate(-50%, -100px) scale(1); opacity: 0; }
+}
+
+/* ─── ЛОГ И ФИНАЛ ─── */
+.battle-log { width: 100%; max-width: 520px; max-height: 100px; overflow-y: auto; background: rgba(13,21,32,.9); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; margin-top: 20px; font-size: 11px; line-height: 1.5; color: #cfd8e4; }
+.battle-result { text-align: center; padding: 20px; animation: resultPop .6s cubic-bezier(.34,1.56,.64,1) }
+@keyframes resultPop { from { transform: scale(0); opacity: 0 } to { transform: scale(1); opacity: 1 } }
+.battle-result .res-emoji { font-size: 70px; }
+.battle-result .res-title { font-size: 28px; font-weight: 900; margin: 10px 0; letter-spacing: 2px; }
 </style>
 </head>
 <body>
