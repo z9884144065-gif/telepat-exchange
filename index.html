@@ -631,7 +631,16 @@ body[data-card-bg="1"] .rank-badge,body[data-card-bg="1"] .slot,body[data-card-b
             </div>
 
             <div style="font-size:14px; margin-bottom:10px; color:#fff;">Выберите противника:</div>
+                        <div style="font-size:14px; margin-bottom:10px; color:#fff;">Выберите противника:</div>
             
+            <!-- 👇 ДОБАВЛЯЕМ КНОПКУ PVP 👇 -->
+            <button class="qb gold" style="width:100%; margin-bottom:12px; padding:14px; flex-direction:row; gap:10px; border-radius:12px;" onclick="findPvPOpponent()">
+                <span class="qi" style="margin:0; font-size:24px;">⚔️</span>
+                <span style="font-size:16px; font-weight:bold;">Найти живого игрока (PvP)</span>
+            </button>
+            <!-- 👆 КОНЕЦ 👆 -->
+
+            <div class="qa" style="grid-template-columns:1fr 1fr 1fr; gap:8px;">
             <div class="qa" style="grid-template-columns:1fr 1fr 1fr; gap:8px;">
                 <!-- ОРК -->
                 <button class="qb" onclick="fightBot('orc')" style="padding:15px 5px; display:flex; flex-direction:column; align-items:center; justify-content:center; height:auto;">
