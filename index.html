@@ -1740,19 +1740,23 @@ function showBattle(botType, battleData) {
   const overlay = document.createElement('div');
   overlay.id = 'battleOverlay';
   overlay.className = 'battle-overlay show';
+  
+  // НОВАЯ ВЕРСТКА АРЕНЫ
   overlay.innerHTML = `
     <div class="battle-hud">
       <div class="hp-bar-container player">
-        <div class="hp-label"><span>👤 Вы</span><span id="battlePlayerHpText">${playerMaxHp}/${playerMaxHp}</span></div>
+        <div class="hp-name"><span>👤 ${esc(CU?.first_name || 'Вы')}</span><span id="battlePlayerHpText">${playerMaxHp}</span></div>
         <div class="hp-bar-bg"><div class="hp-bar-fill" id="battlePlayerHpFill" style="width:100%"></div></div>
       </div>
-      <div class="battle-vs">VS</div>
+      <div class="battle-center-icon">VS</div>
       <div class="hp-bar-container enemy">
-        <div class="hp-label"><span>${esc(botName)}</span><span id="battleEnemyHpText">${enemyMaxHp}/${enemyMaxHp}</span></div>
-        <div class="hp-bar-bg"><div class="hp-bar-fill" id="battleEnemyHpFill" style="width:100%"></div></div>
+        <div class="hp-name" style="justify-content:flex-end;"><span id="battleEnemyHpText">${enemyMaxHp}</span><span>${esc(botName)} 👤</span></div>
+        <div class="hp-bar-bg"><div class="hp-bar-fill" id="battleEnemyHpFill" style="width:100%; float:right;"></div></div>
       </div>
     </div>
-    <div class="battle-field">
+
+    <div class="battle-field" id="battleField">
+      <div class="battle-floor"></div>
       <div class="fighter player-fighter" id="battlePlayerFighter">
         <img src="${esc(playerImg)}" alt="Player" onerror="this.src='knight-9.png'">
       </div>
@@ -1760,18 +1764,17 @@ function showBattle(botType, battleData) {
         <img src="${esc(botImg)}" alt="${esc(botName)}" onerror="this.style.opacity='0.35'">
       </div>
     </div>
+
     <div class="battle-log" id="battleLogBox"></div>
-    <button id="battleCloseBtn" class="admin-btn sec"
-      style="margin-top:16px;min-width:220px;padding:14px;font-size:14px;display:none; background:var(--gold); color:#000; font-weight:bold; border:none;"
-      onclick="closeBattle()">ЗАБРАТЬ НАГРАДУ</button>
+    <button id="battleCloseBtn" class="btn-skip" style="display:none;" onclick="closeBattle()">ЗАБРАТЬ НАГРАДУ</button>
   `;
   document.body.appendChild(overlay);
 
   const logBox      = $('battleLogBox');
   const playerFight = $('battlePlayerFighter');
   const enemyFight  = $('battleEnemyFighter');
+  const battleField = $('battleField');
 
-  // Тайминг боя (~15 секунд)
   const targetMs   = 15000;
   const turnDelay  = Math.min(2000, Math.max(650, Math.floor(targetMs / log.length)));
 
@@ -1779,7 +1782,7 @@ function showBattle(botType, battleData) {
   const timer = setInterval(() => {
     if (i >= log.length) {
       clearInterval(timer);
-      setTimeout(() => finishBattle(winner), 1200);
+      setTimeout(() => finishBattle(winner), 1000);
       return;
     }
     playTurn(log[i], i);
@@ -1793,20 +1796,28 @@ function showBattle(botType, battleData) {
     const actorLabel = isUser ? '👤 Вы' : '🤖 ' + botName;
 
     if (turn.action === 'miss') {
-      const dodger = isUser ? enemyFight : playerFight;
-      showDamageNumber(dodger, 'MISS', 'miss');
+      showDamageNumber(defender, 'MISS', 'miss');
       addLog(`${actorLabel} промахнулся 💨`);
       return;
     }
 
-    attacker.classList.add('player-attacking');
-    setTimeout(() => attacker.classList.remove('player-attacking'), 450);
+    // Анимация замаха
+    attacker.classList.add(isUser ? 'player-attacking' : 'enemy-attacking');
+    setTimeout(() => attacker.classList.remove(isUser ? 'player-attacking' : 'enemy-attacking'), 400);
 
+    // Попадание
     setTimeout(() => {
-      defender.classList.add('hit-target', 'hit-flash');
-      setTimeout(() => defender.classList.remove('hit-target', 'hit-flash'), 450);
+      defender.classList.add('hit-flash');
+      setTimeout(() => defender.classList.remove('hit-flash'), 300);
 
       const dmg = Number(turn.damage) || 0;
+      const isCrit = turn.action === 'crit';
+
+      // ТРЯСКА ЭКРАНА
+      if (isCrit || dmg > 15) {
+          overlay.classList.add('shake');
+          setTimeout(() => overlay.classList.remove('shake'), 400);
+      }
 
       if (isUser) {
         enemyHp = Math.max(0, enemyHp - dmg);
@@ -1816,10 +1827,9 @@ function showBattle(botType, battleData) {
         updateHpBar('player', playerHp, playerMaxHp);
       }
 
-      const isCrit = turn.action === 'crit';
       showDamageNumber(defender, `-${dmg}`, isCrit ? 'crit' : '');
       addLog(`${actorLabel} ${isCrit ? '💥 КРИТ' : 'ударил'} на <b style="color:#f4cf70">${dmg}</b>`);
-    }, 180);
+    }, 150);
   }
 
   function updateHpBar(who, hp, max) {
@@ -1827,20 +1837,25 @@ function showBattle(botType, battleData) {
     const text = $(who === 'player' ? 'battlePlayerHpText' : 'battleEnemyHpText');
     const pct  = max > 0 ? Math.max(0, (hp / max) * 100) : 0;
     if (fill) fill.style.width = pct + '%';
-    if (text) text.textContent = `${Math.round(hp)}/${max}`;
+    if (text) text.textContent = `${Math.round(hp)}`;
   }
 
   function showDamageNumber(targetEl, text, cls) {
     const el = document.createElement('div');
     el.className = 'damage-number ' + (cls || '');
     el.textContent = text;
+    
+    // Позиционируем цифру прямо над целью (по центру)
     targetEl.appendChild(el);
-    setTimeout(() => el.remove(), 1400);
+    
+    // Удаляем через секунду
+    setTimeout(() => el.remove(), 1000);
   }
 
   function addLog(html) {
     if (!logBox) return;
     const line = document.createElement('div');
+    line.style.cssText = 'padding:4px 0; border-bottom:1px solid #333;';
     line.innerHTML = html;
     logBox.appendChild(line);
     logBox.scrollTop = logBox.scrollHeight;
@@ -1848,16 +1863,13 @@ function showBattle(botType, battleData) {
 
   function finishBattle(winnerCode) {
     const win = winnerCode === 'user';
-
+    
     const res = document.createElement('div');
     res.className = 'battle-result';
+    res.style.cssText = 'position:absolute; top:30%; left:50%; transform:translate(-50%, -50%); text-align:center; z-index:100; background:rgba(0,0,0,0.8); padding:20px 40px; border-radius:20px; border:2px solid ' + (win?'#39d98a':'#f6465d');
     res.innerHTML = win
-      ? `<div class="res-emoji" style="color:#39d98a">🏆</div>
-         <div class="res-title" style="color:#39d98a">ПОБЕДА!</div>
-         <div class="res-sub" style="color:var(--gold)">+1 к рейтингу турнира</div>`
-      : `<div class="res-emoji" style="color:#f6465d">💀</div>
-         <div class="res-title" style="color:#f6465d">ПОРАЖЕНИЕ</div>
-         <div class="res-sub">Попробуй ещё раз — ты справишься!</div>`;
+      ? `<div style="font-size:60px;">🏆</div><div style="font-size:32px; font-weight:900; color:#39d98a;">ПОБЕДА!</div>`
+      : `<div style="font-size:60px;">💀</div><div style="font-size:32px; font-weight:900; color:#f6465d;">ПОРАЖЕНИЕ</div>`;
 
     overlay.appendChild(res);
 
@@ -1873,7 +1885,6 @@ function showBattle(botType, battleData) {
     if (btn) btn.style.display = 'block';
   }
 }
-
 async function closeBattle() {
   const overlay = $('battleOverlay');
   if (overlay) overlay.remove();
