@@ -1830,19 +1830,26 @@ function showBattle(botType, battleData) {
       return;
     }
 
-    // Анимация замаха
+    // 1. Персонаж делает выпад/наклон
     attacker.classList.add(isUser ? 'player-attacking' : 'enemy-attacking');
     setTimeout(() => attacker.classList.remove(isUser ? 'player-attacking' : 'enemy-attacking'), 400);
 
-    // Попадание
+    // 2. Летит стрела (снаряд)
+    if (isUser) {
+        spawnProjectile();
+    }
+
+    // 3. Попадание, взрыв и урон
     setTimeout(() => {
+      showHitEffect(defender);
+
       defender.classList.add('hit-flash');
       setTimeout(() => defender.classList.remove('hit-flash'), 300);
 
       const dmg = Number(turn.damage) || 0;
       const isCrit = turn.action === 'crit';
 
-      // ТРЯСКА ЭКРАНА
+      // Тряска экрана при крите или сильном ударе
       if (isCrit || dmg > 15) {
           overlay.classList.add('shake');
           setTimeout(() => overlay.classList.remove('shake'), 400);
@@ -1858,7 +1865,27 @@ function showBattle(botType, battleData) {
 
       showDamageNumber(defender, `-${dmg}`, isCrit ? 'crit' : '');
       addLog(`${actorLabel} ${isCrit ? '💥 КРИТ' : 'ударил'} на <b style="color:#f4cf70">${dmg}</b>`);
-    }, 150);
+    }, 350); 
+  }
+
+  // Создаем летящую стрелу
+  function spawnProjectile() {
+      const proj = document.createElement('div');
+      proj.className = 'projectile';
+      proj.textContent = '🏹';
+      battleField.appendChild(proj);
+      setTimeout(() => proj.remove(), 800);
+  }
+
+  // Эффект взрыва
+  function showHitEffect(targetEl) {
+      const effect = document.createElement('div');
+      effect.className = 'hit-effect';
+      effect.textContent = '💥';
+      effect.style.left = '50%';
+      effect.style.top = '40%';
+      targetEl.appendChild(effect);
+      setTimeout(() => effect.remove(), 500);
   }
 
   function updateHpBar(who, hp, max) {
@@ -1873,11 +1900,7 @@ function showBattle(botType, battleData) {
     const el = document.createElement('div');
     el.className = 'damage-number ' + (cls || '');
     el.textContent = text;
-    
-    // Позиционируем цифру прямо над целью (по центру)
     targetEl.appendChild(el);
-    
-    // Удаляем через секунду
     setTimeout(() => el.remove(), 1000);
   }
 
@@ -1895,11 +1918,11 @@ function showBattle(botType, battleData) {
     
     const res = document.createElement('div');
     res.className = 'battle-result';
-    res.style.cssText = 'position:absolute; top:30%; left:50%; transform:translate(-50%, -50%); text-align:center; z-index:100; background:rgba(0,0,0,0.8); padding:20px 40px; border-radius:20px; border:2px solid ' + (win?'#39d98a':'#f6465d');
+    res.style.cssText = 'position:absolute; top:40%; left:50%; transform:translate(-50%, -50%); text-align:center; z-index:100; background:rgba(0,0,0,0.85); padding:20px 40px; border-radius:20px; border:2px solid ' + (win?'#39d98a':'#f6465d');
     res.innerHTML = win
-      ? `<div style="font-size:60px;">🏆</div><div style="font-size:32px; font-weight:900; color:#39d98a;">ПОБЕДА!</div>`
-      : `<div style="font-size:60px;">💀</div><div style="font-size:32px; font-weight:900; color:#f6465d;">ПОРАЖЕНИЕ</div>`;
-
+      ? `<div style="font-size:60px;">🏆</div><div style="font-size:32px; font-weight:900; color:#39d98a; text-shadow:0 0 20px #39d98a;">ПОБЕДА!</div>`
+      : `<div style="font-size:60px;">💀</div><div style="font-size:32px; font-weight:900; color:#f6465d; text-shadow:0 0 20px #f6465d;">ПОРАЖЕНИЕ</div>`;
+      
     overlay.appendChild(res);
 
     CU.pvp_wins   = (CU.pvp_wins || 0)   + (win ? 1 : 0);
