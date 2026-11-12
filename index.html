@@ -1751,8 +1751,10 @@ async function fightBot(botType) {
 }
 
 function showBattle(botType, battleData) {
-  const botName  = BOT_NAMES[botType] || 'Враг';
-  const botImg   = BOT_IMAGES[botType];
+   // Проверяем, если это PvP бой
+  const isPvP = botType === 'pvp';
+  const botName  = isPvP ? (battleData.customOppName || 'Игрок') : (BOT_NAMES[botType] || 'Враг');
+  const botImg   = isPvP ? (battleData.customOppImg || 'knight-0.png') : BOT_IMAGES[botType];
   const playerImg = getPlayerBattleImg();
   const log      = battleData.log || [];
   const winner   = battleData.winner;
