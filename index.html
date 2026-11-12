@@ -614,7 +614,7 @@ body[data-card-bg="1"] .rank-badge,body[data-card-bg="1"] .slot,body[data-card-b
         </button>
     </div>
 </div>
-      <!-- Блок Арены -->
+        <!-- Блок Арены -->
     <div id="tournament-arena" class="hidden">
         <div class="item-card" style="text-align:center; padding: 20px;">
             <div style="font-size: 40px; margin-bottom: 10px;">🏟️</div>
@@ -632,16 +632,14 @@ body[data-card-bg="1"] .rank-badge,body[data-card-bg="1"] .slot,body[data-card-b
             </div>
 
             <div style="font-size:14px; margin-bottom:10px; color:#fff;">Выберите противника:</div>
-                        <div style="font-size:14px; margin-bottom:10px; color:#fff;">Выберите противника:</div>
             
-            <!-- 👇 ДОБАВЛЯЕМ КНОПКУ PVP 👇 -->
-            <button class="qb gold" style="width:100%; margin-bottom:12px; padding:14px; flex-direction:row; gap:10px; border-radius:12px;" onclick="findPvPOpponent()">
+            <!-- 👇 КНОПКА PVP 👇 -->
+            <button class="qb gold" style="width:100%; margin-bottom:12px; padding:14px; display:flex; flex-direction:row; justify-content:center; align-items:center; gap:10px; border-radius:12px;" onclick="findPvPOpponent()">
                 <span class="qi" style="margin:0; font-size:24px;">⚔️</span>
                 <span style="font-size:16px; font-weight:bold;">Найти живого игрока (PvP)</span>
             </button>
-            <!-- 👆 КОНЕЦ 👆 -->
 
-            <div class="qa" style="grid-template-columns:1fr 1fr 1fr; gap:8px;">
+            <!-- Сетка ботов -->
             <div class="qa" style="grid-template-columns:1fr 1fr 1fr; gap:8px;">
                 <!-- ОРК -->
                 <button class="qb" onclick="fightBot('orc')" style="padding:15px 5px; display:flex; flex-direction:column; align-items:center; justify-content:center; height:auto;">
@@ -661,15 +659,18 @@ body[data-card-bg="1"] .rank-badge,body[data-card-bg="1"] .slot,body[data-card-b
                     <div style="font-size:12px; margin-top:8px; font-weight:bold; pointer-events:none;">Гоблин</div>
                 </button>
             </div>
+
+            <!-- Кнопка Лидеров -->
+            <button class="admin-btn sec" style="width:100%; margin-top:15px; padding:12px;" onclick="openPvPLeaderboard()">
+                🏆 Таблица лидеров Турнира
+            </button>
             
             <!-- Скрытый лог боя (нужен для работы скрипта) -->
-                        <!-- Скрытый лог боя (нужен для работы скрипта) -->
             <div id="battle-log" style="margin-top:15px; text-align:left; max-height:200px; overflow-y:auto; font-size:12px; color:#cfd8e4; background:#0d1520; padding:10px; border-radius:8px; display:none;"></div>
             
-            </div> <!-- Закрывает item-card -->
-        </div> <!-- Закрывает tournament-arena -->
-    </div> <!-- Закрывает view-tournament (ВОТ ЭТОГО НЕ ХВАТАЛО) -->
-
+        </div> <!-- Закрывает item-card -->
+    </div> <!-- Закрывает tournament-arena -->
+</div> <!-- Закрывает view-tournament (ВОТ ЭТОТ ТЕГ ДЕРЖИТ КНОПКИ НА МЕСТЕ) -->
 <div id="view-chatbonus" class="hidden">
 <h2>🎁 Заказать раздачу</h2>
 <div class="item-card" data-ui-block="chatbonus.form"><div class="item-header"><b>Автоматические бонусы в вашем чате</b></div><div class="item-desc">Бот раздаёт награды участникам за активность. Оплата: <b style="color:var(--gold)">$1 за подключение</b> + <b style="color:var(--gold)">бюджет раздачи</b>. С бюджета сразу списывается 10% комиссии платформы.</div></div>
