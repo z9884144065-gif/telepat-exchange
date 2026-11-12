@@ -357,10 +357,13 @@ body[data-card-bg="1"] .rank-badge,body[data-card-bg="1"] .slot,body[data-card-b
   transition: transform 0.1s;
 }
 .fighter img {
-  max-height: 340px; width: auto; max-width: 100%;
-  object-fit: contain; filter: drop-shadow(0 15px 15px rgba(0,0,0,0.9));
-  /* Пульсация (дыхание) персонажа */
+  height: 100%;         /* Заставляем картинку занимать всю высоту поля */
+  max-height: 280px;    /* Ограничиваем максимальный рост (чтобы не залезали на полоски HP) */
+  width: auto;
+  object-fit: contain;  /* Картинка не будет искажаться */
+  filter: drop-shadow(0 15px 15px rgba(0,0,0,0.9));
   animation: idleBounce 2s infinite ease-in-out;
+}
 }
 @keyframes idleBounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
 
