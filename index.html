@@ -4017,6 +4017,82 @@ function initRealtimeUpdates() {
     })
     .subscribe();
 }
+    /* ═══════════════ PVP ТУРНИР ═══════════════ */
+async function findPvPOpponent() {
+  if ($('battleOverlay')) return;
+  msg('⏳ Ищем противника...', 'info');
+
+  try {
+    const { data, error } = await sb.rpc('battle_vs_player', { p_user_id: UID });
+    if (error || !data || data.ok === false) {
+      msg('❌ ' + (data?.error || 'Ошибка поиска'), 'error');
+      return;
+    }
+
+    // Получаем данные противника, чтобы отрисовать его картинку и имя
+    const oppId = data.opponent_id;
+    const { data: oppData } = await sb.from('users').select('first_name, race, rank_level').eq('telegram_id', oppId).single();
+    
+    let oppName = oppData?.first_name || 'Игрок';
+    let oppImg = 'knight-0.png'; // Дефолт
+    if (oppData?.race) {
+        oppImg = `https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/${oppData.race}.png`;
+    }
+
+    // Подменяем данные, чтобы showBattle отрисовала PvP
+    const fakeBotData = {
+        log: data.log,
+        winner: data.winner,
+        customOppImg: oppImg,
+        customOppName: oppName
+    };
+
+    showBattle('pvp', fakeBotData);
+
+  } catch (e) {
+    msg('❌ Ошибка соединения', 'error');
+  }
+}
+
+async function openPvPLeaderboard() {
+  openModal('🏆 Рейтинг Турнира', `<div class="info" style="text-align:center; padding:20px;">Загрузка...</div>`);
+  
+  try {
+    const { data, error } = await sb.rpc('get_pvp_leaderboard');
+    if (error || !data) {
+      openModal('🏆 Рейтинг Турнира', `<div class="info" style="color:red; text-align:center;">Ошибка загрузки</div>`);
+      return;
+    }
+
+    let html = `<div style="display:flex; flex-direction:column; gap:6px;">`;
+    data.forEach((u, i) => {
+        const place = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '#' + (i + 1);
+        const name = u.username ? '@' + u.username : (u.first_name || 'Игрок');
+        const color = i === 0 ? '#ffd700' : i === 1 ? '#c0c0c0' : i === 2 ? '#cd7f32' : '#fff';
+        
+        html += `
+        <div style="display:flex; justify-content:space-between; align-items:center; background:#1b2636; border:1px solid #2d3a4c; padding:10px; border-radius:10px;">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <span style="font-size:20px; font-weight:bold; color:${color}; width:30px;">${place}</span>
+                <div>
+                    <div style="color:#fff; font-weight:bold; font-size:13px;">${esc(name)}</div>
+                    <div style="color:var(--muted); font-size:10px;">${esc(u.race || 'Без расы')} • Ур. ${u.rank_level}</div>
+                </div>
+            </div>
+            <div style="text-align:right;">
+                <div style="color:#39d98a; font-weight:900; font-size:16px;">${u.pvp_rating} <span style="font-size:10px;">pts</span></div>
+                <div style="color:#fff; font-size:10px;">Побед: ${u.pvp_wins} | Пор: ${u.pvp_losses}</div>
+            </div>
+        </div>`;
+    });
+    html += `</div>`;
+    html += `<button class="admin-btn sec" style="width:100%; margin-top:15px;" onclick="closeModal()">Закрыть</button>`;
+
+    openModal('🏆 Рейтинг Турнира', html);
+  } catch (e) {
+    msg('Ошибка', 'error');
+  }
+}
 document.addEventListener('DOMContentLoaded',async()=>{
   await refreshJwt();
   await loadUiSettingsPublic();
