@@ -4062,10 +4062,17 @@ async function findPvPOpponent() {
 
   try {
     const { data, error } = await sb.rpc('battle_vs_player', { p_user_id: UID });
-    if (error || !data || data.ok === false) {
-      msg('❌ ' + (data?.error || 'Ошибка поиска'), 'error');
-      return;
+    
+    // 👇 ПОКАЗЫВАЕМ НАСТОЯЩУЮ ОШИБКУ 👇
+    if (error) { 
+        msg('❌ Ошибка БД: ' + error.message, 'error'); 
+        return; 
     }
+    if (!data || data.ok === false) { 
+        msg('❌ ' + (data?.error || 'В базе нет других игроков'), 'error'); 
+        return; 
+    }
+    // 👆 ------------------------ 👆
 
     // Получаем данные противника, чтобы отрисовать его картинку и имя
     const oppId = data.opponent_id;
