@@ -1573,9 +1573,43 @@ function openItemModal(id){
   const item = MY_ITEMS.find(i => String(i.id) === String(id));
   if (!item) return msg('Предмет не найден', 'error');
   const slotLabel = SLOT_LABEL[item.slot] || item.slot || 'Предмет';
+  
+  // 👇 Считаем прочность
+  const dur = item.durability !== undefined ? Number(item.durability) : 250;
+  const maxDur = 250;
+  const durPct = Math.max(0, Math.min(100, (dur / maxDur) * 100));
+  
+  // Цвет полоски: Зеленый > 50%, Желтый > 20%, Красный < 20%
+  let durColor = '#39d98a';
+  if (durPct <= 50) durColor = '#f4cf70';
+  if (durPct <= 20) durColor = '#f6465d';
+
+  const durHtml = item.is_permanent 
+    ? `<div style="color:#39d98a;font-weight:bold;font-size:12px;margin-top:8px;">♾️ Вечный предмет (не ломается)</div>`
+    : `<div style="margin-top:8px;">
+         <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-bottom:4px;">
+           <span>Прочность</span>
+           <span style="color:${durColor}">${dur} / ${maxDur} боёв</span>
+         </div>
+         <div style="height:8px;background:#080b10;border-radius:4px;overflow:hidden;">
+           <div style="height:100%;width:${durPct}%;background:${durColor};transition:width 0.3s;"></div>
+         </div>
+         <div style="font-size:9px;color:var(--muted);margin-top:4px;">⚠️ Предмет сломается и снимется, когда прочность упадёт до 0.</div>
+       </div>`;
+
   openModal(`${item.emoji || '🎁'} ${esc(item.name)}`, `
-    <div style="text-align: center; margin-bottom: 15px;"><div style="font-size: 48px; margin-bottom: 5px;">${item.emoji || '🎁'}</div><div style="color: var(--gold); font-weight: bold; font-size: 18px;">${esc(item.name)}</div><div class="info">Слот: ${slotLabel}</div></div>
-    <div style="background: #0d1520; padding: 10px; border-radius: 8px; margin-bottom: 15px;"><div class="history-row"><span>Куплен за:</span> <b>$${f(item.purchase_price_usd, 2)}</b></div><div class="history-row"><span>Статус:</span> <b style="color:${item.is_equipped ? '#39d98a' : '#8a94a6'}">${item.is_equipped ? 'Надет' : 'В сумке'}</b></div></div>
+    <div style="text-align: center; margin-bottom: 15px;">
+        <div style="font-size: 48px; margin-bottom: 5px;">${item.emoji || '🎁'}</div>
+        <div style="color: var(--gold); font-weight: bold; font-size: 18px;">${esc(item.name)}</div>
+        <div class="info">Слот: ${slotLabel}</div>
+    </div>
+    
+    <div style="background: #0d1520; padding: 10px; border-radius: 8px; margin-bottom: 15px;">
+        <div class="history-row"><span>Куплен за:</span> <b>$${f(item.purchase_price_usd, 2)}</b></div>
+        <div class="history-row"><span>Статус:</span> <b style="color:${item.is_equipped ? '#39d98a' : '#8a94a6'}">${item.is_equipped ? 'Надет' : 'В сумке'}</b></div>
+        ${durHtml}
+    </div>
+    
     ${item.is_equipped ? `<button class="admin-btn danger" style="width:100%;" onclick="toggleItemEquip('${item.id}', false)">Снять</button>` : `<button class="admin-btn green" style="width:100%;" onclick="toggleItemEquip('${item.id}', true)">Надеть</button>`}
     ${!item.is_equipped ? `<button class="admin-btn gold" style="width:100%; margin-top:8px;" onclick="redirectToSell('${item.id}')">💰 Выставить на продажу</button>` : ''}
     <button class="admin-btn sec" style="width:100%; margin-top:8px;" onclick="closeModal()">Закрыть</button>
