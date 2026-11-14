@@ -1989,6 +1989,7 @@ async function closeBattle() {
   if (overlay) overlay.remove();
   try {
     await loadUser();
+      await loadMyItems();
     if (typeof renderTournament === 'function') await renderTournament();
   } catch(e) {}
 }
