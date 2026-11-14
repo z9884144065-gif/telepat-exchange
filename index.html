@@ -1916,10 +1916,37 @@ function showBattle(botType, battleData) {
   }
 
   // Создаем летящую стрелу
+  // Создаем летящий снаряд в зависимости от оружия
   function spawnProjectile() {
       const proj = document.createElement('div');
       proj.className = 'projectile';
-      proj.textContent = '🏹';
+      
+      // Ищем надетое оружие в инвентаре
+      const weapon = MY_ITEMS.find(i => i.is_equipped && i.slot === 'weapon');
+      
+      let projectileEmoji = '👊'; // Если оружия нет — бьет кулаком
+      
+      if (weapon && weapon.emoji) {
+          if (weapon.emoji === '🏹') {
+              projectileEmoji = '🏹'; // Лук
+          } else if (['🪄', '🔥', '🔮'].includes(weapon.emoji)) {
+              projectileEmoji = '🔥'; // Магические посохи
+          } else if (['🪓', '🪵'].includes(weapon.emoji)) {
+              projectileEmoji = '🪓'; // Топоры
+          } else {
+              projectileEmoji = '⚔️'; // Мечи
+          }
+      }
+
+      proj.textContent = projectileEmoji;
+      proj.style.left = '30%';
+      proj.style.top = '40%';
+      
+      // Красиво поворачиваем снаряд в полете
+      if (projectileEmoji === '🏹') proj.style.transform = 'rotate(45deg)';
+      if (projectileEmoji === '🪓') proj.style.transform = 'rotate(-45deg) scale(1.2)';
+      if (projectileEmoji === '🔥') proj.style.transform = 'scale(1.5)';
+
       battleField.appendChild(proj);
       setTimeout(() => proj.remove(), 800);
   }
