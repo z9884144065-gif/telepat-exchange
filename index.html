@@ -1669,18 +1669,23 @@ async function loadUser(){
   CU=data; // 👈 Сначала грузим базовый профиль
 
   // 👇 А ТЕПЕРЬ ЗАПРАШИВАЕМ ОБОРОТ СТРУКТУРЫ 👇
-  try {
+    try {
     const { data: turnoverVal, error: turnoverError } = await sb.rpc('get_structure_turnover', { p_user_id: Number(UID) });
     
+    // 👇 ВОТ ЭТА СТРОЧКА ПОКАЖЕТ НАМ ПРАВДУ 👇
+    console.log("Ответ от базы по обороту:", turnoverVal, "Ошибка:", turnoverError); 
+
     let val = 0;
-    if (typeof turnoverVal === 'number') {
-        val = turnoverVal; // Если база вернула просто число
-    } else if (turnoverVal && turnoverVal.turnover !== undefined) {
-        val = turnoverVal.turnover; // Если база вернула объект
+    if (turnoverVal !== null && turnoverVal !== undefined) {
+        if (typeof turnoverVal === 'object' && turnoverVal.turnover !== undefined) {
+            val = Number(turnoverVal.turnover);
+        } else {
+            val = Number(turnoverVal);
+        }
     }
     
-    CU.referral_earnings = Number(val) || 0;
-    window.__STRUCTURE_TURNOVER = Number(val) || 0;
+    CU.referral_earnings = val || 0;
+    window.__STRUCTURE_TURNOVER = val || 0;
   } catch(e) {
     console.warn('Ошибка оборота:', e);
     CU.referral_earnings = 0;
