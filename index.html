@@ -1772,41 +1772,27 @@ function renderShop(){
   if(!c) return; 
   const tab = currentShopTab || 'gear';
       // 👇 СЛОВАРЬ БАЗОВЫХ КАРТИНОК 👇
+   // 👇 СЛОВАРЬ БАЗОВЫХ КАРТИНОК (Привязан к слотам) 👇
   const BASE_IMAGES = {
-      // Оружие
-      'sword': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/sword.png',
-      'axe': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/axe.png',
-      'bow': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/bow.png',
-      'staff': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/staff.png',
-      
-      // Одежда и броня
-      'shirt': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/shirt.png',
-      'chainmail': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/chainmail.png',
-      'pants': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/pants.png',
-      'boots': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/boots.png',
-      'helmet': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/helmet.png',
-      'shield': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/shield.png',
-
-      // ЕДА
-      'FOOD_CAKE': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/food_cake.png',
-      'FOOD_BURGER': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/food_burger.png',
-      'FOOD_SHAWARMA': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/food_shawarma.png',
-      'FOOD_KEBAB': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/food_kebab.png',
-
-      // ПИТОМЦЫ
-      'PET_CAT': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/pet_cat.png',
-      'PET_DOG': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/pet_dog.png',
-      'PET_DONKEY': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/pet_donkey.png',
-
-      // АРТЕФАКТЫ (Кольца)
-      'ring': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/ring.png',
+      // Точные совпадения (для особых предметов)
       'RING_KNIGHT': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/ring_knight.png',
+
+      // Фоллбеки по СЛОТАМ (применяются ко всем предметам в этом слоте)
+      'weapon': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/sword.png',
+      'cloak': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/boots.png', 
+      'body': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/shirt.png',
+      'legs': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/pants.png',
+      'armor': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/helmet.png', 
+      'ring': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/ring.png',
+      'artifact': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/art_gem.png', 
+      'titleSlot': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/default.png', 
+      'license': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/default.png', 
+      'food': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/food_burger.png',
+      'pet': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/pet_cat.png',
 
       // Заглушка
       'default': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/sword.png' 
   };
-  // 👆 ------------------------ 👆
-
   // --- РЕФЕРАЛЫ И АУКЦИОН ---
   if (tab === 'referrals') { 
       c.className = ''; 
