@@ -1691,7 +1691,18 @@ async function loadUser(){
   if(sp){ if(String(sp).startsWith('order_')){__START_ORDER_ID=String(sp).replace('order_','');} else if(!CU.referrer_id){ const refId=Number(sp); if(Number.isFinite(refId)&&refId>0&&refId!==UID){ try{const r=await sb.rpc('set_referrer',{p_user_id:UID,p_referrer_id:refId});if(r.data?.ok){const r3=await sb.from('users').select('*').eq('telegram_id',UID).maybeSingle();if(r3.data)CU=r3.data;}}catch(e){} } } }
   if(tgu?.username){try{await sb.rpc('activate_pending_referral',{p_user_id:UID,p_username:tgu.username});}catch(e){}}
 }
-async function loadMyItems(){try{const{data}=await sb.rpc('get_my_items',{p_test_user_id:UID});MY_ITEMS=(data&&data.items)||[];}catch(e){MY_ITEMS=[];}}
+async function loadMyItems(){
+    try{
+        const{data, error}=await sb.rpc('get_my_items',{p_test_user_id:UID});
+        if (error) {
+            console.error("❌ Ошибка загрузки инвентаря:", error);
+        }
+        MY_ITEMS=(data&&data.items)||[];
+    }catch(e){
+        console.error("❌ Критическая ошибка инвентаря:", e);
+        MY_ITEMS=[];
+    }
+}
 async function loadShopItems(){try{const{data}=await sb.rpc('get_shop_items',{p_min_rank:0});SHOP_ITEMS=(data&&data.items)||[];}catch(e){SHOP_ITEMS=[];}}
 async function loadStakeState(){if(!UID) return;try{const{data}=await sb.rpc('get_staking_state',{p_user_id:String(UID)});if(data&&data.ok!==false){STAKE_STATE=data;STAKE_DISPLAY=Number(data.accumulated)||0;}}catch(e){}}
 async function loadRewardFunds(){ if(!ALL_TOKENS.length) return; try{ const results=await Promise.all(ALL_TOKENS.filter(t=>!t.is_system_token).map(async t=>{ try{const{data}=await sb.rpc('get_reward_fund_info',{p_token_symbol:t.symbol,p_user_id:UID});return (data&&data.ok!==false)?data:null;}catch{return null;} })); REWARD_FUNDS=results.filter(Boolean); }catch(e){} }
