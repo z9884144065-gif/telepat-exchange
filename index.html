@@ -1772,7 +1772,7 @@ function renderShop(){
   if(!c) return; 
   const tab = currentShopTab || 'gear';
 
-  // --- РЕФЕРАЛЫ И АУКЦИОН (оставляем как было, без сетки) ---
+  // --- РЕФЕРАЛЫ И АУКЦИОН ---
   if (tab === 'referrals') { 
       c.className = ''; 
       c.innerHTML = '<div class="item-card"><div class="item-desc">Загрузка рынка рефералов...</div></div>'; 
@@ -1798,7 +1798,7 @@ function renderShop(){
       return; 
   }
 
-  // --- ОСТАЛЬНЫЕ ВКЛАДКИ (Ряды по уровням) ---
+  // --- ОСТАЛЬНЫЕ ВКЛАДКИ (Красивые карточки) ---
   c.className = ''; 
   c.innerHTML = '<div class="item-card"><div class="item-desc">Загрузка товаров...</div></div>';
 
@@ -1814,7 +1814,7 @@ function renderShop(){
 
     if (!filtered.length) { c.innerHTML = `<div class="item-card" style="text-align:center">В категории нет товаров</div>`; return; }
 
-    // ГРУППИРУЕМ ПО УРОВНЯМ (min_rank)
+    // ГРУППИРУЕМ ПО УРОВНЯМ
     const grouped = {};
     filtered.forEach(it => {
         const rank = it.min_rank || 0; 
@@ -1836,26 +1836,15 @@ function renderShop(){
                 </div>
                 <div class="shop-row-scroll">
                     ${itemsInRank.map(it => {
-                        let borderClass = 'rare'; 
-                        if (it.price_usd >= 1000) borderClass = 'legendary';
-                        else if (it.price_usd >= 100) borderClass = 'epic';
+                        // 1. Умный фон
+                        let bgGradient = 'linear-gradient(135deg, #2f80ed, #1e3a8a)'; 
+                        if (it.slot === 'weapon') bgGradient = 'linear-gradient(135deg, #f6465d, #991b1b)'; 
+                        else if (['body','legs','armor','shield'].includes(it.slot)) bgGradient = 'linear-gradient(135deg, #3b82f6, #1d4ed8)'; 
+                        else if (it.category === 'food') bgGradient = 'linear-gradient(135deg, #22c55e, #15803d)'; 
+                        else if (it.slot === 'pet') bgGradient = 'linear-gradient(135deg, #a855f7, #6b21a8)'; 
+                        else if (it.category === 'card' || it.category === 'artifact') bgGradient = 'linear-gradient(135deg, #f4cf70, #b45309)'; 
 
-                        const visual = it.image_url 
-                            ? `<img src="${esc(it.image_url)}" style="width:100%; height:100%; object-fit:contain;" onerror="this.src='https://i.ibb.co/6P9Z9Z1/rusty.png'">` 
-                            : `<div style="font-size:50px;">${it.emoji || '🎁'}</div>`;
-
-                                               // Генерируем случайный номер для витрины
-                        const randomId = Math.floor(Math.random() * 90000) + 10000;
-
-                                           // 1. Умный фон в зависимости от категории
-                        let bgGradient = 'linear-gradient(135deg, #2f80ed, #1e3a8a)'; // По умолчанию синий
-                        if (it.slot === 'weapon') bgGradient = 'linear-gradient(135deg, #f6465d, #991b1b)'; // Оружие - красный
-                        else if (['body','legs','armor','shield'].includes(it.slot)) bgGradient = 'linear-gradient(135deg, #3b82f6, #1d4ed8)'; // Броня - синий
-                        else if (it.category === 'food') bgGradient = 'linear-gradient(135deg, #22c55e, #15803d)'; // Еда - зеленый
-                        else if (it.slot === 'pet') bgGradient = 'linear-gradient(135deg, #a855f7, #6b21a8)'; // Питомцы - фиолетовый
-                        else if (it.category === 'card' || it.category === 'artifact') bgGradient = 'linear-gradient(135deg, #f4cf70, #b45309)'; // Артефакты - золотой
-
-                        // 2. Генерация картинки, если её нет в базе
+                        // 2. Нейросеть (если нет картинки)
                         let imgSrc = it.image_url;
                         if (!imgSrc) {
                             const prompt = encodeURIComponent(`fantasy RPG ${it.name} ${it.slot || ''} icon, clean background, highly detailed`);
@@ -1864,9 +1853,11 @@ function renderShop(){
 
                         const visual = `<img src="${imgSrc}" style="width:100%; height:100%; object-fit:cover;" onerror="this.src='https://i.ibb.co/6P9Z9Z1/rusty.png'">`;
                         const randomId = Math.floor(Math.random() * 90000) + 10000;
-                        
-                        // 3. Проверка цены
                         const priceText = (it.price_usd && Number(it.price_usd) > 0) ? `$${f(it.price_usd, 0)}` : 'Бесплатно';
+
+                        let borderClass = 'rare'; 
+                        if (it.price_usd >= 1000) borderClass = 'legendary';
+                        else if (it.price_usd >= 100) borderClass = 'epic';
 
                         return `
                         <div class="nft-card-container">
