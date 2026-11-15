@@ -4416,6 +4416,45 @@ async function openPvPLeaderboard() {
         <button class="admin-btn sec" style="width:100%; margin-top:15px;" onclick="closeModal()">Закрыть</button>
     `);
 }
+
+function openShopItemModal(itemId) {
+    sb.from('telepat_items').select('*').eq('id', itemId).single().then(({data}) => {
+        if(!data) return msg('Ошибка загрузки', 'error');
+        let statsHtml = '';
+        if (data.bonus_dmg > 0) statsHtml += `<div class="history-row"><span>⚔️ Урон:</span><b style="color:#f6465d;">+${data.bonus_dmg}</b></div>`;
+        if (data.bonus_hp > 0) statsHtml += `<div class="history-row"><span>❤️ Здоровье:</span><b style="color:#39d98a;">+${data.bonus_hp}</b></div>`;
+        if (data.inventory_slots > 0) statsHtml += `<div class="history-row"><span>🎒 Слоты:</span><b style="color:#a855f7;">+${data.inventory_slots}</b></div>`;
+        if(!statsHtml) statsHtml = `<div class="info" style="text-align:center;">Нет доп. бонусов</div>`;
+        
+        const visual = data.image_url ? `<img src="${esc(data.image_url)}" style="width:100%; max-height:180px; object-fit:contain; margin-bottom:10px;">` : `<div style="font-size: 64px; margin-bottom: 10px;">${data.emoji || '🎁'}</div>`;
+        
+        openModal(`${data.emoji || '🎁'} ${esc(data.name)}`, `
+            <div style="text-align: center; margin-bottom: 15px;">${visual}<div style="color: var(--gold); font-weight: bold; font-size: 20px;">${esc(data.name)}</div></div>
+            <div style="background: #0d1520; padding: 12px; border-radius: 12px; border: 1px solid #2d3a4c; margin-bottom:15px;">${statsHtml}</div>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+                <button class="admin-btn gold" style="width:100%; padding:14px;" onclick="closeModal(); buyItem('${data.id}', '${esc(data.name)}', ${data.price_usd}, 'TUSD')">💰 КУПИТЬ ЗА TUSD ($${f(data.price_usd, 2)})</button>
+                <button class="admin-btn sec" style="width:100%; padding:14px;" onclick="closeModal(); buyItem('${data.id}', '${esc(data.name)}', ${data.price_usd}, 'TG')">💎 КУПИТЬ ЗА TG (-5%)</button>
+            </div>
+            <button class="admin-btn sec" style="width:100%; margin-top:8px;" onclick="closeModal()">Закрыть</button>
+        `);
+    });
+}
+
+function tiltCard(e, card) {
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const rotateX = ((y - centerY) / centerY) * -15; 
+    const rotateY = ((x - centerX) / centerX) * 15;
+    card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.05)`;
+}
+
+function resetTilt(card) {
+    card.style.transform = `rotateX(0) rotateY(0) scale(1)`;
+}
+
 document.addEventListener('DOMContentLoaded',async()=>{
   await refreshJwt();
   await loadUiSettingsPublic();
