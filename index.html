@@ -1704,46 +1704,82 @@ function renderShopTabs(){
   }).join(''); applyUiConfig(__UICONFIG);
 }
 function renderShop(){ 
-  renderShopTabs(); const c=$('shopContent'); if(!c) return; const tab = currentShopTab || 'gear';
-  if (tab === 'referrals') { c.innerHTML = '<div class="item-card"><div class="item-desc">Загрузка рынка рефералов...</div></div>'; sb.rpc('referral_market_list').then(({data, error}) => { if (error || !data || !data.items || !data.items.length) { c.innerHTML = '<div class="item-card"><div class="item-desc" style="text-align:center">На рынке пока нет рефералов</div></div>'; return; } c.innerHTML = data.items.map(l => `<div class="item-card"><div class="item-header"><span class="item-name">👤 ${l.username || l.first_name || 'ID '+l.ref_id}</span><span class="rarity rare">${esc(l.rank_name)}</span></div><div class="item-footer"><span class="item-price">$${f(l.price_tusd, 2)}</span><button class="gold" onclick="buyReferral('${l.id}')">Купить</button></div></div>`).join(''); }); return; }
-  if (tab === 'auction') { c.innerHTML = '<div class="item-card"><div class="item-desc">Загрузка аукциона...</div></div>'; sb.rpc('auction_list').then(({data, error}) => { if (error || !data || !data.items || !data.items.length) { c.innerHTML = '<div class="item-card"><div class="item-desc" style="text-align:center">Активных лотов нет</div></div>'; return; } c.innerHTML = data.items.map(l => `<div class="item-card"><div class="item-header"><span class="item-name">${l.emoji||'🎁'} ${esc(l.item_name)}</span><span class="rarity">⏱ ${fmtAucTime(l.seconds_left)}</span></div><div class="item-footer"><span class="item-price">$${f(l.current_bid || l.start_price, 2)}</span><button class="gold" onclick="bidAuction('${l.id}')">Ставка</button></div></div>`).join(''); }); return; }
-  c.innerHTML = '<div class="item-card"><div class="item-desc">Загрузка товаров...</div></div>';
- sb.from('telepat_items').select('*').order('min_rank', { ascending: true }).then(({data, error}) => {
-    if (error) { c.innerHTML = `<div class="item-card"><div class="item-desc" style="color:red;text-align:center">Ошибка БД: ${error.message}</div></div>`; return; }
-    if (!data || !data.length) { c.innerHTML = '<div class="item-card"><div class="item-desc" style="text-align:center">Товаров нет</div></div>'; return; }
+  renderShopTabs(); 
+  const c=$('shopContent'); 
+  if(!c) return; 
+  const tab = currentShopTab || 'gear';
+
+  // --- РЕФЕРАЛЫ И АУКЦИОН (Оставляем как было, без сетки) ---
+  if (tab === 'referrals') { 
+      c.className = ''; 
+      c.innerHTML = '<div class="item-card"><div class="item-desc">Загрузка рынка рефералов...</div></div>'; 
+      sb.rpc('referral_market_list').then(({data, error}) => { 
+          if (error || !data || !data.items || !data.items.length) { 
+              c.innerHTML = '<div class="item-card"><div class="item-desc" style="text-align:center">На рынке пока нет рефералов</div></div>'; 
+              return; 
+          } 
+          c.innerHTML = data.items.map(l => `<div class="item-card"><div class="item-header"><span class="item-name">👤 ${l.username || l.first_name || 'ID '+l.ref_id}</span><span class="rarity rare">${esc(l.rank_name)}</span></div><div class="item-footer"><span class="item-price">$${f(l.price_tusd, 2)}</span><button class="gold" onclick="buyReferral('${l.id}')">Купить</button></div></div>`).join(''); 
+      }); 
+      return; 
+  }
+  if (tab === 'auction') { 
+      c.className = ''; 
+      c.innerHTML = '<div class="item-card"><div class="item-desc">Загрузка аукциона...</div></div>'; 
+      sb.rpc('auction_list').then(({data, error}) => { 
+          if (error || !data || !data.items || !data.items.length) { 
+              c.innerHTML = '<div class="item-card"><div class="item-desc" style="text-align:center">Активных лотов нет</div></div>'; 
+              return; 
+          } 
+          c.innerHTML = data.items.map(l => `<div class="item-card"><div class="item-header"><span class="item-name">${l.emoji||'🎁'} ${esc(l.item_name)}</span><span class="rarity">⏱ ${fmtAucTime(l.seconds_left)}</span></div><div class="item-footer"><span class="item-price">$${f(l.current_bid || l.start_price, 2)}</span><button class="gold" onclick="bidAuction('${l.id}')">Ставка</button></div></div>`).join(''); 
+      }); 
+      return; 
+  }
+
+  // --- ВСЕ ОСТАЛЬНЫЕ ВКЛАДКИ (Красивые карточки) ---
+  c.className = 'nft-grid'; // Включаем сетку
+  c.innerHTML = '<div class="item-card" style="grid-column: span 2;"><div class="item-desc">Загрузка товаров...</div></div>';
+
+  sb.from('telepat_items').select('*').order('price_usd', { ascending: true }).then(({data, error}) => {
+    if (error) { 
+        c.innerHTML = `<div class="item-card" style="grid-column: span 2; color:red; text-align:center">Ошибка БД: ${error.message}</div>`; 
+        return; 
+    }
+    if (!data || !data.length) { 
+        c.innerHTML = '<div class="item-card" style="grid-column: span 2; text-align:center">Товаров нет</div>'; 
+        return; 
+    }
+    
     let filtered = data.filter(i => i.active === true); 
     if (tab === 'gear') filtered = filtered.filter(i => ['weapon','body','legs','armor','shield','cloak'].includes(i.slot) || ['weapon','clothes','armor'].includes(i.category));
     else if (tab === 'titles') filtered = filtered.filter(i => i.category === 'title' || i.slot === 'titleSlot');
-    else if (tab === 'artifacts') filtered = filtered.filter(i => i.category === 'artifact');
+    else if (tab === 'artifacts') filtered = filtered.filter(i => i.category === 'artifact' || i.category === 'card');
     else if (tab === 'certs') filtered = filtered.filter(i => i.category === 'license');
     else if (tab === 'extras') filtered = filtered.filter(i => ['ring','bag','pet','aura'].includes(i.slot));
-         // 👇 СОРТИРОВКА ПО ЦЕНЕ (ОТ ДЕШЕВЫХ К ДОРОГИМ) 👇
-    filtered.sort((a, b) => Number(a.price_usd) - Number(b.price_usd));
-    // 👆 -------------------------------------------------- 👆
-    if (!filtered.length) { c.innerHTML = `<div class="item-card"><div class="item-desc" style="text-align:center">В категории нет активных товаров</div></div>`; return; }
-        c.innerHTML = filtered.map(it => {
-        const tgPriceUSD = it.price_usd * 0.95;
-        const tgAmount = tgPriceUSD / priceOf('TG');
-        
+
+    if (!filtered.length) { 
+        c.innerHTML = `<div class="item-card" style="grid-column: span 2; text-align:center">В категории нет товаров</div>`; 
+        return; 
+    }
+
+    // РИСУЕМ КАЖДЫЙ ТОВАР КАК NFT-КАРТОЧКУ
+    c.innerHTML = filtered.map(it => {
+        let borderClass = 'rare'; 
+        if (it.price_usd >= 1000) borderClass = 'legendary';
+        else if (it.price_usd >= 100) borderClass = 'epic';
+
+        const visual = it.image_url 
+            ? `<img src="${esc(it.image_url)}" style="width:100%; height:100%; object-fit:contain;" onerror="this.src='https://i.ibb.co/6P9Z9Z1/rusty.png'">` 
+            : `<div style="font-size:50px; filter:drop-shadow(0 5px 10px rgba(0,0,0,0.8));">${it.emoji || '🎁'}</div>`;
+
         return `
-        <div class="item-card">
-            <div class="item-header">
-                <span class="item-name">${it.emoji||'🎁'} ${esc(it.name)}</span>
-                <span class="rarity ${it.min_rank>5?'rare':'common'}">Ур. ${it.min_rank||0}</span>
+        <div class="nft-card ${borderClass}" onclick="openShopItemModal('${it.id}')">
+            <div class="nft-image-wrap">
+                ${visual}
             </div>
-            <div class="item-footer" style="flex-direction:column; align-items:flex-start; gap:8px; width:100%;">
-                <div style="font-size:14px; color:var(--gold); font-weight:bold; width:100%; display:flex; justify-content:space-between;">
-                    <span>Цена:</span> 
-                    <span>$${f(it.price_usd, 2)}</span>
-                </div>
-                <div style="font-size:12px; color:#39d98a; width:100%; display:flex; justify-content:space-between;">
-                    <span>💎 В TG (-5%):</span> 
-                    <span>${f(tgAmount, 2)} TG <span style="font-size:10px; color:var(--muted);">(≈ $${f(tgPriceUSD, 2)})</span></span>
-                </div>
-                <div style="display:flex; gap:6px; width:100%; margin-top:4px;">
-                    <button class="admin-btn sec" style="flex:1; font-size:12px; padding:8px;" onclick="buyItem('${it.id}', '${esc(it.name)}', ${it.price_usd}, 'TUSD')">Купить за TUSD</button>
-                    <button class="admin-btn gold" style="flex:1; font-size:12px; padding:8px;" onclick="buyItem('${it.id}', '${esc(it.name)}', ${it.price_usd}, 'TG')">Купить за TG (-5%)</button>
-                </div>
+            <div class="nft-title">${esc(it.name)}</div>
+            <div class="nft-price-row">
+                <div class="nft-price">$${f(it.price_usd, 0)}</div>
+                <div style="font-size:10px; color:#8a94a6; font-weight:bold;">Ур. ${it.min_rank||0}</div>
             </div>
         </div>
         `;
