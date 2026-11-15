@@ -1783,7 +1783,7 @@ function renderShop(){
   if(!c) return; 
   const tab = currentShopTab || 'gear';
       // 👇 СЛОВАРЬ БАЗОВЫХ КАРТИНОК 👇
-   // 👇 СЛОВАРЬ БАЗОВЫХ КАРТИНОК (Привязан к слотам) 👇
+    // 👇 СЛОВАРЬ БАЗОВЫХ КАРТИНОК (Привязан к слотам) 👇
   const BASE_IMAGES = {
       // Точные совпадения (для особых предметов)
       'RING_KNIGHT': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/ring_knight.png',
@@ -1794,6 +1794,10 @@ function renderShop(){
       'body': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/shirt.png',
       'legs': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/pants.png',
       'armor': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/helmet.png', 
+      
+      // 👇 ВОТ ЭТА СТРОЧКА ДЛЯ КОЛЬЧУГ/ЛАТ/ЩИТОВ 👇
+      'shield': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/chainmail.png', 
+      
       'ring': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/ring.png',
       'artifact': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/art_gem.png', 
       'titleSlot': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/default.png', 
