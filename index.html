@@ -4343,6 +4343,53 @@ async function openPvPLeaderboard() {
     msg('Ошибка', 'error');
   }
 }
+    function openCategoryInventory(categoryId, titleName) {
+    // Берем все предметы, которые не надеты
+    const inv = MY_ITEMS.filter(i => !i.is_equipped && !i.is_listed);
+    
+    // Фильтруем по выбранной категории
+    let filtered = inv;
+    if (categoryId === 'weapon') {
+        filtered = inv.filter(i => i.slot === 'weapon');
+    } else if (categoryId === 'armor') {
+        filtered = inv.filter(i => ['body','legs','armor','shield','cloak','helmet'].includes(i.slot));
+    } else if (categoryId === 'food') {
+        filtered = inv.filter(i => i.category === 'food');
+    } else if (categoryId === 'artifact') {
+        filtered = inv.filter(i => ['ring','bag','aura'].includes(i.slot) || i.category === 'artifact' || i.category === 'card');
+    } else if (categoryId === 'pet') {
+        filtered = inv.filter(i => i.slot === 'pet');
+    }
+
+    // Формируем сетку
+    let gridHtml = '';
+    if (!filtered.length) {
+        gridHtml = `<div class="info" style="text-align:center; grid-column:span 3; padding:20px;">В этой категории пусто</div>`;
+    } else {
+        gridHtml = filtered.map(item => {
+            const visual = item.image_url 
+                ? `<img src="${esc(item.image_url)}" style="width:100%; height:100%; object-fit:contain;">` 
+                : `<div style="font-size:40px;">${item.emoji || '🎁'}</div>`;
+                
+            return `
+            <div style="background:#1e293b; border:1px solid #334155; border-radius:12px; padding:8px; text-align:center; cursor:pointer;" onclick="closeModal(); openItemModal('${item.id}')">
+                <div style="height:60px; display:flex; align-items:center; justify-content:center; margin-bottom:4px;">
+                    ${visual}
+                </div>
+                <div style="color:#fff; font-size:10px; font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${esc(item.name)}</div>
+            </div>
+            `;
+        }).join('');
+    }
+
+    // Открываем окно
+    openModal(`🎒 ${titleName}`, `
+        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; max-height:60vh; overflow-y:auto; padding-right:4px;">
+            ${gridHtml}
+        </div>
+        <button class="admin-btn sec" style="width:100%; margin-top:15px;" onclick="closeModal()">Закрыть</button>
+    `);
+}
 document.addEventListener('DOMContentLoaded',async()=>{
   await refreshJwt();
   await loadUiSettingsPublic();
