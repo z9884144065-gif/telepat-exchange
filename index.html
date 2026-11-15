@@ -1800,7 +1800,7 @@ function renderShop(){
   if(!c) return; 
   const tab = currentShopTab || 'gear';
 
-  // --- РЕФЕРАЛЫ И АУКЦИОН (Оставляем как было, без сетки) ---
+  // --- РЕФЕРАЛЫ И АУКЦИОН (оставляем как было, без сетки) ---
   if (tab === 'referrals') { 
       c.className = ''; 
       c.innerHTML = '<div class="item-card"><div class="item-desc">Загрузка рынка рефералов...</div></div>'; 
@@ -1826,19 +1826,12 @@ function renderShop(){
       return; 
   }
 
-  // --- ВСЕ ОСТАЛЬНЫЕ ВКЛАДКИ (Красивые карточки) ---
-  c.className = 'nft-grid'; // Включаем сетку
-  c.innerHTML = '<div class="item-card" style="grid-column: span 2;"><div class="item-desc">Загрузка товаров...</div></div>';
+  // --- ОСТАЛЬНЫЕ ВКЛАДКИ (Ряды по уровням) ---
+  c.className = ''; 
+  c.innerHTML = '<div class="item-card"><div class="item-desc">Загрузка товаров...</div></div>';
 
   sb.from('telepat_items').select('*').order('price_usd', { ascending: true }).then(({data, error}) => {
-    if (error) { 
-        c.innerHTML = `<div class="item-card" style="grid-column: span 2; color:red; text-align:center">Ошибка БД: ${error.message}</div>`; 
-        return; 
-    }
-    if (!data || !data.length) { 
-        c.innerHTML = '<div class="item-card" style="grid-column: span 2; text-align:center">Товаров нет</div>'; 
-        return; 
-    }
+    if (error || !data || !data.length) { c.innerHTML = '<div class="item-card" style="text-align:center">Товаров нет</div>'; return; }
     
     let filtered = data.filter(i => i.active === true); 
     if (tab === 'gear') filtered = filtered.filter(i => ['weapon','body','legs','armor','shield','cloak'].includes(i.slot) || ['weapon','clothes','armor'].includes(i.category));
@@ -1847,34 +1840,56 @@ function renderShop(){
     else if (tab === 'certs') filtered = filtered.filter(i => i.category === 'license');
     else if (tab === 'extras') filtered = filtered.filter(i => ['ring','bag','pet','aura'].includes(i.slot));
 
-    if (!filtered.length) { 
-        c.innerHTML = `<div class="item-card" style="grid-column: span 2; text-align:center">В категории нет товаров</div>`; 
-        return; 
-    }
+    if (!filtered.length) { c.innerHTML = `<div class="item-card" style="text-align:center">В категории нет товаров</div>`; return; }
 
-    // РИСУЕМ КАЖДЫЙ ТОВАР КАК NFT-КАРТОЧКУ
-    c.innerHTML = filtered.map(it => {
-        let borderClass = 'rare'; 
-        if (it.price_usd >= 1000) borderClass = 'legendary';
-        else if (it.price_usd >= 100) borderClass = 'epic';
+    // ГРУППИРУЕМ ПО УРОВНЯМ
+    const grouped = {};
+    filtered.forEach(it => {
+        const rank = it.min_rank || 0; 
+        if (!grouped[rank]) grouped[rank] = [];
+        grouped[rank].push(it);
+    });
 
-        const visual = it.image_url 
-            ? `<img src="${esc(it.image_url)}" style="width:100%; height:100%; object-fit:contain;" onerror="this.src='https://i.ibb.co/6P9Z9Z1/rusty.png'">` 
-            : `<div style="font-size:50px; filter:drop-shadow(0 5px 10px rgba(0,0,0,0.8));">${it.emoji || '🎁'}</div>`;
+    const sortedRanks = Object.keys(grouped).map(Number).sort((a, b) => a - b);
+    let finalHtml = '';
 
-        return `
-        <div class="nft-card ${borderClass}" onclick="openShopItemModal('${it.id}')">
-            <div class="nft-image-wrap">
-                ${visual}
+    sortedRanks.forEach(rankLevel => {
+        const rankName = RANKS[rankLevel] || `Уровень ${rankLevel}`;
+        const itemsInRank = grouped[rankLevel];
+
+        finalHtml += `
+            <div class="shop-row-container">
+                <div class="shop-row-title">
+                    <span>👑 ${rankLevel} Уровень: ${rankName}</span>
+                </div>
+                <div class="shop-row-scroll">
+                    ${itemsInRank.map(it => {
+                        let borderClass = 'rare'; 
+                        if (it.price_usd >= 1000) borderClass = 'legendary';
+                        else if (it.price_usd >= 100) borderClass = 'epic';
+
+                        const visual = it.image_url 
+                            ? `<img src="${esc(it.image_url)}" style="width:100%; height:100%; object-fit:contain;" onerror="this.src='https://i.ibb.co/6P9Z9Z1/rusty.png'">` 
+                            : `<div style="font-size:50px;">${it.emoji || '🎁'}</div>`;
+
+                        return `
+                        <div class="nft-card-container">
+                            <div class="nft-card ${borderClass}" onclick="openShopItemModal('${it.id}')" onmousemove="tiltCard(event, this)" onmouseleave="resetTilt(this)">
+                                <div class="nft-image-wrap">${visual}</div>
+                                <div class="nft-title">${esc(it.name)}</div>
+                                <div class="nft-price-row">
+                                    <div class="nft-price">$${f(it.price_usd, 0)}</div>
+                                </div>
+                            </div>
+                        </div>
+                        `;
+                    }).join('')}
+                </div>
             </div>
-            <div class="nft-title">${esc(it.name)}</div>
-            <div class="nft-price-row">
-                <div class="nft-price">$${f(it.price_usd, 0)}</div>
-                <div style="font-size:10px; color:#8a94a6; font-weight:bold;">Ур. ${it.min_rank||0}</div>
-            </div>
-        </div>
         `;
-    }).join('');
+    });
+
+    c.innerHTML = finalHtml;
   });
 }
 async function buyReferral(id) { if(!confirm('Купить этого реферала?')) return; const {data, error} = await sb.rpc('referral_buy', { p_lot_id: id }); if(error || (data && data.ok === false)) { msg('Ошибка: ' + (error?.message || data?.error || 'Не удалось купить'), 'error'); return; } msg('✅ Реферал куплен!', 'success'); renderShop(); }
