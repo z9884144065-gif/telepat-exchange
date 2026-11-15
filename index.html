@@ -1867,9 +1867,14 @@ function renderShop(){
 
                         // 2. Нейросеть (если нет картинки)
                         let imgSrc = it.image_url;
-                        if (!imgSrc) {
-                            const prompt = encodeURIComponent(`fantasy RPG ${it.name} ${it.slot || ''} icon, clean background, highly detailed`);
-                            imgSrc = `https://image.pollinations.ai/prompt/${prompt}?width=200&height=200&nologo=true&seed=${it.id}`;
+                                                if (!imgSrc) {
+                            const sym = (it.symbol || '').toUpperCase();
+                            if (BASE_IMAGES[sym]) {
+                                imgSrc = BASE_IMAGES[sym];
+                            } else {
+                                const slotKey = (it.slot || '').toLowerCase();
+                                imgSrc = BASE_IMAGES[slotKey] || BASE_IMAGES['default'];
+                            }
                         }
 
                         const visual = `<img src="${imgSrc}" style="width:100%; height:100%; object-fit:cover;" onerror="this.src='https://i.ibb.co/6P9Z9Z1/rusty.png'">`;
