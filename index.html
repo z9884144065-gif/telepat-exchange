@@ -1842,7 +1842,7 @@ function renderShop(){
     if (error || !data || !data.length) { c.innerHTML = '<div class="item-card" style="text-align:center">Товаров нет</div>'; return; }
     
     let filtered = data.filter(i => i.active === true); 
-    if (tab === 'gear') filtered = filtered.filter(i => ['weapon','body','legs','armor','shield','cloak'].includes(i.slot) || ['weapon','clothes','armor'].includes(i.category));
+  if (tab === 'gear') filtered = filtered.filter(i => ['weapon','body','legs','armor','shield','cloak','bag'].includes(i.slot) || ['weapon','clothes','armor'].includes(i.category));
     else if (tab === 'titles') filtered = filtered.filter(i => i.category === 'title' || i.slot === 'titleSlot');
     else if (tab === 'artifacts') filtered = filtered.filter(i => i.category === 'artifact' || i.category === 'card');
     else if (tab === 'certs') filtered = filtered.filter(i => i.category === 'license');
