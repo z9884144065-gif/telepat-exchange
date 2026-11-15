@@ -7,6 +7,73 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
+    /* ═══════════════ NFT КАРТОЧКИ В МАГАЗИНЕ ═══════════════ */
+.nft-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 10px;
+}
+.nft-card {
+    background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+    border: 2px solid #334155;
+    border-radius: 16px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+}
+.nft-card:active {
+    transform: scale(0.96);
+}
+.nft-card.rare { border-color: #3b82f6; box-shadow: 0 0 10px rgba(59,130,246,0.3); }
+.nft-card.epic { border-color: #a855f7; box-shadow: 0 0 10px rgba(168,85,247,0.3); }
+.nft-card.legendary { border-color: #f4cf70; box-shadow: 0 0 15px rgba(244,207,112,0.4); }
+
+.nft-image-wrap {
+    background: rgba(0,0,0,0.4);
+    border-radius: 12px;
+    height: 110px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+.nft-image-wrap img {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+    filter: drop-shadow(0 5px 10px rgba(0,0,0,0.8));
+}
+.nft-title {
+    color: #fff;
+    font-weight: 800;
+    font-size: 12px;
+    text-align: center;
+    line-height: 1.2;
+    margin-bottom: 4px;
+    height: 28px;
+    overflow: hidden;
+}
+.nft-price-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #000;
+    padding: 4px 8px;
+    border-radius: 8px;
+}
+.nft-price { color: var(--gold); font-weight: 900; font-size: 14px; }
+.nft-buy-btn {
+    background: #2f80ed; color: #fff; border: none; border-radius: 6px;
+    padding: 5px 8px; font-size: 11px; font-weight: bold; cursor: pointer;
+}
+.nft-buy-btn:hover { background: #4f8cff; }
 :root{--bg:#0b0e11;--bg-card:#151a21;--line:#252b36;--gold:#f4cf70;--text:#fff;--muted:#8a94a6;--green:#26a17b;--red:#f6465d;--blue:#2f80ed;--purple:#a855f7;--card-bg-image:none}
 *{box-sizing:border-box}
 html,body{margin:0;padding:0;background:radial-gradient(circle at 50% -10%,#1a2535 0%,var(--bg) 42%),var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;min-height:100vh;-webkit-tap-highlight-color:transparent}
