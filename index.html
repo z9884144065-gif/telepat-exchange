@@ -4470,6 +4470,41 @@ function resetTilt(card) {
     card.style.transform = `rotateX(0) rotateY(0) scale(1)`;
 }
 
+    function openPaymentModal(itemId) {
+    sb.from('telepat_items').select('*').eq('id', itemId).single().then(({data}) => {
+        if(!data) return msg('Ошибка загрузки', 'error');
+        
+        const visual = data.image_url 
+            ? `<img src="${esc(data.image_url)}" style="width:100%; max-height:150px; object-fit:contain; margin-bottom:10px;">` 
+            : `<div style="font-size: 64px; margin-bottom: 10px;">${data.emoji || '🎁'}</div>`;
+        
+        const tgPriceUsd = data.price_usd * 0.95;
+        const tgAmount = tgPriceUsd / priceOf('TG');
+
+        openModal(`🛒 Покупка: ${esc(data.name)}`, `
+            <div style="text-align: center; margin-bottom: 15px;">
+                ${visual}
+                <div style="color: var(--gold); font-weight: bold; font-size: 20px;">${esc(data.name)}</div>
+            </div>
+            
+            <div style="background: #0d1520; padding: 12px; border-radius: 12px; border: 1px solid #2d3a4c; margin-bottom:15px; text-align:center;">
+                <div style="font-size: 11px; color: var(--muted); margin-bottom: 10px;">Выберите способ оплаты:</div>
+                
+                <button class="admin-btn sec" style="width:100%; margin-bottom:10px; padding:12px; display:flex; justify-content:space-between; align-items:center; border-color:#39d98a;" onclick="closeModal(); buyItem('${data.id}', '${esc(data.name)}', ${data.price_usd}, 'TUSD')">
+                    <span>💵 Оплатить TUSD</span>
+                    <b style="color:#39d98a; font-size:16px;">$${f(data.price_usd, 2)}</b>
+                </button>
+                
+                <button class="admin-btn sec" style="width:100%; padding:12px; display:flex; justify-content:space-between; align-items:center; border-color:#f4cf70;" onclick="closeModal(); buyItem('${data.id}', '${esc(data.name)}', ${data.price_usd}, 'TG')">
+                    <span>🥇 Оплатить TG (-5%)</span>
+                    <b style="color:#f4cf70; font-size:16px;">${f(tgAmount, 2)} TG</b>
+                </button>
+            </div>
+            
+            <button class="admin-btn sec" style="width:100%;" onclick="closeModal()">Отмена</button>
+        `);
+    });
+}
 document.addEventListener('DOMContentLoaded',async()=>{
   await refreshJwt();
   await loadUiSettingsPublic();
