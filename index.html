@@ -1650,6 +1650,9 @@ function renderShop(){
     else if (tab === 'artifacts') filtered = filtered.filter(i => i.category === 'artifact');
     else if (tab === 'certs') filtered = filtered.filter(i => i.category === 'license');
     else if (tab === 'extras') filtered = filtered.filter(i => ['ring','bag','pet','aura'].includes(i.slot));
+         // 👇 СОРТИРОВКА ПО ЦЕНЕ (ОТ ДЕШЕВЫХ К ДОРОГИМ) 👇
+    filtered.sort((a, b) => Number(a.price_usd) - Number(b.price_usd));
+    // 👆 -------------------------------------------------- 👆
     if (!filtered.length) { c.innerHTML = `<div class="item-card"><div class="item-desc" style="text-align:center">В категории нет активных товаров</div></div>`; return; }
         c.innerHTML = filtered.map(it => {
         const tgPriceUSD = it.price_usd * 0.95;
