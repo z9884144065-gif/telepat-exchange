@@ -4405,8 +4405,8 @@ document.addEventListener('DOMContentLoaded',async()=>{
   await loadRewardFunds();
   await loadStakeState();
   await loadTopBanner();
-  renderHome();
-  renderBottomNav();
+4408  renderBottomNav();  // 👈 Кнопки меню рисуются ПЕРВЫМИ
+4409  renderHome();       // 👈 Главная страница рисуется ВТОРОЙ
   if(__START_ORDER_ID){setTimeout(() => { openDirectOrder(__START_ORDER_ID); }, 500);}
   setInterval(refreshJwt,30*60*1000);
   setInterval(loadRewardFunds,60*1000);
