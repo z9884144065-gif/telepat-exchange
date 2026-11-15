@@ -2333,9 +2333,35 @@ $('statLevel').textContent=rl;
   });
 
   const inv=MY_ITEMS.filter(i=>!i.is_equipped&&!i.is_listed);
-  $('invCount').textContent=inv.length+' / 10';
-  const grid=$('invGrid');grid.innerHTML='';
-  for(let i=0;i<10;i++){ const item=inv[i];const slot=document.createElement('div');slot.className='slot'; if(item){slot.classList.add('filled');slot.innerHTML=item.emoji||'🎁';slot.onclick=()=>openItemModal(item.id);} else{slot.classList.add('unlocked-empty');slot.innerHTML='🎒';slot.style.opacity='0.4';} grid.appendChild(slot); }
+  
+  // Считаем максимальный размер инвентаря
+  let maxSlots = 10; 
+  const equippedRing = MY_ITEMS.find(i => i.is_equipped && i.slot === 'ring');
+  if (equippedRing && equippedRing.inventory_slots) {
+      maxSlots += Number(equippedRing.inventory_slots);
+  }
+  
+  $('invCount').textContent = inv.length + ' / ' + maxSlots;
+  
+  // 👇 РИСУЕМ КНОПКИ КАТЕГОРИЙ 👇
+  const catGrid = $('invCategoriesGrid');
+  if (catGrid) {
+      const categories = [
+          { id: 'weapon', name: 'Оружие', icon: '⚔️' },
+          { id: 'armor', name: 'Броня', icon: '🛡️' },
+          { id: 'pet', name: 'Питомцы', icon: '🐺' },
+          { id: 'artifact', name: 'Артефакты', icon: '💍' },
+          { id: 'food', name: 'Еда', icon: '🍔' },
+          { id: 'all', name: 'Всё', icon: '🎒' }
+      ];
+      
+      catGrid.innerHTML = categories.map(c => `
+          <div class="qb" style="padding:10px 4px; min-height:64px; border-radius:12px;" onclick="openCategoryInventory('${c.id}', '${c.name}')">
+              <span class="qi" style="font-size:24px; margin-bottom:6px;">${c.icon}</span>
+              <span style="font-size:11px; font-weight:bold;">${c.name}</span>
+          </div>
+      `).join('');
+  }
   
     const stakeUSD=Number(CU.stake_usd_locked||0),deals=Number(CU.completed_trades||0),refs=Number(CU.refs_new||0);
   const earnUSD = Number(CU.referral_earnings || 0); // 👈 ДОБАВЛЕНО: Прибыль структуры
