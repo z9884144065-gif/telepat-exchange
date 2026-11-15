@@ -638,8 +638,12 @@ body[data-card-bg="1"] .rank-badge,body[data-card-bg="1"] .slot,body[data-card-b
 <div class="slot" id="slot-aura" onclick="clickSlot('aura')"><span class="slot-label">Аура</span>✨</div>
 </div>
 <div class="inventory-section">
-<div class="inventory-header"><span class="title">🎒 Инвентарь</span><span class="info" id="invCount">0 / 10</span></div>
-<div class="inventory-grid" id="invGrid"></div>
+    <div class="inventory-header">
+        <span class="title">🎒 Инвентарь</span>
+        <span class="info" id="invCount">0 / 10</span>
+    </div>
+    <!-- Здесь будут кнопки категорий (Оружие, Броня, Еда и т.д.) -->
+    <div class="qa" style="grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px;" id="invCategoriesGrid"></div>
 </div>
 <div class="next-level-box" id="nextLevelBox"></div>
 <div class="scales-container">
