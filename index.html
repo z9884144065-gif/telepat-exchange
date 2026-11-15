@@ -1803,7 +1803,7 @@ function renderShop(){
 
     if (!filtered.length) { c.innerHTML = `<div class="item-card" style="text-align:center">В категории нет товаров</div>`; return; }
 
-    // ГРУППИРУЕМ ПО УРОВНЯМ
+    // ГРУППИРУЕМ ПО УРОВНЯМ (min_rank)
     const grouped = {};
     filtered.forEach(it => {
         const rank = it.min_rank || 0; 
