@@ -1945,16 +1945,16 @@ function renderShop(){
                         if (it.price_usd >= 1000) borderClass = 'legendary';
                         else if (it.price_usd >= 100) borderClass = 'epic';
 
-                        return `
+                                               return `
                         <div class="nft-card-container">
-                            <div class="nft-card ${borderClass}">
+                            <div class="nft-card ${borderClass}" onclick="openPaymentModal('${it.id}')" style="cursor:pointer;">
                                 <div class="nft-image-wrap" style="background: ${bgGradient};">
                                     ${visual}
                                     <div class="nft-serial">#${randomId}</div>
                                 </div>
                                 <div class="nft-title">${esc(it.name)}</div>
                                 
-                                <button class="nft-buy-btn" style="background: ${bgGradient};" onclick="openPaymentModal('${it.id}')">
+                                <button class="nft-buy-btn" style="background: ${bgGradient};" onclick="event.stopPropagation(); openPaymentModal('${it.id}')">
                                     💎 ${priceText}
                                 </button>
                             </div>
