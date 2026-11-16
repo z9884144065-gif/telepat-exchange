@@ -1862,7 +1862,7 @@ function renderShop(){
     else if (tab === 'titles') filtered = filtered.filter(i => i.category === 'title' || i.slot === 'titleSlot');
     else if (tab === 'artifacts') filtered = filtered.filter(i => i.category === 'artifact' || i.category === 'card');
     else if (tab === 'certs') filtered = filtered.filter(i => i.category === 'license');
-    else if (tab === 'extras') filtered = filtered.filter(i => ['ring','bag','pet','aura'].includes(i.slot));
+   else if (tab === 'pets') filtered = filtered.filter(i => i.slot === 'pet' || i.category === 'pet');
 
     if (!filtered.length) { c.innerHTML = `<div class="item-card" style="text-align:center">В категории нет товаров</div>`; return; }
 
