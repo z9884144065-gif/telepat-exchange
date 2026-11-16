@@ -1793,6 +1793,29 @@ function renderShopTabs(){
     return `<button class="${cls}" data-ui-btn="${btnId}" data-ui-default-emoji="${esc(btns[btnId].emoji)}" data-ui-default-label="${esc(btns[btnId].label)}" onclick="showShopTab('${key}')"><span class="tab-icon">${emoji}</span>${esc(label)}</button>`;
   }).join(''); applyUiConfig(__UICONFIG);
 }
+    const BASE_IMAGES = {
+    'RING_KNIGHT': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/ring_knight.png',
+    'weapon': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/sword.png',
+    'cloak': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/boots.png', 
+    'body': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/shirt.png',
+    'legs': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/pants.png',
+    'armor': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/helmet.png', 
+    'shield': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/chainmail.png', 
+    'bag': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/shield.png',
+    'ring': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/ring.png',
+    'artifact': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/art_gem.png', 
+    'titleSlot': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/default.png', 
+    'license': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/default.png', 
+    'food': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/food_burger.png',
+    'pet': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/pet_cat.png',
+    'PET_CAT': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/pet_cat.png',
+    'PET_DOG': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/pet_dog.png',
+    'PET_DONKEY': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/pet_donkey.png',
+    'PET_HORSE': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/pet_horse.png',
+    'PET_TIGER': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/pet_tiger.png',
+    'PET_UNICORN': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/pet_unicorn.png',
+    'default': 'https://jutszxuzjzyfxarceydw.supabase.co/storage/v1/object/public/ads/sword.png' 
+};
 function renderShop(){ 
   renderShopTabs(); 
   const c=$('shopContent'); 
