@@ -1662,18 +1662,22 @@ async function loadCustomBalances(){
 }
 async function loadUser(){
   if(!UID){msg('Открой через Telegram','error');return;}
-    async function loadUser(){
-  if(!UID){msg('Открой через Telegram','error');return;}
   
   // 👇 ВОТ ЭТА СТРОЧКА ЗАПУСКАЕТ ПРОВЕРКУ УРОВНЯ 👇
   try { await sb.rpc('recalculate_user_rank', { p_user_id: UID }); } catch(e) { console.warn('Ошибка проверки ранга:', e); }
   // 👆 ----------------------------------------- 👆
 
   let{data}=await sb.from('users').select('*').eq('telegram_id',UID).maybeSingle();
-  // ... дальше твой старый код ...
-  let{data}=await sb.from('users').select('*').eq('telegram_id',UID).maybeSingle();
-  if(!data){ try{await sb.rpc('ensure_user_exists',{p_telegram_id:UID,p_first_name:tgu?.first_name||null,p_username:tgu?.username||null});}catch(e){} const r2=await sb.from('users').select('*').eq('telegram_id',UID).maybeSingle(); data=r2.data; }
+  
+  if(!data){ 
+      try{ await sb.rpc('ensure_user_exists', { p_telegram_id: UID, p_first_name: tgu?.first_name || null, p_username: tgu?.username || null }); } catch(e){} 
+      const r2 = await sb.from('users').select('*').eq('telegram_id',UID).maybeSingle(); 
+      data = r2.data; 
+  }
+  
   if(!data){msg('Профиль не найден','error');return;}
+
+  CU=data; // 👈 Сначала грузим базовый профиль
   
   CU=data; // 👈 Сначала грузим базовый профиль
 
