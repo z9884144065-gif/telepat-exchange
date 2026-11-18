@@ -2086,7 +2086,15 @@ function showBattle(botType, battleData) {
 
   if (!log.length) { msg('❌ Пустой бой', 'error'); return; }
 
-  const playerMaxHp = Math.max(Number(CU?.hp_base) || 100, 1);
+   // 👇 БЕЗОПАСНЫЙ РАСЧЕТ ЗДОРОВЬЯ 👇
+  const playerRank = Number(CU?.rank_level || 0);
+  
+  // Считаем бонусы от надетой экипировки (защита от пустых значений)
+  const equipHp = MY_ITEMS.filter(i => i.is_equipped).reduce((sum, i) => sum + (Number(i.bonus_hp) || 0), 0);
+  
+  // Итоговое здоровье: 50 + (Ранг * 10) + Экипировка. Минимум 50.
+  const playerMaxHp = Math.max(50 + (playerRank * 10) + equipHp, 50);
+  
   let dmgToEnemy = 0, dmgToPlayer = 0;
 
   log.forEach(t => {
@@ -2095,9 +2103,11 @@ function showBattle(botType, battleData) {
     else                    dmgToPlayer += Number(t.damage) || 0;
   });
 
-  const enemyMaxHp = (winner === 'user') ? Math.max(dmgToEnemy, 30) : Math.max(dmgToEnemy + 10, 60);
+  // Врагу тоже даем адекватное здоровье
+  const enemyMaxHp = (winner === 'user') ? Math.max(dmgToEnemy, 100) : Math.max(dmgToEnemy + 10, 100);
   let playerHp = playerMaxHp;
   let enemyHp  = enemyMaxHp;
+  // 👆 --------------------------------- 👆
 
   const old = $('battleOverlay');
   if (old) old.remove();
