@@ -4084,10 +4084,56 @@ async function pauseMyCampaign(id, action){const{data,error}=await sb.rpc('my_ca
 async function cancelMyCampaign(id){if(!confirm('Отменить? Остаток вернётся.')) return;const{data,error}=await sb.rpc('my_campaign_action',{p_id:id,p_action:'cancel'});if(error||!data||data.ok===false){msg('Ошибка','error');return;}msg(`🚫 Возврат: $${f(data.refund||0,2)}`,'success');await refreshAll();setTimeout(openMyAds,700);}
 
 /* ═══════ GEAR P2P ═══════ */
-async function gearListItem(){const itemId=$('gear_sell_item')?.value,price=Number($('gear_sell_price')?.value);if(!itemId||!Number.isFinite(price)||price<=0){msg('Заполните','error');return;}const{data,error}=await sb.rpc('gear_list_item',{p_user_item_id:itemId,p_price_tusd:price});if(error||!data||data.ok===false){msg(data?.error||'Ошибка','error');return;}msg('✅','success');await refreshAll();if(currentIncomeTab==='gear-p2p') showIncomeTab('gear-p2p');}
-async function gearCancelListing(id){if(!confirm('Снять?')) return;const{data,error}=await sb.rpc('gear_cancel_listing',{p_listing_id:id});if(error||!data||data.ok===false){msg('Ошибка','error');return;}msg('✅','success');await refreshAll();}
-async function gearBuyListing(id){if(!confirm('Купить?')) return;const{data,error}=await sb.rpc('gear_buy_listing',{p_listing_id:id});if(error||!data||data.ok===false){msg(data?.error||'Ошибка','error');return;}msg('✅','success');await refreshAll();}
+async function gearListItem() {
+    const itemId = $('gear_sell_item')?.value;
+    const price = Number($('gear_sell_price')?.value);
+    
+    if (!itemId || !Number.isFinite(price) || price <= 0) {
+        msg('Заполните корректную цену', 'error');
+        return;
+    }
+    
+    // 👇 Передаем UID третьим параметром для защиты 👇
+    const { data, error } = await sb.rpc('gear_list_item', {
+        p_user_item_id: itemId,
+        p_price_tusd: price,
+        p_telegram_id: UID 
+    });
+    
+    if (error || (data && data.ok === false)) {
+        msg(data?.error || error?.message || 'Ошибка', 'error');
+        return;
+    }
+    
+    msg('✅ Предмет выставлен на продажу', 'success');
+    await refreshAll();
+    if (currentIncomeTab === 'gear-p2p') showIncomeTab('gear-p2p');
+}
 
+async function gearCancelListing(id) {
+    if (!confirm('Снять?')) return;
+    const { data, error } = await sb.rpc('gear_cancel_listing', { p_listing_id: id });
+    if (error || !data || data.ok === false) {
+        msg(data?.error || 'Ошибка', 'error');
+        return;
+    }
+    msg('✅ Снято с продажи', 'success');
+    await refreshAll();
+}
+
+async function gearBuyListing(id) {
+    if (!confirm('Купить?')) return;
+    const { data, error } = await sb.rpc('gear_buy_listing', { 
+        p_listing_id: id, 
+        p_buyer_id: UID // 👈 Тоже добавим ID покупателя на будущее
+    });
+    if (error || !data || data.ok === false) {
+        msg(data?.error || 'Ошибка', 'error');
+        return;
+    }
+    msg('✅ Успешно куплено', 'success');
+    await refreshAll();
+}
 /* ═══════ PROFILE / HISTORY ═══════ */
 async function openProfile(uid){
   $('profileModal').classList.add('show');$('profileRank').textContent='Загрузка...';
