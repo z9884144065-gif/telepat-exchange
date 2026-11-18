@@ -2298,7 +2298,13 @@ function showBattle(botType, battleData) {
 
   function finishBattle(winnerCode) {
     const win = winnerCode === 'user';
-    
+        // 👇 ПРИНУДИТЕЛЬНО ОБНУЛЯЕМ ПОЛОСКУ ПРОИГРАВШЕГО 👇
+    if (win) {
+        updateHpBar('enemy', 0, enemyMaxHp);
+    } else {
+        updateHpBar('player', 0, playerMaxHp);
+    }
+    // 👆 ------------------------------------------ 👆
     const res = document.createElement('div');
     res.className = 'battle-result';
     res.style.cssText = 'position:absolute; top:40%; left:50%; transform:translate(-50%, -50%); text-align:center; z-index:100; background:rgba(0,0,0,0.85); padding:20px 40px; border-radius:20px; border:2px solid ' + (win?'#39d98a':'#f6465d');
