@@ -2032,8 +2032,18 @@ async function renderTournament() {
         if(selectBlock) selectBlock.classList.add('hidden');
         if(arenaBlock) arenaBlock.classList.remove('hidden');
         
-        if ($('tour-hp')) $('tour-hp').textContent = CU.hp_base || 100;
-        if ($('tour-dmg')) $('tour-dmg').textContent = CU.damage_base || 10;
+               // 👇 ДИНАМИЧЕСКИЙ РАСЧЕТ СТАТОВ ДЛЯ ЭКРАНА АРЕНЫ 👇
+        const myRank = Number(CU?.rank_level || 0);
+        const equipHp = MY_ITEMS.filter(i => i.is_equipped).reduce((sum, i) => sum + (Number(i.bonus_hp) || 0), 0);
+        const equipDmg = MY_ITEMS.filter(i => i.is_equipped).reduce((sum, i) => sum + (Number(i.bonus_dmg) || 0), 0);
+        const buffDmg = Number(CU?.buff_dmg_amount || 0);
+
+        const displayHp = 50 + (myRank * 10) + equipHp;
+        const displayDmg = 1 + (myRank * 2) + equipDmg + buffDmg;
+
+        if ($('tour-hp')) $('tour-hp').textContent = displayHp;
+        if ($('tour-dmg')) $('tour-dmg').textContent = displayDmg;
+        // 👆 --------------------------------------------- 👆
         if ($('tour-wins')) $('tour-wins').textContent = CU.pvp_wins || 0;
         if ($('tour-losses')) $('tour-losses').textContent = CU.pvp_losses || 0;
         if ($('tour-rating')) $('tour-rating').textContent = CU.pvp_rating || 0;
